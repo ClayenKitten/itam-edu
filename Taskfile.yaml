@@ -1,0 +1,71 @@
+version: "3"
+
+silent: true
+
+tasks:
+  default:
+    cmds: [task --list]
+
+  format:
+    desc: Format the whole project
+    cmds: [npm run format]
+
+  dev:
+    desc: Basic development environment command
+    cmds: ["docker compose -f ./compose.dev.yaml {{.CLI_ARGS}}"]
+
+  dev:up:
+    desc: Setup development environment
+    cmds:
+      - docker compose -f ./compose.dev.yaml up -d --build
+      - task: db:up
+
+  dev:down:
+    desc: Remove development environment
+    cmds: [docker compose -f ./compose.dev.yaml down]
+
+  dev:drop:
+    desc: Remove development environment with volumes
+    prompt: Are you sure? It will remove all volumes, leading to full data loss.
+    cmds: [docker compose -f ./compose.dev.yaml down -v]
+
+  db:dump:
+    desc: Dump database schema
+    dir: ./db
+    cmds:
+      - "npm run dbmate dump"
+      - "npm run infer"
+
+  db:up:
+    desc: Run database migrations
+    dir: ./db
+    cmds:
+      - "npm run dbmate up"
+      - "npm run infer"
+
+  db:down:
+    desc: Revert database migration
+    dir: ./db
+    cmds:
+      - "npm run dbmate down"
+      - "npm run infer"
+
+  db:reup:
+    desc: Drop database and reapply database migrations
+    dir: ./db
+    interactive: true
+    cmds:
+      - "docker compose -f ../compose.dev.yaml down -v postgres 2>/dev/null"
+      - 'echo "Existing database removed"'
+      - "docker compose -f ../compose.dev.yaml up postgres -d 2>/dev/null"
+      - 'echo "New database started"'
+      - "npm run dbmate wait"
+      - "npm run dbmate up"
+      - "npm run infer"
+
+  db:new:
+    desc: Create new migration file
+    dir: ./db
+    cmds:
+      - "npm run dbmate new -- {{.CLI_ARGS}}"
+      - "npm run infer"

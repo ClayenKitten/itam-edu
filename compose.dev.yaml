@@ -1,0 +1,77 @@
+# Development-oriented docker compose
+
+services:
+  postgres:
+    image: postgres:17
+    expose: [5432]
+    ports:
+      - 127.0.0.1:5432:5432
+    shm_size: 128mb
+    restart: unless-stopped
+    volumes: [postgres:/var/lib/postgresql/data]
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "app"]
+      interval: 5s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-09-22T00-33-43Z
+    expose: [9000, 9001]
+    ports:
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    command: server --console-address ":9001" /mnt/data
+    environment:
+      MINIO_ROOT_USER: user
+      MINIO_ROOT_PASSWORD: password
+    volumes: [minio:/mnt/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  minio-init:
+    build: s3
+    environment:
+      MINIO_ROOT_USER: user
+      MINIO_ROOT_PASSWORD: password
+      S3_BUCKET: data
+      S3_ACCESS_KEY: user
+      S3_SECRET_KEY: password
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  dbgate:
+    image: dbgate/dbgate:5.3.1-alpine
+    expose: [3000]
+    ports:
+      - 127.0.0.1:5500:3000
+    restart: unless-stopped
+    environment:
+      CONNECTIONS: Database
+      SIGNLE_CONNECTION: Database
+      SINGLE_DATABASE: app
+
+      LABEL_Database: Database
+      SERVER_Database: postgres
+      DATABASE_Database: app
+      USER_Database: user
+      PASSWORD_Database: password
+      PORT_Database: 5432
+      ENGINE_Database: postgres@dbgate-plugin-postgres
+    volumes:
+      - dbgate:/root/.dbgate
+
+volumes:
+  postgres:
+  dbgate:
+  minio:
