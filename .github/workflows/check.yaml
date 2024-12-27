@@ -1,0 +1,44 @@
+name: Check
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      path: { type: string, required: true }
+  workflow_call:
+    inputs:
+      path: { type: string, required: true }
+
+jobs:
+  check-and-test:
+    name: Check
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: "${{ inputs.path }}"
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js 21.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.x
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+      - name: Install Dependencies
+        id: deps
+        run: npm ci
+
+      - name: Check formatting
+        run: "npm run check:format"
+        if: ${{ github.event_name == 'pull_request' }}
+
+      - name: Check
+        id: check
+        run: "npm run check"
+        if: ${{ !cancelled() && steps.deps.conclusion == 'success' }}
+
+      - name: Test
+        run: "npm run test --if-present"
+        if: ${{ !cancelled() && steps.check.conclusion == 'success' }}

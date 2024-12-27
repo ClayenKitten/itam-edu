@@ -1,0 +1,7 @@
+[
+    { "name": "web", "path": "web", "check": true },
+    { "name": "api", "path": "api", "check": true },
+    { "name": "tg", "path": "tg", "check": true },
+    { "name": "db", "path": "db" },
+    { "name": "s3", "path": "s3" }
+]

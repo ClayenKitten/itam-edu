@@ -1,0 +1,31 @@
+name: Service Pipeline
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      name: { type: string, required: true }
+      path: { type: string, required: true }
+      check: { type: boolean, default: true }
+  workflow_call:
+    inputs:
+      name: { type: string, required: true }
+      path: { type: string, required: true }
+      check: { type: boolean, required: true }
+
+jobs:
+  check:
+    name: Check
+    if: ${{ inputs.check }}
+    uses: "./.github/workflows/check.yaml"
+    with:
+      path: ${{ inputs.path }}
+  build:
+    name: Build
+    needs: check
+    uses: "./.github/workflows/build.yaml"
+    with:
+      name: ${{ inputs.name }}
+      path: ${{ inputs.path }}

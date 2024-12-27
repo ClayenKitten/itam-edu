@@ -1,0 +1,50 @@
+name: Main workflow
+permissions:
+  contents: read
+  packages: write
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-22.04
+    outputs:
+      services: ${{ steps.changed.outputs.services }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Get services
+        run: "echo SERVICES=$(cat .github/workflows/services.json) >> $GITHUB_ENV"
+      - name: Get changed folders
+        id: folders
+        uses: tj-actions/changed-files@v45
+        with:
+          json: true
+          escape_json: false
+          dir_names: true
+          since_last_remote_commit: true
+      - name: Filter changed services
+        id: changed
+        if: "${{ github.event_name != 'workflow_dispatch' }}"
+        env:
+          FILES: "${{ steps.folders.outputs.all_changed_and_modified_files }}"
+          COMMAND: "map(.path as $PATH | select($FILES | map(. == $PATH) | any))"
+        run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
+
+  main:
+    name: Main workflow
+    needs: prepare
+    if: ${{ needs.prepare.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare.outputs.services) }}
+      fail-fast: false
+    uses: "./.github/workflows/pipeline.yaml"
+    with:
+      name: "${{ matrix.service.name }}"
+      path: "${{ matrix.service.path }}"
+      check: "${{ matrix.service.check == true }}"
