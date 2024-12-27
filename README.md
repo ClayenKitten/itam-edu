@@ -1,38 +1,12 @@
 # ITAM educational platform
 
-## Features
+An LMS for ITAM Courses.
 
-Planned features for the platform
-
-- Telegram bot
-    - Platfrom login
-    - Notifications
-- Course
-    - Pages
-        - Theory
-        - Homeworks
-        - Quizzes
-        - Live lessons
-            - Video streaming
-            - Recording :question:
-            - Scheduling
-            - Student feedback
-    - Course feedback
-    - Teacher's blog
-- Course design
-    - Hierarchical course structure
-    - Multiple page types:
-        - Theory -
-        - Lesson - information-only lesson
-        - Live lesson - lesson that was live streamed
-    - WYSIWYG editor
-
-## Architecture
+## Packages
 
 - web - frontend web application
 - api - REST API backend
 - tg - companion Telegram bot
-- webrtc - webrtc server
 - db - database migrations
 - s3 - S3 proxy and Minio configuration
 

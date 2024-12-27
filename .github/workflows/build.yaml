@@ -6,12 +6,14 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      name: { type: string, required: true }
-      path: { type: string, required: true }
+      image: { type: string, required: true }
+      context: { type: string, required: true }
+      dockerfile: { type: string, default: Dockerfile }
   workflow_call:
     inputs:
-      name: { type: string, required: true }
-      path: { type: string, required: true }
+      image: { type: string, required: true }
+      context: { type: string, required: true }
+      dockerfile: { type: string, default: Dockerfile }
 
 jobs:
   docker:
@@ -34,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/${{ inputs.name }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}-${{ inputs.image }}
           tags: |
             type=schedule
             type=ref,event=branch
@@ -45,7 +47,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: "${{ inputs.path }}"
+          context: "${{ inputs.context }}"
+          file: "${{ inputs.context }}/${{ inputs.dockerfile }}"
           tags: "${{ steps.meta.outputs.tags }}"
           push: true
           cache-from: "type=registry,ref=${{ steps.meta.outputs.tags }}"

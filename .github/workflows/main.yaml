@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - name: Get services
-        run: "echo SERVICES=$(cat .github/workflows/services.json) >> $GITHUB_ENV"
+        run: "echo SERVICES=$(cat packages/packages.json) >> $GITHUB_ENV"
       - name: Get changed folders
         id: folders
         uses: tj-actions/changed-files@v45
@@ -27,12 +27,13 @@ jobs:
           escape_json: false
           dir_names: true
           since_last_remote_commit: true
+          path: packages
+          files: "*/*"
       - name: Filter changed services
         id: changed
-        if: "${{ github.event_name != 'workflow_dispatch' }}"
         env:
           FILES: "${{ steps.folders.outputs.all_changed_and_modified_files }}"
-          COMMAND: "map(.path as $PATH | select($FILES | map(. == $PATH) | any))"
+          COMMAND: "map(.name as $NAME | select($FILES | map(. == $NAME) | any))"
         run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
 
   main:
@@ -45,6 +46,4 @@ jobs:
       fail-fast: false
     uses: "./.github/workflows/pipeline.yaml"
     with:
-      name: "${{ matrix.service.name }}"
-      path: "${{ matrix.service.path }}"
-      check: "${{ matrix.service.check == true }}"
+      service: "${{ toJson(matrix.service) }}"

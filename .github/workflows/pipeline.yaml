@@ -6,26 +6,23 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      name: { type: string, required: true }
-      path: { type: string, required: true }
-      check: { type: boolean, default: true }
+      service: { type: string, required: true }
   workflow_call:
     inputs:
-      name: { type: string, required: true }
-      path: { type: string, required: true }
-      check: { type: boolean, required: true }
+      service: { type: string, required: true }
 
 jobs:
   check:
     name: Check
-    if: ${{ inputs.check }}
+    if: ${{ contains(fromJson(inputs.service).kind, 'node') }}
     uses: "./.github/workflows/check.yaml"
     with:
-      path: ${{ inputs.path }}
+      path: ./packages/${{ fromJson(inputs.service).name }}
   build:
     name: Build
     needs: check
+    if: ${{ !cancelled() && needs.check.result != 'failure' }}
     uses: "./.github/workflows/build.yaml"
     with:
-      name: ${{ inputs.name }}
-      path: ${{ inputs.path }}
+      image: ${{ fromJson(inputs.service).name }}
+      context: ./packages/${{ fromJson(inputs.service).name }}

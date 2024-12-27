@@ -1,0 +1,7 @@
+[
+    { "name": "web", "kind": ["node"] },
+    { "name": "api", "kind": ["node"] },
+    { "name": "tg", "kind": ["node"] },
+    { "name": "db", "kind": [] },
+    { "name": "s3", "kind": [] }
+]
