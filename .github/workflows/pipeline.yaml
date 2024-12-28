@@ -1,4 +1,4 @@
-name: Service Pipeline
+name: Pipeline
 permissions:
   contents: read
   packages: write
@@ -18,6 +18,7 @@ jobs:
     uses: "./.github/workflows/check.yaml"
     with:
       path: ./packages/${{ fromJson(inputs.service).name }}
+
   build:
     name: Build
     needs: check
@@ -26,3 +27,18 @@ jobs:
     with:
       image: ${{ fromJson(inputs.service).name }}
       context: ./packages/${{ fromJson(inputs.service).name }}
+
+  report:
+    name: Report pipeline result
+    needs: [check, build]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo '✅ itam-edu-${{ fromJson(inputs.service).name }}' > summary.txt
+        if: ${{ needs.build.result == 'success' }}
+      - run: echo '🚫 itam-edu-${{ fromJson(inputs.service).name }}' > summary.txt
+        if: ${{ needs.build.result == 'failure' || needs.check.result == 'failure' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "summary-${{ fromJson(inputs.service).name }}"
+          path: "summary.txt"

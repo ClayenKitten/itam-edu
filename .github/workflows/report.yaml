@@ -1,0 +1,45 @@
+name: Check
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    secrets:
+      token: { required: true }
+      chat: { required: true }
+
+jobs:
+  report:
+    name: Report
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Get summary
+        uses: actions/download-artifact@v4
+        with:
+          pattern: summary-*
+          path: summary
+      - name: Merge summary
+        id: summary
+        run: |
+          {
+            echo 'summary<<EOF'
+            echo "$(awk '{print $0}' summary/*/*)"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+      - name: Send Telegram message
+        uses: appleboy/telegram-action@master
+        env:
+          SUCCESS: '<b>🎉 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">Pipeline</a> at <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a> completed successfully!</b>'
+          FAILURE: '<b>⚠️ <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">Pipeline</a> at <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a> completed with errors!</b>'
+          PACKAGES: |
+            <b>Built packages</b>
+            ${{ steps.summary.outputs.summary }}
+        with:
+          to: ${{ secrets.chat }}
+          token: ${{ secrets.token }}
+          format: html
+          disable_web_page_preview: true
+          message: |
+            ${{ contains(steps.summary.outputs.summary, '🚫') && env.FAILURE || env.SUCCESS }}
+            ${{ steps.summary.outputs.summary && env.PACKAGES }}

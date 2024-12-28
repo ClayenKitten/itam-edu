@@ -26,9 +26,8 @@ jobs:
           json: true
           escape_json: false
           dir_names: true
-          since_last_remote_commit: true
+          dir_names_max_depth: 1
           path: packages
-          files: "*/*"
       - name: Filter changed services
         id: changed
         env:
@@ -36,14 +35,23 @@ jobs:
           COMMAND: "map(.name as $NAME | select($FILES | map(. == $NAME) | any))"
         run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
 
-  main:
-    name: Main workflow
+  pipeline:
+    name: Pipeline
+    uses: "./.github/workflows/pipeline.yaml"
     needs: prepare
     if: ${{ needs.prepare.outputs.services != '[]' }}
     strategy:
       matrix:
         service: ${{ fromJson(needs.prepare.outputs.services) }}
       fail-fast: false
-    uses: "./.github/workflows/pipeline.yaml"
     with:
       service: "${{ toJson(matrix.service) }}"
+
+  report:
+    name: Report
+    uses: "./.github/workflows/report.yaml"
+    needs: pipeline
+    if: ${{ !cancelled() }}
+    secrets:
+      chat: "${{ secrets.TELEGRAM_REPORT_CHAT }}"
+      token: "${{ secrets.TELEGRAM_REPORT_TOKEN }}"
