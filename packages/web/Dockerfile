@@ -1,19 +1,26 @@
-FROM node:22-alpine AS builder
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
+# Dependencies
 COPY .npmrc .
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci --omit=dev
+COPY ./packages/web/package.json ./packages/web/package.json
+RUN npm ci --workspace itam-edu-web
 
-COPY . .
-RUN npm run build
+# Source
+COPY ./packages/api ./packages/api
+COPY ./packages/web ./packages/web
 
-FROM node:22-alpine AS production
+# Build
+RUN npm run build --workspace itam-edu-web
+RUN npm prune --omit=dev
+
+FROM node:22-alpine AS serve
 
 WORKDIR /app
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=build /app/packages/web/build ./build
+COPY --from=build /app/node_modules ./node_modules
 COPY package.json .
 CMD ["node", "./build"]

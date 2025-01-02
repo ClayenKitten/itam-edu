@@ -31,28 +31,28 @@ tasks:
 
   db:dump:
     desc: Dump database schema
-    dir: ./db
+    dir: ./packages/db
     cmds:
       - "npm run dbmate dump"
       - "npm run infer"
 
   db:up:
     desc: Run database migrations
-    dir: ./db
+    dir: ./packages/db
     cmds:
       - "npm run dbmate up"
       - "npm run infer"
 
   db:down:
     desc: Revert database migration
-    dir: ./db
+    dir: ./packages/db
     cmds:
       - "npm run dbmate down"
       - "npm run infer"
 
   db:reup:
     desc: Drop database and reapply database migrations
-    dir: ./db
+    dir: ./packages/db
     interactive: true
     cmds:
       - "docker compose -f ../compose.dev.yaml down -v postgres 2>/dev/null"
@@ -65,7 +65,7 @@ tasks:
 
   db:new:
     desc: Create new migration file
-    dir: ./db
+    dir: ./packages/db
     cmds:
       - "npm run dbmate new -- {{.CLI_ARGS}}"
       - "npm run infer"

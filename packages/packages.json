@@ -1,7 +1,27 @@
 [
-    { "name": "web", "kind": ["node"] },
-    { "name": "api", "kind": ["node"] },
-    { "name": "tg", "kind": ["node"] },
-    { "name": "db", "kind": [] },
-    { "name": "s3", "kind": [] }
+    {
+        "path": "packages/web",
+        "node": { "name": "itam-edu-web" },
+        "docker": { "name": "itam-edu-web", "context": ".", "dockerfile": "packages/web/Dockerfile" }
+    },
+    {
+        "path": "packages/api",
+        "node": { "name": "itam-edu-api" },
+        "docker": { "name": "itam-edu-api", "context": ".", "dockerfile": "packages/api/Dockerfile" }
+    },
+    {
+        "path": "packages/tg",
+        "node": { "name": "itam-edu-tg" },
+        "docker": { "name": "itam-edu-tg", "context": ".", "dockerfile": "packages/tg/Dockerfile" }
+    },
+    {
+        "path": "packages/db",
+        "kind": [],
+        "docker": { "name": "itam-edu-db" }
+    },
+    {
+        "path": "packages/s3",
+        "kind": [],
+        "docker": { "name": "itam-edu-s3" }
+    }
 ]

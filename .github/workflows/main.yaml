@@ -10,39 +10,20 @@ on:
 jobs:
   prepare:
     name: Prepare
-    runs-on: ubuntu-22.04
-    outputs:
-      services: ${{ steps.changed.outputs.services }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - name: Get services
-        run: "echo SERVICES=$(cat packages/packages.json) >> $GITHUB_ENV"
-      - name: Get changed folders
-        id: folders
-        uses: tj-actions/changed-files@v45
-        with:
-          json: true
-          escape_json: false
-          dir_names: true
-          dir_names_max_depth: 1
-          path: packages
-      - name: Filter changed services
-        id: changed
-        env:
-          FILES: "${{ steps.folders.outputs.all_changed_and_modified_files }}"
-          COMMAND: "map(.name as $NAME | select($FILES | map(. == $NAME) | any))"
-        run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
+    uses: "./.github/workflows/prepare.yaml"
+
+  check:
+    name: Check
+    uses: "./.github/workflows/check.yaml"
 
   pipeline:
-    name: Pipeline
+    name: Package pipeline
     uses: "./.github/workflows/pipeline.yaml"
-    needs: prepare
-    if: ${{ needs.prepare.outputs.services != '[]' }}
+    needs: [prepare, check]
+    if: ${{ success() && needs.prepare.outputs.services != '[]' }}
     strategy:
       matrix:
-        service: ${{ fromJson(needs.prepare.outputs.services) }}
+        service: ${{ fromJson(needs.prepare.outputs.docker-services) }}
       fail-fast: false
     with:
       service: "${{ toJson(matrix.service) }}"

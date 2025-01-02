@@ -1,0 +1,69 @@
+name: Prepare Services
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_call:
+    outputs:
+      services: { value: "${{ jobs.changed.outputs.services }}" }
+      node-services: { value: "${{ jobs.node.outputs.services }}" }
+      docker-services: { value: "${{ jobs.docker.outputs.services }}" }
+
+jobs:
+  changed:
+    name: Get changed services
+    runs-on: ubuntu-22.04
+    outputs:
+      services: ${{ steps.changed.outputs.services }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Get services
+        id: services
+        run: "echo services=$(cat packages/packages.json) >> $GITHUB_OUTPUT"
+      - name: Get changed folders
+        id: folders
+        uses: tj-actions/changed-files@v45
+        with:
+          json: true
+          escape_json: false
+          dir_names: true
+          dir_names_max_depth: 1
+          path: packages
+      - name: Filter changed services
+        id: changed
+        env:
+          SERVICES: "${{ steps.services.outputs.services }}"
+          FILES: "${{ steps.folders.outputs.all_changed_and_modified_files }}"
+          COMMAND: "map(.name as $NAME | select($FILES | map(. == $NAME) | any))"
+        run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
+
+  node:
+    name: Prepare Node services
+    runs-on: ubuntu-22.04
+    needs: changed
+    outputs:
+      services: "${{ steps.filter.outputs.services }}"
+    steps:
+      - name: Filter Node services
+        id: filter
+        env:
+          SERVICES: "${{ needs.changed.outputs.services }}"
+          COMMAND: "map(select(.node != null) | .node + { path: .path })"
+        run: 'echo services=$(echo "$SERVICES" | jq -c "$COMMAND") >> $GITHUB_OUTPUT'
+
+  docker:
+    name: Prepare Docker services
+    runs-on: ubuntu-22.04
+    needs: changed
+    outputs:
+      services: "${{ steps.filter.outputs.services }}"
+    steps:
+      - name: Filter Docker services
+        id: filter
+        env:
+          SERVICES: "${{ needs.changed.outputs.services }}"
+          COMMAND: "map(select(.docker != null) | .node + { path: .path })"
+        run: 'echo services=$(echo "$SERVICES" | jq -c "$COMMAND") >> $GITHUB_OUTPUT'
