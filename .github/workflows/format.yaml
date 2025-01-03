@@ -23,13 +23,8 @@ jobs:
 
       - name: Install Dependencies
         id: deps
-        run: npm ci
+        run: npm ci --workspaces=false
 
-      - name: Check
-        id: check
-        run: "npm run check --if-present --workspaces"
-        if: ${{ !cancelled() && steps.deps.conclusion == 'success' }}
-
-      - name: Test
-        run: "npm run test --if-present --workspaces"
-        if: ${{ !cancelled() && steps.check.conclusion == 'success' }}
+      - name: Check formatting
+        run: "npm run check:format --if-present --workspaces"
+        continue-on-error: ${{ github.event_name != 'pull_request' }}

@@ -8,18 +8,23 @@ on:
     branches: [main]
 
 jobs:
-  prepare:
-    name: Prepare
-    uses: "./.github/workflows/prepare.yaml"
+  format:
+    name: Format
+    uses: "./.github/workflows/format.yaml"
 
   check:
     name: Check
     uses: "./.github/workflows/check.yaml"
 
+  prepare:
+    name: Prepare
+    uses: "./.github/workflows/prepare.yaml"
+    needs: [format, check]
+
   pipeline:
-    name: Package pipeline
+    name: Package Pipeline
     uses: "./.github/workflows/pipeline.yaml"
-    needs: [prepare, check]
+    needs: [prepare]
     if: ${{ success() && needs.prepare.outputs.services != '[]' }}
     strategy:
       matrix:

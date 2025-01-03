@@ -1,12 +1,12 @@
 {
     "name": "itam-edu",
     "scripts": {
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "check:format": "prettier . --check"
     },
     "devDependencies": {
         "prettier": "3.4.2",
-        "prettier-plugin-svelte": "^3.3.2",
-        "sass-embedded": "^1.83.0"
+        "prettier-plugin-svelte": "^3.3.2"
     },
     "workspaces": [
         "packages/*"
