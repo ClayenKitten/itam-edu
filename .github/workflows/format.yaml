@@ -1,4 +1,4 @@
-name: Check
+name: Format
 permissions:
   contents: read
 
@@ -7,8 +7,8 @@ on:
   workflow_call:
 
 jobs:
-  check-and-test:
-    name: Check
+  format:
+    name: Format
     runs-on: ubuntu-22.04
 
     steps:
