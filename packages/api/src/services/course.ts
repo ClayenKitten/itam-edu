@@ -24,7 +24,10 @@ export async function courseService() {
                         z.literal("null")
                     ]),
                     courseSlug: z.string().regex(/^[a-z\d-]{3,}$/)
-                })
+                }),
+                (result, c) => {
+                    if (!result.success) return c.text("Not Found", 404);
+                }
             ),
             async c => {
                 let query = c.var.db
@@ -49,51 +52,79 @@ export async function courseService() {
                 } else return c.json("not found", 404);
             }
         )
-        .get("/:course", async c => {
-            const course = await c.var.db
-                .selectFrom("courses")
-                .selectAll()
-                .where("id", "=", c.req.param("course"))
-                .executeTakeFirst();
-            if (course) return c.json(course);
-            else return c.json("not found", 404);
-        })
-        .get("/:course/lessons", async c => {
-            const lessons = await c.var.db
-                .selectFrom("lessons")
-                .select([
-                    "id",
-                    "courseId",
-                    "slug",
-                    "parentId",
-                    "position",
-                    "icon",
-                    "title"
-                ])
-                .where("courseId", "=", c.req.param("course"))
-                .orderBy("position asc")
-                .execute();
-            return c.json(lessons);
-        })
-        .get("/:course/lessons/:lesson", async c => {
-            const lesson = await c.var.db
-                .selectFrom("lessons")
-                .selectAll()
-                .where("courseId", "=", c.req.param("course"))
-                .where("id", "=", c.req.param("lesson"))
-                .orderBy("position asc")
-                .executeTakeFirst();
-            if (lesson) return c.json(lesson);
-            else return c.json("not found", 404);
-        })
-        .get("/:course/lessons/lookup/:lessonSlug", async c => {
-            const lesson = await c.var.db
-                .selectFrom("lessons")
-                .select("id")
-                .where("courseId", "=", c.req.param("course"))
-                .where("slug", "=", c.req.param("lessonSlug"))
-                .executeTakeFirst();
-            if (lesson) return c.json(lesson);
-            else return c.json("not found", 404);
-        });
+        .get(
+            "/:course",
+            zValidator("param", z.object({ course: z.string().uuid() })),
+            async c => {
+                const course = await c.var.db
+                    .selectFrom("courses")
+                    .selectAll()
+                    .where("id", "=", c.req.param("course"))
+                    .executeTakeFirst();
+                if (course) return c.json(course);
+                else return c.json("not found", 404);
+            }
+        )
+        .get(
+            "/:course/lessons",
+            zValidator("param", z.object({ course: z.string().uuid() })),
+            async c => {
+                const lessons = await c.var.db
+                    .selectFrom("lessons")
+                    .select([
+                        "id",
+                        "courseId",
+                        "slug",
+                        "parentId",
+                        "position",
+                        "icon",
+                        "title"
+                    ])
+                    .where("courseId", "=", c.req.param("course"))
+                    .orderBy("position asc")
+                    .execute();
+                return c.json(lessons);
+            }
+        )
+        .get(
+            "/:course/lessons/:lesson",
+            zValidator(
+                "param",
+                z.object({
+                    course: z.string().uuid(),
+                    lesson: z.string().uuid()
+                })
+            ),
+            async c => {
+                const lesson = await c.var.db
+                    .selectFrom("lessons")
+                    .selectAll()
+                    .where("courseId", "=", c.req.param("course"))
+                    .where("id", "=", c.req.param("lesson"))
+                    .orderBy("position asc")
+                    .executeTakeFirst();
+                if (lesson) return c.json(lesson);
+                else return c.json("not found", 404);
+            }
+        )
+        .get(
+            "/:course/lessons/lookup/:lessonSlug",
+            zValidator(
+                "param",
+                z.object({ course: z.string().uuid(), lessonSlug: z.string() }),
+                (result, c) => {
+                    if (!result.success) return c.text("Not Found", 404);
+                }
+            ),
+            async c => {
+                const lesson = await c.var.db
+                    .selectFrom("lessons")
+                    .select("id")
+                    .where("courseId", "=", c.req.param("course"))
+                    .where("slug", "=", c.req.param("lessonSlug"))
+                    .executeTakeFirst();
+                if (lesson) return c.json(lesson);
+                else return c.json("not found", 404);
+            }
+        );
 }
