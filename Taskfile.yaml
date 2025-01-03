@@ -8,7 +8,11 @@ tasks:
 
   format:
     desc: Format the whole project
-    cmds: [npm run format]
+    cmd: npm run format
+
+  check:
+    desc: Check code in all packages
+    cmd: npm run check --workspaces --if-present
 
   dev:
     desc: Basic development environment command
