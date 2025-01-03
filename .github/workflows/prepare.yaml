@@ -45,11 +45,11 @@ jobs:
         id: node
         env:
           SERVICES: "${{ steps.changed.outputs.services }}"
-          COMMAND: "map(select(.node != null) | .node + { path: .path })"
+          COMMAND: "map(select(.node != null))"
         run: 'echo services=$(echo "$SERVICES" | jq -c "$COMMAND") >> $GITHUB_OUTPUT'
       - name: Filter Docker services
         id: docker
         env:
           SERVICES: "${{ steps.changed.outputs.services }}"
-          COMMAND: "map(select(.docker != null) | .node + { path: .path })"
+          COMMAND: "map(select(.docker != null))"
         run: 'echo services=$(echo "$SERVICES" | jq -c "$COMMAND") >> $GITHUB_OUTPUT'

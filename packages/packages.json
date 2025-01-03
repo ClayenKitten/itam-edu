@@ -28,12 +28,10 @@
     },
     {
         "path": "packages/db",
-        "kind": [],
         "docker": { "name": "itam-edu-db" }
     },
     {
         "path": "packages/s3",
-        "kind": [],
         "docker": { "name": "itam-edu-s3" }
     }
 ]
