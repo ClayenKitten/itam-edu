@@ -18,7 +18,7 @@
 >
     {#each data.courses as course}
         <article class="flex flex-col bg-surface rounded">
-            <a href={`/admin/courses/${course.id}`}>
+            <a class="contents" href={`/admin/courses/${course.id}`}>
                 <header
                     class="flex items-center h-[72px] px-6 text-text text-lg font-bold break-all"
                 >
