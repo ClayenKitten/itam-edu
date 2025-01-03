@@ -31,6 +31,6 @@ jobs:
         service: ${{ fromJson(needs.prepare.outputs.docker-services) }}
       fail-fast: false
     with:
-      image: ${{ fromJson(matrix.service).docker.name }}
-      context: ${{ fromJson(matrix.service).docker.context }}
-      dockerfile: ${{ fromJson(matrix.service).docker.dockerfile }}
+      image: ${{ toJson(matrix.service).docker.name }}
+      context: ${{ toJson(matrix.service).docker.context }}
+      dockerfile: ${{ toJson(matrix.service).docker.dockerfile }}
