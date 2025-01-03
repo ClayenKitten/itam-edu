@@ -39,7 +39,7 @@ jobs:
         env:
           SERVICES: "${{ steps.services.outputs.services }}"
           FILES: "${{ steps.folders.outputs.all_changed_and_modified_files }}"
-          COMMAND: "map(.name as $NAME | select($FILES | map(. == $NAME) | any))"
+          COMMAND: 'map(.path as $PACKAGE_PATH | select($FILES | map("packages/" + . == $PACKAGE_PATH) | any))'
         run: 'echo services=$(echo "$SERVICES" | jq -c --argjson FILES "$FILES" "$COMMAND") >> $GITHUB_OUTPUT'
       - name: Filter Node services
         id: node
