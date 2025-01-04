@@ -20,10 +20,19 @@
         <article class="flex flex-col bg-surface rounded">
             <a class="contents" href={`/admin/courses/${course.id}`}>
                 <header
-                    class="flex items-center h-[72px] px-6 text-text text-lg font-bold break-all"
+                    class="flex items-center gap-2.5 h-[72px] px-6 text-text text-lg font-bold break-all"
                 >
-                    {course.title.substring(0, 80) +
-                        (course.title.length > 80 ? "..." : "")}
+                    <div
+                        class="flex justify-center items-center flex-shrink-0 w-[30px] h-[30px] p-1 bg-surface-light rounded-sm"
+                    >
+                        {#if course.logo}
+                            <img src={course.logo} alt="" />
+                        {/if}
+                    </div>
+                    <span>
+                        {course.title.substring(0, 80) +
+                            (course.title.length > 80 ? "..." : "")}
+                    </span>
                 </header>
                 <hr class="border-surface-light" />
                 <ul class="contents text-text break-all">

@@ -18,10 +18,7 @@
         <div
             class="flex justify-center items-center flex-shrink-0 w-[100px] h-[100px] p-2.5 bg-surface-light rounded-sm"
         >
-            <img
-                src="https://github.com/sveltejs/branding/blob/master/svelte-logo-square.png?raw=true"
-                alt=""
-            />
+            {#if data.course.logo}<img src={data.course.logo} alt="" />{/if}
         </div>
         <div class="flex flex-col self-center gap-5 py-2.5">
             <h1 class="text-text text-2xl font-bold">{data.course.title}</h1>
