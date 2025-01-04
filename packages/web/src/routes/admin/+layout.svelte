@@ -60,11 +60,13 @@
             <span>Courses</span>
         </a>
         <a
-            class={linkClasses(page.url.pathname.startsWith("/admin/students"))}
-            href="/admin/students"
+            class={linkClasses(
+                page.url.pathname.startsWith("/admin/submissions")
+            )}
+            href="/admin/submissions"
         >
-            <i class="ph-fill ph-student text-xl"></i>
-            <span>Students</span>
+            <i class="ph-fill ph-files text-xl"></i>
+            <span>Submissions</span>
         </a>
         <a
             class={linkClasses(page.url.pathname.startsWith("/admin/calendar"))}
@@ -78,7 +80,7 @@
             class={linkClasses(page.url.pathname.startsWith("/admin/settings"))}
             href="/admin/settings"
         >
-            <i class="ph-fill ph-gear text-xl"></i>
+            <i class="ph ph-gear text-xl"></i>
             <span>Settings</span>
         </a>
         <button
