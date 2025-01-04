@@ -6,11 +6,13 @@ CREATE TABLE users (
     last_name TEXT,
     patronim TEXT,
     email TEXT UNIQUE,
-    is_public BOOLEAN NOT NULL,
+    avatar TEXT,
+    bio TEXT,
     tg_user_id BIGINT NOT NULL,
     tg_chat_id BIGINT NOT NULL,
     tg_username TEXT NOT NULL
 );
+COMMENT ON COLUMN users.avatar IS 'URL of the user avatar';
 
 CREATE TABLE user_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -19,12 +21,10 @@ CREATE TABLE user_sessions (
     expires TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE employees (
+CREATE TABLE staff_permissions (
     user_id UUID REFERENCES users(id) PRIMARY KEY,
-    bio TEXT,
-    is_teacher BOOLEAN NOT NULL,
-    is_course_admin BOOLEAN NOT NULL,
-    is_tech_admin BOOLEAN NOT NULL
+    can_create_courses BOOLEAN NOT NULL DEFAULT true,
+    can_publish_courses BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE login_attempts (
@@ -37,6 +37,6 @@ CREATE TABLE login_attempts (
 -- migrate:down
 
 DROP TABLE IF EXISTS login_attempts;
-DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS staff_permissions;
 DROP TABLE IF EXISTS user_sessions;
 DROP TABLE IF EXISTS users;

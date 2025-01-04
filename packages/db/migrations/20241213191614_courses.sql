@@ -7,15 +7,31 @@ CREATE TABLE courses (
     slug TEXT NOT NULL,
     UNIQUE NULLS NOT DISTINCT (year, semester, slug),
     title TEXT NOT NULL,
-    description TEXT DEFAULT '' NOT NULL,
+    description TEXT,
+    logo TEXT,
+    public BOOLEAN NOT NULL DEFAULT false,
     archived BOOLEAN NOT NULL DEFAULT false
 );
+COMMENT ON COLUMN courses.year IS 'Year in which the course takes place';
+COMMENT ON COLUMN courses.semester IS 'Optional semester in which the course takes place';
+COMMENT ON COLUMN courses.slug IS 'Machine-readable name of the course that is unique in combination with year and semester';
+COMMENT ON COLUMN courses.title IS 'Human-readable name of the course';
+COMMENT ON COLUMN courses.description IS 'Multi-line description of the course';
+COMMENT ON COLUMN courses.logo IS 'URL of the course logo';
+COMMENT ON COLUMN courses.public IS 'Whether the course is publically accessible or not';
+COMMENT ON COLUMN courses.archived IS 'Whether the course is archived or not';
 
-CREATE TABLE course_teachers (
+CREATE TABLE course_staff (
     user_id UUID REFERENCES users(id) NOT NULL,
     course_id UUID REFERENCES courses(id) NOT NULL,
     PRIMARY KEY (user_id, course_id),
-    slug TEXT
+    title TEXT,
+    admin BOOLEAN NOT NULL DEFAULT false,
+    can_edit_info BOOLEAN NOT NULL DEFAULT false,
+    can_edit_content BOOLEAN NOT NULL DEFAULT false,
+    can_grade_homeworks BOOLEAN NOT NULL DEFAULT false,
+    can_manage_blog BOOLEAN NOT NULL DEFAULT false,
+    can_manage_feedback BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE course_students (
@@ -69,5 +85,5 @@ DROP TABLE IF EXISTS homework_submissions;
 DROP TABLE IF EXISTS homeworks;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS course_students;
-DROP TABLE IF EXISTS course_teachers;
+DROP TABLE IF EXISTS course_staff;
 DROP TABLE IF EXISTS courses;

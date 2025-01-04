@@ -14,31 +14,55 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Courses {
+  /**
+   * Whether the course is archived or not
+   */
   archived: Generated<boolean>;
-  description: Generated<string>;
+  /**
+   * Multi-line description of the course
+   */
+  description: string | null;
   id: Generated<string>;
+  /**
+   * URL of the course logo
+   */
+  logo: string | null;
+  /**
+   * Whether the course is publically accessible or not
+   */
+  public: Generated<boolean>;
+  /**
+   * Optional semester in which the course takes place
+   */
   semester: number | null;
+  /**
+   * Machine-readable name of the course that is unique in combination with year and semester
+   */
   slug: string;
+  /**
+   * Human-readable name of the course
+   */
   title: string;
+  /**
+   * Year in which the course takes place
+   */
   year: Generated<number>;
+}
+
+export interface CourseStaff {
+  admin: Generated<boolean>;
+  canEditContent: Generated<boolean>;
+  canEditInfo: Generated<boolean>;
+  canGradeHomeworks: Generated<boolean>;
+  canManageBlog: Generated<boolean>;
+  canManageFeedback: Generated<boolean>;
+  courseId: string;
+  title: string | null;
+  userId: string;
 }
 
 export interface CourseStudents {
   courseId: string;
-  userId: string;
-}
-
-export interface CourseTeachers {
-  courseId: string;
-  slug: string | null;
-  userId: string;
-}
-
-export interface Employees {
-  bio: string | null;
-  isCourseAdmin: boolean;
-  isTeacher: boolean;
-  isTechAdmin: boolean;
   userId: string;
 }
 
@@ -113,11 +137,21 @@ export interface SchemaMigrations {
   version: string;
 }
 
+export interface StaffPermissions {
+  canCreateCourses: Generated<boolean>;
+  canPublishCourses: Generated<boolean>;
+  userId: string;
+}
+
 export interface Users {
+  /**
+   * URL of the user avatar
+   */
+  avatar: string | null;
+  bio: string | null;
   email: string | null;
   firstName: string | null;
   id: Generated<string>;
-  isPublic: boolean;
   lastName: string | null;
   patronim: string | null;
   tgChatId: Int8;
@@ -134,9 +168,8 @@ export interface UserSessions {
 
 export interface DB {
   courses: Courses;
+  courseStaff: CourseStaff;
   courseStudents: CourseStudents;
-  courseTeachers: CourseTeachers;
-  employees: Employees;
   homeworks: Homeworks;
   homeworkSubmissions: HomeworkSubmissions;
   lessons: Lessons;
@@ -144,6 +177,7 @@ export interface DB {
   manualNotifications: ManualNotifications;
   notifications: Notifications;
   schemaMigrations: SchemaMigrations;
+  staffPermissions: StaffPermissions;
   users: Users;
   userSessions: UserSessions;
 }

@@ -13,7 +13,9 @@ export async function userService() {
                     "lastName",
                     "patronim",
                     "email",
-                    "isPublic"
+                    "avatar",
+                    "bio",
+                    "tgUsername"
                 ])
                 .execute();
             return c.json(courses);

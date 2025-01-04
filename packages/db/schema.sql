@@ -15,23 +15,29 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: course_staff; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.course_staff (
+    user_id uuid NOT NULL,
+    course_id uuid NOT NULL,
+    title text,
+    admin boolean DEFAULT false NOT NULL,
+    can_edit_info boolean DEFAULT false NOT NULL,
+    can_edit_content boolean DEFAULT false NOT NULL,
+    can_grade_homeworks boolean DEFAULT false NOT NULL,
+    can_manage_blog boolean DEFAULT false NOT NULL,
+    can_manage_feedback boolean DEFAULT false NOT NULL
+);
+
+
+--
 -- Name: course_students; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.course_students (
     user_id uuid NOT NULL,
     course_id uuid NOT NULL
-);
-
-
---
--- Name: course_teachers; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.course_teachers (
-    user_id uuid NOT NULL,
-    course_id uuid NOT NULL,
-    slug text
 );
 
 
@@ -45,22 +51,67 @@ CREATE TABLE public.courses (
     semester integer,
     slug text NOT NULL,
     title text NOT NULL,
-    description text DEFAULT ''::text NOT NULL,
+    description text,
+    logo text,
+    public boolean DEFAULT false NOT NULL,
     archived boolean DEFAULT false NOT NULL
 );
 
 
 --
--- Name: employees; Type: TABLE; Schema: public; Owner: -
+-- Name: COLUMN courses.year; Type: COMMENT; Schema: public; Owner: -
 --
 
-CREATE TABLE public.employees (
-    user_id uuid NOT NULL,
-    bio text,
-    is_teacher boolean NOT NULL,
-    is_course_admin boolean NOT NULL,
-    is_tech_admin boolean NOT NULL
-);
+COMMENT ON COLUMN public.courses.year IS 'Year in which the course takes place';
+
+
+--
+-- Name: COLUMN courses.semester; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.semester IS 'Optional semester in which the course takes place';
+
+
+--
+-- Name: COLUMN courses.slug; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.slug IS 'Machine-readable name of the course that is unique in combination with year and semester';
+
+
+--
+-- Name: COLUMN courses.title; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.title IS 'Human-readable name of the course';
+
+
+--
+-- Name: COLUMN courses.description; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.description IS 'Multi-line description of the course';
+
+
+--
+-- Name: COLUMN courses.logo; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.logo IS 'URL of the course logo';
+
+
+--
+-- Name: COLUMN courses.public; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.public IS 'Whether the course is publically accessible or not';
+
+
+--
+-- Name: COLUMN courses.archived; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.courses.archived IS 'Whether the course is archived or not';
 
 
 --
@@ -200,6 +251,17 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: staff_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.staff_permissions (
+    user_id uuid NOT NULL,
+    can_create_courses boolean DEFAULT true NOT NULL,
+    can_publish_courses boolean DEFAULT false NOT NULL
+);
+
+
+--
 -- Name: user_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -221,11 +283,27 @@ CREATE TABLE public.users (
     last_name text,
     patronim text,
     email text,
-    is_public boolean NOT NULL,
+    avatar text,
+    bio text,
     tg_user_id bigint NOT NULL,
     tg_chat_id bigint NOT NULL,
     tg_username text NOT NULL
 );
+
+
+--
+-- Name: COLUMN users.avatar; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.users.avatar IS 'URL of the user avatar';
+
+
+--
+-- Name: course_staff course_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.course_staff
+    ADD CONSTRAINT course_staff_pkey PRIMARY KEY (user_id, course_id);
 
 
 --
@@ -234,14 +312,6 @@ CREATE TABLE public.users (
 
 ALTER TABLE ONLY public.course_students
     ADD CONSTRAINT course_students_pkey PRIMARY KEY (user_id, course_id);
-
-
---
--- Name: course_teachers course_teachers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.course_teachers
-    ADD CONSTRAINT course_teachers_pkey PRIMARY KEY (user_id, course_id);
 
 
 --
@@ -258,14 +328,6 @@ ALTER TABLE ONLY public.courses
 
 ALTER TABLE ONLY public.courses
     ADD CONSTRAINT courses_year_semester_slug_key UNIQUE NULLS NOT DISTINCT (year, semester, slug);
-
-
---
--- Name: employees employees_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.employees
-    ADD CONSTRAINT employees_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -341,6 +403,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: staff_permissions staff_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.staff_permissions
+    ADD CONSTRAINT staff_permissions_pkey PRIMARY KEY (user_id);
+
+
+--
 -- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -365,6 +435,22 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: course_staff course_staff_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.course_staff
+    ADD CONSTRAINT course_staff_course_id_fkey FOREIGN KEY (course_id) REFERENCES public.courses(id);
+
+
+--
+-- Name: course_staff course_staff_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.course_staff
+    ADD CONSTRAINT course_staff_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: course_students course_students_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -378,30 +464,6 @@ ALTER TABLE ONLY public.course_students
 
 ALTER TABLE ONLY public.course_students
     ADD CONSTRAINT course_students_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- Name: course_teachers course_teachers_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.course_teachers
-    ADD CONSTRAINT course_teachers_course_id_fkey FOREIGN KEY (course_id) REFERENCES public.courses(id);
-
-
---
--- Name: course_teachers course_teachers_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.course_teachers
-    ADD CONSTRAINT course_teachers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- Name: employees employees_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.employees
-    ADD CONSTRAINT employees_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -474,6 +536,14 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: staff_permissions staff_permissions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.staff_permissions
+    ADD CONSTRAINT staff_permissions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
