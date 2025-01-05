@@ -10,6 +10,23 @@
 @import "@phosphor-icons/web/regular";
 @import "@phosphor-icons/web/fill";
 
+@layer base {
+    input,
+    select,
+    textarea {
+        @apply text-text bg-surface-light px-3 rounded-sm border-0 read-only:text-opacity-50;
+    }
+
+    .input,
+    input,
+    .select,
+    select,
+    textarea,
+    .textarea {
+        @apply focus-within:outline-none focus-within:ring-1 focus-within:ring-primary-light;
+    }
+}
+
 html,
 body {
     margin: 0;

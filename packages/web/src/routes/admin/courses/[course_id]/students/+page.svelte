@@ -5,7 +5,7 @@
 <section class="bg-surface rounded">
     <header class="flex justify-end p-6 pb-5">
         <label
-            class="group flex items-center gap-2 w-64 h-10 p-2.5 bg-surface-light rounded-sm"
+            class="input group flex items-center gap-2 w-64 h-10 p-2.5 bg-surface-light rounded-sm"
         >
             <i
                 class="ph ph-magnifying-glass text-base text-text-opaque group-focus-within:text-text"

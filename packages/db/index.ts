@@ -18,10 +18,13 @@ export interface Courses {
    * Whether the course is archived or not
    */
   archived: Generated<boolean>;
+  blogEnabled: Generated<boolean>;
   /**
    * Multi-line description of the course
    */
   description: string | null;
+  enrollmentOpen: Generated<boolean>;
+  feedbackEnabled: Generated<boolean>;
   id: Generated<string>;
   /**
    * URL of the course logo

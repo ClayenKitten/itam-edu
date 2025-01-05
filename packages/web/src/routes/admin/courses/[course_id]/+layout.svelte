@@ -47,18 +47,22 @@
         >
             Students
         </a>
-        <a
-            class={linkClasses(path.startsWith(`${baseUrl}/blog`))}
-            href={`${baseUrl}/blog`}
-        >
-            Blog
-        </a>
-        <a
-            class={linkClasses(path.startsWith(`${baseUrl}/feedback`))}
-            href={`${baseUrl}/feedback`}
-        >
-            Feedback
-        </a>
+        {#if data.course.blogEnabled}
+            <a
+                class={linkClasses(path.startsWith(`${baseUrl}/blog`))}
+                href={`${baseUrl}/blog`}
+            >
+                Blog
+            </a>
+        {/if}
+        {#if data.course.feedbackEnabled}
+            <a
+                class={linkClasses(path.startsWith(`${baseUrl}/feedback`))}
+                href={`${baseUrl}/feedback`}
+            >
+                Feedback
+            </a>
+        {/if}
         <a
             class={linkClasses(path.startsWith(`${baseUrl}/settings`))}
             href={`${baseUrl}/settings`}

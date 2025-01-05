@@ -54,7 +54,10 @@ CREATE TABLE public.courses (
     description text,
     logo text,
     public boolean DEFAULT false NOT NULL,
-    archived boolean DEFAULT false NOT NULL
+    archived boolean DEFAULT false NOT NULL,
+    enrollment_open boolean DEFAULT true NOT NULL,
+    blog_enabled boolean DEFAULT false NOT NULL,
+    feedback_enabled boolean DEFAULT false NOT NULL
 );
 
 

@@ -7,7 +7,7 @@
 </header>
 <menu>
     <button
-        class="h-10 px-7 text-text text-sm bg-secondary hover:bg-secondary-light rounded-sm"
+        class="h-10 px-7 text-text text-sm bg-success hover:bg-success-light rounded-sm"
     >
         <span>Create new course</span>
         <i class="ph ph-plus-circle"></i>
@@ -33,6 +33,32 @@
                         {course.title.substring(0, 80) +
                             (course.title.length > 80 ? "..." : "")}
                     </span>
+                    <div class="flex-1"></div>
+                    <div class="flex gap-2.5">
+                        {#if course.public}
+                            <div
+                                title="Public"
+                                class="flex justify-center items-center bg-surface-light w-8 h-8 rounded-sm"
+                            >
+                                <i class="ph ph-eye text-xl"></i>
+                            </div>
+                        {:else}
+                            <div
+                                title="Not Public"
+                                class="flex justify-center items-center bg-surface-light w-8 h-8 rounded-sm"
+                            >
+                                <i class="ph ph-eye-slash text-xl"></i>
+                            </div>
+                        {/if}
+                        {#if course.archived}
+                            <div
+                                title="Archived"
+                                class="flex justify-center items-center bg-surface-light w-8 h-8 rounded-sm"
+                            >
+                                <i class="ph ph-archive text-xl"></i>
+                            </div>
+                        {/if}
+                    </div>
                 </header>
                 <hr class="border-surface-light" />
                 <div class="contents text-text break-all">

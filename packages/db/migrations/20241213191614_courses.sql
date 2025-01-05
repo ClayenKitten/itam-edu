@@ -10,7 +10,10 @@ CREATE TABLE courses (
     description TEXT,
     logo TEXT,
     public BOOLEAN NOT NULL DEFAULT false,
-    archived BOOLEAN NOT NULL DEFAULT false
+    enrollment_open BOOLEAN NOT NULL DEFAULT false,
+    archived BOOLEAN NOT NULL DEFAULT false,
+    blog_enabled BOOLEAN NOT NULL DEFAULT false,
+    feedback_enabled BOOLEAN NOT NULL DEFAULT false
 );
 COMMENT ON COLUMN courses.year IS 'Year in which the course takes place';
 COMMENT ON COLUMN courses.semester IS 'Optional semester in which the course takes place';
@@ -18,8 +21,6 @@ COMMENT ON COLUMN courses.slug IS 'Machine-readable name of the course that is u
 COMMENT ON COLUMN courses.title IS 'Human-readable name of the course';
 COMMENT ON COLUMN courses.description IS 'Multi-line description of the course';
 COMMENT ON COLUMN courses.logo IS 'URL of the course logo';
-COMMENT ON COLUMN courses.public IS 'Whether the course is publically accessible or not';
-COMMENT ON COLUMN courses.archived IS 'Whether the course is archived or not';
 
 CREATE TABLE course_staff (
     user_id UUID REFERENCES users(id) NOT NULL,

@@ -12,7 +12,7 @@ export default {
                     DEFAULT: "#5A3FB6",
                     light: "#9A63F0"
                 },
-                secondary: {
+                success: {
                     DEFAULT: "#0DA678",
                     light: "#10D096"
                 },
@@ -24,6 +24,9 @@ export default {
                     dark: "#161B21",
                     DEFAULT: "#1D232C",
                     light: "#3B4758"
+                },
+                danger: {
+                    DEFAULT: "#E4003F"
                 }
             },
             fontFamily: {
