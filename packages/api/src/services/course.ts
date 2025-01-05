@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { AppEnv } from "../index.js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { sql } from "kysely";
 
 export async function courseService() {
     return new Hono<AppEnv>()
@@ -9,6 +10,8 @@ export async function courseService() {
             const courses = await c.var.db
                 .selectFrom("courses")
                 .selectAll()
+                .orderBy("year desc")
+                .orderBy("semester", sql<string>`asc nulls first`)
                 .execute();
             return c.json(courses);
         })
