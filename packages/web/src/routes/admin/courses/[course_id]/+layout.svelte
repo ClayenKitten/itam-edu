@@ -7,9 +7,9 @@
     const baseUrl = `/admin/courses/${data.course.id}`;
     const linkClasses = (selected: boolean) => [
         selected
-            ? "text-primary border-b-primary border-b-2"
+            ? "text-primary-light border-b-primary-light border-b-2"
             : "text-text-opaque hover:text-text",
-        "flex justify-center items-center px-5 py-5 text-text text-regular font-bold hover:text-primary"
+        "flex justify-center items-center px-5 py-5 text-regular font-bold"
     ];
 </script>
 
