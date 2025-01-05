@@ -75,9 +75,11 @@
             <i class="ph-fill ph-calendar text-xl"></i>
             <span>Calendar</span>
         </a>
-        <div class="flex-1"></div>
         <a
-            class={linkClasses(page.url.pathname.startsWith("/admin/settings"))}
+            class={[
+                "mt-auto",
+                ...linkClasses(page.url.pathname.startsWith("/admin/settings"))
+            ]}
             href="/admin/settings"
         >
             <i class="ph ph-gear text-xl"></i>
