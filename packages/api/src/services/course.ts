@@ -3,15 +3,34 @@ import type { AppEnv } from "../index.js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { sql } from "kysely";
+import type { NotNull } from "kysely";
 
 export async function courseService() {
     return new Hono<AppEnv>()
         .get("/", async c => {
             const courses = await c.var.db
                 .selectFrom("courses")
-                .selectAll()
+                .select([
+                    "id",
+                    "year",
+                    "semester",
+                    "slug",
+                    "title",
+                    "description",
+                    "logo",
+                    "public",
+                    "archived"
+                ])
+                .select(eb => [
+                    eb
+                        .selectFrom("courseStudents")
+                        .select(sql<number>`count(*)::int`.as("studentsCount"))
+                        .whereRef("courses.id", "=", "courseStudents.courseId")
+                        .as("studentsCount")
+                ])
                 .orderBy("year desc")
                 .orderBy("semester", sql<string>`asc nulls first`)
+                .$narrowType<{ studentsCount: NotNull }>()
                 .execute();
             return c.json(courses);
         })
@@ -128,6 +147,33 @@ export async function courseService() {
                     .executeTakeFirst();
                 if (lesson) return c.json(lesson);
                 else return c.json("not found", 404);
+            }
+        )
+        .get(
+            "/:course/students",
+            zValidator("param", z.object({ course: z.string().uuid() })),
+            async c => {
+                const course = await c.var.db
+                    .selectFrom("courses")
+                    .where("id", "=", c.req.param("course"))
+                    .executeTakeFirst();
+                if (course === undefined) c.text("Not Found", 404);
+                const students = await c.var.db
+                    .selectFrom("courseStudents")
+                    .where("courseId", "=", c.req.param("course"))
+                    .leftJoin("users", "users.id", "courseStudents.userId")
+                    .orderBy("tgUsername asc")
+                    .select([
+                        "id",
+                        "tgUsername",
+                        "firstName",
+                        "lastName",
+                        "patronim",
+                        "email",
+                        "avatar"
+                    ])
+                    .execute();
+                return c.json(students);
             }
         );
 }

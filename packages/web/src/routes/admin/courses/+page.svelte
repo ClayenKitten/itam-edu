@@ -35,15 +35,23 @@
                     </span>
                 </header>
                 <hr class="border-surface-light" />
-                <ul class="contents text-text break-all">
+                <div class="contents text-text break-all">
                     {#if course.description}
-                        <li class="flex-1 px-6 py-3">{course.description}</li>
+                        <span class="flex-1 px-6 py-3">
+                            {course.description}
+                        </span>
                     {:else}
-                        <li class="flex-1 px-6 py-3 text-text-opaque italic">
+                        <span class="flex-1 px-6 py-3 text-text-opaque italic">
                             No description
-                        </li>
+                        </span>
                     {/if}
-                    <li class="px-6 py-3">
+                </div>
+                <ul class="flex flex-col gap-2 py-3 text-text break-all">
+                    <li class="px-6">
+                        <span class="text-text-opaque">Students:&nbsp;</span>
+                        <span class="text-text">{course.studentsCount}</span>
+                    </li>
+                    <li class="px-6">
                         <span class="text-text-opaque">Year:&nbsp;</span>
                         <span class="text-text">{course.year}</span>
                         {#if course.semester}
