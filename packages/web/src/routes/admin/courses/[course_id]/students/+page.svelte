@@ -50,6 +50,11 @@
             <div class="flex items-center h-20 px-6 text-text">
                 {student.email}
             </div>
+        {:else}
+            <hr class="col-span-full border-surface-light" />
+            <div class="flex justify-center p-8 text-text col-span-full">
+                No students yet!
+            </div>
         {/each}
     </article>
 </section>
