@@ -5,15 +5,25 @@
 
     const path = $derived(page.url.pathname);
     const baseUrl = `/admin/courses/${data.course.id}`;
-    const linkClasses = (selected: boolean) => [
-        selected
-            ? "text-primary-light border-b-primary-light border-b-2"
-            : "text-text-opaque hover:text-text",
-        "flex justify-center items-center px-5 py-5 text-regular font-bold"
-    ];
 </script>
 
-<section class="my-5 p-6 pb-0 bg-surface rounded">
+{#snippet link(text: string, icon: string, path: string, selected?: boolean)}
+    {@const current = selected ?? page.url.pathname.startsWith(path)}
+    <a
+        class={[
+            current
+                ? "text-primary-light border-b-primary-light border-b-2"
+                : "text-text-opaque hover:text-text",
+            "flex justify-center items-center gap-1.5 px-1 lg:px-5 py-5 text-regular font-bold"
+        ]}
+        href={path}
+    >
+        <i class="ph-fill ph-{icon} text-2xl"></i>
+        <span class="hidden sm:inline">{text}</span>
+    </a>
+{/snippet}
+
+<section class="mb-5 p-6 pb-0 bg-surface rounded">
     <header class="flex gap-10 pb-5">
         <div
             class="flex justify-center items-center flex-shrink-0 w-[100px] h-[100px] p-2.5 bg-surface-light rounded-sm"
@@ -33,42 +43,23 @@
         </div>
     </header>
     <hr class="border-surface-light" />
-    <nav class="flex gap-x-10">
-        <a class={linkClasses(path === baseUrl)} href={baseUrl}>Overview</a>
-        <a
-            class={linkClasses(path.startsWith(`${baseUrl}/content`))}
-            href={`${baseUrl}/content`}
-        >
-            Content
-        </a>
-        <a
-            class={linkClasses(path.startsWith(`${baseUrl}/students`))}
-            href={`${baseUrl}/students`}
-        >
-            Students
-        </a>
+    <nav
+        class="flex max-sm:justify-between sm:gap-x-4 lg:gap-x-10 overflow-x-auto"
+    >
+        {@render link("Overview", "house", baseUrl, path === baseUrl)}
+        {@render link("Content", "article", `${baseUrl}/content`)}
+        {@render link("Students", "student", `${baseUrl}/students`)}
         {#if data.course.blogEnabled}
-            <a
-                class={linkClasses(path.startsWith(`${baseUrl}/blog`))}
-                href={`${baseUrl}/blog`}
-            >
-                Blog
-            </a>
+            {@render link("Blog", "text-t", `${baseUrl}/blog`)}
         {/if}
         {#if data.course.feedbackEnabled}
-            <a
-                class={linkClasses(path.startsWith(`${baseUrl}/feedback`))}
-                href={`${baseUrl}/feedback`}
-            >
-                Feedback
-            </a>
+            {@render link(
+                "Feedback",
+                "chat-teardrop-dots",
+                `${baseUrl}/feedback`
+            )}
         {/if}
-        <a
-            class={linkClasses(path.startsWith(`${baseUrl}/settings`))}
-            href={`${baseUrl}/settings`}
-        >
-            Settings
-        </a>
+        {@render link("Settings", "gear", `${baseUrl}/settings`)}
     </nav>
 </section>
 
