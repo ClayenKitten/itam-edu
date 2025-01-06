@@ -24,48 +24,44 @@
 <section class="flex flex-col gap-5 text-text">
     <section class="flex flex-col gap-8 p-6 bg-surface rounded">
         {@render sectionHeader("Course information", "info")}
-        <div class="flex flex-col max-w-[600px]">
-            <label
-                class="flex flex-col lg:flex-row justify-between gap-x-40 gap-y-4"
-            >
-                {@render optionHeader("Title")}
-                <input
-                    value={data.course.title}
-                    class="w-full lg:w-[300px] text-base"
-                />
-            </label>
-        </div>
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex flex-col justify-between gap-x-40 gap-y-4">
-                {@render optionHeader("Description")}
-                <textarea
-                    value={data.course.description}
-                    maxlength="384"
-                    class="w-full h-[160px] text-base"
-                ></textarea>
-            </label>
-        </div>
-        <div class="flex flex-col max-w-[600px]">
-            <label
-                class="flex flex-col lg:flex-row justify-between gap-x-40 gap-y-4"
-            >
-                {@render optionHeader(
-                    "Path",
-                    "Machine-readable path. Can't be edited after course creation."
-                )}
-                <input
-                    value={[
-                        data.course.year,
-                        data.course.semester,
-                        data.course.slug
-                    ]
-                        .filter(x => x !== null)
-                        .join("/")}
-                    class="w-full lg:w-[300px] text-base"
-                    readonly
-                />
-            </label>
-        </div>
+        <label
+            class="flex flex-col lg:flex-row justify-between gap-x-40 gap-y-4 max-w-[600px]"
+        >
+            {@render optionHeader("Title")}
+            <input
+                value={data.course.title}
+                class="w-full lg:w-[300px] text-base"
+            />
+        </label>
+        <label
+            class="flex flex-col justify-between gap-x-40 gap-y-4 max-w-[600px]"
+        >
+            {@render optionHeader("Description")}
+            <textarea
+                value={data.course.description}
+                maxlength="384"
+                class="w-full h-[160px] text-base"
+            ></textarea>
+        </label>
+        <label
+            class="flex flex-col lg:flex-row justify-between gap-x-40 gap-y-4 max-w-[600px]"
+        >
+            {@render optionHeader(
+                "Path",
+                "Machine-readable path. Can't be edited after course creation."
+            )}
+            <input
+                value={[
+                    data.course.year,
+                    data.course.semester,
+                    data.course.slug
+                ]
+                    .filter(x => x !== null)
+                    .join("/")}
+                class="w-full lg:w-[300px] text-base"
+                readonly
+            />
+        </label>
         <button
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
@@ -74,12 +70,10 @@
     </section>
     <section class="flex flex-col gap-8 p-6 bg-surface rounded">
         {@render sectionHeader("Blog", "text-t")}
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex justify-between items-center gap-y-4">
-                {@render optionHeader("Enabled")}
-                <Switch value={data.course.blogEnabled} />
-            </label>
-        </div>
+        <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
+            {@render optionHeader("Enabled")}
+            <Switch value={data.course.blogEnabled} />
+        </label>
         <button
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
@@ -88,12 +82,10 @@
     </section>
     <section class="flex flex-col gap-8 p-6 bg-surface rounded">
         {@render sectionHeader("Feedback", "chat-teardrop-dots")}
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex justify-between items-center gap-y-4">
-                {@render optionHeader("Enabled")}
-                <Switch value={data.course.feedbackEnabled} />
-            </label>
-        </div>
+        <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
+            {@render optionHeader("Enabled")}
+            <Switch value={data.course.feedbackEnabled} />
+        </label>
         <button
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
@@ -118,48 +110,46 @@
         {/snippet}
 
         {@render sectionHeader("Danger Zone", "warning-octagon")}
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex flex-col lg:flex-row justify-between gap-4">
-                {@render optionHeader(
-                    data.course.public ? "Unpublish" : "Publish",
-                    "Published courses are accessible to students"
-                )}
-                {@render dangerButton(
-                    data.course.public,
-                    d => (d ? "Unpublish this course" : "Publish this course"),
-                    "file-dashed"
-                )}
-            </label>
-        </div>
-
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex flex-col lg:flex-row justify-between gap-4">
-                {@render optionHeader(
-                    data.course.enrollmentOpen
-                        ? "Close enrollment"
-                        : "Open enrollment",
-                    "Courses with closed enrollment don't accept new students, but already enrolled students are not affected"
-                )}
-                {@render dangerButton(
-                    data.course.enrollmentOpen,
-                    d => (d ? "Close enrollment" : "Open enrollment"),
-                    "student"
-                )}
-            </label>
-        </div>
-
-        <div class="flex flex-col max-w-[600px]">
-            <label class="flex flex-col lg:flex-row justify-between gap-4">
-                {@render optionHeader(
-                    data.course.archived ? "Unarchive" : "Archive",
-                    "Archived courses are still accessible to students if published, but in a read-only mode"
-                )}
-                {@render dangerButton(
-                    data.course.archived,
-                    d => (d ? "Unarchive this course" : "Archive this course"),
-                    "archive"
-                )}
-            </label>
-        </div>
+        <label
+            class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
+        >
+            {@render optionHeader(
+                data.course.public ? "Unpublish" : "Publish",
+                "Published courses are accessible to students"
+            )}
+            {@render dangerButton(
+                data.course.public,
+                d => (d ? "Unpublish this course" : "Publish this course"),
+                "file-dashed"
+            )}
+        </label>
+        <label
+            class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
+        >
+            {@render optionHeader(
+                data.course.enrollmentOpen
+                    ? "Close enrollment"
+                    : "Open enrollment",
+                "Courses with closed enrollment don't accept new students, but already enrolled students are not affected"
+            )}
+            {@render dangerButton(
+                data.course.enrollmentOpen,
+                d => (d ? "Close enrollment" : "Open enrollment"),
+                "student"
+            )}
+        </label>
+        <label
+            class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
+        >
+            {@render optionHeader(
+                data.course.archived ? "Unarchive" : "Archive",
+                "Archived courses are still accessible to students if published, but in a read-only mode"
+            )}
+            {@render dangerButton(
+                data.course.archived,
+                d => (d ? "Unarchive this course" : "Archive this course"),
+                "archive"
+            )}
+        </label>
     </section>
 </section>
