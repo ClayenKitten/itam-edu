@@ -54,8 +54,10 @@
             </div>
         {:else}
             <hr class="col-span-full border-surface-light" />
-            <div class="flex justify-center p-8 text-text col-span-full">
-                No students yet!
+            <div
+                class="flex justify-center items-center gap-2.5 py-10 lg:py-20 text-xl text-text-opaque col-span-full italic"
+            >
+                No students yet
             </div>
         {/each}
     </article>
