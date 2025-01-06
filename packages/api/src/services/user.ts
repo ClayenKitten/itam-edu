@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import type { AppEnv } from "../index.js";
+import type { AppEnv } from "../ctx.js";
 
 export async function userService() {
     return new Hono<AppEnv>()

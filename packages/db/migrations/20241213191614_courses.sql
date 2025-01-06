@@ -42,21 +42,25 @@ CREATE TABLE course_students (
 );
 
 CREATE TABLE lessons (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     course_id UUID REFERENCES courses(id) NOT NULL,
     slug TEXT NOT NULL,
-    UNIQUE (course_id, slug),
-    parent_id UUID REFERENCES lessons(id),
+    PRIMARY KEY (course_id, slug),
     position INTEGER NOT NULL,
-    UNIQUE NULLS NOT DISTINCT (parent_id, position),
-    icon TEXT,
+    UNIQUE (course_id, position),
     title TEXT NOT NULL,
-    content TEXT NOT NULL
+    content TEXT,
+    icon TEXT
 );
+COMMENT ON COLUMN lessons.slug IS 'Machine-readable name of the lesson that is unique within a course';
+COMMENT ON COLUMN lessons.title IS 'Human-readable name of the lesson';
+COMMENT ON COLUMN lessons.content IS 'HTML content of the lesson';
+COMMENT ON COLUMN lessons.icon IS 'URL of the lesson icon';
 
 CREATE TABLE homeworks (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    lesson_id UUID REFERENCES lessons(id) NOT NULL,
+    course_id UUID NOT NULL,
+    lesson TEXT NOT NULL,
+    FOREIGN KEY(course_id, lesson) REFERENCES lessons(course_id, slug),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     is_solution_multiline BOOLEAN NOT NULL,

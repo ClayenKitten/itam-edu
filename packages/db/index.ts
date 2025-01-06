@@ -14,9 +14,6 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Courses {
-  /**
-   * Whether the course is archived or not
-   */
   archived: Generated<boolean>;
   blogEnabled: Generated<boolean>;
   /**
@@ -30,9 +27,6 @@ export interface Courses {
    * URL of the course logo
    */
   logo: string | null;
-  /**
-   * Whether the course is publically accessible or not
-   */
   public: Generated<boolean>;
   /**
    * Optional semester in which the course takes place
@@ -71,9 +65,10 @@ export interface CourseStudents {
 
 export interface Homeworks {
   content: string;
+  courseId: string;
   id: Generated<string>;
   isSolutionMultiline: boolean;
-  lessonId: string;
+  lesson: string;
   solutionSyntaxHighlighting: string | null;
   title: string;
 }
@@ -103,13 +98,23 @@ export interface HomeworkSubmissions {
 }
 
 export interface Lessons {
-  content: string;
+  /**
+   * HTML content of the lesson
+   */
+  content: string | null;
   courseId: string;
+  /**
+   * URL of the lesson icon
+   */
   icon: string | null;
-  id: Generated<string>;
-  parentId: string | null;
   position: number;
+  /**
+   * Machine-readable name of the lesson that is unique within a course
+   */
   slug: string;
+  /**
+   * Human-readable name of the lesson
+   */
   title: string;
 }
 

@@ -54,8 +54,8 @@ CREATE TABLE public.courses (
     description text,
     logo text,
     public boolean DEFAULT false NOT NULL,
+    enrollment_open boolean DEFAULT false NOT NULL,
     archived boolean DEFAULT false NOT NULL,
-    enrollment_open boolean DEFAULT true NOT NULL,
     blog_enabled boolean DEFAULT false NOT NULL,
     feedback_enabled boolean DEFAULT false NOT NULL
 );
@@ -101,20 +101,6 @@ COMMENT ON COLUMN public.courses.description IS 'Multi-line description of the c
 --
 
 COMMENT ON COLUMN public.courses.logo IS 'URL of the course logo';
-
-
---
--- Name: COLUMN courses.public; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.courses.public IS 'Whether the course is publically accessible or not';
-
-
---
--- Name: COLUMN courses.archived; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.courses.archived IS 'Whether the course is archived or not';
 
 
 --
@@ -168,7 +154,8 @@ COMMENT ON COLUMN public.homework_submissions.accepted IS 'Whether homework is a
 
 CREATE TABLE public.homeworks (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    lesson_id uuid NOT NULL,
+    course_id uuid NOT NULL,
+    lesson text NOT NULL,
     title text NOT NULL,
     content text NOT NULL,
     is_solution_multiline boolean NOT NULL,
@@ -181,15 +168,41 @@ CREATE TABLE public.homeworks (
 --
 
 CREATE TABLE public.lessons (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
     course_id uuid NOT NULL,
     slug text NOT NULL,
-    parent_id uuid,
     "position" integer NOT NULL,
-    icon text,
     title text NOT NULL,
-    content text NOT NULL
+    content text,
+    icon text
 );
+
+
+--
+-- Name: COLUMN lessons.slug; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.lessons.slug IS 'Machine-readable name of the lesson that is unique within a course';
+
+
+--
+-- Name: COLUMN lessons.title; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.lessons.title IS 'Human-readable name of the lesson';
+
+
+--
+-- Name: COLUMN lessons.content; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.lessons.content IS 'HTML content of the lesson';
+
+
+--
+-- Name: COLUMN lessons.icon; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.lessons.icon IS 'URL of the lesson icon';
 
 
 --
@@ -350,19 +363,11 @@ ALTER TABLE ONLY public.homeworks
 
 
 --
--- Name: lessons lessons_course_id_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: lessons lessons_course_id_position_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.lessons
-    ADD CONSTRAINT lessons_course_id_slug_key UNIQUE (course_id, slug);
-
-
---
--- Name: lessons lessons_parent_id_position_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.lessons
-    ADD CONSTRAINT lessons_parent_id_position_key UNIQUE NULLS NOT DISTINCT (parent_id, "position");
+    ADD CONSTRAINT lessons_course_id_position_key UNIQUE (course_id, "position");
 
 
 --
@@ -370,7 +375,7 @@ ALTER TABLE ONLY public.lessons
 --
 
 ALTER TABLE ONLY public.lessons
-    ADD CONSTRAINT lessons_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT lessons_pkey PRIMARY KEY (course_id, slug);
 
 
 --
@@ -494,11 +499,11 @@ ALTER TABLE ONLY public.homework_submissions
 
 
 --
--- Name: homeworks homeworks_lesson_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: homeworks homeworks_course_id_lesson_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.homeworks
-    ADD CONSTRAINT homeworks_lesson_id_fkey FOREIGN KEY (lesson_id) REFERENCES public.lessons(id);
+    ADD CONSTRAINT homeworks_course_id_lesson_fkey FOREIGN KEY (course_id, lesson) REFERENCES public.lessons(course_id, slug);
 
 
 --
@@ -507,14 +512,6 @@ ALTER TABLE ONLY public.homeworks
 
 ALTER TABLE ONLY public.lessons
     ADD CONSTRAINT lessons_course_id_fkey FOREIGN KEY (course_id) REFERENCES public.courses(id);
-
-
---
--- Name: lessons lessons_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.lessons
-    ADD CONSTRAINT lessons_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.lessons(id);
 
 
 --
