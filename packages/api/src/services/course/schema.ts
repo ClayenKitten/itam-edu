@@ -25,3 +25,16 @@ export const updateCourseSchema = courseSchema
         semester: true
     })
     .partial();
+
+export const lessonSchema = z.object({
+    courseId: z.string().uuid(),
+    title: z.string().min(3).max(200),
+    slug: z.string().regex(/^[a-z][a-z0-9-]*$/),
+    position: z.number().int(),
+    content: z.string().nullable()
+});
+
+export const createLessonSchema = lessonSchema.pick({
+    title: true,
+    slug: true
+});

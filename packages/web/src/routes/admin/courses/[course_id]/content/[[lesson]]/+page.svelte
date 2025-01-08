@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { invalidate } from "$app/navigation";
+    import api from "$lib/api";
+    import CreateLessonModal from "./CreateLessonModal.svelte";
     import DraggableList from "./DraggableList.svelte";
 
     const { data } = $props();
@@ -28,9 +31,21 @@
                 <button
                     aria-label="Add new lesson"
                     class="flex self-end gap-2.5 p-2 bg-success hover:opacity-95 rounded-full"
+                    popovertarget="createLessonModal"
+                    popovertargetaction="show"
                 >
                     <i class="ph ph-plus text-lg"></i>
                 </button>
+                <CreateLessonModal
+                    id="createLessonModal"
+                    oncreate={async lesson => {
+                        await api({ fetch }).courses[":course"].lessons.$post({
+                            param: { course: data.course.id },
+                            json: lesson
+                        });
+                        await invalidate("app:lessons");
+                    }}
+                />
             </header>
             <hr class="border-surface-light" />
             <DraggableList

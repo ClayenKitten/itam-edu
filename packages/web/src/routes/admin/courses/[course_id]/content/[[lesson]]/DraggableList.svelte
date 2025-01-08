@@ -24,7 +24,7 @@
         items = structuredClone(wrappedItems).map(x => x.item);
     };
 
-    let wrappedItems = $state(
+    let wrappedItems = $derived(
         structuredClone(items).map(item => ({ id: id(item), item }))
     );
     type WrappedItem = (typeof wrappedItems)[number];

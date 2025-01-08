@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import type { AppEnv } from "../../ctx.js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { updateCourseSchema } from "./schema.js";
+import { createLessonSchema, updateCourseSchema } from "./schema.js";
 
 export async function courseService() {
     return new Hono<AppEnv>()
@@ -64,6 +64,18 @@ export async function courseService() {
                     c.req.param("course")
                 );
                 return c.json(lessons);
+            }
+        )
+        .post(
+            "/:course/lessons",
+            zValidator("param", z.object({ course: z.string().uuid() })),
+            zValidator("json", createLessonSchema),
+            async c => {
+                const success = await c.var.repo.course.createLesson(
+                    c.req.valid("param").course,
+                    c.req.valid("json")
+                );
+                return c.json(success);
             }
         )
         .get(

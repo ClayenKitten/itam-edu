@@ -2,7 +2,7 @@ import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ fetch, params }) => {
+export const load: PageServerLoad = async ({ fetch, params, depends }) => {
     const [lessonsResp, lessonResp] = await Promise.all([
         api({ fetch }).courses[":course"].lessons.$get({
             param: { course: params.course_id }
@@ -18,6 +18,8 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
         lessonsResp.json(),
         lessonResp?.json() ?? null
     ]);
+
+    depends("app:lesson", "app:lessons");
 
     return { lessons, lesson };
 };

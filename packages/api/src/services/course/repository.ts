@@ -1,7 +1,7 @@
 import type { DB } from "itam-edu-db";
 import { type Kysely, type NotNull, sql } from "kysely";
 import type { TypeOf } from "zod";
-import type { updateCourseSchema } from "./schema.js";
+import type { createLessonSchema, updateCourseSchema } from "./schema.js";
 
 export default class CourseRepository {
     constructor(private db: Kysely<DB>) {}
@@ -84,6 +84,42 @@ export default class CourseRepository {
             .orderBy("position asc")
             .execute();
         return lessons;
+    }
+
+    public async createLesson(
+        courseId: string,
+        lesson: TypeOf<typeof createLessonSchema>
+    ) {
+        return (
+            (
+                await this.db
+                    .insertInto("lessons")
+                    .values(eb => ({
+                        courseId,
+                        ...lesson,
+                        position: eb
+                            .selectFrom("lessons")
+                            .where("courseId", "=", courseId)
+                            .select(
+                                eb(
+                                    eb.fn.coalesce(
+                                        eb.fn
+                                            .max<number>("position")
+                                            .filterWhere(
+                                                "courseId",
+                                                "=",
+                                                courseId
+                                            ),
+                                        eb.lit(0)
+                                    ),
+                                    "+",
+                                    eb.val(1)
+                                ).as("position")
+                            )
+                    }))
+                    .executeTakeFirst()
+            ).numInsertedOrUpdatedRows === 1n
+        );
     }
 
     public async getLesson(courseId: string, lessonSlug: string) {

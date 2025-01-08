@@ -18,16 +18,19 @@ export default {
                 },
                 text: {
                     DEFAULT: "#EEF0F4",
-                    opaque: "#7D8FA9"
+                    opaque: "#7D8FA9",
+                    invert: "#586A84"
                 },
                 surface: {
                     dark: "#161B21",
                     DEFAULT: "#1D232C",
-                    light: "#3B4758"
+                    light: "#3B4758",
+                    invert: "#EEF0F4"
                 },
                 danger: {
                     DEFAULT: "#E4003F"
-                }
+                },
+                disabled: "#586A84"
             },
             fontFamily: {
                 sans: ["Roboto", "ui-sans-serif"]
