@@ -1,5 +1,7 @@
 import type { DB } from "itam-edu-db";
 import { type Kysely, type NotNull, sql } from "kysely";
+import type { TypeOf } from "zod";
+import type { updateCourseSchema } from "./schema.js";
 
 export default class CourseRepository {
     constructor(private db: Kysely<DB>) {}
@@ -37,6 +39,21 @@ export default class CourseRepository {
             .selectAll()
             .where("id", "=", id)
             .executeTakeFirst();
+    }
+
+    public async updateCourse(
+        id: string,
+        course: TypeOf<typeof updateCourseSchema>
+    ) {
+        return (
+            (
+                await this.db
+                    .updateTable("courses")
+                    .where("id", "=", id)
+                    .set(course)
+                    .executeTakeFirst()
+            ).numUpdatedRows !== 0n
+        );
     }
 
     public async lookupCourse(params: {

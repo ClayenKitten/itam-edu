@@ -1,7 +1,18 @@
 <script lang="ts">
+    import { invalidate } from "$app/navigation";
+    import api from "$lib/api.js";
     import Switch from "$lib/components/Switch.svelte";
 
     const { data } = $props();
+
+    let course = $state(structuredClone(data.course));
+    const saveCourse = async (courseUpdate: Partial<typeof course>) => {
+        await api({ fetch }).courses[":course"].$put({
+            param: { course: course.id },
+            json: courseUpdate
+        });
+        await invalidate("app:course");
+    };
 </script>
 
 {#snippet sectionHeader(title: string, icon: string)}
@@ -29,7 +40,7 @@
         >
             {@render optionHeader("Title")}
             <input
-                value={data.course.title}
+                bind:value={course.title}
                 class="w-full lg:w-[300px] text-base"
             />
         </label>
@@ -38,7 +49,7 @@
         >
             {@render optionHeader("Description")}
             <textarea
-                value={data.course.description}
+                bind:value={course.description}
                 maxlength="384"
                 class="w-full h-[160px] text-base"
             ></textarea>
@@ -51,11 +62,7 @@
                 "Machine-readable path. Can't be edited after course creation."
             )}
             <input
-                value={[
-                    data.course.year,
-                    data.course.semester,
-                    data.course.slug
-                ]
+                value={[course.year, course.semester, course.slug]
                     .filter(x => x !== null)
                     .join("/")}
                 class="w-full lg:w-[300px] text-base"
@@ -63,6 +70,11 @@
             />
         </label>
         <button
+            onclick={() =>
+                saveCourse({
+                    title: course.title,
+                    description: course.description
+                })}
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
             Save
@@ -72,9 +84,10 @@
         {@render sectionHeader("Blog", "text-t")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch value={data.course.blogEnabled} />
+            <Switch bind:value={course.blogEnabled} />
         </label>
         <button
+            onclick={() => saveCourse({ blogEnabled: course.blogEnabled })}
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
             Save
@@ -84,9 +97,11 @@
         {@render sectionHeader("Feedback", "chat-teardrop-dots")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch value={data.course.feedbackEnabled} />
+            <Switch bind:value={course.feedbackEnabled} />
         </label>
         <button
+            onclick={() =>
+                saveCourse({ feedbackEnabled: course.feedbackEnabled })}
             class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
         >
             Save
@@ -94,11 +109,13 @@
     </section>
     <section class="flex flex-col gap-8 p-6 bg-surface rounded">
         {#snippet dangerButton(
+            onclick: () => void,
             danger: boolean,
             text: (e: boolean) => string,
             icon: string
         )}
             <button
+                {onclick}
                 class={[
                     "flex gap-2 justify-center items-center w-full lg:w-[240px] text-white h-10 text-left px-4 rounded-sm",
                     danger ? "bg-danger" : "bg-success"
@@ -114,11 +131,15 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                data.course.public ? "Unpublish" : "Publish",
+                course.public ? "Unpublish" : "Publish",
                 "Published courses are accessible to students"
             )}
             {@render dangerButton(
-                data.course.public,
+                async () => {
+                    await saveCourse({ public: !course.public });
+                    course.public = !course.public;
+                },
+                course.public,
                 d => (d ? "Unpublish this course" : "Publish this course"),
                 "file-dashed"
             )}
@@ -127,13 +148,17 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                data.course.enrollmentOpen
-                    ? "Close enrollment"
-                    : "Open enrollment",
+                course.enrollmentOpen ? "Close enrollment" : "Open enrollment",
                 "Courses with closed enrollment don't accept new students, but already enrolled students are not affected"
             )}
             {@render dangerButton(
-                data.course.enrollmentOpen,
+                async () => {
+                    await saveCourse({
+                        enrollmentOpen: !course.enrollmentOpen
+                    });
+                    course.enrollmentOpen = !course.enrollmentOpen;
+                },
+                course.enrollmentOpen,
                 d => (d ? "Close enrollment" : "Open enrollment"),
                 "student"
             )}
@@ -142,12 +167,16 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                data.course.archived ? "Unarchive" : "Archive",
+                course.archived ? "Unarchive" : "Archive",
                 "Archived courses are still accessible to students if published, but in a read-only mode"
             )}
             {@render dangerButton(
-                data.course.archived,
-                d => (d ? "Unarchive this course" : "Archive this course"),
+                async () => {
+                    await saveCourse({ archived: !course.archived });
+                    course.archived = !course.archived;
+                },
+                course.archived,
+                d => (d ? "Archive this course" : "Unarchive this course"),
                 "archive"
             )}
         </label>
