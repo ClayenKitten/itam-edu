@@ -48,7 +48,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "${{ inputs.context }}"
-          file: "${{ inputs.context }}/${{ inputs.dockerfile }}"
+          file: "${{ inputs.context }}/${{ inputs.dockerfile || 'Dockerfile' }}"
           tags: "${{ steps.meta.outputs.tags }}"
           push: true
           cache-from: "type=registry,ref=${{ steps.meta.outputs.tags }}"
