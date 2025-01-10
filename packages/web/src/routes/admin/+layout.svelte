@@ -17,14 +17,12 @@
             current
                 ? "bg-primary text-text"
                 : "bg-surface text-text-opaque hover:bg-surface-light hover:text-text",
-            "flex items-center gap-2.5 h-[60px] w-[60px] rounded-sm",
-            "sm:max-lg:justify-center sm:max-lg:p-0",
-            "justify-start lg:h-12 lg:w-full px-4",
-            "max-sm:w-[200px]"
+            "flex items-center justify-start gap-2.5",
+            "h-12 w-[200px] lg:w-full px-4 rounded-sm"
         ]}
     >
         <i class="{current ? 'ph-fill' : 'ph'} ph-{icon} text-xl"></i>
-        <span class="sm:max-lg:hidden">{text}</span>
+        <span>{text}</span>
     </a>
 {/snippet}
 
@@ -40,7 +38,7 @@
     >
         <button
             aria-label="Toggle navigation menu"
-            class="mob-menu sm:hidden bg-surface aspect-square rounded peer"
+            class="mob-menu lg:hidden bg-surface aspect-square rounded peer"
         >
             <i
                 class="ph ph-list flex justify-center items-center text-text text-2xl"
@@ -48,9 +46,10 @@
         </button>
         <div
             class={[
-                "lg:flex-1 hidden sm:flex lg:flex-col lg:bg-surface lg:px-4 lg:py-5 lg:rounded gap-2.5",
-                "peer-focus:flex hover:flex",
-                "max-sm:absolute max-sm:flex-col max-sm:top-[calc(2_*_20px_+_60px)] max-sm:rounded max-sm:bg-surface"
+                "absolute top-[calc(2_*_20px_+_60px)] lg:static",
+                "flex-col rounded",
+                "lg:flex lg:flex-1 hidden bg-surface lg:px-4 lg:py-5 gap-2.5",
+                "peer-focus:flex hover:flex"
             ]}
         >
             {@render link(
@@ -65,13 +64,13 @@
         </div>
         <a
             href="/"
-            class="flex-1 flex lg:hidden justify-center items-center p-4 text-xl text-text bg-surface rounded sm:rounded-sm"
+            class="flex-1 flex lg:hidden justify-center items-center p-4 text-xl text-text bg-surface rounded"
         >
             ITAM.Education
         </a>
         <a
             href="/admin/profile"
-            class="lg:flex gap-2.5 aspect-square lg:h-[80px] lg:aspect-auto bg-surface rounded sm:max-lg:rounded-sm overflow-hidden"
+            class="lg:flex gap-2.5 aspect-square lg:h-[80px] lg:aspect-auto bg-surface rounded overflow-hidden"
         >
             <img src={data.user.avatar} alt="" class="aspect-square" />
             <div
