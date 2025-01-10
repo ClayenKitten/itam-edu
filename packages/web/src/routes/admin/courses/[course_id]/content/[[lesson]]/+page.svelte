@@ -1,11 +1,24 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
+    import { innerWidth } from "svelte/reactivity/window";
     import CreateLessonModal from "./CreateLessonModal.svelte";
     import DraggableList from "./DraggableList.svelte";
 
     const { data } = $props();
+
+    const popoverMode = $derived((innerWidth.current ?? 0) < 1024);
 </script>
+
+<svelte:head>
+    {#if popoverMode && data.lesson !== null}
+        <style>
+            body {
+                overflow: hidden !important;
+            }
+        </style>
+    {/if}
+</svelte:head>
 
 {#snippet lesson(lesson: (typeof data.lessons)[number])}
     <a
@@ -22,10 +35,8 @@
 {/snippet}
 
 <section class="flex gap-5">
-    <aside class="flex flex-col gap-5">
-        <nav
-            class="flex flex-col justify-between w-80 bg-surface text-text rounded"
-        >
+    <aside class="max-lg:flex-1 flex flex-col gap-5 lg:w-80">
+        <nav class="flex flex-col justify-between bg-surface text-text rounded">
             <header class="flex justify-between items-center p-5">
                 <h2 class="text-2xl">Lessons</h2>
                 <button
@@ -67,7 +78,7 @@
             </DraggableList>
         </nav>
         <menu
-            class="flex flex-col justify-between w-80 bg-surface text-text rounded"
+            class="flex flex-col justify-between bg-surface text-text rounded"
         >
             <header class="flex justify-between items-center p-5">
                 <h2 class="text-2xl">Archive</h2>
@@ -94,7 +105,12 @@
         </menu>
     </aside>
     <article
-        class="flex-1 flex flex-col gap-5 p-8 bg-surface text-text rounded"
+        class={[
+            "fixed inset-0 max-lg:overflow-auto",
+            "lg:flex-1 lg:flex lg:static lg:inset-auto",
+            "flex-col gap-5 p-8 bg-surface text-text lg:rounded",
+            data.lesson === null ? "hidden" : "flex z-20"
+        ]}
     >
         {#if data.lesson}
             <header class="flex flex-col">
@@ -104,6 +120,13 @@
                 >
                     {data.course.slug}/{data.lesson.slug}
                 </h2>
+                <a
+                    aria-label="Close"
+                    href={`/admin/courses/${data.course.id}/content`}
+                    class="absolute block lg:hidden top-8 right-8"
+                >
+                    <i class="ph ph-x text-3xl"></i>
+                </a>
             </header>
             {#if data.lesson.content}
                 <div class="text-base">{data.lesson.content}</div>
