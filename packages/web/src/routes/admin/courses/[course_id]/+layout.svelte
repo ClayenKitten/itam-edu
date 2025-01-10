@@ -23,7 +23,7 @@
     </a>
 {/snippet}
 
-<section class="mb-5 p-6 pb-0 bg-surface rounded">
+<section class="mb-5 p-6 pb-0 bg-surface lg:rounded">
     <header class="flex gap-10 pb-5">
         <div
             class="flex justify-center items-center flex-shrink-0 w-[100px] h-[100px] p-2.5 bg-surface-light rounded-sm"

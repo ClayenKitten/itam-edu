@@ -1,8 +1,14 @@
 <script lang="ts">
+    import { onNavigate } from "$app/navigation";
     import { page } from "$app/state";
     import "../../app.css";
 
     let { data, children } = $props();
+
+    let navOpen = $state(false);
+    onNavigate(() => {
+        navOpen = false;
+    });
 </script>
 
 <svelte:head>
@@ -16,9 +22,9 @@
         class={[
             current
                 ? "bg-primary text-text"
-                : "bg-surface text-text-opaque hover:bg-surface-light hover:text-text",
+                : "bg-transparent text-text-opaque hover:bg-surface-light hover:text-text",
             "flex items-center justify-start gap-2.5",
-            "h-12 w-[200px] lg:w-full px-4 rounded-sm"
+            "h-12 w-full px-4 lg:rounded-sm"
         ]}
     >
         <i class="{current ? 'ph-fill' : 'ph'} ph-{icon} text-xl"></i>
@@ -26,30 +32,36 @@
     </a>
 {/snippet}
 
-<div class="flex flex-col lg:flex-row w-full gap-5 p-5">
+<div class="flex flex-col lg:flex-row w-full gap-5 pb-0 lg:p-5">
     <nav
         class={[
             "sticky top-0 lg:top-5 flex-shrink-0",
             "flex flex-row lg:flex-col gap-2.5 lg:gap-5",
-            "w-screen h-[100px] lg:w-[260px] lg:h-[calc(100vh_-_40px)]",
-            "bg-surface-dark lg:bg-transparent",
-            "-m-5 p-5 lg:m-0 lg:p-0 z-20"
+            "h-[60px] lg:w-[260px] lg:h-[calc(100vh_-_40px)]",
+            "bg-surface lg:bg-transparent",
+            "lg:m-0 lg:p-0 z-20"
         ]}
     >
         <button
             aria-label="Toggle navigation menu"
-            class="mob-menu lg:hidden bg-surface aspect-square rounded peer"
+            class="lg:hidden bg-surface aspect-square p-2"
+            onclick={() => (navOpen = !navOpen)}
         >
             <i
-                class="ph ph-list flex justify-center items-center text-text text-2xl"
+                class={[
+                    navOpen && "bg-surface-light",
+                    "ph ph-list flex justify-center items-center w-full h-full",
+                    "text-text text-2xl rounded"
+                ]}
             ></i>
         </button>
         <div
             class={[
-                "absolute top-[calc(2_*_20px_+_60px)] lg:static",
-                "flex-col rounded",
-                "lg:flex lg:flex-1 hidden bg-surface lg:px-4 lg:py-5 gap-2.5",
-                "peer-focus:flex hover:flex"
+                navOpen ? "flex" : "hidden",
+                "absolute top-[60px] h-[calc(100dvh_-_60px)] inset-x-0",
+                "lg:static lg:flex",
+                "lg:flex-1 flex-col lg:gap-2.5 lg:h-auto lg:px-4 lg:py-5",
+                "bg-surface-dark lg:bg-surface lg:rounded"
             ]}
         >
             {@render link(
@@ -70,9 +82,13 @@
         </a>
         <a
             href="/admin/profile"
-            class="lg:flex gap-2.5 aspect-square lg:h-[80px] lg:aspect-auto bg-surface rounded overflow-hidden"
+            class="lg:flex gap-2.5 aspect-square lg:h-[80px] lg:aspect-auto bg-surface lg:rounded overflow-hidden"
         >
-            <img src={data.user.avatar} alt="" class="aspect-square" />
+            <img
+                src={data.user.avatar}
+                alt=""
+                class="aspect-square max-lg:p-2 max-lg:rounded"
+            />
             <div
                 class="hidden lg:flex flex-col justify-center gap-0.5 py-2 pr-3 overflow-hidden"
             >

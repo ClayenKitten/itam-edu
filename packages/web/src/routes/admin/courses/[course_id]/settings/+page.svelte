@@ -33,7 +33,7 @@
 {/snippet}
 
 <section class="flex flex-col gap-5 text-text">
-    <section class="flex flex-col gap-8 p-6 bg-surface rounded">
+    <section class="flex flex-col gap-8 p-6 bg-surface lg:rounded">
         {@render sectionHeader("Course information", "info")}
         <label
             class="flex flex-col lg:flex-row justify-between gap-x-40 gap-y-4 max-w-[600px]"
@@ -80,7 +80,7 @@
             Save
         </button>
     </section>
-    <section class="flex flex-col gap-8 p-6 bg-surface rounded">
+    <section class="flex flex-col gap-8 p-6 bg-surface lg:rounded">
         {@render sectionHeader("Blog", "text-t")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
@@ -93,7 +93,7 @@
             Save
         </button>
     </section>
-    <section class="flex flex-col gap-8 p-6 bg-surface rounded">
+    <section class="flex flex-col gap-8 p-6 bg-surface lg:rounded">
         {@render sectionHeader("Feedback", "chat-teardrop-dots")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
@@ -107,7 +107,7 @@
             Save
         </button>
     </section>
-    <section class="flex flex-col gap-8 p-6 bg-surface rounded">
+    <section class="flex flex-col gap-8 p-6 max-lg:pb-10 bg-surface lg:rounded">
         {#snippet dangerButton(
             onclick: () => void,
             danger: boolean,

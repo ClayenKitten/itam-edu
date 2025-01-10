@@ -2,25 +2,35 @@
     const { data } = $props();
 </script>
 
-<header class="flex justify-between items-center h-20">
-    <h1 class="text-2xl text-text font-bold">Courses</h1>
+<header class="flex flex-col pb-5 px-4 max-lg:gap-2 lg:p-0">
+    <h1 class="flex items-center lg:h-20 text-2xl text-text font-bold">
+        Courses
+    </h1>
+    <menu>
+        <button
+            class={[
+                "flex items-center gap-2 h-10 px-3 lg:px-7",
+                "text-text text-sm bg-success hover:bg-success-light rounded-sm"
+            ]}
+        >
+            <span>Create new course</span>
+            <i class="ph ph-plus-circle"></i>
+        </button>
+    </menu>
 </header>
-<menu>
-    <button
-        class="h-10 px-7 text-text text-sm bg-success hover:bg-success-light rounded-sm"
-    >
-        <span>Create new course</span>
-        <i class="ph ph-plus-circle"></i>
-    </button>
-</menu>
 <section
-    class="flex-1 grid grid-cols-[repeat(auto-fill,minmax(max(100%/3-20px,300px),1fr))] auto-rows-auto mt-5 gap-5"
+    class={[
+        "flex-1 grid auto-rows-auto lg:mt-5 gap-5",
+        "grid-cols-1 lg:grid-cols-[repeat(auto-fill,minmax(max(100%/3-20px,300px),1fr))]"
+    ]}
 >
     {#each data.courses as course}
-        <article class="flex flex-col bg-surface rounded">
+        <article
+            class="flex flex-col bg-surface lg:rounded max-lg:last-of-type:pb-4"
+        >
             <a class="contents" href={`/admin/courses/${course.id}`}>
                 <header
-                    class="flex items-center gap-2.5 h-[72px] px-6 text-text text-lg font-bold break-all"
+                    class="flex items-center gap-2.5 h-[72px] px-4 lg:px-6 text-text text-lg font-bold break-all"
                 >
                     <div
                         class="flex justify-center items-center flex-shrink-0 w-[30px] h-[30px] p-1 bg-surface-light rounded-sm"
@@ -63,21 +73,23 @@
                 <hr class="border-surface-light" />
                 <div class="contents text-text break-all">
                     {#if course.description}
-                        <span class="flex-1 px-6 py-3">
+                        <span class="flex-1 px-4 lg:px-6 py-3">
                             {course.description}
                         </span>
                     {:else}
-                        <span class="flex-1 px-6 py-3 text-text-opaque italic">
+                        <span
+                            class="flex-1 px-4 lg:px-6 py-3 text-text-opaque italic"
+                        >
                             No description
                         </span>
                     {/if}
                 </div>
                 <ul class="flex flex-col gap-2 py-3 text-text break-all">
-                    <li class="px-6">
+                    <li class=" px-4 lg:px-6">
                         <span class="text-text-opaque">Students:&nbsp;</span>
                         <span class="text-text">{course.studentsCount}</span>
                     </li>
-                    <li class="px-6">
+                    <li class=" px-4 lg:px-6">
                         <span class="text-text-opaque">Year:&nbsp;</span>
                         <span class="text-text">{course.year}</span>
                         {#if course.semester}

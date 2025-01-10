@@ -2,7 +2,7 @@
     const { data } = $props();
 </script>
 
-<section class="bg-surface rounded">
+<section class="bg-surface lg:rounded">
     <header class="flex justify-end max-sm:px-3 p-6 pb-5">
         <label
             class="input group flex items-center gap-2 flex-1 sm:flex-[0_0_280px] h-10 p-2.5 bg-surface-light rounded-sm"

@@ -36,7 +36,9 @@
 
 <section class="flex gap-5">
     <aside class="max-lg:flex-1 flex flex-col gap-5 lg:w-80">
-        <nav class="flex flex-col justify-between bg-surface text-text rounded">
+        <nav
+            class="flex flex-col justify-between bg-surface text-text lg:rounded"
+        >
             <header class="flex justify-between items-center p-5">
                 <h2 class="text-2xl">Lessons</h2>
                 <button
@@ -77,8 +79,8 @@
                 {/snippet}
             </DraggableList>
         </nav>
-        <menu
-            class="flex flex-col justify-between bg-surface text-text rounded"
+        <nav
+            class="flex flex-col justify-between bg-surface text-text lg:rounded max-lg:pb-5"
         >
             <header class="flex justify-between items-center p-5">
                 <h2 class="text-2xl">Archive</h2>
@@ -102,7 +104,7 @@
                     </span>
                 {/snippet}
             </DraggableList>
-        </menu>
+        </nav>
     </aside>
     <article
         class={[
