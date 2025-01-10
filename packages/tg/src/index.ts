@@ -1,6 +1,5 @@
 import { env } from "process";
 import Bot from "./bot.js";
-import startApi from "./api.js";
 import type { Telegraf } from "telegraf";
 
 const bot = new Bot(env.ITAM_EDU_TG_BOT_TOKEN);
@@ -12,5 +11,3 @@ const webhook: Telegraf.LaunchOptions["webhook"] =
           }
         : undefined;
 await bot.launch({ webhook });
-
-startApi(bot, { port: Number(env.ITAM_EDU_TG_API_PORT) });
