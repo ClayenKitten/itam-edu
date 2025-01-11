@@ -25,9 +25,10 @@ export async function createApp() {
         .use(
             cors({
                 origin:
-                    env.NODE_ENV === "development"
-                        ? "*"
-                        : env.ITAM_EDU_API_HOST!
+                    env.NODE_ENV === "production"
+                        ? env.ITAM_EDU_API_HOST!
+                        : c => c,
+                credentials: env.NODE_ENV === "development"
             })
         )
         .use(createContext)
