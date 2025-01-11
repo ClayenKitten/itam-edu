@@ -31,6 +31,13 @@ export async function createApp() {
         )
         .use(createContext)
         .use(authentication())
+        .onError(async (error, c) => {
+            logger.error("Unhandled Exception", {
+                exceptionKind: error?.constructor?.name,
+                error
+            });
+            return c.text("Internal Server Error", 500);
+        })
         .route("/courses", await courseService())
         .route("/users", await userService())
         .route("/bot", await botService())
