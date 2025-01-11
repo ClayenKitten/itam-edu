@@ -24,7 +24,11 @@ export const updateCourseSchema = courseSchema
         year: true,
         semester: true
     })
-    .partial();
+    .strict()
+    .partial()
+    .refine(obj => Object.keys(obj).length !== 0, {
+        message: "Empty object is not allowed"
+    });
 
 export const lessonSchema = z.object({
     courseId: z.string().uuid(),
