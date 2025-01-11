@@ -11,6 +11,7 @@ RUN npm ci --workspace itam-edu-tg
 
 # Source
 COPY ./packages/api ./packages/api
+COPY ./packages/db ./packages/db
 COPY ./packages/tg ./packages/tg
 
 # Build

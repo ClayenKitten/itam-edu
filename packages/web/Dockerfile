@@ -11,6 +11,7 @@ RUN npm ci --workspace itam-edu-web
 
 # Source
 COPY ./packages/api ./packages/api
+COPY ./packages/db ./packages/db
 COPY ./packages/web ./packages/web
 
 # Build
