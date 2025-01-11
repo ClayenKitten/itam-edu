@@ -82,7 +82,7 @@
         </a>
         <a
             href="/admin/profile"
-            class="lg:flex gap-2.5 aspect-square lg:h-[80px] lg:aspect-auto bg-surface lg:rounded overflow-hidden"
+            class="lg:flex gap-4 aspect-square lg:h-[80px] lg:aspect-auto bg-surface lg:rounded overflow-hidden"
         >
             <img
                 src={data.user.avatar}
@@ -95,14 +95,20 @@
                 <h1
                     class="text-lg leading-5 text-text overflow-ellipsis overflow-hidden"
                 >
-                    <span class="text-nowrap">{data.user.firstName}</span>
-                    <span class="text-nowrap">{data.user.lastName}</span>
+                    {#if data.user.firstName || data.user.lastName}
+                        <span class="text-nowrap">{data.user.firstName}</span>
+                        <span class="text-nowrap">{data.user.lastName}</span>
+                    {:else}
+                        @{data.user.tgUsername}
+                    {/if}
                 </h1>
-                <h2
-                    class="text-sm h-5 text-text-opaque overflow-ellipsis overflow-hidden text-nowrap"
-                >
-                    @{data.user.tgUsername}
-                </h2>
+                {#if data.user.firstName || data.user.lastName}
+                    <h2
+                        class="text-sm h-5 text-text-opaque overflow-ellipsis overflow-hidden text-nowrap"
+                    >
+                        @{data.user.tgUsername}
+                    </h2>
+                {/if}
             </div>
         </a>
     </nav>
