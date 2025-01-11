@@ -118,13 +118,6 @@ export interface Lessons {
   title: string;
 }
 
-export interface LoginAttempts {
-  code: string;
-  expires: Timestamp;
-  id: Generated<string>;
-  userId: string;
-}
-
 export interface ManualNotifications {
   content: string;
   createdAt: Generated<Timestamp>;
@@ -145,9 +138,9 @@ export interface SchemaMigrations {
   version: string;
 }
 
-export interface StaffPermissions {
-  canCreateCourses: Generated<boolean>;
-  canPublishCourses: Generated<boolean>;
+export interface UserLoginAttempts {
+  code: string;
+  expires: Timestamp;
   userId: string;
 }
 
@@ -157,9 +150,12 @@ export interface Users {
    */
   avatar: string | null;
   bio: string | null;
+  canCreateCourses: Generated<boolean>;
+  canPublishCourses: Generated<boolean>;
   email: string | null;
   firstName: string | null;
   id: Generated<string>;
+  isStaff: Generated<boolean>;
   lastName: string | null;
   patronim: string | null;
   tgChatId: Int8;
@@ -170,7 +166,7 @@ export interface Users {
 export interface UserSessions {
   expires: Timestamp;
   id: Generated<string>;
-  tokenHash: string;
+  token: string;
   userId: string;
 }
 
@@ -181,11 +177,10 @@ export interface DB {
   homeworks: Homeworks;
   homeworkSubmissions: HomeworkSubmissions;
   lessons: Lessons;
-  loginAttempts: LoginAttempts;
   manualNotifications: ManualNotifications;
   notifications: Notifications;
   schemaMigrations: SchemaMigrations;
-  staffPermissions: StaffPermissions;
+  userLoginAttempts: UserLoginAttempts;
   users: Users;
   userSessions: UserSessions;
 }

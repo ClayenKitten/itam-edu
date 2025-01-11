@@ -3,13 +3,14 @@ import { env } from "process";
 import { serve } from "@hono/node-server";
 
 import { courseService } from "./services/course/controller.js";
-import { userService } from "./services/user.js";
+import { userService } from "./services/user/controller.js";
 
 import logger from "./logger.js";
 import { bodyLimit } from "hono/body-limit";
 import createContext, { type AppEnv } from "./ctx.js";
 import { cors } from "hono/cors";
 import { loggerMiddleware } from "./middlewares/logger.js";
+import { botService } from "./services/bot.js";
 
 const port = Number(env.ITAM_EDU_API_PORT) ?? 3000;
 
@@ -30,6 +31,7 @@ export async function createApp() {
         .use(createContext)
         .route("/courses", await courseService())
         .route("/users", await userService())
+        .route("/bot", await botService())
         .get("/healthz", c => c.body(null, 200));
 }
 

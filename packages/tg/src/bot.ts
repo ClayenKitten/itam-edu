@@ -3,6 +3,7 @@ import { message } from "telegraf/filters";
 import type { Update } from "telegraf/types";
 import logger from "./logger.js";
 import { env } from "process";
+import api from "./api.js";
 
 export default class Bot {
     private telegraf: Telegraf<Context<Update>>;
@@ -27,12 +28,42 @@ export default class Bot {
         });
 
         this.telegraf.command("login", async ctx => {
-            const code = ctx.args.at(0);
-            if (!code) {
-                await ctx.reply("Please provide login code.");
+            if (!ctx.from.username) {
+                await ctx.reply("Please set Telegram username");
                 return;
             }
-            await ctx.reply(`Login \`${code}\``);
+
+            const msg = await ctx.reply("Your code is being created... ⏳");
+            await new Promise(r => setTimeout(r, 2000));
+
+            const response = await api().bot.login.$post({
+                json: {
+                    tgChatId: ctx.chat.id.toString(),
+                    tgUserId: ctx.from.id.toString(),
+                    tgUsername: ctx.from.username
+                }
+            });
+            if (response.status !== 200) {
+                await ctx.reply("Oups\\! Something went wrong.");
+                return;
+            }
+            const { code, expires } = await response.json();
+
+            const minutesRemaining = Math.ceil(
+                (new Date(expires).getTime() - new Date().getTime()) / 60000
+            );
+
+            await ctx.telegram.editMessageText(
+                ctx.chat.id,
+                msg.message_id,
+                undefined,
+                [
+                    "✅ Your code is:",
+                    `\n<code>${code}</code>\n`,
+                    `The code expires in ${minutesRemaining} minutes.`
+                ].join("\n"),
+                { parse_mode: "HTML" }
+            );
         });
 
         this.telegraf.on(message("text"), async ctx => {
@@ -56,12 +87,12 @@ export default class Bot {
     }
 
     public static readonly HELP_MESSAGE = [
-        "*ITAM.Education Bot 🎒*",
+        "*ITAM\\.Education Bot 🎒*",
         "",
-        "Companion bot for [ITAM.Education platform](https://clayenkitten.dev)\\.",
+        "Companion bot for [ITAM\\.Education platform](https://edu.itatmisis.ru)\\.",
         "",
         "*Commands 💬*",
-        "\\- `/login CODE` \\- login into web app with provided code",
+        "/login \\- login into the web app",
         "",
         "*Features ✅*",
         "\\- Login into the platform",

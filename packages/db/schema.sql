@@ -206,18 +206,6 @@ COMMENT ON COLUMN public.lessons.icon IS 'URL of the lesson icon';
 
 
 --
--- Name: login_attempts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.login_attempts (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
-    code text NOT NULL,
-    expires timestamp with time zone NOT NULL
-);
-
-
---
 -- Name: manual_notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -267,13 +255,13 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: staff_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: user_login_attempts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.staff_permissions (
+CREATE TABLE public.user_login_attempts (
+    code text NOT NULL,
     user_id uuid NOT NULL,
-    can_create_courses boolean DEFAULT true NOT NULL,
-    can_publish_courses boolean DEFAULT false NOT NULL
+    expires timestamp with time zone NOT NULL
 );
 
 
@@ -284,7 +272,7 @@ CREATE TABLE public.staff_permissions (
 CREATE TABLE public.user_sessions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    token_hash text NOT NULL,
+    token text NOT NULL,
     expires timestamp with time zone NOT NULL
 );
 
@@ -303,7 +291,10 @@ CREATE TABLE public.users (
     bio text,
     tg_user_id bigint NOT NULL,
     tg_chat_id bigint NOT NULL,
-    tg_username text NOT NULL
+    tg_username text NOT NULL,
+    is_staff boolean DEFAULT false NOT NULL,
+    can_create_courses boolean DEFAULT false NOT NULL,
+    can_publish_courses boolean DEFAULT false NOT NULL
 );
 
 
@@ -379,14 +370,6 @@ ALTER TABLE ONLY public.lessons
 
 
 --
--- Name: login_attempts login_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.login_attempts
-    ADD CONSTRAINT login_attempts_pkey PRIMARY KEY (id);
-
-
---
 -- Name: manual_notifications manual_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -411,11 +394,19 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: staff_permissions staff_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_login_attempts user_login_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.staff_permissions
-    ADD CONSTRAINT staff_permissions_pkey PRIMARY KEY (user_id);
+ALTER TABLE ONLY public.user_login_attempts
+    ADD CONSTRAINT user_login_attempts_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: user_login_attempts user_login_attempts_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_login_attempts
+    ADD CONSTRAINT user_login_attempts_user_id_key UNIQUE (user_id);
 
 
 --
@@ -440,6 +431,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_tg_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_tg_user_id_key UNIQUE (tg_user_id);
 
 
 --
@@ -515,14 +514,6 @@ ALTER TABLE ONLY public.lessons
 
 
 --
--- Name: login_attempts login_attempts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.login_attempts
-    ADD CONSTRAINT login_attempts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
 -- Name: notifications notifications_manual_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -539,11 +530,11 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: staff_permissions staff_permissions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_login_attempts user_login_attempts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.staff_permissions
-    ADD CONSTRAINT staff_permissions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE ONLY public.user_login_attempts
+    ADD CONSTRAINT user_login_attempts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
