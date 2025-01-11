@@ -1,4 +1,3 @@
-import { createMiddleware } from "hono/factory";
 import winston, { format } from "winston";
 
 const logger = winston.createLogger({
@@ -28,20 +27,3 @@ function getConsoleTransport(production: boolean) {
 }
 
 export default logger;
-
-export function loggerMiddleware() {
-    return createMiddleware(async (c, next) => {
-        logger.debug("HTTP Request", {
-            http: "request",
-            method: c.req.method,
-            path: c.req.path
-        });
-        await next();
-        logger.debug("HTTP Response", {
-            http: "response",
-            method: c.req.method,
-            path: c.req.path,
-            status: c.res.status
-        });
-    });
-}
