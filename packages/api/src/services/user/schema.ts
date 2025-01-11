@@ -1,6 +1,7 @@
 import { z, type TypeOf } from "zod";
 
 export const userSchema = z.object({
+    id: z.string().uuid(),
     firstName: z.string().max(100).nullable(),
     lastName: z.string().max(100).nullable(),
     patronim: z.string().max(100).nullable(),

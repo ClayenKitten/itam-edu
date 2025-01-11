@@ -3,6 +3,7 @@ import type { AppEnv } from "../../ctx.js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createLessonSchema, updateCourseSchema } from "./schema.js";
+import authorize from "../../middlewares/authorize.js";
 
 export async function courseService() {
     return new Hono<AppEnv>()
@@ -47,6 +48,10 @@ export async function courseService() {
             "/:course",
             zValidator("param", z.object({ course: z.string().uuid() })),
             zValidator("json", updateCourseSchema),
+            authorize(
+                (p, c) =>
+                    p.course.get(c.req.param("course"))?.canEditInfo === true
+            ),
             async c => {
                 const found = await c.var.repo.course.updateCourse(
                     c.req.valid("param").course,
@@ -70,6 +75,10 @@ export async function courseService() {
             "/:course/lessons",
             zValidator("param", z.object({ course: z.string().uuid() })),
             zValidator("json", createLessonSchema),
+            authorize(
+                (p, c) =>
+                    p.course.get(c.req.param("course"))?.canEditContent === true
+            ),
             async c => {
                 const success = await c.var.repo.course.createLesson(
                     c.req.valid("param").course,
@@ -99,6 +108,7 @@ export async function courseService() {
         .get(
             "/:course/students",
             zValidator("param", z.object({ course: z.string().uuid() })),
+            authorize(c => c.user.isStaff),
             async c => {
                 const students = await c.var.repo.course.getCourseStudents(
                     c.req.param("course")

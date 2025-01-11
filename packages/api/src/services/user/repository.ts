@@ -2,6 +2,7 @@ import type { DB } from "itam-edu-db";
 import { type Kysely } from "kysely";
 import { type UserSchema, userSchemaFields } from "./schema.js";
 import logger from "../../logger.js";
+import { PermissionKinds } from "./permissions.js";
 
 export default class UserRepository {
     constructor(private db: Kysely<DB>) {}
@@ -9,7 +10,7 @@ export default class UserRepository {
     public async getUserByToken(token: string): Promise<UserSchema | null> {
         const user = await this.db
             .selectFrom("users")
-            .select(userSchemaFields)
+            .select(["users.id", ...userSchemaFields.filter(x => x !== "id")])
             .leftJoin("userSessions", "userSessions.userId", "users.id")
             .where("userSessions.token", "=", token)
             .executeTakeFirst();
@@ -61,5 +62,41 @@ export default class UserRepository {
             logger.error("Error during db transaction", { error: e });
             return false;
         }
+    }
+
+    public async getPermissions(userId: string) {
+        const user = await this.db
+            .selectFrom("users")
+            .select(PermissionKinds["user"])
+            .where("id", "=", userId)
+            .executeTakeFirst();
+        if (user === undefined) return null;
+
+        const course = await this.db
+            .selectFrom("courseStaff")
+            .select(["courseId", ...PermissionKinds["course"]])
+            .where("userId", "=", userId)
+            .execute();
+
+        return {
+            user,
+            course: course.reduce(
+                (obj, val) => {
+                    const { courseId, ...permissions } = val;
+                    obj[courseId] = permissions;
+                    return obj;
+                },
+                {} as Record<string, Omit<(typeof course)[number], "courseId">>
+            )
+        };
+    }
+
+    public async getPermissionsMap(userId: string) {
+        const permissions = await this.getPermissions(userId);
+        if (!permissions) return null;
+        return {
+            user: permissions.user,
+            course: new Map(Object.entries(permissions.course))
+        };
     }
 }
