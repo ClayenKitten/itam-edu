@@ -1,6 +1,5 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
-    import "../../app.css";
     let { children, data } = $props();
 </script>
 

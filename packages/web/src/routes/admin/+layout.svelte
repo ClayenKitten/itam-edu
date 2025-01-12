@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onNavigate } from "$app/navigation";
     import { page } from "$app/state";
-    import "../../app.css";
 
     let { data, children } = $props();
 
