@@ -9,7 +9,11 @@ export default function createDatabaseConnection() {
         dialect: new PostgresDialect({
             pool: new pg.Pool({
                 connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING,
-                log: () => {}
+                log: (message, ...e) => {
+                    if (message === "client failed to connect") {
+                        logger.error("Database Connection Failed");
+                    }
+                }
             })
         }),
         plugins: [new CamelCasePlugin()],
