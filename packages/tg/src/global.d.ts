@@ -7,5 +7,7 @@ namespace NodeJS {
         ITAM_EDU_TG_WEBHOOK_PORT: string;
         ITAM_EDU_TG_API_URL: string;
         ITAM_EDU_TG_API_TOKEN: string;
+        ITAM_EDU_TG_WEB_URL: string;
+        ITAM_EDU_TG_SUPPORT_USERNAME: string;
     }
 }
