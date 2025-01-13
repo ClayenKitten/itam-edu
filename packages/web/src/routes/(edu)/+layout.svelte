@@ -30,12 +30,18 @@
                 </a>
             {/if}
         </div>
-        <a
-            href="/me"
-            class="h-10 block bg-white aspect-square rounded-full overflow-hidden"
-        >
-            <img alt="Profile" />
-        </a>
+        {#if data.user === null}
+            <a href="/signin" class="p-2 px-4 text-black bg-white rounded-sm">
+                Sign in
+            </a>
+        {:else}
+            <a
+                href="/me"
+                class="h-10 block bg-white aspect-square rounded-full overflow-hidden"
+            >
+                <img alt="Profile" />
+            </a>
+        {/if}
     </header>
     <div class="flex-1">
         {@render children()}

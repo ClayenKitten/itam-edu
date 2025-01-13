@@ -27,6 +27,12 @@
     }
 }
 
+@layer components {
+    .btn {
+        @apply h-12 text-base font-bold bg-primary disabled:bg-disabled rounded-sm;
+    }
+}
+
 html,
 body {
     margin: 0;

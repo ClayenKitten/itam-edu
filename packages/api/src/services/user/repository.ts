@@ -64,6 +64,34 @@ export default class UserRepository {
         }
     }
 
+    public async completeLoginAttempt({
+        code,
+        expires,
+        token
+    }: {
+        code: string;
+        token: string;
+        expires: Date;
+    }): Promise<boolean> {
+        return await this.db.transaction().execute(async trx => {
+            const result = await trx
+                .deleteFrom("userLoginAttempts")
+                .where("code", "=", code)
+                .where("expires", ">", new Date())
+                .returning(["userId"])
+                .executeTakeFirst();
+            if (result === undefined) return false;
+            const { userId } = result;
+
+            await trx
+                .insertInto("userSessions")
+                .values({ userId, token, expires })
+                .executeTakeFirst();
+
+            return true;
+        });
+    }
+
     public async getPermissions(userId: string) {
         const user = await this.db
             .selectFrom("users")
