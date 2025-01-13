@@ -118,22 +118,6 @@ export interface Lessons {
   title: string;
 }
 
-export interface ManualNotifications {
-  content: string;
-  createdAt: Generated<Timestamp>;
-  deleted: Generated<boolean>;
-  id: Generated<string>;
-  silent: boolean;
-}
-
-export interface Notifications {
-  content: string;
-  id: Generated<string>;
-  manualId: string | null;
-  tgMessageId: Int8;
-  userId: string;
-}
-
 export interface SchemaMigrations {
   version: string;
 }
@@ -177,8 +161,6 @@ export interface DB {
   homeworks: Homeworks;
   homeworkSubmissions: HomeworkSubmissions;
   lessons: Lessons;
-  manualNotifications: ManualNotifications;
-  notifications: Notifications;
   schemaMigrations: SchemaMigrations;
   userLoginAttempts: UserLoginAttempts;
   users: Users;

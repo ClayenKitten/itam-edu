@@ -206,46 +206,6 @@ COMMENT ON COLUMN public.lessons.icon IS 'URL of the lesson icon';
 
 
 --
--- Name: manual_notifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.manual_notifications (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    content text NOT NULL,
-    silent boolean NOT NULL,
-    deleted boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: TABLE manual_notifications; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.manual_notifications IS 'Notifications issued manually by admins';
-
-
---
--- Name: notifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.notifications (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
-    tg_message_id bigint NOT NULL,
-    content text NOT NULL,
-    manual_id uuid
-);
-
-
---
--- Name: TABLE notifications; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.notifications IS 'Notifications sent through Telegram bot';
-
-
---
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -367,22 +327,6 @@ ALTER TABLE ONLY public.lessons
 
 ALTER TABLE ONLY public.lessons
     ADD CONSTRAINT lessons_pkey PRIMARY KEY (course_id, slug);
-
-
---
--- Name: manual_notifications manual_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.manual_notifications
-    ADD CONSTRAINT manual_notifications_pkey PRIMARY KEY (id);
-
-
---
--- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -514,22 +458,6 @@ ALTER TABLE ONLY public.lessons
 
 
 --
--- Name: notifications notifications_manual_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_manual_id_fkey FOREIGN KEY (manual_id) REFERENCES public.manual_notifications(id);
-
-
---
--- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
 -- Name: user_login_attempts user_login_attempts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -556,5 +484,4 @@ ALTER TABLE ONLY public.user_sessions
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20241213114857'),
-    ('20241213191614'),
-    ('20241213191642');
+    ('20241213191614');
