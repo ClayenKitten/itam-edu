@@ -4,7 +4,7 @@
     "main": "./src/index.ts",
     "scripts": {
         "start": "tsx --env-file=.env .",
-        "dev": "tsx watch --env-file=.env --ignore=db.json .",
+        "dev": "tsx watch --env-file=.env .",
         "build": "tsc",
         "preview": "node ./build/index.js",
         "format": "prettier --write .",
