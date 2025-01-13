@@ -1,24 +1,25 @@
 # ITAM educational platform
 
-An LMS for ITAM Courses.
+An LMS for [ITAM](https://itatmisis.ru) Courses.
 
 ## Packages
 
-- web - frontend web application
-- api - REST API backend
-- tg - companion Telegram bot
-- db - database migrations
-- s3 - S3 proxy and Minio configuration
+- [itam-edu-web](./packages/web) - frontend web application
+- [itam-edu-api](./packages/api) - REST API backend
+- [itam-edu-tg](./packages/tg) - companion Telegram bot
+- [itam-edu-db](./packages/db) - database migrations
+- [itam-edu-s3](./packages/s3) - S3 proxy and Minio configuration (work in progress)
 
 ## Development
 
 Taskfile is used to run custom commands. Write `task` in CLI to see a list of available commands.
 
-Development environment is setup via docker compose.
+Development environment is setup via [docker compose](./compose.dev.yaml).
 
-|    Service    | Description            | Credentials     |             Port              |
-| :-----------: | ---------------------- | --------------- | :---------------------------: |
-|   Postgres    | Postgres database      | user / password |             5432              |
-|    dbgate     | Postgres web interface |                 | [5500](http://localhost:5500) |
-|     Minio     | Minio S3 storage       | user / password |             9000              |
-| Minio Console | Minio web interface    | user / password | [9001](http://localhost:9001) |
+|   Service    | Description               |                  URL                  |
+| :----------: | ------------------------- | :-----------------------------------: |
+| itam-edu-web | Web server                | [www.localhost](http://www.localhost) |
+| itam-edu-api | API server                | [api.localhost](http://api.localhost) |
+| itam-edu-tg  | Telegram bot              |                                       |
+|    dbgate    | Web interface to Postgres |  [db.localhost](http://db.localhost)  |
+|   postgres   | Postgres RDBMS            |            localhost:5432             |

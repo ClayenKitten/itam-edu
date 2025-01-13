@@ -20,18 +20,24 @@ tasks:
 
   dev:up:
     desc: Setup development environment
-    cmds:
-      - docker compose -f ./compose.dev.yaml up -d --build
-      - task: db:up
+    cmd: |
+      docker compose -f ./compose.dev.yaml up \
+        --build \
+        --no-attach gateway \
+        --no-attach dbgate \
+        --abort-on-container-failure \
+        --watch \
+        {{.CLI_ARGS}}
+    ignore_error: true
 
   dev:down:
-    desc: Remove development environment
-    cmds: [docker compose -f ./compose.dev.yaml down]
+    desc: Stop development environment
+    cmd: docker compose -f ./compose.dev.yaml down
 
   dev:drop:
-    desc: Remove development environment with volumes
+    desc: Stop development environment and delete volumes
     prompt: Are you sure? It will remove all volumes, leading to full data loss.
-    cmds: [docker compose -f ./compose.dev.yaml down -v]
+    cmd: docker compose -f ./compose.dev.yaml down -v
 
   db:dump:
     desc: Dump database schema

@@ -1,27 +1,40 @@
-FROM node:22-alpine AS build
-
+# Install dependencies and copy source code
+FROM node:22-alpine AS prepare
 WORKDIR /app
 
-# Dependencies
 COPY .npmrc .
 COPY package.json .
 COPY package-lock.json .
 COPY ./packages/tg/package.json ./packages/tg/package.json
-RUN npm ci --workspace itam-edu-tg
+RUN npm --workspace=itam-edu-tg ci
 
-# Source
-COPY ./packages/api ./packages/api
 COPY ./packages/db ./packages/db
+COPY ./packages/api ./packages/api
 COPY ./packages/tg ./packages/tg
 
-# Build
-RUN npm run build --workspace itam-edu-tg
-RUN npm prune --omit=dev
-
-FROM node:22-alpine AS serve
-
+# Start development server
+FROM node:22-alpine AS dev
 WORKDIR /app
-COPY --from=build /app/packages/tg/build ./build
-COPY --from=build /app/node_modules ./node_modules
+ENV NODE_ENV development
+
+COPY --from=prepare /app .
+ENTRYPOINT npm --workspace=itam-edu-tg run dev
+
+# Build for production and prune dev dependencies
+FROM node:22-alpine AS build
+WORKDIR /app
+ENV NODE_ENV production
+
+COPY --from=prepare /app .
+RUN npm --workspace=itam-edu-tg run build
+RUN npm --workspace=itam-edu-tg prune --omit=dev 
+
+# Serve production build
+FROM node:22-alpine AS serve
+WORKDIR /app
+ENV NODE_ENV production
+
 COPY package.json .
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages/tg/build ./build
 CMD ["node", "./build"]

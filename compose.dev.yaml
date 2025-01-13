@@ -1,11 +1,75 @@
-# Development-oriented docker compose
+# Development environment
 
 services:
+  web:
+    build: &build
+      dockerfile: ./packages/web/Dockerfile
+      context: .
+      target: dev
+    depends_on: [api]
+    expose: [3000]
+    volumes: [./packages/web/.svelte-kit:/app/packages/web/.svelte-kit]
+    environment: &environment
+      PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER: http://www.localhost
+      PUBLIC_ITAM_EDU_WEB_API_URL_SERVER: http://api:3000
+      ITAM_EDU_API_HOST: 0.0.0.0
+      ITAM_EDU_API_PORT: 3000
+      ITAM_EDU_API_DB_CONNECTION_STRING: postgres://user:password@postgres:5432/app?sslmode=disable
+      ITAM_EDU_TG_WEB_URL: http://www.localhost
+      ITAM_EDU_TG_API_URL: http://api:3000
+    develop:
+      watch:
+        - action: sync
+          path: ./packages/web
+          target: /app/packages/web
+          ignore: ["**/.svelte-kit/**"]
+        - action: rebuild
+          path: ./node_modules
+
+  api:
+    build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
+    depends_on:
+      db: { condition: service_completed_successfully }
+    expose: [3000]
+    environment: *environment
+    develop:
+      watch:
+        - { action: sync, path: ./packages/api, target: /app/packages/api }
+        - { action: rebuild, path: ./node_modules }
+
+  tg:
+    build: { <<: *build, dockerfile: ./packages/tg/Dockerfile }
+    depends_on: [api]
+    environment: *environment
+    develop:
+      watch:
+        - { action: sync, path: ./packages/tg, target: /app/packages/tg }
+        - { action: rebuild, path: ./node_modules }
+
+  db:
+    build: { context: ./packages/db, target: dev }
+    depends_on:
+      postgres: { condition: service_healthy }
+    develop:
+      watch:
+        - { action: rebuild, path: ./packages/db }
+    env_file: ./packages/db/.env
+    environment:
+      <<: *environment
+      DATABASE_URL: "postgres://user:password@postgres:5432/app?sslmode=disable"
+
+  gateway:
+    image: caddy:2-alpine
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    ports: [127.0.0.1:80:80]
+    configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
+
   postgres:
     image: postgres:17
     expose: [5432]
-    ports:
-      - 127.0.0.1:5432:5432
+    ports: [127.0.0.1:5432:5432]
     shm_size: 128mb
     restart: unless-stopped
     volumes: [postgres:/var/lib/postgresql/data]
@@ -14,47 +78,16 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "app"]
+      test: ["CMD", "pg_isready", "--dbname=app", "--username=user"]
       interval: 5s
       timeout: 60s
       retries: 5
       start_period: 30s
-
-  minio:
-    image: quay.io/minio/minio:RELEASE.2024-09-22T00-33-43Z
-    expose: [9000, 9001]
-    ports:
-      - 127.0.0.1:9000:9000
-      - 127.0.0.1:9001:9001
-    command: server --console-address ":9001" /mnt/data
-    environment:
-      MINIO_ROOT_USER: user
-      MINIO_ROOT_PASSWORD: password
-    volumes: [minio:/mnt/data]
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  minio-init:
-    build: packages/s3
-    environment:
-      MINIO_ROOT_USER: user
-      MINIO_ROOT_PASSWORD: password
-      S3_BUCKET: data
-      S3_ACCESS_KEY: user
-      S3_SECRET_KEY: password
-    depends_on:
-      minio:
-        condition: service_healthy
+      start_interval: 500ms
 
   dbgate:
     image: dbgate/dbgate:5.3.1-alpine
     expose: [3000]
-    ports:
-      - 127.0.0.1:5500:3000
     restart: unless-stopped
     environment:
       CONNECTIONS: Database
@@ -62,16 +95,31 @@ services:
       SINGLE_DATABASE: app
 
       LABEL_Database: Database
+      ENGINE_Database: postgres@dbgate-plugin-postgres
       SERVER_Database: postgres
+      PORT_Database: 5432
       DATABASE_Database: app
       USER_Database: user
       PASSWORD_Database: password
-      PORT_Database: 5432
-      ENGINE_Database: postgres@dbgate-plugin-postgres
     volumes:
       - dbgate:/root/.dbgate
+
+configs:
+  caddy:
+    content: |
+      http://www.localhost {
+          reverse_proxy web:3000
+      }
+      http://api.localhost {
+          reverse_proxy api:3000
+      }
+      http://db.localhost {
+          reverse_proxy dbgate:3000
+      }
 
 volumes:
   postgres:
   dbgate:
   minio:
+  caddy_data:
+  caddy_config:
