@@ -1,12 +1,13 @@
-import { Context, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
-import type { Update } from "telegraf/types";
 import logger from "./logger.js";
 import { env } from "process";
 import api from "./api.js";
+import { contextMiddleware, type MyContext } from "./middlewares/ctx.js";
+import { loggerMiddleware } from "./middlewares/logger.js";
 
 export default class Bot {
-    private telegraf: Telegraf<Context<Update>>;
+    private telegraf: Telegraf<MyContext>;
 
     public get tg() {
         return this.telegraf.telegram;
@@ -18,6 +19,17 @@ export default class Bot {
             process.once("SIGINT", () => this.telegraf.stop("SIGINT"));
             process.once("SIGTERM", () => this.telegraf.stop("SIGTERM"));
         }
+
+        this.telegraf.use(contextMiddleware);
+        this.telegraf.on(message("text"), (c, next) =>
+            loggerMiddleware(c, next)
+        );
+        this.telegraf.catch(async (error, ctx) => {
+            ctx.logger.error("Unhandled Exception", { error });
+            try {
+                await ctx.reply("🚫 Sorry, an unexpected error occurred!");
+            } catch {}
+        });
 
         this.telegraf.start(async ctx => {
             await ctx.reply(Bot.HELP_MESSAGE, { parse_mode: "MarkdownV2" });
