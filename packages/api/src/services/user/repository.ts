@@ -7,7 +7,7 @@ import { PermissionKinds } from "./permissions.js";
 export default class UserRepository {
     constructor(private db: Kysely<DB>) {}
 
-    public async getUserByToken(token: string): Promise<UserSchema | null> {
+    public async getByToken(token: string): Promise<UserSchema | null> {
         const user = await this.db
             .selectFrom("users")
             .select(["users.id", ...userSchemaFields.filter(x => x !== "id")])

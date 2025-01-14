@@ -4,7 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 
-export async function userService() {
+export async function userController() {
     return new Hono<AppEnv>()
         .get("/me", async c => {
             const user = c.var.user;
@@ -13,7 +13,7 @@ export async function userService() {
             const permissions = await c.var.repo.user.getPermissions(user.id);
             if (!permissions) return c.text("Unauthorized", 401);
 
-            return c.json({ user, permissions });
+            return c.json({ user, permissions }, 200);
         })
         .post(
             "/me/session",

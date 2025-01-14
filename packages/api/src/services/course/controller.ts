@@ -2,14 +2,18 @@ import { Hono } from "hono";
 import type { AppEnv } from "../../ctx.js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { createLessonSchema, updateCourseSchema } from "./schema.js";
+import { updateCourseSchema } from "./schema.js";
 import authorize from "../../middlewares/authorize.js";
+import { lessonController } from "./lesson/controller.js";
+import { studentController } from "./student/controller.js";
 
-export async function courseService() {
+export async function courseController() {
     return new Hono<AppEnv>()
+        .route("/", await lessonController())
+        .route("/", await studentController())
         .get("/", async c => {
-            const courses = await c.var.repo.course.getCourses();
-            return c.json(courses);
+            const courses = await c.var.repo.course.getAll();
+            return c.json(courses, 200);
         })
         .get(
             "/lookup/:year/:semester/:courseSlug",
@@ -23,25 +27,25 @@ export async function courseService() {
             ),
             async c => {
                 const { year, semester, courseSlug } = c.req.valid("param");
-                const course = await c.var.repo.course.lookupCourse({
+                const course = await c.var.repo.course.lookup({
                     year: Number(year),
                     semester: semester !== "null" ? Number(semester) : null,
                     courseSlug
                 });
                 if (!course) return c.text("Not Found", 404);
                 c.header("Cache-Control", "max-age=1800");
-                return c.json(course);
+                return c.json(course, 200);
             }
         )
         .get(
             "/:course",
             zValidator("param", z.object({ course: z.string().uuid() })),
             async c => {
-                const course = await c.var.repo.course.getCourse(
+                const course = await c.var.repo.course.get(
                     c.req.param("course")
                 );
                 if (!course) return c.text("Not Found", 404);
-                return c.json(course);
+                return c.json(course, 200);
             }
         )
         .put(
@@ -53,67 +57,12 @@ export async function courseService() {
                     p.course.get(c.req.param("course"))?.canEditInfo === true
             ),
             async c => {
-                const found = await c.var.repo.course.updateCourse(
+                const found = await c.var.repo.course.update(
                     c.req.valid("param").course,
                     c.req.valid("json")
                 );
                 if (!found) return c.text("Not Found", 404);
-                return c.json({ success: found });
-            }
-        )
-        .get(
-            "/:course/lessons",
-            zValidator("param", z.object({ course: z.string().uuid() })),
-            async c => {
-                const lessons = await c.var.repo.course.getLessons(
-                    c.req.param("course")
-                );
-                return c.json(lessons);
-            }
-        )
-        .post(
-            "/:course/lessons",
-            zValidator("param", z.object({ course: z.string().uuid() })),
-            zValidator("json", createLessonSchema),
-            authorize(
-                (p, c) =>
-                    p.course.get(c.req.param("course"))?.canEditContent === true
-            ),
-            async c => {
-                const success = await c.var.repo.course.createLesson(
-                    c.req.valid("param").course,
-                    c.req.valid("json")
-                );
-                return c.json(success);
-            }
-        )
-        .get(
-            "/:course/lessons/:lesson",
-            zValidator(
-                "param",
-                z.object({
-                    course: z.string().uuid(),
-                    lesson: z.string()
-                })
-            ),
-            async c => {
-                const lesson = await c.var.repo.course.getLesson(
-                    c.req.param("course"),
-                    c.req.param("lesson")
-                );
-                if (lesson) return c.json(lesson);
-                return c.json("not found", 404);
-            }
-        )
-        .get(
-            "/:course/students",
-            zValidator("param", z.object({ course: z.string().uuid() })),
-            authorize(c => c.user.isStaff),
-            async c => {
-                const students = await c.var.repo.course.getCourseStudents(
-                    c.req.param("course")
-                );
-                return c.json(students);
+                return c.json({ success: found }, 200);
             }
         );
 }

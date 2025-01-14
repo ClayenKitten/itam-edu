@@ -16,7 +16,7 @@ export const authentication = () =>
             }
             token = token.replace(/^Bearer /, "");
 
-            const user = await c.var.repo.user.getUserByToken(token);
+            const user = await c.var.repo.user.getByToken(token);
             c.set("user", user);
             await next();
         }

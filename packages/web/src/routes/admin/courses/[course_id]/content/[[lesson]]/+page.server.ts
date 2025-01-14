@@ -15,7 +15,8 @@ export const load: PageServerLoad = async ({ fetch, params, depends }) => {
               })
             : null
     ]);
-    if (lessonsResp.status === 404 || lessonResp?.status === 404) error(404);
+    if ((lessonsResp.status as number) === 404 || lessonResp?.status === 404)
+        error(404);
     const [lessons, lesson] = await Promise.all([
         lessonsResp.json(),
         lessonResp?.json() ?? null

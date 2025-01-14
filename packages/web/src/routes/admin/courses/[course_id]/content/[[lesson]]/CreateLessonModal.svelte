@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createLessonSchema } from "itam-edu-api/src/services/course/schema";
+    import * as schema from "itam-edu-api/src/services/course/lesson/schema";
 
     let props: {
         id: string;
@@ -51,7 +51,7 @@
                 "px-4 py-3 text-sm bg-primary hover:opacity-95 rounded-sm",
                 "disabled:bg-disabled disabled:italic"
             ]}
-            disabled={!createLessonSchema.safeParse(lesson).success}
+            disabled={!schema.createLesson.safeParse(lesson).success}
             onclick={() => props.oncreate(lesson)}
         >
             Add new lesson

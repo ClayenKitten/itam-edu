@@ -6,7 +6,7 @@ import { randomInt } from "node:crypto";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
-export async function botService() {
+export async function botController() {
     return new Hono<AppEnv>()
         .use(botAuthentication(env.ITAM_EDU_API_BOT_TOKEN!))
         .post(
