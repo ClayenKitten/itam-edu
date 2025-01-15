@@ -10,7 +10,7 @@ services:
     expose: [3000]
     volumes: [./packages/web/.svelte-kit:/app/packages/web/.svelte-kit]
     environment: &environment
-      PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER: http://www.localhost
+      PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER: http://api.localhost
       PUBLIC_ITAM_EDU_WEB_API_URL_SERVER: http://api:3000
       ITAM_EDU_API_HOST: 0.0.0.0
       ITAM_EDU_API_PORT: 3000
