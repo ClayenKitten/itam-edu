@@ -8,8 +8,15 @@ export default function api(params: ApiParams) {
     const baseUrl = browser
         ? env.PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER!
         : env.PUBLIC_ITAM_EDU_WEB_API_URL_SERVER!;
+
+    const authorization = browser ? getCookie("itam-edu-token") : undefined;
+    const headers = authorization
+        ? { authorization: `Bearer ${authorization}` }
+        : undefined;
+
     const client = hc<AppType>(baseUrl, {
-        fetch: getFetchWithHook(params)
+        fetch: getFetchWithHook(params),
+        headers
     });
     return client;
 }
@@ -29,10 +36,7 @@ type ApiParams = {
 
 const getFetchWithHook = (params: ApiParams): Window["fetch"] => {
     return async (input, init) => {
-        const response = await params.fetch(input, {
-            credentials: "include",
-            ...init
-        });
+        const response = await params.fetch(input, init);
         if (params.enableDefaultCatch !== false && !response.ok) {
             if (browser) {
                 // TODO: display toast notification
@@ -42,4 +46,11 @@ const getFetchWithHook = (params: ApiParams): Window["fetch"] => {
         }
         return response;
     };
+};
+
+const getCookie = (name: string): string | undefined => {
+    return document.cookie
+        .split("; ")
+        .find(row => row.startsWith(`${name}=`))
+        ?.split("=")[1];
 };

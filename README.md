@@ -1,6 +1,6 @@
 # ITAM educational platform
 
-An LMS for [ITAM](https://itatmisis.ru) Courses.
+An LMS for [ITAM](https://itatmisis.ru) educational platform.
 
 ## Packages
 
@@ -16,10 +16,13 @@ Taskfile is used to run custom commands. Write `task` in CLI to see a list of av
 
 Development environment is setup via [docker compose](./compose.dev.yaml).
 
-|   Service    | Description               |                  URL                  |
-| :----------: | ------------------------- | :-----------------------------------: |
-| itam-edu-web | Web server                | [www.localhost](http://www.localhost) |
-| itam-edu-api | API server                | [api.localhost](http://api.localhost) |
-| itam-edu-tg  | Telegram bot              |                                       |
-|    dbgate    | Web interface to Postgres |  [db.localhost](http://db.localhost)  |
-|   postgres   | Postgres RDBMS            |            localhost:5432             |
+| Service      | Description               | URL                                    |
+| ------------ | ------------------------- | -------------------------------------- |
+| itam-edu-web | Web server                | [www.localhost](https://www.localhost) |
+| itam-edu-api | API server                | [api.localhost](https://api.localhost) |
+| itam-edu-tg  | Telegram bot              |                                        |
+| dbgate       | Web interface to Postgres | [db.localhost](https://db.localhost)   |
+| postgres     | Postgres RDBMS            | localhost:5432                         |
+
+> [!NOTE]
+> HTTPS with self-signed certificates is used to ensure browser security features behave just like in production. Warnings may be shown.

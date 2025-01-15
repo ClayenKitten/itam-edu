@@ -1,5 +1,4 @@
 import api from "$lib/api";
-import { error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
 /**
@@ -27,7 +26,7 @@ export const POST: RequestHandler = async ({ fetch, cookies, url }) => {
         path: "/",
         sameSite: "lax",
         secure: true,
-        httpOnly: true,
+        httpOnly: false,
         expires: new Date(expires)
     });
 

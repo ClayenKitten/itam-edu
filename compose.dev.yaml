@@ -10,12 +10,12 @@ services:
     expose: [3000]
     volumes: [./packages/web/.svelte-kit:/app/packages/web/.svelte-kit]
     environment: &environment
-      PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER: http://api.localhost
+      PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER: https://api.localhost
       PUBLIC_ITAM_EDU_WEB_API_URL_SERVER: http://api:3000
       ITAM_EDU_API_HOST: 0.0.0.0
       ITAM_EDU_API_PORT: 3000
       ITAM_EDU_API_DB_CONNECTION_STRING: postgres://user:password@postgres:5432/app?sslmode=disable
-      ITAM_EDU_TG_WEB_URL: http://www.localhost
+      ITAM_EDU_TG_WEB_URL: https://www.localhost
       ITAM_EDU_TG_API_URL: http://api:3000
     develop:
       watch:
@@ -63,7 +63,7 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-    ports: [127.0.0.1:80:80]
+    ports: [127.0.0.1:80:80, 127.0.0.1:443:443]
     configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
 
   postgres:
@@ -107,13 +107,13 @@ services:
 configs:
   caddy:
     content: |
-      http://www.localhost {
+      www.localhost {
           reverse_proxy web:3000
       }
-      http://api.localhost {
+      api.localhost {
           reverse_proxy api:3000
       }
-      http://db.localhost {
+      db.localhost {
           reverse_proxy dbgate:3000
       }
 
