@@ -5,7 +5,7 @@ import type UserRepository from "../services/user/repository.js";
 
 const authorize = (callback: AuthzCallback) =>
     createMiddleware<AppEnv>(async (c, next) => {
-        if (!c.var.user) return c.text("Forbidden", 403);
+        if (!c.var.user) return c.text("Unauthorized", 401);
 
         const permissions = await c.var.repo.user.getPermissionsMap(
             c.var.user.id
