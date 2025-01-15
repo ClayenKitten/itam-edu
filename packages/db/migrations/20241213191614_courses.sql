@@ -46,7 +46,7 @@ CREATE TABLE lessons (
     slug TEXT NOT NULL,
     PRIMARY KEY (course_id, slug),
     position INTEGER NOT NULL,
-    UNIQUE (course_id, position),
+    UNIQUE (course_id, position) DEFERRABLE,
     title TEXT NOT NULL,
     content TEXT,
     icon TEXT

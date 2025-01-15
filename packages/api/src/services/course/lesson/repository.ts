@@ -1,8 +1,9 @@
 import type { DB } from "itam-edu-db";
-import { type Kysely, type NotNull, sql } from "kysely";
+import { type Kysely, sql } from "kysely";
 import type { TypeOf } from "zod";
 import * as schema from "./schema.js";
 import type { ExpressionBuilder } from "kysely";
+import { HTTPException } from "hono/http-exception";
 
 export default class LessonRepository {
     constructor(private db: Kysely<DB>) {}
@@ -65,5 +66,31 @@ export default class LessonRepository {
             .executeTakeFirst();
 
         return result.numInsertedOrUpdatedRows === 1n;
+    }
+
+    public async updatePositions(
+        courseId: string,
+        lessons: TypeOf<(typeof schema)["updateLessonPositions"]>
+    ) {
+        await this.db.transaction().execute(async trx => {
+            await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
+
+            let position = 0;
+            for (const slug of lessons) {
+                const { numUpdatedRows } = await trx
+                    .updateTable("lessons")
+                    .where("courseId", "=", courseId)
+                    .where("lessons.slug", "=", slug)
+                    .set({ position })
+                    .executeTakeFirstOrThrow();
+                if (numUpdatedRows !== 1n) {
+                    console.log(slug, position, numUpdatedRows);
+                    throw new HTTPException(400, {
+                        message: "all lessons need to be present"
+                    });
+                }
+                position += 1;
+            }
+        });
     }
 }

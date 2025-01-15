@@ -66,6 +66,18 @@
                 id={item => item.slug}
                 class="flex flex-col items-stretch gap-2.5 p-5"
                 children={lesson}
+                handleFinalize={async ({ items }) => {
+                    if (items.length === 0) return;
+                    await api({ fetch }).courses[":course"].lessons.$put({
+                        param: { course: data.course.id },
+                        json: {
+                            lessons: items.map(x => x.slug) as [
+                                string,
+                                ...string[]
+                            ]
+                        }
+                    });
+                }}
             >
                 {#snippet empty()}
                     <span
@@ -75,32 +87,6 @@
                         ]}
                     >
                         No lessons
-                    </span>
-                {/snippet}
-            </DraggableList>
-        </nav>
-        <nav
-            class="flex flex-col justify-between bg-surface text-text lg:rounded max-lg:pb-5"
-        >
-            <header class="flex justify-between items-center p-5">
-                <h2 class="text-2xl">Archive</h2>
-                <i class="ph ph-archive text-xl"></i>
-            </header>
-            <hr class="border-surface-light" />
-            <DraggableList
-                items={data.lessons.filter(x => x.position < 0)}
-                id={item => item.slug}
-                class="flex flex-col items-stretch gap-2.5 p-5"
-                children={lesson}
-            >
-                {#snippet empty()}
-                    <span
-                        class={[
-                            "p-2.5 text-center text-base italic text-text-opaque rounded-sm",
-                            "[.droptarget_&]:bg-surface-light [.droptarget_&]:text-text"
-                        ]}
-                    >
-                        No lessons archived
                     </span>
                 {/snippet}
             </DraggableList>

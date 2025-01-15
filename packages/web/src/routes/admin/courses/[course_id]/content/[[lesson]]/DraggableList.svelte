@@ -3,7 +3,7 @@
     import { dndzone, type DndEvent } from "svelte-dnd-action";
 
     let {
-        items = $bindable(),
+        items,
         id,
         children,
         empty,
@@ -14,19 +14,27 @@
         children: Snippet<[T]>;
         empty?: Snippet;
         class?: string;
+        handleConsider?: (e: DndEvent<T>) => void;
+        handleFinalize?: (e: DndEvent<T>) => void;
     } = $props();
 
     const handleConsider = (e: DndEvent<WrappedItem>) => {
         wrappedItems = e.items;
+        props.handleConsider?.({
+            info: e.info,
+            items: e.items.map(x => x.item)
+        });
     };
     const handleFinalize = (e: DndEvent<WrappedItem>) => {
         wrappedItems = e.items;
-        items = structuredClone(wrappedItems).map(x => x.item);
+        items = wrappedItems.map(x => x.item);
+        props.handleFinalize?.({
+            info: e.info,
+            items: e.items.map(x => x.item)
+        });
     };
 
-    let wrappedItems = $derived(
-        structuredClone(items).map(item => ({ id: id(item), item }))
-    );
+    let wrappedItems = $derived(items.map(item => ({ id: id(item), item })));
     type WrappedItem = (typeof wrappedItems)[number];
 </script>
 

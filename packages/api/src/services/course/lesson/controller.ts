@@ -34,6 +34,25 @@ export async function lessonController() {
                 return c.json(success, 200);
             }
         )
+        .put(
+            "/",
+            zValidator("param", z.object({ course: z.string().uuid() })),
+            zValidator(
+                "json",
+                z.object({ lessons: schema.updateLessonPositions })
+            ),
+            authorize(
+                (p, c) =>
+                    p.course.get(c.req.param("course"))?.canEditContent === true
+            ),
+            async c => {
+                await c.var.repo.lesson.updatePositions(
+                    c.req.valid("param").course,
+                    c.req.valid("json").lessons
+                );
+                return c.text("Ok", 200);
+            }
+        )
         .get(
             "/:lesson",
             zValidator(

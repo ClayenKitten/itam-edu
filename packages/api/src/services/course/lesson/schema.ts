@@ -14,6 +14,8 @@ export const updateLesson = lesson.pick({
     content: true
 });
 
+export const updateLessonPositions = z.string().array().nonempty();
+
 export const createLesson = lesson.pick({
     title: true,
     slug: true
