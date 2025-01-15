@@ -1,8 +1,11 @@
 <script lang="ts">
-    let { value: checked = $bindable() }: { value?: boolean } = $props();
+    let {
+        value: checked = $bindable(),
+        disabled
+    }: { value?: boolean; disabled: boolean } = $props();
 </script>
 
-<input type="checkbox" bind:checked class="sr-only peer" />
+<input type="checkbox" bind:checked class="sr-only peer" {disabled} />
 <div
     class={[
         "relative w-11 h-6 peer",

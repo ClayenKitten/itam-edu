@@ -16,6 +16,7 @@
         class?: string;
         handleConsider?: (e: DndEvent<T>) => void;
         handleFinalize?: (e: DndEvent<T>) => void;
+        dragDisabled?: boolean;
     } = $props();
 
     const handleConsider = (e: DndEvent<WrappedItem>) => {
@@ -45,7 +46,8 @@
         items: wrappedItems,
         type: "lessons",
         dropTargetStyle: {},
-        dropTargetClasses: ["droptarget"]
+        dropTargetClasses: ["droptarget"],
+        dragDisabled: props.dragDisabled
     }}
     onconsider={e => handleConsider(e.detail)}
     onfinalize={e => handleFinalize(e.detail)}

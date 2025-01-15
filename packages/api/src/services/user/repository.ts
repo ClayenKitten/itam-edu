@@ -100,11 +100,13 @@ export default class UserRepository {
             .executeTakeFirst();
         if (user === undefined) return null;
 
-        const course = await this.db
-            .selectFrom("courseStaff")
-            .select(["courseId", ...PermissionKinds["course"]])
-            .where("userId", "=", userId)
-            .execute();
+        const course = user.isStaff
+            ? await this.db
+                  .selectFrom("courseStaff")
+                  .select(["courseId", ...PermissionKinds["course"]])
+                  .where("userId", "=", userId)
+                  .execute()
+            : [];
 
         return {
             user,

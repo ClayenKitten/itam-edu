@@ -2,6 +2,7 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api.js";
     import Switch from "$lib/components/Switch.svelte";
+    import { onMount } from "svelte";
 
     const { data } = $props();
 
@@ -13,6 +14,10 @@
         });
         await invalidate("app:course");
     };
+
+    const canEdit = $derived(
+        data.permissions?.course?.[data.course.id]?.canEditInfo ?? false
+    );
 </script>
 
 {#snippet sectionHeader(title: string, icon: string)}
@@ -42,6 +47,7 @@
             <input
                 bind:value={course.title}
                 class="w-full lg:w-[300px] text-base"
+                readonly={!canEdit}
             />
         </label>
         <label
@@ -52,6 +58,7 @@
                 bind:value={course.description}
                 maxlength="384"
                 class="w-full h-[160px] text-base"
+                readonly={!canEdit}
             ></textarea>
         </label>
         <label
@@ -69,43 +76,49 @@
                 readonly
             />
         </label>
-        <button
-            onclick={() =>
-                saveCourse({
-                    title: course.title,
-                    description: course.description
-                })}
-            class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
-        >
-            Save
-        </button>
+        {#if canEdit}
+            <button
+                onclick={() =>
+                    saveCourse({
+                        title: course.title,
+                        description: course.description
+                    })}
+                class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
+            >
+                Save
+            </button>
+        {/if}
     </section>
     <section class="flex flex-col gap-8 p-6 bg-surface lg:rounded">
         {@render sectionHeader("Blog", "text-t")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch bind:value={course.blogEnabled} />
+            <Switch bind:value={course.blogEnabled} disabled={!canEdit} />
         </label>
-        <button
-            onclick={() => saveCourse({ blogEnabled: course.blogEnabled })}
-            class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
-        >
-            Save
-        </button>
+        {#if canEdit}
+            <button
+                onclick={() => saveCourse({ blogEnabled: course.blogEnabled })}
+                class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
+            >
+                Save
+            </button>
+        {/if}
     </section>
     <section class="flex flex-col gap-8 p-6 bg-surface lg:rounded">
         {@render sectionHeader("Feedback", "chat-teardrop-dots")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch bind:value={course.feedbackEnabled} />
+            <Switch bind:value={course.feedbackEnabled} disabled={!canEdit} />
         </label>
-        <button
-            onclick={() =>
-                saveCourse({ feedbackEnabled: course.feedbackEnabled })}
-            class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
-        >
-            Save
-        </button>
+        {#if canEdit}
+            <button
+                onclick={() =>
+                    saveCourse({ feedbackEnabled: course.feedbackEnabled })}
+                class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
+            >
+                Save
+            </button>
+        {/if}
     </section>
     <section class="flex flex-col gap-8 p-6 max-lg:pb-10 bg-surface lg:rounded">
         {#snippet dangerButton(
@@ -118,8 +131,10 @@
                 {onclick}
                 class={[
                     "flex gap-2 justify-center items-center w-full lg:w-[240px] text-white h-10 text-left px-4 rounded-sm",
+                    "disabled:bg-disabled",
                     danger ? "bg-danger" : "bg-success"
                 ]}
+                disabled={!canEdit}
             >
                 <i class="ph ph-{icon} text-xl"></i>
                 {text(danger)}

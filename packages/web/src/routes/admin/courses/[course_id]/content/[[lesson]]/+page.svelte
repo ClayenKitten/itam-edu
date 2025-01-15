@@ -8,6 +8,10 @@
     const { data } = $props();
 
     const popoverMode = $derived((innerWidth.current ?? 0) < 1024);
+
+    const canEdit = $derived(
+        data.permissions?.course?.[data.course.id]?.canEditContent ?? false
+    );
 </script>
 
 <svelte:head>
@@ -41,24 +45,28 @@
         >
             <header class="flex justify-between items-center p-5">
                 <h2 class="text-2xl">Lessons</h2>
-                <button
-                    aria-label="Add new lesson"
-                    class="flex self-end gap-2.5 p-2 bg-success hover:opacity-95 rounded-full"
-                    popovertarget="createLessonModal"
-                    popovertargetaction="show"
-                >
-                    <i class="ph ph-plus text-lg"></i>
-                </button>
-                <CreateLessonModal
-                    id="createLessonModal"
-                    oncreate={async lesson => {
-                        await api({ fetch }).courses[":course"].lessons.$post({
-                            param: { course: data.course.id },
-                            json: lesson
-                        });
-                        await invalidate("app:lessons");
-                    }}
-                />
+                {#if canEdit}
+                    <button
+                        aria-label="Add new lesson"
+                        class="flex self-end gap-2.5 p-2 bg-success hover:opacity-95 rounded-full"
+                        popovertarget="createLessonModal"
+                        popovertargetaction="show"
+                    >
+                        <i class="ph ph-plus text-lg"></i>
+                    </button>
+                    <CreateLessonModal
+                        id="createLessonModal"
+                        oncreate={async lesson => {
+                            await api({ fetch }).courses[
+                                ":course"
+                            ].lessons.$post({
+                                param: { course: data.course.id },
+                                json: lesson
+                            });
+                            await invalidate("app:lessons");
+                        }}
+                    />
+                {/if}
             </header>
             <hr class="border-surface-light" />
             <DraggableList
@@ -78,6 +86,7 @@
                         }
                     });
                 }}
+                dragDisabled={!canEdit}
             >
                 {#snippet empty()}
                     <span

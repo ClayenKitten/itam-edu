@@ -7,15 +7,17 @@
         Courses
     </h1>
     <menu>
-        <button
-            class={[
-                "flex items-center gap-2 h-10 px-3 lg:px-7",
-                "text-text text-sm bg-success hover:bg-success-light rounded-sm"
-            ]}
-        >
-            <span>Create new course</span>
-            <i class="ph ph-plus-circle"></i>
-        </button>
+        {#if data.permissions?.user.canCreateCourses}
+            <button
+                class={[
+                    "flex items-center gap-2 h-10 px-3 lg:px-7",
+                    "text-text text-sm bg-success hover:bg-success-light rounded-sm"
+                ]}
+            >
+                <span>Create new course</span>
+                <i class="ph ph-plus-circle"></i>
+            </button>
+        {/if}
     </menu>
 </header>
 <section
