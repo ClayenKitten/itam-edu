@@ -1,30 +1,28 @@
+import { Repository } from "../../../plugins/db/repository";
 import type { DB } from "itam-edu-db";
-import { type Kysely, sql } from "kysely";
-import type { TypeOf } from "zod";
-import * as schema from "./schema.js";
+import { sql } from "kysely";
+import * as schema from "./schema";
 import type { ExpressionBuilder } from "kysely";
-import { HTTPException } from "hono/http-exception";
+import { schemaFields } from "../../../util";
+import { error } from "elysia";
 
-export default class LessonRepository {
-    constructor(private db: Kysely<DB>) {}
-
-    public async get(courseId: string, lessonSlug: string) {
-        return await this.db
+export default class LessonRepository extends Repository {
+    public async get(
+        courseId: string,
+        lessonSlug: string
+    ): Promise<typeof schema.lesson.static | null> {
+        const lesson = await this.db
             .selectFrom("lessons")
-            .select([
-                "courseId",
-                "slug",
-                "position",
-                "icon",
-                "title",
-                "content"
-            ])
+            .select(schemaFields(schema.lesson))
             .where("courseId", "=", courseId)
             .where("slug", "=", lessonSlug)
             .executeTakeFirst();
+        return lesson ?? null;
     }
 
-    public async getAll(courseId: string) {
+    public async getAll(
+        courseId: string
+    ): Promise<(typeof schema.lessonWithoutContent.static)[]> {
         const lessons = await this.db
             .selectFrom("lessons")
             .select(["courseId", "slug", "position", "icon", "title"])
@@ -36,8 +34,8 @@ export default class LessonRepository {
 
     public async create(
         courseId: string,
-        lesson: TypeOf<(typeof schema)["createLesson"]>
-    ) {
+        lesson: typeof schema.createLesson.static
+    ): Promise<typeof schema.lesson.static | null> {
         const selectPosition = (eb: ExpressionBuilder<DB, "lessons">) => {
             return eb
                 .selectFrom("lessons")
@@ -56,21 +54,22 @@ export default class LessonRepository {
                 );
         };
 
-        const result = await this.db
+        const newLesson = await this.db
             .insertInto("lessons")
             .values(eb => ({
                 courseId,
                 ...lesson,
                 position: selectPosition(eb)
             }))
+            .returning(schemaFields(schema.lesson))
             .executeTakeFirst();
 
-        return result.numInsertedOrUpdatedRows === 1n;
+        return newLesson ?? null;
     }
 
     public async updatePositions(
         courseId: string,
-        lessons: TypeOf<(typeof schema)["updateLessonPositions"]>
+        lessons: typeof schema.updateLessonPositions.static
     ) {
         await this.db.transaction().execute(async trx => {
             await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
@@ -84,10 +83,7 @@ export default class LessonRepository {
                     .set({ position })
                     .executeTakeFirstOrThrow();
                 if (numUpdatedRows !== 1n) {
-                    console.log(slug, position, numUpdatedRows);
-                    throw new HTTPException(400, {
-                        message: "all lessons need to be present"
-                    });
+                    throw error(422, "all lessons need to be present");
                 }
                 position += 1;
             }

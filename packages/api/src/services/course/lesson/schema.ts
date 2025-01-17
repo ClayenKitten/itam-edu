@@ -1,22 +1,14 @@
-import { z } from "zod";
+import { t } from "elysia";
 
-export const lesson = z.object({
-    courseId: z.string().uuid(),
-    title: z.string().min(3).max(200),
-    slug: z.string().regex(/^[a-z][a-z0-9-]*$/),
-    position: z.number().int(),
-    content: z.string().nullable()
+export const lesson = t.Object({
+    courseId: t.String({ format: "uuid" }),
+    title: t.String({ minLength: 3, maxLength: 80 }),
+    slug: t.String({ pattern: /^[a-z][a-z0-9-]*$/.toString() }),
+    position: t.Integer(),
+    content: t.Nullable(t.String()),
+    icon: t.Nullable(t.String({ format: "uri", maxLength: 1000 }))
 });
-
-export const updateLesson = lesson.pick({
-    title: true,
-    position: true,
-    content: true
-});
-
-export const updateLessonPositions = z.string().array().nonempty();
-
-export const createLesson = lesson.pick({
-    title: true,
-    slug: true
-});
+export const lessonWithoutContent = t.Omit(lesson, ["content"]);
+export const updateLesson = t.Pick(lesson, ["title", "position", "content"]);
+export const updateLessonPositions = t.Array(t.String(), { minItems: 1 });
+export const createLesson = t.Pick(lesson, ["title", "slug"]);

@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
-        "module": "NodeNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "outDir": "build",
         "target": "es2022",
 

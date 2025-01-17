@@ -1,68 +1,67 @@
-import { Hono } from "hono";
-import type { AppEnv } from "../../ctx.js";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import { updateCourseSchema } from "./schema.js";
-import authorize from "../../middlewares/authorize.js";
-import { lessonController } from "./lesson/controller.js";
-import { studentController } from "./student/controller.js";
+import { Elysia, t } from "elysia";
+import initContext from "../../plugins";
+import { lessonController } from "./lesson/controller";
+import { studentController } from "./student/controller";
+import * as schema from "./schema";
 
-export async function courseController() {
-    return new Hono<AppEnv>()
-        .route("/", await lessonController())
-        .route("/", await studentController())
-        .get("/", async c => {
-            const courses = await c.var.repo.course.getAll();
-            return c.json(courses, 200);
+export async function courseController(prefix: string) {
+    return new Elysia({ prefix, tags: ["Courses"] })
+        .use(initContext())
+        .use(lessonController("/:course/lessons"))
+        .use(studentController("/:course/students"))
+        .get("", async ({ db }) => {
+            const courses = await db.course.getAll();
+            return courses;
         })
         .get(
-            "/lookup/:year/:semester/:courseSlug",
-            zValidator(
-                "param",
-                z.object({
-                    year: z.string().regex(/^\d+$/),
-                    semester: z.enum(["1", "2", "null"]),
-                    courseSlug: z.string().regex(/^[a-z\d-]{3,}$/)
+            "/lookup/:slug",
+            async ({ db, params, query, error }) => {
+                const course = await db.course.lookup(
+                    params.slug,
+                    query.year,
+                    query.semester
+                );
+                if (!course) return error(404);
+                return course;
+            },
+            {
+                query: t.Partial(
+                    t.Object({
+                        year: t.Integer(),
+                        semester: t.Integer()
+                    })
+                ),
+                params: t.Object({
+                    slug: schema.course.properties.slug
                 })
-            ),
-            async c => {
-                const { year, semester, courseSlug } = c.req.valid("param");
-                const course = await c.var.repo.course.lookup({
-                    year: Number(year),
-                    semester: semester !== "null" ? Number(semester) : null,
-                    courseSlug
-                });
-                if (!course) return c.text("Not Found", 404);
-                c.header("Cache-Control", "max-age=1800");
-                return c.json(course, 200);
             }
         )
-        .get(
+        .group(
             "/:course",
-            zValidator("param", z.object({ course: z.string().uuid() })),
-            async c => {
-                const course = await c.var.repo.course.get(
-                    c.req.param("course")
-                );
-                if (!course) return c.text("Not Found", 404);
-                return c.json(course, 200);
-            }
-        )
-        .put(
-            "/:course",
-            zValidator("param", z.object({ course: z.string().uuid() })),
-            zValidator("json", updateCourseSchema),
-            authorize(
-                (p, c) =>
-                    p.course.get(c.req.param("course"))?.canEditInfo === true
-            ),
-            async c => {
-                const found = await c.var.repo.course.update(
-                    c.req.valid("param").course,
-                    c.req.valid("json")
-                );
-                if (!found) return c.text("Not Found", 404);
-                return c.json({ success: found }, 200);
-            }
+            {
+                params: t.Object({ course: t.String({ format: "uuid" }) })
+            },
+            app =>
+                app
+                    .get("", async ({ db, params, error }) => {
+                        const course = await db.course.get(params.course);
+                        if (!course) return error(404);
+                        return course;
+                    })
+                    .put(
+                        "",
+                        async ({ db, params, body, error }) => {
+                            const found = await db.course.update(
+                                params.course,
+                                body
+                            );
+                            if (!found) return error(404);
+                            return { success: found };
+                        },
+                        {
+                            body: schema.updateCourse,
+                            hasCoursePermission: "canEditContent"
+                        }
+                    )
         );
 }

@@ -1,19 +1,18 @@
-import { Hono } from "hono";
-import type { AppEnv } from "../../../ctx.js";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import authorize from "../../../middlewares/authorize.js";
+import { Elysia, t } from "elysia";
+import initContext from "../../../plugins";
 
-export async function studentController() {
-    return new Hono<AppEnv>().basePath("/:course/students").get(
-        "/",
-        zValidator("param", z.object({ course: z.string().uuid() })),
-        authorize(c => c.user.isStaff),
-        async c => {
-            const students = await c.var.repo.student.getAll(
-                c.req.param("course")
-            );
-            return c.json(students, 200);
-        }
-    );
+export function studentController(prefix: string) {
+    return new Elysia({ name: "students", prefix, tags: ["Students"] })
+        .use(initContext())
+        .guard({
+            params: t.Object({ course: t.String({ format: "uuid" }) })
+        })
+        .get(
+            "",
+            async ({ db, params }) => {
+                const students = await db.student.getAll(params.course);
+                return students;
+            },
+            { hasPermission: "isStaff" }
+        );
 }

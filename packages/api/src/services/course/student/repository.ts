@@ -1,24 +1,18 @@
-import type { DB } from "itam-edu-db";
-import { type Kysely } from "kysely";
+import { Repository } from "../../../plugins/db/repository";
+import { schemaFields } from "../../../util";
+import * as userSchema from "../../user/schema";
 
-export default class StudentRepository {
-    constructor(private db: Kysely<DB>) {}
-
-    public async getAll(courseId: string) {
-        return await this.db
-            .selectFrom("courseStudents")
-            .where("courseId", "=", courseId)
-            .leftJoin("users", "users.id", "courseStudents.userId")
+export default class StudentRepository extends Repository {
+    public async getAll(
+        courseId: string
+    ): Promise<(typeof userSchema.user.static)[]> {
+        const students = await this.db
+            .selectFrom("users")
+            .leftJoin("courseStudents", "users.id", "courseStudents.userId")
+            .where("courseStudents.courseId", "=", courseId)
             .orderBy("tgUsername asc")
-            .select([
-                "id",
-                "tgUsername",
-                "firstName",
-                "lastName",
-                "patronim",
-                "email",
-                "avatar"
-            ])
+            .select(schemaFields(userSchema.user))
             .execute();
+        return students;
     }
 }

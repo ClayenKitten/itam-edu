@@ -1,16 +1,18 @@
-import type { DB } from "itam-edu-db";
-import { type Kysely } from "kysely";
-import { type UserSchema, userSchemaFields } from "./schema.js";
-import logger from "../../logger.js";
-import { PermissionKinds } from "./permissions.js";
+import * as schema from "./schema";
+import { PermissionKinds } from "./permissions";
+import { Repository } from "../../plugins/db/repository";
+import { schemaFields } from "../../util";
 
-export default class UserRepository {
-    constructor(private db: Kysely<DB>) {}
-
-    public async getByToken(token: string): Promise<UserSchema | null> {
+export default class UserRepository extends Repository {
+    public async getByToken(
+        token: string
+    ): Promise<typeof schema.user.static | null> {
         const user = await this.db
             .selectFrom("users")
-            .select(["users.id", ...userSchemaFields.filter(x => x !== "id")])
+            .select([
+                "users.id",
+                ...schemaFields(schema.user).filter(x => x !== "id")
+            ])
             .leftJoin("userSessions", "userSessions.userId", "users.id")
             .where("userSessions.token", "=", token)
             .executeTakeFirst();
@@ -59,7 +61,7 @@ export default class UserRepository {
                 return result.numInsertedOrUpdatedRows === 1n;
             });
         } catch (e) {
-            logger.error("Error during db transaction", { error: e });
+            this.logger.error("Error during db transaction", { error: e });
             return false;
         }
     }
@@ -107,6 +109,7 @@ export default class UserRepository {
                   .where("userId", "=", userId)
                   .execute()
             : [];
+        type CoursePermission = Omit<(typeof course)[number], "courseId">;
 
         return {
             user,
@@ -116,17 +119,8 @@ export default class UserRepository {
                     obj[courseId] = permissions;
                     return obj;
                 },
-                {} as Record<string, Omit<(typeof course)[number], "courseId">>
+                {} as Record<string, CoursePermission>
             )
-        };
-    }
-
-    public async getPermissionsMap(userId: string) {
-        const permissions = await this.getPermissions(userId);
-        if (!permissions) return null;
-        return {
-            user: permissions.user,
-            course: new Map(Object.entries(permissions.course))
         };
     }
 }

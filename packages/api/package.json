@@ -4,9 +4,8 @@
     "main": "./src/index.ts",
     "scripts": {
         "start": "tsx --env-file=.env .",
-        "dev": "tsx watch --env-file=.env --clear-screen=false .",
+        "dev": "bun --watch --env-file=.env --clear-screen=false .",
         "build": "tsc",
-        "preview": "node ./build/index.js",
         "format": "prettier --write .",
         "check": "tsc --noEmit",
         "check:format": "prettier . --check"
@@ -15,8 +14,11 @@
     "author": "ClayenKitten",
     "license": "MIT",
     "dependencies": {
+        "@elysiajs/cors": "^1.2.0",
+        "@elysiajs/swagger": "^1.2.0",
         "@hono/node-server": "^1.13.7",
         "@hono/zod-validator": "^0.4.2",
+        "elysia": "^1.2.10",
         "hono": "^4.6.13",
         "kysely": "^0.27.5",
         "pg": "^8.13.1",

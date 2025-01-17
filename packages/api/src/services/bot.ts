@@ -1,25 +1,17 @@
-import { Hono } from "hono";
-import type { AppEnv } from "../ctx.js";
-import { botAuthentication } from "../middlewares/botAuthentication.js";
+import { Elysia, t } from "elysia";
 import { env } from "process";
 import { randomInt } from "node:crypto";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
 
-export async function botController() {
-    return new Hono<AppEnv>()
-        .use(botAuthentication(env.ITAM_EDU_API_BOT_TOKEN!))
+import initContext from "../plugins";
+import authenticateBot from "../plugins/authenticateBot";
+
+export async function botController<PREFIX extends string>(prefix: PREFIX) {
+    return new Elysia({ prefix, tags: ["Bot"] })
+        .use(initContext())
+        .use(authenticateBot(env.ITAM_EDU_API_BOT_TOKEN!))
         .post(
             "/login",
-            zValidator(
-                "json",
-                z.object({
-                    tgUserId: z.string(),
-                    tgChatId: z.string(),
-                    tgUsername: z.string()
-                })
-            ),
-            async c => {
+            async ({ db, body, error }) => {
                 const codeLength = 8;
                 const codeRadix = 16;
                 const code = randomInt(0, codeRadix ** codeLength)
@@ -32,17 +24,24 @@ export async function botController() {
                     new Date().getTime() + expiresAfterMinutes * 60000
                 );
 
-                const success = await c.var.repo.user.createLoginAttempt({
+                const success = await db.user.createLoginAttempt({
                     code,
                     expires,
-                    ...c.req.valid("json")
+                    ...body
                 });
 
                 if (success) {
-                    return c.json({ code, expires }, 200);
+                    return { code, expires };
                 } else {
-                    return c.json("Internal Server Error", 500);
+                    return error(500);
                 }
+            },
+            {
+                body: t.Object({
+                    tgUserId: t.String(),
+                    tgChatId: t.String(),
+                    tgUsername: t.String()
+                })
             }
         );
 }

@@ -1,31 +1,29 @@
-import { z } from "zod";
+import { t } from "elysia";
 
-export const courseSchema = z.object({
-    id: z.string().uuid(),
-    slug: z.string().min(3).max(12),
-    year: z.number().int().min(2000).max(3000),
-    semester: z.number().int().nullable(),
+/** Course information. */
+export const course = t.Object({
+    id: t.String({ format: "uuid" }),
+    slug: t.String({
+        minLength: 3,
+        maxLength: 12,
+        pattern: "^[a-z\\d-]+$",
+        default: "my-lesson"
+    }),
+    year: t.Integer({ minimum: 2000, maximum: 3000 }),
+    semester: t.Nullable(t.Integer({ minimum: 1, maximum: 2 })),
 
-    title: z.string().min(3).max(200),
-    description: z.string().max(1000).nullable(),
-    logo: z.string().max(1000).url().nullable(),
+    title: t.String({ minLength: 1, maxLength: 200 }),
+    description: t.Nullable(t.String({ maxLength: 1000 })),
+    logo: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
 
-    blogEnabled: z.boolean(),
-    feedbackEnabled: z.boolean(),
-    public: z.boolean(),
-    enrollmentOpen: z.boolean(),
-    archived: z.boolean()
+    blogEnabled: t.Boolean(),
+    feedbackEnabled: t.Boolean(),
+    public: t.Boolean(),
+    enrollmentOpen: t.Boolean(),
+    archived: t.Boolean()
 });
 
-export const updateCourseSchema = courseSchema
-    .omit({
-        id: true,
-        slug: true,
-        year: true,
-        semester: true
-    })
-    .strict()
-    .partial()
-    .refine(obj => Object.keys(obj).length !== 0, {
-        message: "Empty object is not allowed"
-    });
+/** Update course information. */
+export const updateCourse = t.Partial(
+    t.Omit(course, ["id", "slug", "year", "semester"])
+);
