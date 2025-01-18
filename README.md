@@ -1,15 +1,36 @@
-# ITAM educational platform
+# ITAM.Education
 
-An LMS for the [ITAM](https://itatmisis.ru) educational platform.
+An LMS for the [ITAM](https://itatmisis.ru) community.
 
-## Packages
+## ✨ Features
+
+- Courses
+- Homeworks
+- Live Streams
+- Admin panel
+
+## 🚀 Installation
+
+### 🐋 Docker Compose
+
+_WIP_
+
+### ☸️ Helm
+
+_WIP_
+
+## 📦 Packages
+
+ITAM.Education platform consists of multiple NodeJS/Bun packages that communicate with each other over typesafe HTTP powered by [Elysia](https://github.com/elysiajs/elysia).
 
 - [itam-edu-web](./packages/web) - frontend web application
 - [itam-edu-api](./packages/api) - REST API backend
 - [itam-edu-tg](./packages/tg) - companion Telegram bot
 - [itam-edu-db](./packages/db) - database migrations
 
-## Development
+All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
+
+## 🛠️ Development
 
 Run `task` to see a list of available commands.
 
