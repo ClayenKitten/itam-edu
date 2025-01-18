@@ -120,6 +120,5 @@ configs:
 volumes:
   postgres:
   dbgate:
-  minio:
   caddy_data:
   caddy_config:
