@@ -8,7 +8,6 @@ An LMS for [ITAM](https://itatmisis.ru) educational platform.
 - [itam-edu-api](./packages/api) - REST API backend
 - [itam-edu-tg](./packages/tg) - companion Telegram bot
 - [itam-edu-db](./packages/db) - database migrations
-- [itam-edu-s3](./packages/s3) - S3 proxy and Minio configuration (work in progress)
 
 ## Development
 
