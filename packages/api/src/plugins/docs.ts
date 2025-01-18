@@ -6,7 +6,17 @@ export default async function docs() {
         .use(
             await swagger({
                 provider: "swagger-ui",
-                path: "/docs"
+                path: "/docs",
+                documentation: {
+                    tags: [
+                        { name: "Courses" },
+                        { name: "Lessons" },
+                        { name: "Students" },
+                        { name: "Users" },
+                        { name: "Bot" },
+                        { name: "Infra" }
+                    ]
+                }
             })
         )
         .as("plugin");

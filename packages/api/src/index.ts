@@ -25,7 +25,7 @@ const app = new Elysia({
     .use(courseController("/courses"))
     .use(userController("/users"))
     .use(botController("/bot"))
-    .get("/healthz", () => "Ok")
+    .get("/healthz", () => "Ok", { tags: ["Infra"] })
     .listen(Number(env.ITAM_EDU_API_PORT) ?? 3000);
 
 export type AppType = typeof app;
