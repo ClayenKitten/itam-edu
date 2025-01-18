@@ -1,4 +1,3 @@
-import type { Message, Update } from "telegraf/types";
 import api from "../api.js";
 import { env } from "process";
 import type { MyMsgContext } from "../middlewares/ctx.js";
@@ -41,13 +40,11 @@ async function login(data: {
     tgUsername: string;
 }): Promise<LoginResult> {
     try {
-        const response = await api().bot.login.$post({
-            json: data
-        });
-        if (response.status !== 200) {
+        const response = await api().bot.login.post({ ...data });
+        if (response.error) {
             return { success: false, error: { status: response.status } };
         }
-        const { code, expires } = await response.json();
+        const { code, expires } = response.data;
         return { success: true, code, expires: new Date(expires) };
     } catch (error) {
         return { success: false, error };

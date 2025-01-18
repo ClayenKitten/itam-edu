@@ -13,12 +13,12 @@ COPY ./packages/api ./packages/api
 COPY ./packages/tg ./packages/tg
 
 # Start development server
-FROM node:22-alpine AS dev
+FROM oven/bun:1.1-alpine AS dev
 WORKDIR /app
 ENV NODE_ENV development
 
 COPY --from=prepare /app .
-ENTRYPOINT npm --workspace=itam-edu-tg run dev
+ENTRYPOINT bun --cwd="packages/tg" run dev
 
 # Build for production and prune dev dependencies
 FROM node:22-alpine AS build
@@ -30,11 +30,11 @@ RUN npm --workspace=itam-edu-tg run build
 RUN npm --workspace=itam-edu-tg prune --omit=dev 
 
 # Serve production build
-FROM node:22-alpine AS serve
+FROM oven/bun:1.1-alpine AS serve
 WORKDIR /app
 ENV NODE_ENV production
 
 COPY package.json .
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/tg/build ./build
-CMD ["node", "./build"]
+CMD ["bun", "./build"]
