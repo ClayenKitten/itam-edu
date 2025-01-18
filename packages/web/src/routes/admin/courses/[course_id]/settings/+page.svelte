@@ -90,11 +90,12 @@
         {@render sectionHeader("Blog", "text-t")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch bind:value={course.blogEnabled} disabled={!canEdit} />
+            <Switch bind:value={course.isBlogEnabled} disabled={!canEdit} />
         </label>
         {#if canEdit}
             <button
-                onclick={() => saveCourse({ blogEnabled: course.blogEnabled })}
+                onclick={() =>
+                    saveCourse({ isBlogEnabled: course.isBlogEnabled })}
                 class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
             >
                 Save
@@ -105,12 +106,12 @@
         {@render sectionHeader("Feedback", "chat-teardrop-dots")}
         <label class="flex justify-between items-center gap-y-4 max-w-[600px]">
             {@render optionHeader("Enabled")}
-            <Switch bind:value={course.feedbackEnabled} disabled={!canEdit} />
+            <Switch bind:value={course.isFeedbackEnabled} disabled={!canEdit} />
         </label>
         {#if canEdit}
             <button
                 onclick={() =>
-                    saveCourse({ feedbackEnabled: course.feedbackEnabled })}
+                    saveCourse({ isFeedbackEnabled: course.isFeedbackEnabled })}
                 class="w-[100px] text-lg py-2 bg-success hover:opacity-95 rounded-sm"
             >
                 Save
@@ -143,15 +144,15 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                course.public ? "Unpublish" : "Publish",
+                course.isPublished ? "Unpublish" : "Publish",
                 "Published courses are accessible to students"
             )}
             {@render dangerButton(
                 async () => {
-                    await saveCourse({ public: !course.public });
-                    course.public = !course.public;
+                    await saveCourse({ isPublished: !course.isPublished });
+                    course.isPublished = !course.isPublished;
                 },
-                course.public,
+                course.isPublished,
                 d => (d ? "Unpublish this course" : "Publish this course"),
                 "file-dashed"
             )}
@@ -160,17 +161,19 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                course.enrollmentOpen ? "Close enrollment" : "Open enrollment",
+                course.isEnrollmentOpen
+                    ? "Close enrollment"
+                    : "Open enrollment",
                 "Courses with closed enrollment don't accept new students, but already enrolled students are not affected"
             )}
             {@render dangerButton(
                 async () => {
                     await saveCourse({
-                        enrollmentOpen: !course.enrollmentOpen
+                        isEnrollmentOpen: !course.isEnrollmentOpen
                     });
-                    course.enrollmentOpen = !course.enrollmentOpen;
+                    course.isEnrollmentOpen = !course.isEnrollmentOpen;
                 },
-                course.enrollmentOpen,
+                course.isEnrollmentOpen,
                 d => (d ? "Close enrollment" : "Open enrollment"),
                 "student"
             )}
@@ -179,15 +182,15 @@
             class="flex flex-col lg:flex-row justify-between gap-4 max-w-[600px]"
         >
             {@render optionHeader(
-                course.archived ? "Unarchive" : "Archive",
+                course.isArchived ? "Unarchive" : "Archive",
                 "Archived courses are still accessible to students if published, but in a read-only mode"
             )}
             {@render dangerButton(
                 async () => {
-                    await saveCourse({ archived: !course.archived });
-                    course.archived = !course.archived;
+                    await saveCourse({ isArchived: !course.isArchived });
+                    course.isArchived = !course.isArchived;
                 },
-                course.archived,
+                course.isArchived,
                 d => (d ? "Archive this course" : "Unarchive this course"),
                 "archive"
             )}

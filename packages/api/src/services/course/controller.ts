@@ -63,7 +63,7 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                         },
                         {
                             body: schema.updateCourse,
-                            hasCoursePermission: "canEditContent"
+                            hasCoursePermission: "canEditInfo"
                         }
                     )
         );

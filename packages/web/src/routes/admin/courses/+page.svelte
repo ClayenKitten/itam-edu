@@ -47,7 +47,7 @@
                     </span>
                     <div class="flex-1"></div>
                     <div class="flex gap-2.5">
-                        {#if course.public}
+                        {#if course.isPublished}
                             <div
                                 title="Public"
                                 class="flex justify-center items-center bg-surface-light w-8 h-8 rounded-sm"
@@ -62,7 +62,7 @@
                                 <i class="ph ph-eye-slash text-xl"></i>
                             </div>
                         {/if}
-                        {#if course.archived}
+                        {#if course.isArchived}
                             <div
                                 title="Archived"
                                 class="flex justify-center items-center bg-surface-light w-8 h-8 rounded-sm"

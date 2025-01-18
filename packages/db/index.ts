@@ -14,20 +14,20 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Courses {
-  archived: Generated<boolean>;
-  blogEnabled: Generated<boolean>;
   /**
    * Multi-line description of the course
    */
   description: string | null;
-  enrollmentOpen: Generated<boolean>;
-  feedbackEnabled: Generated<boolean>;
   id: Generated<string>;
+  isArchived: Generated<boolean>;
+  isBlogEnabled: Generated<boolean>;
+  isEnrollmentOpen: Generated<boolean>;
+  isFeedbackEnabled: Generated<boolean>;
+  isPublished: Generated<boolean>;
   /**
    * URL of the course logo
    */
   logo: string | null;
-  public: Generated<boolean>;
   /**
    * Optional semester in which the course takes place
    */
@@ -47,13 +47,31 @@ export interface Courses {
 }
 
 export interface CourseStaff {
-  admin: Generated<boolean>;
+  /**
+   * Whether user can edit course content such as lessons, homeworks, etc
+   */
   canEditContent: Generated<boolean>;
+  /**
+   * Whether user can edit primary course info
+   */
   canEditInfo: Generated<boolean>;
-  canGradeHomeworks: Generated<boolean>;
+  /**
+   * Whether user can write posts to blog
+   */
   canManageBlog: Generated<boolean>;
+  /**
+   * Whether user can modify feedback form
+   */
   canManageFeedback: Generated<boolean>;
+  /**
+   * Whether user can accept or reject submissions
+   */
+  canManageSubmissions: Generated<boolean>;
   courseId: string;
+  /**
+   * Whether user is owner of the course. Course owners can manage staff, add other owners and even delete courses
+   */
+  isOwner: Generated<boolean>;
   title: string | null;
   userId: string;
 }
@@ -67,8 +85,9 @@ export interface Homeworks {
   content: string;
   courseId: string;
   id: Generated<string>;
-  isSolutionMultiline: boolean;
   lesson: string;
+  solutionMultiline: boolean;
+  solutionPlaceholder: string | null;
   solutionSyntaxHighlighting: string | null;
   title: string;
 }

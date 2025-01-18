@@ -9,11 +9,11 @@ CREATE TABLE courses (
     title TEXT NOT NULL,
     description TEXT,
     logo TEXT,
-    public BOOLEAN NOT NULL DEFAULT false,
-    enrollment_open BOOLEAN NOT NULL DEFAULT false,
-    archived BOOLEAN NOT NULL DEFAULT false,
-    blog_enabled BOOLEAN NOT NULL DEFAULT false,
-    feedback_enabled BOOLEAN NOT NULL DEFAULT false
+    is_published BOOLEAN NOT NULL DEFAULT false,
+    is_enrollment_open BOOLEAN NOT NULL DEFAULT false,
+    is_archived BOOLEAN NOT NULL DEFAULT false,
+    is_blog_enabled BOOLEAN NOT NULL DEFAULT false,
+    is_feedback_enabled BOOLEAN NOT NULL DEFAULT false
 );
 COMMENT ON COLUMN courses.year IS 'Year in which the course takes place';
 COMMENT ON COLUMN courses.semester IS 'Optional semester in which the course takes place';
@@ -27,13 +27,19 @@ CREATE TABLE course_staff (
     course_id UUID REFERENCES courses(id) NOT NULL,
     PRIMARY KEY (user_id, course_id),
     title TEXT,
-    admin BOOLEAN NOT NULL DEFAULT false,
+    is_owner BOOLEAN NOT NULL DEFAULT false,
     can_edit_info BOOLEAN NOT NULL DEFAULT false,
     can_edit_content BOOLEAN NOT NULL DEFAULT false,
-    can_grade_homeworks BOOLEAN NOT NULL DEFAULT false,
+    can_manage_submissions BOOLEAN NOT NULL DEFAULT false,
     can_manage_blog BOOLEAN NOT NULL DEFAULT false,
     can_manage_feedback BOOLEAN NOT NULL DEFAULT false
 );
+COMMENT ON COLUMN course_staff.is_owner IS 'Whether user is owner of the course. Course owners can manage staff, add other owners and even delete courses';
+COMMENT ON COLUMN course_staff.can_edit_info IS 'Whether user can edit primary course info';
+COMMENT ON COLUMN course_staff.can_edit_content IS 'Whether user can edit course content such as lessons, homeworks, etc';
+COMMENT ON COLUMN course_staff.can_manage_submissions IS 'Whether user can accept or reject submissions';
+COMMENT ON COLUMN course_staff.can_manage_blog IS 'Whether user can write posts to blog';
+COMMENT ON COLUMN course_staff.can_manage_feedback IS 'Whether user can modify feedback form';
 
 CREATE TABLE course_students (
     user_id UUID REFERENCES users(id),
@@ -63,8 +69,9 @@ CREATE TABLE homeworks (
     FOREIGN KEY(course_id, lesson) REFERENCES lessons(course_id, slug),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
-    is_solution_multiline BOOLEAN NOT NULL,
-    solution_syntax_highlighting TEXT DEFAULT NULL
+    solution_placeholder TEXT,
+    solution_multiline BOOLEAN NOT NULL,
+    solution_syntax_highlighting TEXT
 );
 
 CREATE TABLE homework_submissions (

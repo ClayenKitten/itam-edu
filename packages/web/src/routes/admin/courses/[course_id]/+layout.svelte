@@ -49,10 +49,10 @@
         {@render link("Overview", "house", baseUrl, path === baseUrl)}
         {@render link("Content", "article", `${baseUrl}/content`)}
         {@render link("Students", "student", `${baseUrl}/students`)}
-        {#if data.course.blogEnabled}
+        {#if data.course.isBlogEnabled}
             {@render link("Blog", "text-t", `${baseUrl}/blog`)}
         {/if}
-        {#if data.course.feedbackEnabled}
+        {#if data.course.isFeedbackEnabled}
             {@render link(
                 "Feedback",
                 "chat-teardrop-dots",

@@ -16,9 +16,10 @@ export const PermissionKinds = {
     ] satisfies (keyof DB["users"])[],
     /** Permissions scoped to specific course. */
     course: [
+        "isOwner",
         "canEditInfo",
         "canEditContent",
-        "canGradeHomeworks",
+        "canManageSubmissions",
         "canManageBlog",
         "canManageFeedback"
     ] satisfies (keyof DB["courseStaff"])[]

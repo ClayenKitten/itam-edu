@@ -16,11 +16,11 @@ export const course = t.Object({
     description: t.Nullable(t.String({ maxLength: 1000 })),
     logo: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
 
-    blogEnabled: t.Boolean(),
-    feedbackEnabled: t.Boolean(),
-    public: t.Boolean(),
-    enrollmentOpen: t.Boolean(),
-    archived: t.Boolean()
+    isPublished: t.Boolean(),
+    isEnrollmentOpen: t.Boolean(),
+    isArchived: t.Boolean(),
+    isBlogEnabled: t.Boolean(),
+    isFeedbackEnabled: t.Boolean()
 });
 
 /** Update course information. */
