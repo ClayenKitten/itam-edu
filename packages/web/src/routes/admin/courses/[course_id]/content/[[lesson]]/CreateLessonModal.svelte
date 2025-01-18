@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Value } from "@sinclair/typebox/value";
     import * as schema from "itam-edu-api/src/services/course/lesson/schema";
 
     let props: {
@@ -51,7 +52,7 @@
                 "px-4 py-3 text-sm bg-primary hover:opacity-95 rounded-sm",
                 "disabled:bg-disabled disabled:italic"
             ]}
-            disabled={!schema.createLesson.safeParse(lesson).success}
+            disabled={!Value.Check(schema.createLesson, lesson)}
             onclick={() => props.oncreate(lesson)}
         >
             Add new lesson

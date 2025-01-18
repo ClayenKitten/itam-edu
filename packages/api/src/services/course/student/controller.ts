@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import initContext from "../../../plugins";
 
-export function studentController(prefix: string) {
+export function studentController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ name: "students", prefix, tags: ["Students"] })
         .use(initContext())
         .guard({

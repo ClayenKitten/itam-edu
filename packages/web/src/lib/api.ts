@@ -1,7 +1,7 @@
 import { browser } from "$app/environment";
 import { env } from "$env/dynamic/public";
-import { error } from "@sveltejs/kit";
-import { hc } from "hono/client";
+import { treaty } from "@elysiajs/eden";
+import { error, type Cookies } from "@sveltejs/kit";
 import type { AppType } from "itam-edu-api";
 
 export default function api(params: ApiParams) {
@@ -9,44 +9,44 @@ export default function api(params: ApiParams) {
         ? env.PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER!
         : env.PUBLIC_ITAM_EDU_WEB_API_URL_SERVER!;
 
-    const authorization = browser ? getCookie("itam-edu-token") : undefined;
-    const headers = authorization
-        ? { authorization: `Bearer ${authorization}` }
-        : undefined;
-
-    const client = hc<AppType>(baseUrl, {
-        fetch: getFetchWithHook(params),
-        headers
+    const client = treaty<AppType>(baseUrl, {
+        fetcher: params.fetch,
+        onRequest: () => {
+            if (!browser) return; // On server `hooks.server.ts` is used
+            const token = getCookie("itam-edu-token");
+            if (!token) return;
+            return {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            };
+        },
+        onResponse: async response => {
+            const path = new URL(response.url).pathname;
+            /** Intercept login to set local cookie */
+            if (response.status === 200 && path === "/users/me/session") {
+                const { token, expires } = await response.clone().json();
+                setCookie("itam-edu-token", token, expires);
+            }
+            if (params.toast) {
+                // TODO: display toast notification
+                const toast = params.toast(response);
+            }
+        }
     });
     return client;
 }
 
 type ApiParams = {
     fetch: Window["fetch"];
-    /**
-     * Enables default error handler.
-     *
-     * When set to `true`, all 4xx and 5xx responses will be propagated to SvelteKit errors
-     * (on server) or displayed to user (in browser).
-     *
-     * Defaults to `true`.
-     * */
-    enableDefaultCatch?: boolean;
+    /** Gets info to display in toast notification. */
+    toast?: (response: Response) => { title: string };
 };
 
-const getFetchWithHook = (params: ApiParams): Window["fetch"] => {
-    return async (input, init) => {
-        const response = await params.fetch(input, init);
-        if (params.enableDefaultCatch !== false && !response.ok) {
-            if (browser) {
-                // TODO: display toast notification
-            } else {
-                error(response.status, response.statusText);
-            }
-        }
-        return response;
-    };
-};
+function setCookie(name: string, token: string, expires: string): void {
+    const cookieValue = `${encodeURIComponent(name)}=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Secure; Expires=${expires}`;
+    document.cookie = cookieValue;
+}
 
 const getCookie = (name: string): string | undefined => {
     return document.cookie

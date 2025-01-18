@@ -2,11 +2,14 @@ import { Elysia, t } from "elysia";
 import initContext from "../../../plugins";
 import * as schema from "./schema";
 
-export function lessonController(prefix: string) {
+export function lessonController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ name: "lessons", prefix, tags: ["Lessons"] })
         .use(initContext())
         .guard({
-            params: t.Object({ course: t.String({ format: "uuid" }) })
+            params: t.Object(
+                { course: t.String({ format: "uuid" }) },
+                { additionalProperties: true }
+            )
         })
         .get("", async ({ db, params }) => {
             const lessons = await db.lesson.getAll(params.course);
@@ -49,6 +52,11 @@ export function lessonController(prefix: string) {
                 if (!lesson) return error(404);
                 return lesson;
             },
-            { params: t.Object({ lesson: t.String() }) }
+            {
+                params: t.Object(
+                    { lesson: t.String() },
+                    { additionalProperties: true }
+                )
+            }
         );
 }

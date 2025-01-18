@@ -3,7 +3,7 @@ import { t } from "elysia";
 export const lesson = t.Object({
     courseId: t.String({ format: "uuid" }),
     title: t.String({ minLength: 3, maxLength: 80 }),
-    slug: t.String({ pattern: /^[a-z][a-z0-9-]*$/.toString() }),
+    slug: t.String({ pattern: "^[a-z][a-z0-9-]*$" }),
     position: t.Integer(),
     content: t.Nullable(t.String()),
     icon: t.Nullable(t.String({ format: "uri", maxLength: 1000 }))

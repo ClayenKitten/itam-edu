@@ -19,11 +19,9 @@
         "@hono/node-server": "^1.13.7",
         "@hono/zod-validator": "^0.4.2",
         "elysia": "^1.2.10",
-        "hono": "^4.6.13",
         "kysely": "^0.27.5",
         "pg": "^8.13.1",
-        "winston": "^3.17.0",
-        "zod": "^3.24.1"
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@types/node": "^22.7.4",

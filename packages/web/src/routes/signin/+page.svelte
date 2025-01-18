@@ -1,22 +1,29 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { env } from "$env/dynamic/public";
+    import api from "$lib/api.js";
 
     const { data } = $props();
 
     let code = $state(data.code ?? "");
 
     const login = async () => {
-        const resp = await fetch(`/signin?code=${code.toUpperCase()}`, {
-            method: "POST"
+        const resp = await api({
+            fetch,
+            toast: resp => ({
+                title: resp.status === 200 ? "Welcome back!" : "Sign-in Failed"
+            })
+        }).users.me.session.post({
+            code: code.toUpperCase()
         });
-        if (resp.status !== 200) {
+        if (resp.error) {
+            console.log(resp.error);
             // TODO: use toast notification
             alert("Sign-in Failed");
-        } else {
-            await invalidate("app:user");
-            await goto(data.redirect);
+            return;
         }
+        await invalidate("app:user");
+        await goto(data.redirect);
     };
 
     const botUrl = `https://t.me/${env.PUBLIC_ITAM_EDU_WEB_TG_USERNAME!}?start=login`;

@@ -4,7 +4,7 @@ import { lessonController } from "./lesson/controller";
 import { studentController } from "./student/controller";
 import * as schema from "./schema";
 
-export async function courseController(prefix: string) {
+export async function courseController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ prefix, tags: ["Courses"] })
         .use(initContext())
         .use(lessonController("/:course/lessons"))
@@ -39,7 +39,10 @@ export async function courseController(prefix: string) {
         .group(
             "/:course",
             {
-                params: t.Object({ course: t.String({ format: "uuid" }) })
+                params: t.Object(
+                    { course: t.String({ format: "uuid" }) },
+                    { additionalProperties: true }
+                )
             },
             app =>
                 app

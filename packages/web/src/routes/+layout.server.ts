@@ -5,11 +5,10 @@ export const load: LayoutServerLoad = async ({ fetch, depends }) => {
     depends("app:user", "app:permissions");
 
     const userResp = await api({
-        fetch,
-        enableDefaultCatch: false
-    }).users.me.$get();
-    if (!userResp.ok) return { user: null, permissions: null };
-    const { user, permissions } = await userResp.json();
+        fetch
+    }).users.me.get();
+    if (userResp.error) return { user: null, permissions: null };
+    const { user, permissions } = userResp.data;
 
     return { user, permissions };
 };

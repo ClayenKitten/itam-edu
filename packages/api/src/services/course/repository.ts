@@ -13,7 +13,7 @@ export default class CourseRepository extends Repository {
         return course ?? null;
     }
 
-    public async getAll(): Promise<(typeof schema.course.static)[]> {
+    public async getAll() {
         return await this.db
             .selectFrom("courses")
             .select(schemaFields(schema.course))

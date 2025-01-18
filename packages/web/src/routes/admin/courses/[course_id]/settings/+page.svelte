@@ -8,10 +8,7 @@
 
     let course = $state(structuredClone(data.course));
     const saveCourse = async (courseUpdate: Partial<typeof course>) => {
-        await api({ fetch }).courses[":course"].$put({
-            param: { course: course.id },
-            json: courseUpdate
-        });
+        await api({ fetch }).courses({ course: course.id }).put(courseUpdate);
         await invalidate("app:course");
     };
 

@@ -57,12 +57,9 @@
                     <CreateLessonModal
                         id="createLessonModal"
                         oncreate={async lesson => {
-                            await api({ fetch }).courses[
-                                ":course"
-                            ].lessons.$post({
-                                param: { course: data.course.id },
-                                json: lesson
-                            });
+                            await api({ fetch })
+                                .courses({ course: data.course.id })
+                                .lessons.post({ lesson });
                             await invalidate("app:lessons");
                         }}
                     />
@@ -76,15 +73,14 @@
                 children={lesson}
                 handleFinalize={async ({ items }) => {
                     if (items.length === 0) return;
-                    await api({ fetch }).courses[":course"].lessons.$put({
-                        param: { course: data.course.id },
-                        json: {
+                    await api({ fetch })
+                        .courses({ course: data.course.id })
+                        .lessons.put({
                             lessons: items.map(x => x.slug) as [
                                 string,
                                 ...string[]
                             ]
-                        }
-                    });
+                        });
                 }}
                 dragDisabled={!canEdit}
             >
