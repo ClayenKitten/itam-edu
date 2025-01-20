@@ -1,6 +1,12 @@
 # Development environment
 
 services:
+  gateway:
+    image: caddy:2-alpine
+    volumes: [caddy_data:/data, caddy_config:/config]
+    ports: [127.0.0.1:80:80, 127.0.0.1:443:443]
+    configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
+
   web:
     build: &build
       dockerfile: ./packages/web/Dockerfile
@@ -47,24 +53,17 @@ services:
         - { action: rebuild, path: ./node_modules }
 
   db:
-    build: { context: ./packages/db, target: dev }
+    build: ./packages/db
     depends_on:
       postgres: { condition: service_healthy }
     develop:
       watch:
         - { action: rebuild, path: ./packages/db }
-    env_file: ./packages/db/.env
-    environment:
-      <<: *environment
-      DATABASE_URL: "postgres://user:password@postgres:5432/app?sslmode=disable"
-
-  gateway:
-    image: caddy:2-alpine
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    ports: [127.0.0.1:80:80, 127.0.0.1:443:443]
-    configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
+    environment: &db_env
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
 
   postgres:
     image: postgres:17
@@ -73,10 +72,7 @@ services:
     shm_size: 128mb
     restart: unless-stopped
     volumes: [postgres:/var/lib/postgresql/data]
-    environment:
-      POSTGRES_DB: app
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+    environment: *db_env
     healthcheck:
       test: ["CMD", "pg_isready", "--dbname=app", "--username=user"]
       interval: 5s

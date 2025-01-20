@@ -1,0 +1,11 @@
+www.example.com {
+    reverse_proxy web:3000
+}
+
+api.example.com {
+    reverse_proxy api:3000
+}
+
+tg.example.com {
+    reverse_proxy tg:3000
+}

@@ -7,6 +7,7 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.test
+Caddyfile
 
 # Build artifacts
 build

@@ -9,16 +9,6 @@ An LMS for the [ITAM](https://itatmisis.ru) community.
 - Live Streams
 - Admin panel
 
-## 🚀 Installation
-
-### 🐋 Docker Compose
-
-_WIP_
-
-### ☸️ Helm
-
-_WIP_
-
 ## 📦 Packages
 
 ITAM.Education platform consists of multiple NodeJS/Bun packages that communicate with each other over typesafe HTTP powered by [Elysia](https://github.com/elysiajs/elysia).
@@ -29,6 +19,35 @@ ITAM.Education platform consists of multiple NodeJS/Bun packages that communicat
 - [itam-edu-db](./packages/db) - database migrations
 
 All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
+
+## 🚀 Deploy
+
+### 🐋 Docker Compose
+
+#### Clone repository
+
+`git clone https://github.com/ClayenKitten/itam-edu.git`
+
+#### Configure packages
+
+Copy every `.env.example` in `packages/PACKAGE_NAME` as `.env` and modify values
+
+> [!NOTE]
+> All services are started at port `3000`, changes to ports in `.env` will be ignored.
+
+#### Configure reverse proxy
+
+Compose deployment includes [Caddy](https://caddyserver.com/) as as reverse-proxy.
+
+Copy [Caddyfile.example](./Caddyfile.example) as `Caddyfile` and adjust values in it.
+
+#### Start
+
+`docker compose up --detach`
+
+### ☸️ Helm
+
+_WIP_
 
 ## 🛠️ Development
 

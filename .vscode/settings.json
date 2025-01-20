@@ -14,5 +14,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[astro]": {
         "editor.defaultFormatter": "astro-build.astro-vscode"
+    },
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     }
 }

@@ -39,43 +39,31 @@ tasks:
     prompt: Are you sure? It will remove all volumes, leading to full data loss.
     cmd: docker compose -f ./compose.dev.yaml down -v
 
-  db:dump:
-    desc: Dump database schema
+  db:
+    desc: Invoke dbmate
     dir: ./packages/db
-    cmds:
-      - "npm run dbmate dump"
-      - "npm run infer"
+    dotenv: ["./.env"]
+    env:
+      DBMATE_MIGRATIONS_DIR: "./migrations"
+      DBMATE_SCHEMA_FILE: "./schema.sql"
+      DBMATE_STRICT: "true"
+    cmd: |
+      export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable"
+      echo "Connecting to database '$POSTGRES_DB' at '$POSTGRES_HOST' as '$POSTGRES_USER'"
+      npx dbmate {{.CLI_ARGS}}
+      npx kysely-codegen --out-file ./index.ts --camel-case --dialect postgres
 
   db:up:
     desc: Run database migrations
-    dir: ./packages/db
-    cmds:
-      - "npm run dbmate up"
-      - "npm run infer"
+    cmd: { task: db, vars: { CLI_ARGS: up } }
 
   db:down:
     desc: Revert database migration
-    dir: ./packages/db
-    cmds:
-      - "npm run dbmate down"
-      - "npm run infer"
-
-  db:reup:
-    desc: Drop database and reapply database migrations
-    dir: ./packages/db
-    interactive: true
-    cmds:
-      - "docker compose -f ../compose.dev.yaml down -v postgres 2>/dev/null"
-      - 'echo "Existing database removed"'
-      - "docker compose -f ../compose.dev.yaml up postgres -d 2>/dev/null"
-      - 'echo "New database started"'
-      - "npm run dbmate wait"
-      - "npm run dbmate up"
-      - "npm run infer"
+    cmd: { task: db, vars: { CLI_ARGS: down } }
 
   db:new:
-    desc: Create new migration file
+    desc: Create new migration file. Name must be specified as argument.
     dir: ./packages/db
-    cmds:
-      - "npm run dbmate new -- {{.CLI_ARGS}}"
-      - "npm run infer"
+    env:
+      DBMATE_MIGRATIONS_DIR: "./migrations"
+    cmd: "npx dbmate new -- {{.CLI_ARGS}}"

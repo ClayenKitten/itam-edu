@@ -1,0 +1,68 @@
+# Production environment
+
+services:
+  gateway:
+    image: caddy:2-alpine
+    volumes: [caddy_data:/data, caddy_config:/config]
+    ports: [80:80, 443:443]
+    configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
+    restart: unless-stopped
+
+  web:
+    build: &build
+      dockerfile: ./packages/web/Dockerfile
+      context: .
+    depends_on: [api]
+    expose: [3000]
+    env_file: ./packages/web/.env
+    environment: { ITAM_EDU_WEB_PORT: "3000" }
+    restart: unless-stopped
+
+  api:
+    build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
+    depends_on: { db: { condition: service_completed_successfully } }
+    expose: [3000]
+    env_file: ./packages/api/.env
+    environment: { ITAM_EDU_API_PORT: "3000" }
+    restart: unless-stopped
+
+  tg:
+    build: { <<: *build, dockerfile: ./packages/tg/Dockerfile }
+    depends_on: [api]
+    expose: [3000]
+    env_file: ./packages/tg/.env
+    environment: { ITAM_EDU_TG_WEBHOOK_PORT: "3000" }
+    restart: unless-stopped
+
+  db:
+    build: ./packages/db
+    depends_on: { postgres: { condition: service_healthy } }
+    env_file: ./packages/db/.env
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+  postgres:
+    image: postgres:17
+    expose: [5432]
+    ports: [127.0.0.1:5432:5432]
+    shm_size: 128mb
+    restart: unless-stopped
+    volumes: [postgres:/var/lib/postgresql/data]
+    env_file: ./packages/db/.env
+    healthcheck:
+      test: ["CMD", "pg_isready", "--dbname=app", "--username=user"]
+      interval: 5s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+      start_interval: 500ms
+
+configs:
+  caddy: { file: ./Caddyfile }
+
+volumes:
+  postgres:
+  caddy_data:
+  caddy_config:
