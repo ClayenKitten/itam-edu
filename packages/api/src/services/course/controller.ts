@@ -36,6 +36,13 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                 })
             }
         )
+        .post(
+            "",
+            async ({ db, body }) => {
+                return await db.course.create(body);
+            },
+            { hasPermission: ["canCreateCourses"], body: schema.createCourse }
+        )
         .group(
             "/:course",
             {

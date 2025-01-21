@@ -23,6 +23,14 @@ export const course = t.Object({
     isFeedbackEnabled: t.Boolean()
 });
 
+/** Information to create course. */
+export const createCourse = t.Pick(course, [
+    "slug",
+    "year",
+    "semester",
+    "title"
+]);
+
 /** Update course information. */
 export const updateCourse = t.Partial(
     t.Omit(course, ["id", "slug", "year", "semester"])

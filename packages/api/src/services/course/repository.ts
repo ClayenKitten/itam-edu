@@ -30,6 +30,22 @@ export default class CourseRepository extends Repository {
             .execute();
     }
 
+    public async create(
+        course: typeof schema.createCourse.static
+    ): Promise<typeof schema.course.static> {
+        const newCourse = await this.db
+            .insertInto("courses")
+            .values({
+                slug: course.slug,
+                year: course.year,
+                semester: course.semester,
+                title: course.title
+            })
+            .returning(schemaFields(schema.course))
+            .executeTakeFirstOrThrow();
+        return newCourse;
+    }
+
     public async update(
         id: string,
         course: typeof schema.updateCourse.static
