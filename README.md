@@ -37,9 +37,9 @@ Copy every `.env.example` in `packages/PACKAGE_NAME` as `.env` and modify values
 
 #### Configure reverse proxy
 
-Compose deployment includes [Caddy](https://caddyserver.com/) as as reverse-proxy.
+Compose deployment includes [Caddy](https://caddyserver.com/) as a reverse-proxy.
 
-Copy [Caddyfile.example](./Caddyfile.example) as `Caddyfile` and adjust values in it.
+Copy [Caddyfile.example](./Caddyfile.example) as `Caddyfile` and adjust its content as needed.
 
 #### Start
 
@@ -64,13 +64,10 @@ The [development environment](./compose.dev.yaml) is setup by running `task dev:
 
 This command starts the reverse proxy, PostgreSQL, and all packages in development mode with hot reloading enabled.
 
-| Service      | Description               | URL                                    |
-| ------------ | ------------------------- | -------------------------------------- |
-| itam-edu-web | Frontend                  | [www.localhost](https://www.localhost) |
-| itam-edu-api | Backend                   | [api.localhost](https://api.localhost) |
-| itam-edu-tg  | Telegram bot              |                                        |
-| dbgate       | Web interface to Postgres | [db.localhost](https://db.localhost)   |
-| PostgreSQL   | PostgresSQL RDBMS         | localhost:5432                         |
-
-> [!NOTE]
-> HTTPS with self-signed certificates is used to ensure browser security features behave just like in production. Warnings may be shown.
+| Service      | Description               | URL                                   |
+| ------------ | ------------------------- | ------------------------------------- |
+| itam-edu-web | Frontend                  | [www.localhost](http://www.localhost) |
+| itam-edu-api | Backend                   | [api.localhost](http://api.localhost) |
+| itam-edu-tg  | Telegram bot              |                                       |
+| dbgate       | Web interface to Postgres | [db.localhost](http://db.localhost)   |
+| PostgreSQL   | PostgresSQL RDBMS         | localhost:5432                        |
