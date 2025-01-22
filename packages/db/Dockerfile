@@ -5,9 +5,6 @@ ENV DBMATE_MIGRATIONS_DIR="./migrations"
 ENV DBMATE_NO_DUMP_SCHEMA="true"
 ENV DBMATE_STRICT="true"
 
-COPY ./entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-
 COPY ./migrations ./migrations
 
-ENTRYPOINT ["sh", "-c", "./entrypoint.sh"]
+ENTRYPOINT DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable" dbmate up
