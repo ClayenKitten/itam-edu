@@ -13,7 +13,7 @@ export default async function docs() {
                         { name: "Lessons" },
                         { name: "Students" },
                         { name: "Users" },
-                        { name: "Bot" },
+                        { name: "Telegram Bot" },
                         { name: "Infra" }
                     ]
                 }

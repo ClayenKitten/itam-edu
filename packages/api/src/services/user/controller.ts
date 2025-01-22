@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import { z } from "zod";
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 import initContext from "../../plugins";
 
 export async function userController<PREFIX extends string>(prefix: PREFIX) {
@@ -33,6 +33,47 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
             {
                 body: t.Object({
                     code: t.String({ minLength: 0, maxLength: 128 })
+                })
+            }
+        )
+        .post(
+            "/loginAttempt",
+            async ({ db, body, error }) => {
+                const codeLength = 8;
+                const codeRadix = 16;
+                const code = randomInt(0, codeRadix ** codeLength)
+                    .toString(codeRadix)
+                    .padStart(codeLength, "0")
+                    .toUpperCase();
+
+                const expiresAfterMinutes = 5;
+                const expires = new Date(
+                    new Date().getTime() + expiresAfterMinutes * 60000
+                );
+
+                const success = await db.user.createLoginAttempt({
+                    code,
+                    expires,
+                    ...body
+                });
+
+                if (success) {
+                    return { code, expires };
+                } else {
+                    return error(500);
+                }
+            },
+            {
+                detail: {
+                    description:
+                        "Creates login attempt for user if it exists, and creates user otherwise.",
+                    tags: ["Users", "Telegram Bot"]
+                },
+                authenticateIntegration: "telegram",
+                body: t.Object({
+                    tgUserId: t.String(),
+                    tgChatId: t.String(),
+                    tgUsername: t.String()
                 })
             }
         );

@@ -2,7 +2,6 @@ import { Elysia } from "elysia";
 import { env } from "process";
 
 import initContext from "./plugins";
-import { botController } from "./services/bot";
 import { courseController } from "./services/course/controller";
 import { userController } from "./services/user/controller";
 
@@ -24,7 +23,6 @@ const app = new Elysia({
     })
     .use(courseController("/courses"))
     .use(userController("/users"))
-    .use(botController("/bot"))
     .get("/healthz", () => "Ok", { tags: ["Infra"] })
     .listen(Number(env.ITAM_EDU_API_PORT) ?? 3000);
 

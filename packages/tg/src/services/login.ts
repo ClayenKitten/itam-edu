@@ -40,7 +40,7 @@ async function login(data: {
     tgUsername: string;
 }): Promise<LoginResult> {
     try {
-        const response = await api().bot.login.post({ ...data });
+        const response = await api().users.loginAttempt.post({ ...data });
         if (response.error) {
             return { success: false, error: { status: response.status } };
         }

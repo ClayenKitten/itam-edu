@@ -6,9 +6,9 @@ export default async function handleHelp(ctx: MyMsgContext) {
 }
 
 const HELP_MESSAGE: string = [
-    "<b>ITAM.Education Bot 🎒</b>",
+    "<b>ITAM Education Bot 🎒</b>",
     "",
-    `Companion bot for <a href="${env.ITAM_EDU_TG_WEB_URL}">ITAM.Education Platform</a>.`,
+    `Companion bot for <a href="${env.ITAM_EDU_TG_WEB_URL}">ITAM Education Platform</a>.`,
     "",
     "<b>Commands 💬</b>",
     "/login - login into the web app",

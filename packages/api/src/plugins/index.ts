@@ -6,6 +6,7 @@ import logger from "./logger";
 import db from "./db";
 import authenticate from "./authenticate";
 import authorize from "./authorize";
+import integration from "./integration";
 
 /** Creates an application context. */
 export default async function initContext() {
@@ -16,5 +17,6 @@ export default async function initContext() {
         .use(db())
         .use(authenticate())
         .use(authorize())
+        .use(integration())
         .as("plugin");
 }

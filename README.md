@@ -1,4 +1,4 @@
-# ITAM.Education
+# ITAM Education
 
 An LMS for the [ITAM](https://itatmisis.ru) community.
 
@@ -9,9 +9,24 @@ An LMS for the [ITAM](https://itatmisis.ru) community.
 - Live Streams
 - Admin panel
 
+## 🧩 Integrations
+
+ITAM Education supports integration with some third-party tools.
+
+### <img height="16" width="16" src="https://cdn.simpleicons.org/telegram/white" />&nbsp;&nbsp;Telegram Bot
+
+Telegram bot is used for user login and notifications. Check [itam-edu-tg](/packages/tg) package for more information.
+
+### <img height="16" width="16" src="https://cdn.simpleicons.org/github/white" />&nbsp;&nbsp;GitHub App
+
+GitHub App manages GitHub organization of the course. Check [itam-edu-gh](https://www.youtube.com/watch?v=dQw4w9WgXcQ) package for more information.
+
+> [!IMPORTANT]
+> GitHub integration is not implemented yet.
+
 ## 📦 Packages
 
-ITAM.Education platform consists of multiple NodeJS/Bun packages that communicate with each other over typesafe HTTP powered by [Elysia](https://github.com/elysiajs/elysia).
+ITAM Education platform consists of multiple NodeJS/Bun packages that communicate with each other over typesafe HTTP powered by [Elysia](https://github.com/elysiajs/elysia).
 
 - [itam-edu-web](./packages/web) - frontend web application
 - [itam-edu-api](./packages/api) - REST API backend
