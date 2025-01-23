@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import { coursePath } from "$lib/path.js";
 
     const { data, children } = $props();
 
@@ -41,6 +42,14 @@
                 <p class="text-text-opaque text-sm italic">No description</p>
             {/if}
         </div>
+        <a
+            href={`${coursePath(data.course)}`}
+            target="_blank"
+            class="self-center hidden md:flex items-center justify-center gap-1 ml-auto px-6 h-min text-lg py-2 text-text bg-success hover:opacity-95 rounded-sm"
+        >
+            <span>Open</span>
+            <i class="ph-fill ph-arrow-square-out"></i>
+        </a>
     </header>
     <hr class="border-surface-light" />
     <nav
