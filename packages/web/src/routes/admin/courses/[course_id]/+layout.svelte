@@ -56,7 +56,8 @@
         class="flex max-sm:justify-between sm:gap-x-4 lg:gap-x-10 overflow-x-auto"
     >
         {@render link("Overview", "house", baseUrl, path === baseUrl)}
-        {@render link("Content", "article", `${baseUrl}/content`)}
+        {@render link("About", "book-bookmark", `${baseUrl}/about`)}
+        {@render link("Content", "books", `${baseUrl}/content`)}
         {@render link("Students", "student", `${baseUrl}/students`)}
         {#if data.course.isBlogEnabled}
             {@render link("Blog", "text-t", `${baseUrl}/blog`)}
