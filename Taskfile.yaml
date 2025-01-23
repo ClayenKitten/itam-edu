@@ -41,17 +41,7 @@ tasks:
 
   db:
     desc: Invoke dbmate
-    dir: ./packages/db
-    dotenv: ["./.env"]
-    env:
-      DBMATE_MIGRATIONS_DIR: "./migrations"
-      DBMATE_SCHEMA_FILE: "./schema.sql"
-      DBMATE_STRICT: "true"
-    cmd: |
-      export DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable"
-      echo "Connecting to database '$POSTGRES_DB' at '$POSTGRES_HOST' as '$POSTGRES_USER'"
-      npx dbmate {{.CLI_ARGS}}
-      npx kysely-codegen --out-file ./index.ts --camel-case --dialect postgres
+    cmd: ITAM_EDU_DB_COMMAND="{{.CLI_ARGS}}" docker compose -f ./compose.dev.yaml up --menu=false dbmate kysely-codegen
 
   db:up:
     desc: Run database migrations

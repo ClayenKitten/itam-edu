@@ -1,12 +1,4 @@
 {
     "name": "itam-edu-db",
-    "main": "./index.ts",
-    "dependencies": {
-        "dbmate": "^2.24.0",
-        "kysely": "^0.27.5",
-        "pg": "^8.13.1"
-    },
-    "devDependencies": {
-        "kysely-codegen": "^0.17.0"
-    }
+    "main": "./index.ts"
 }

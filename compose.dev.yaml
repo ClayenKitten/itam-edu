@@ -34,8 +34,6 @@ services:
 
   api:
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
-    depends_on:
-      db: { condition: service_completed_successfully }
     expose: [3000]
     environment: *environment
     develop:
@@ -52,19 +50,7 @@ services:
         - { action: sync, path: ./packages/tg, target: /app/packages/tg }
         - { action: rebuild, path: ./node_modules }
 
-  db:
-    build: ./packages/db
-    depends_on:
-      postgres: { condition: service_healthy }
-    develop:
-      watch:
-        - { action: rebuild, path: ./packages/db }
-    environment: &db_env
-      POSTGRES_DB: app
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_HOST: postgres
-
+  # Database
   postgres:
     image: postgres:17
     expose: [5432]
@@ -72,7 +58,11 @@ services:
     shm_size: 128mb
     restart: unless-stopped
     volumes: [postgres:/var/lib/postgresql/data]
-    environment: *db_env
+    environment: &db_env
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: postgres
     healthcheck:
       test: pg_isready --dbname="$$POSTGRES_DB" --username="$$POSTGRES_USER"
       interval: 5s
@@ -80,6 +70,32 @@ services:
       retries: 5
       start_period: 30s
       start_interval: 500ms
+
+  # Execute dbmate command (e.g. migrate database up or down)
+  dbmate:
+    build:
+      context: ./packages/db
+      dockerfile: ./dev.Dockerfile
+      target: dbmate
+    depends_on:
+      postgres: { condition: service_healthy }
+    volumes: [./packages/db/migrations:/app/migrations]
+    environment:
+      <<: *db_env
+      ITAM_EDU_DB_COMMAND: "${ITAM_EDU_DB_COMMAND-up}"
+    profiles: [dbmate]
+
+  # Codegen Typescript definitions from database schema
+  kysely-codegen:
+    build:
+      context: ./packages/db
+      dockerfile: ./dev.Dockerfile
+      target: kysely-codegen
+    depends_on:
+      dbmate: { condition: service_completed_successfully }
+    volumes: [./packages/db/index.ts:/app/index.ts]
+    environment: *db_env
+    profiles: [kysely-codegen]
 
   dbgate:
     image: dbgate/dbgate:5.3.1-alpine
