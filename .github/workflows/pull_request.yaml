@@ -1,4 +1,4 @@
-name: Main workflow
+name: Pull Request workflow
 permissions:
   contents: read
   packages: write
@@ -8,10 +8,14 @@ on:
   pull_request:
 
 jobs:
-  format:
-    name: Check Format
-    uses: "./.github/workflows/format.yaml"
-
   check:
     name: Check Code
     uses: "./.github/workflows/check.yaml"
+
+  check-format:
+    name: Check Format
+    uses: "./.github/workflows/format.yaml"
+
+  check-db:
+    name: Check Database
+    uses: "./.github/workflows/check-db.yaml"

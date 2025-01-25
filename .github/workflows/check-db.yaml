@@ -1,0 +1,33 @@
+# Ensures that all migrations are valid, and that schema file is up to date.
+name: Check DB
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  check-db:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Migrate
+        env:
+          ITAM_EDU_DB_COMMAND: up
+        run: docker compose --file="./compose.dev.yaml" up dbmate kysely-codegen
+
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v20
+        id: verify-changed-files
+        with:
+          files: ./packages/db/index.ts
+
+      - name: "ERROR: schema mismatch"
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          printf "## Schema mismatch:\n\n" >> $GITHUB_STEP_SUMMARY
+          printf "\`\`\`diff\n$(git diff ./packages/db/index.ts)\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+          printf "::error file=./packages/db/index.ts::Generated schema diffs from committed"
+          exit 1

@@ -8,18 +8,22 @@ on:
     branches: [main]
 
 jobs:
-  format:
-    name: Check Format
-    uses: "./.github/workflows/format.yaml"
-
   check:
     name: Check Code
     uses: "./.github/workflows/check.yaml"
 
+  check-format:
+    name: Check Format
+    uses: "./.github/workflows/format.yaml"
+
+  check-db:
+    name: Check Database
+    uses: "./.github/workflows/check-db.yaml"
+
   prepare:
     name: Prepare Services
     uses: "./.github/workflows/prepare.yaml"
-    needs: [format, check]
+    needs: [check, check-format, check-db]
 
   build:
     name: Build
