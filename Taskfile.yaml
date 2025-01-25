@@ -20,15 +20,17 @@ tasks:
 
   dev:up:
     desc: Setup development environment
-    cmd: |
-      docker compose -f ./compose.dev.yaml up \
-        --build \
-        --no-attach gateway \
-        --no-attach dbgate \
-        --abort-on-container-failure \
-        --watch \
-        {{.CLI_ARGS}}
-    ignore_error: true
+    interactive: true
+    cmds:
+      - cmd: |
+          docker compose --file="./compose.dev.yaml" up \
+            --build \
+            --no-attach gateway \
+            --no-attach dbgate \
+            --remove-orphans \
+            --watch \
+            {{.CLI_ARGS}}
+      - task: dev:down
 
   dev:down:
     desc: Stop development environment
