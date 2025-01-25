@@ -32,12 +32,12 @@ tasks:
 
   dev:down:
     desc: Stop development environment
-    cmd: docker compose -f ./compose.dev.yaml down
+    cmd: docker compose --profile "*" --file="./compose.dev.yaml" down
 
   dev:drop:
     desc: Stop development environment and delete volumes
     prompt: Are you sure? It will remove all volumes, leading to full data loss.
-    cmd: docker compose -f ./compose.dev.yaml down -v
+    cmd: docker compose --profile "*" --file="./compose.dev.yaml" down -v
 
   db:
     desc: Invoke dbmate
