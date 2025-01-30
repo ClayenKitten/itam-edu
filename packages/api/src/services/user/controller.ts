@@ -1,18 +1,16 @@
 import { Elysia, t } from "elysia";
-import { z } from "zod";
 import { randomBytes, randomInt } from "node:crypto";
 import initContext from "../../plugins";
 
 export async function userController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ prefix, tags: ["Users"] })
         .use(initContext())
-        .get("/me", async ({ db, user, error }) => {
+        .get("/me", async ({ user, error }) => {
             if (!user) return error(401);
-
-            const permissions = await db.user.getPermissions(user.id);
-            if (!permissions) return error(401);
-
-            return { user, permissions };
+            return {
+                user: user.toPublicDTO(),
+                permissions: user.permissions.toDTO()
+            };
         })
         .post(
             "/me/session",

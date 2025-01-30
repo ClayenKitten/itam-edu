@@ -2,7 +2,6 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api.js";
     import Switch from "$lib/components/Switch.svelte";
-    import { onMount } from "svelte";
 
     const { data } = $props();
 
@@ -13,7 +12,8 @@
     };
 
     const canEdit = $derived(
-        data.permissions?.course?.[data.course.id]?.canEditInfo ?? false
+        data.permissions.course.find(x => x.courseId === data.course.id)
+            ?.canEditInfo ?? false
     );
 </script>
 

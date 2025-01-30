@@ -1,23 +1,25 @@
 import * as schema from "./schema";
-import { PermissionKinds } from "./permissions";
 import { Repository } from "../../plugins/db/repository";
 import { schemaFields } from "../../util";
+import { User, Permissions } from "./entity";
 
 export default class UserRepository extends Repository {
-    public async getByToken(
-        token: string
-    ): Promise<typeof schema.user.static | null> {
+    public async getByToken(token: string): Promise<User | null> {
         const user = await this.db
             .selectFrom("users")
-            .select([
-                "users.id",
-                ...schemaFields(schema.user).filter(x => x !== "id")
-            ])
+            .selectAll("users")
             .leftJoin("userSessions", "userSessions.userId", "users.id")
             .where("userSessions.token", "=", token)
             .executeTakeFirst();
-        if (user === undefined) return null;
-        return user;
+        if (!user) return null;
+
+        const coursePermissions = await this.db
+            .selectFrom("courseStaff")
+            .select(schemaFields(schema.coursePermissions))
+            .where("userId", "=", user.id)
+            .execute();
+
+        return new User(user, new Permissions(user, coursePermissions));
     }
 
     public async createLoginAttempt({
@@ -92,35 +94,5 @@ export default class UserRepository extends Repository {
 
             return true;
         });
-    }
-
-    public async getPermissions(userId: string) {
-        const user = await this.db
-            .selectFrom("users")
-            .select(PermissionKinds["user"])
-            .where("id", "=", userId)
-            .executeTakeFirst();
-        if (user === undefined) return null;
-
-        const course = user.isStaff
-            ? await this.db
-                  .selectFrom("courseStaff")
-                  .select(["courseId", ...PermissionKinds["course"]])
-                  .where("userId", "=", userId)
-                  .execute()
-            : [];
-        type CoursePermission = Omit<(typeof course)[number], "courseId">;
-
-        return {
-            user,
-            course: course.reduce(
-                (obj, val) => {
-                    const { courseId, ...permissions } = val;
-                    obj[courseId] = permissions;
-                    return obj;
-                },
-                {} as Record<string, CoursePermission>
-            )
-        };
     }
 }

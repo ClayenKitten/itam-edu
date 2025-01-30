@@ -7,7 +7,7 @@
         Courses
     </h1>
     <menu>
-        {#if data.permissions?.user.canCreateCourses}
+        {#if data.permissions.global.canCreateCourses === true}
             <button
                 class={[
                     "flex items-center gap-2 h-10 px-3 lg:px-7",

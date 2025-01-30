@@ -10,7 +10,8 @@
     const popoverMode = $derived((innerWidth.current ?? 0) < 1024);
 
     const canEdit = $derived(
-        data.permissions?.course?.[data.course.id]?.canEditContent ?? false
+        data.permissions.course.find(x => x.courseId === data.course.id)
+            ?.canEditContent ?? false
     );
 </script>
 

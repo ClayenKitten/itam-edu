@@ -11,3 +11,19 @@ export const user = t.Object({
     bio: t.Nullable(t.String({ maxLength: 500 })),
     tgUsername: t.String()
 });
+
+export const globalPermissions = t.Object({
+    isStaff: t.Boolean(),
+    canCreateCourses: t.Boolean(),
+    canPublishCourses: t.Boolean()
+});
+
+export const coursePermissions = t.Object({
+    courseId: t.String({ format: "uuid" }),
+    isOwner: t.Boolean(),
+    canEditInfo: t.Boolean(),
+    canEditContent: t.Boolean(),
+    canManageSubmissions: t.Boolean(),
+    canManageBlog: t.Boolean(),
+    canManageFeedback: t.Boolean()
+});

@@ -4,9 +4,9 @@ import type { LayoutServerLoad } from "./$types";
 export const load: LayoutServerLoad = async ({ parent, url }) => {
     const { user, permissions } = await parent();
     if (!user) return redirectSignin(url);
-    if (!permissions.user.isStaff) error(403);
+    if (!permissions.global.isStaff == true) error(403);
 
-    return { user };
+    return { user, permissions };
 };
 
 function redirectSignin(current: URL): never {
