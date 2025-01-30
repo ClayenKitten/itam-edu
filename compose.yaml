@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
 
   web:
+    image: ghcr.io/clayenkitten/itam-edu-web:latest
     build: &build
       dockerfile: ./packages/web/Dockerfile
       context: .
@@ -19,14 +20,16 @@ services:
     restart: unless-stopped
 
   api:
+    image: ghcr.io/clayenkitten/itam-edu-api:latest
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
-    depends_on: { db: { condition: service_completed_successfully } }
+    depends_on: { db-migration: { condition: service_completed_successfully } }
     expose: [3000]
     env_file: ./packages/api/.env
     environment: { ITAM_EDU_API_PORT: "3000" }
     restart: unless-stopped
 
   tg:
+    image: ghcr.io/clayenkitten/itam-edu-tg:latest
     build: { <<: *build, dockerfile: ./packages/tg/Dockerfile }
     depends_on: [api]
     expose: [3000]
@@ -34,7 +37,8 @@ services:
     environment: { ITAM_EDU_TG_WEBHOOK_PORT: "3000" }
     restart: unless-stopped
 
-  db:
+  db-migration:
+    image: ghcr.io/clayenkitten/itam-edu-db:latest
     build: ./packages/db
     depends_on: { postgres: { condition: service_healthy } }
     env_file: ./packages/db/.env
