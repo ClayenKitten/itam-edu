@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Value } from "@sinclair/typebox/value";
-    import * as schema from "itam-edu-api/src/services/course/lesson/schema";
+    import * as schema from "itam-edu-api/src/api/courses/lesson/schema";
 
     let props: {
         id: string;

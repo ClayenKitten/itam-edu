@@ -1,15 +1,14 @@
 import { browser } from "$app/environment";
 import { env } from "$env/dynamic/public";
 import { treaty } from "@elysiajs/eden";
-import { error, type Cookies } from "@sveltejs/kit";
-import type { AppType } from "itam-edu-api";
+import type { ApiTreaty } from "itam-edu-api/src/api";
 
 export default function api(params: ApiParams) {
     const baseUrl = browser
         ? env.PUBLIC_ITAM_EDU_WEB_API_URL_BROWSER!
         : env.PUBLIC_ITAM_EDU_WEB_API_URL_SERVER!;
 
-    const client = treaty<AppType>(baseUrl, {
+    const client = treaty<ApiTreaty>(baseUrl, {
         fetcher: params.fetch,
         onRequest: () => {
             if (!browser) return; // On server `hooks.server.ts` is used

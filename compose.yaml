@@ -28,15 +28,6 @@ services:
     environment: { ITAM_EDU_API_PORT: "3000" }
     restart: unless-stopped
 
-  tg:
-    image: ghcr.io/clayenkitten/itam-edu-tg:latest
-    build: { <<: *build, dockerfile: ./packages/tg/Dockerfile }
-    depends_on: [api]
-    expose: [3000]
-    env_file: ./packages/tg/.env
-    environment: { ITAM_EDU_TG_WEBHOOK_PORT: "3000" }
-    restart: unless-stopped
-
   db-migration:
     image: ghcr.io/clayenkitten/itam-edu-db:latest
     build: ./packages/db

@@ -1,29 +1,23 @@
-import { Elysia } from "elysia";
 import { env } from "process";
+import ApiServer from "./api";
+import TelegramBot from "./telegram";
+import type AppConfig from "./config";
 
-import initContext from "./plugins";
-import { courseController } from "./services/course/controller";
-import { userController } from "./services/user/controller";
+const config: AppConfig = {
+    db: {
+        connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING
+    },
+    api: {
+        host: env.ITAM_EDU_API_HOST ?? "0.0.0.0",
+        port: env.ITAM_EDU_API_PORT ?? "3000"
+    },
+    tg: {
+        token: env.ITAM_EDU_API_TG_TOKEN,
+        supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME
+    },
+    webUrl: env.ITAM_EDU_API_WEB_HOST
+};
 
-const app = new Elysia({
-    serve: { maxRequestBodySize: 50 * 1024 * 1024 },
-    strictPath: true
-})
-    .use(await initContext())
-    .onError(async ({ logger, ...ctx }) => {
-        if (ctx.code === "UNKNOWN") {
-            logger?.error("Unhandled Exception", {
-                exceptionKind: ctx.error?.constructor?.name,
-                name: ctx.error.name,
-                message: ctx.error.message,
-                cause: ctx.error.cause,
-                stack: ctx.error.stack
-            });
-        }
-    })
-    .use(courseController("/courses"))
-    .use(userController("/users"))
-    .get("/healthz", () => "Ok", { tags: ["Infra"] })
-    .listen(Number(env.ITAM_EDU_API_PORT) ?? 3000);
-
-export type AppType = typeof app;
+const api = new ApiServer(config);
+const telegram = new TelegramBot(config);
+await Promise.all([api.start(), telegram.start()]);

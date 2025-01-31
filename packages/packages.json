@@ -18,15 +18,6 @@
         }
     },
     {
-        "path": "packages/tg",
-        "node": { "name": "itam-edu-tg" },
-        "docker": {
-            "name": "itam-edu-tg",
-            "context": ".",
-            "dockerfile": "packages/tg/Dockerfile"
-        }
-    },
-    {
         "path": "packages/db",
         "docker": { "name": "itam-edu-db", "context": "packages/db" }
     }

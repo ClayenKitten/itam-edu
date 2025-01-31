@@ -15,11 +15,11 @@ ITAM Education supports integration with some third-party tools.
 
 ### <img height="16" width="16" src="https://cdn.simpleicons.org/telegram/white" />&nbsp;&nbsp;Telegram Bot
 
-Telegram bot is used for user login and notifications. Check [itam-edu-tg](/packages/tg) package for more information.
+Telegram bot is used for user login and notifications. Check integration [README](/packages/api/src/telegram) for more information.
 
 ### <img height="16" width="16" src="https://cdn.simpleicons.org/github/white" />&nbsp;&nbsp;GitHub App
 
-GitHub App manages GitHub organization of the course. Check [itam-edu-gh](https://www.youtube.com/watch?v=dQw4w9WgXcQ) package for more information.
+GitHub App manages GitHub organization of the course. Check integration [README](https://www.youtube.com/watch?v=dQw4w9WgXcQ) for more information.
 
 > [!IMPORTANT]
 > GitHub integration is not implemented yet.
@@ -30,7 +30,6 @@ ITAM Education platform consists of multiple NodeJS/Bun packages that communicat
 
 - [itam-edu-web](./packages/web) - frontend web application
 - [itam-edu-api](./packages/api) - REST API backend
-- [itam-edu-tg](./packages/tg) - companion Telegram bot
 - [itam-edu-db](./packages/db) - database migrations
 
 All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
@@ -83,6 +82,5 @@ This command starts the reverse proxy, PostgreSQL, and all packages in developme
 | ------------ | ------------------------- | ------------------------------------- |
 | itam-edu-web | Frontend                  | [www.localhost](http://www.localhost) |
 | itam-edu-api | Backend                   | [api.localhost](http://api.localhost) |
-| itam-edu-tg  | Telegram bot              |                                       |
 | dbgate       | Web interface to Postgres | [db.localhost](http://db.localhost)   |
 | PostgreSQL   | PostgresSQL RDBMS         | localhost:5432                        |
