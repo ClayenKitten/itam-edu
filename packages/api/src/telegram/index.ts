@@ -1,24 +1,33 @@
 import { Telegraf } from "telegraf";
 import { env } from "process";
 
-import { extendContext, type BotContext } from "./ctx.js";
+import {
+    extendContext,
+    type BotContext,
+    type StaticBotContext
+} from "./ctx.js";
 import type AppConfig from "../config.js";
 import Logger from "../logger.js";
 import setupHandlers from "./handlers/index.js";
+import Database from "../db/index.js";
 
 export default class TelegramBot {
+    /** Internal Telegraf instance. */
     private telegraf: Telegraf<BotContext>;
-    private logger: Logger;
 
-    public constructor(public readonly config: AppConfig) {
-        this.logger = new Logger();
+    /** Static context. */
+    public readonly ctx: StaticBotContext;
+
+    public constructor(config: AppConfig) {
+        const logger = new Logger();
+        const db = new Database(config.db.connectionString, logger);
+        this.ctx = { config, logger, db };
         this.telegraf = new Telegraf<BotContext>(config.tg.token).use(
             async (ctx, next) => {
-                await extendContext(ctx, config, this.logger);
+                await extendContext(ctx, this.ctx);
                 await next();
             }
         );
-        this.telegraf.context.logger = this.logger;
 
         if (env.NODE_ENV === "production") {
             process.once("SIGINT", () => this.telegraf.stop("SIGINT"));
@@ -32,13 +41,13 @@ export default class TelegramBot {
         return new Promise(resolve => {
             this.telegraf
                 .launch(() => {
-                    this.telegraf.context.logger?.info("Started Telegram bot", {
+                    this.ctx.logger.info("Started Telegram bot", {
                         mode: "polling"
                     });
                     resolve();
                 })
                 .finally(() => {
-                    this.telegraf.context.logger?.info("Stopped Telegram bot");
+                    this.ctx.logger.info("Stopped Telegram bot");
                 });
         });
     }
