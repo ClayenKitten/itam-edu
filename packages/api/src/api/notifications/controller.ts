@@ -2,10 +2,8 @@ import { Elysia, t } from "elysia";
 import initContext from "../plugins";
 import * as schema from "./schema";
 
-export async function notificationController<PREFIX extends string>(
-    prefix: PREFIX
-) {
-    return new Elysia({ prefix, tags: ["Notification"] })
+export async function notificationController() {
+    return new Elysia({ prefix: "/notifications", tags: ["Notifications"] })
         .use(initContext())
         .get("/unsent", async ({ db }) => {
             const notificationMessages =
@@ -32,6 +30,29 @@ export async function notificationController<PREFIX extends string>(
                 body: t.Object({
                     text: t.String({ minLength: 1, maxLength: 4096 }),
                     users: t.Union([t.Array(t.String()), t.Literal("all")])
+                })
+            }
+        )
+        .put(
+            "/send",
+            async ({ db, body, error }) => {
+                const { id, date } = body;
+
+                if (!id || !date) {
+                    return error(400, "Both 'id' and 'date' are required");
+                }
+
+                try {
+                    await db.notification.changeMessageStatus(id, date);
+                    return { success: true };
+                } catch (err) {
+                    return error(500, "Failed to send notification");
+                }
+            },
+            {
+                body: t.Object({
+                    id: t.String({ format: "uuid" }),
+                    date: t.Date()
                 })
             }
         );

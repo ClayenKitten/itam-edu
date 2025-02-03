@@ -74,5 +74,19 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
                     tgUsername: t.String()
                 })
             }
+        )
+
+        .get(
+            "/:id",
+            async ({ db, params, query, error }) => {
+                const user = await db.user.getById(params.id);
+                if (!user) return error(404);
+                return user;
+            },
+            {
+                params: t.Object({
+                    id: t.String({ format: "uuid" })
+                })
+            }
         );
 }
