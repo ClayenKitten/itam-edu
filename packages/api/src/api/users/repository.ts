@@ -22,6 +22,23 @@ export default class UserRepository extends Repository {
         return new User(user, new Permissions(user, coursePermissions));
     }
 
+    public async getById(id: string): Promise<User | null> {
+        const user = await this.db
+            .selectFrom("users")
+            .selectAll("users")
+            .where("id", "=", id)
+            .executeTakeFirst();
+        if (!user) return null;
+
+        const coursePermissions = await this.db
+            .selectFrom("courseStaff")
+            .select(schemaFields(schema.coursePermissions))
+            .where("userId", "=", user.id)
+            .execute();
+
+        return new User(user, new Permissions(user, coursePermissions));
+    }
+
     public async createLoginAttempt({
         tgUserId,
         tgChatId,

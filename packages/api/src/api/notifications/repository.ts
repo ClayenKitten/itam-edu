@@ -36,14 +36,43 @@ export default class NotificationRepository extends Repository {
         }
     }
 
-    public async getUnsentMessages(): Promise<
-        (typeof schema.notificationMessage.static)[] | null
-    > {
+    public async getMessageText(id: string): Promise<string> {
+        const notification = await this.db
+            .selectFrom("notifications")
+            .select("notificationText")
+            .where("id", "=", id)
+            .executeTakeFirst();
+
+        if (!notification) {
+            throw new Error(`Notification with id ${id} not found`);
+        }
+
+        return notification.notificationText;
+    }
+
+    public async changeMessageStatus(id: string, date: Date) {
+        const message = await this.db
+            .updateTable("notificationMessages")
+            .set({ sentAt: date })
+            .where("id", "=", id)
+            .executeTakeFirstOrThrow();
+        return message;
+    }
+
+    public async getUnsentMessages() {
         const notifications = await this.db
             .selectFrom("notificationMessages")
-            .select(schemaFields(schema.notificationMessage))
-            .where("sentAt", "is", null)
+            .innerJoin(
+                "notifications",
+                "notifications.id",
+                "notificationMessages.notificationId"
+            )
+            .selectAll("notificationMessages")
+            .select("notifications.notificationText")
+            .where("notificationMessages.sentAt", "is", null)
+            .orderBy("notifications.createdAt", "asc")
             .execute();
-        return notifications ?? null;
+
+        return notifications;
     }
 }

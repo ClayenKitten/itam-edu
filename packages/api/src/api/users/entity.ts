@@ -34,6 +34,12 @@ export class User {
     public get tgUsername() {
         return this.user.tgUsername;
     }
+    public get tgChatId() {
+        return this.user.tgChatId;
+    }
+    public get tgUserId() {
+        return this.user.tgUserId;
+    }
 }
 
 export class Permissions {
