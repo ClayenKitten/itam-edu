@@ -28,16 +28,8 @@ services:
     environment: { ITAM_EDU_API_PORT: "3000" }
     restart: unless-stopped
 
-  db-migration:
-    image: ghcr.io/clayenkitten/itam-edu-db:latest
-    build: ./packages/db
-    depends_on: { postgres: { condition: service_healthy } }
-    env_file: ./packages/db/.env
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-
+  # Database
+  ## PostgreSQL server
   postgres:
     image: postgres:17
     expose: [5432]
@@ -53,6 +45,26 @@ services:
       retries: 5
       start_period: 30s
       start_interval: 500ms
+  ## Database migration
+  db-migration:
+    image: ghcr.io/clayenkitten/itam-edu-db:latest
+    build: ./packages/db
+    depends_on: { postgres: { condition: service_healthy } }
+    env_file: ./packages/db/.env
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+  # Media
+  ## Proxy server (Caddy)
+  media:
+    build:
+      context: ./packages/media
+      dockerfile: ./Dockerfile
+    depends_on: [api]
+    expose: [3000]
+    environment: { ITAM_EDU_MEDIA_PORT: "3000" }
 
 configs:
   caddy: { file: ./Caddyfile }
@@ -61,3 +73,4 @@ volumes:
   postgres:
   caddy_data:
   caddy_config:
+  media:

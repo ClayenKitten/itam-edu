@@ -1,5 +1,10 @@
 www.example.com {
-    reverse_proxy web:3000
+    handle /media* {
+        reverse_proxy media:3000        
+    }
+    handle {
+        reverse_proxy web:3000
+    }
 }
 
 api.example.com {
