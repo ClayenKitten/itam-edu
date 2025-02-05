@@ -6,3 +6,6 @@ yarn.lock
 # Generated
 generated
 packages/db/index.ts
+
+# Data
+packages/media/data

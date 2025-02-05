@@ -5,6 +5,7 @@ import { courseController } from "./courses/controller";
 import { userController } from "./users/controller";
 import type AppConfig from "../config";
 import Logger from "../logger";
+import { mediaController } from "./media/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -59,6 +60,7 @@ export default class ApiServer {
             })
             .use(courseController("/courses"))
             .use(userController("/users"))
+            .use(mediaController())
             .get("/healthz", () => "Ok", { tags: ["Infra"] });
     }
 }

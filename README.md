@@ -26,11 +26,14 @@ GitHub App manages GitHub organization of the course. Check integration [README]
 
 ## 📦 Packages
 
-ITAM Education platform consists of multiple NodeJS/Bun packages that communicate with each other over typesafe HTTP powered by [Elysia](https://github.com/elysiajs/elysia).
+ITAM Education platform consists of multiple packages that communicate over HTTP.
 
-- [itam-edu-web](./packages/web) - frontend web application
-- [itam-edu-api](./packages/api) - REST API backend
-- [itam-edu-db](./packages/db) - database migrations
+| Package                            | Implementation                                          | Description         |
+| ---------------------------------- | ------------------------------------------------------- | ------------------- |
+| [itam-edu-web](./packages/web)     | [NodeJS](https://nodejs.org)                            | Frontend            |
+| [itam-edu-api](./packages/api)     | [Bun](https://bun.sh)                                   | REST API            |
+| [itam-edu-media](./packages/media) | Caddy proxy and [dufs](https://github.com/sigoden/dufs) | File server         |
+| [itam-edu-db](./packages/db)       | [dbmate](https://github.com/amacneil/dbmate)            | Database migrations |
 
 All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
 
@@ -78,9 +81,10 @@ The [development environment](./compose.dev.yaml) is setup by running `task dev:
 
 This command starts the reverse proxy, PostgreSQL, and all packages in development mode with hot reloading enabled.
 
-| Service      | Description               | URL                                   |
-| ------------ | ------------------------- | ------------------------------------- |
-| itam-edu-web | Frontend                  | [www.localhost](http://www.localhost) |
-| itam-edu-api | Backend                   | [api.localhost](http://api.localhost) |
-| dbgate       | Web interface to Postgres | [db.localhost](http://db.localhost)   |
-| PostgreSQL   | PostgresSQL RDBMS         | localhost:5432                        |
+| Service    | Internal URL    | Reverse-proxy URL                                 |
+| ---------- | --------------- | ------------------------------------------------- |
+| web        | `web:3000`      | [www.localhost](http://www.localhost)             |
+| api        | `api:3000`      | [api.localhost](http://api.localhost)             |
+| media      | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
+| dbgate     | `dbgate:3000`   | [db.localhost](http://db.localhost)               |
+| PostgreSQL | `postgres:5432` | localhost:5432                                    |
