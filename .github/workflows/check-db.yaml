@@ -1,5 +1,5 @@
 # Ensures that all migrations are valid, and that schema file is up to date.
-name: Check DB
+name: Check database migrations
 permissions:
   contents: read
 

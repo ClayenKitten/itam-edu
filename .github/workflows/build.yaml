@@ -4,11 +4,6 @@ permissions:
   packages: write
 
 on:
-  workflow_dispatch:
-    inputs:
-      image: { type: string, required: true }
-      context: { type: string, required: true }
-      dockerfile: { type: string, default: Dockerfile }
   workflow_call:
     inputs:
       image: { type: string, required: true }

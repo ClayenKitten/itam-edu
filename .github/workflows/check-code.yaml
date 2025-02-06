@@ -1,4 +1,4 @@
-name: Check
+name: Check code
 permissions:
   contents: read
 
@@ -8,7 +8,6 @@ on:
 
 jobs:
   check-and-test:
-    name: Check
     runs-on: ubuntu-22.04
 
     steps:

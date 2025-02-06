@@ -8,33 +8,15 @@ on:
     branches: [main]
 
 jobs:
-  check:
-    name: Check Code
-    uses: "./.github/workflows/check.yaml"
+  check-code:
+    uses: "./.github/workflows/check-code.yaml"
 
   check-format:
-    name: Check Format
-    uses: "./.github/workflows/format.yaml"
+    uses: "./.github/workflows/check-format.yaml"
 
   check-db:
-    name: Check Database
     uses: "./.github/workflows/check-db.yaml"
 
-  prepare:
-    name: Prepare Services
-    uses: "./.github/workflows/prepare.yaml"
-    needs: [check, check-format, check-db]
-
   build:
-    name: Build
-    uses: "./.github/workflows/build.yaml"
-    needs: [prepare]
-    if: ${{ success() && needs.prepare.outputs.services != '[]' }}
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.prepare.outputs.docker-services) }}
-      fail-fast: false
-    with:
-      image: ${{ matrix.service.docker.name }}
-      context: ${{ matrix.service.docker.context }}
-      dockerfile: ${{ matrix.service.docker.dockerfile }}
+    uses: "./.github/workflows/build-packages.yaml"
+    needs: [check-code, check-format, check-db]
