@@ -85,33 +85,19 @@ export interface Homeworks {
   content: string;
   courseId: string;
   id: Generated<string>;
-  lesson: string;
-  solutionMultiline: boolean;
   solutionPlaceholder: string | null;
-  solutionSyntaxHighlighting: string | null;
   title: string;
 }
 
 export interface HomeworkSubmissions {
-  /**
-   * Whether homework is accepted or rejected by teacher. If set to NULL, it is not reviewed yet.
-   */
-  accepted: boolean | null;
   attempt: number;
-  /**
-   * Student comment
-   */
-  comment: Generated<string>;
-  /**
-   * Feedback from reviewer
-   */
-  feedback: Generated<string>;
   homeworkId: string;
+  reviewAccepted: boolean | null;
+  reviewedAt: Timestamp | null;
+  reviewerComment: string | null;
   reviewerId: string | null;
-  /**
-   * Homework solution, usually in form of text or of an URL
-   */
   solution: string;
+  studentComment: string | null;
   studentId: string;
   submittedAt: Generated<Timestamp | null>;
 }
