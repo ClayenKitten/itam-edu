@@ -62,39 +62,8 @@ COMMENT ON COLUMN lessons.title IS 'Human-readable name of the lesson';
 COMMENT ON COLUMN lessons.content IS 'HTML content of the lesson';
 COMMENT ON COLUMN lessons.icon IS 'URL of the lesson icon';
 
-CREATE TABLE homeworks (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    course_id UUID NOT NULL,
-    lesson TEXT NOT NULL,
-    FOREIGN KEY(course_id, lesson) REFERENCES lessons(course_id, slug),
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    solution_placeholder TEXT,
-    solution_multiline BOOLEAN NOT NULL,
-    solution_syntax_highlighting TEXT
-);
-
-CREATE TABLE homework_submissions (
-    student_id UUID REFERENCES users(id) NOT NULL,
-    homework_id UUID REFERENCES homeworks(id) NOT NULL,
-    attempt INTEGER NOT NULL,
-    PRIMARY KEY (student_id, homework_id, attempt),
-    solution TEXT NOT NULL,
-    comment TEXT DEFAULT '' NOT NULL,
-    feedback TEXT DEFAULT '' NOT NULL,
-    accepted BOOLEAN DEFAULT NULL,
-    reviewer_id UUID REFERENCES users(id),
-    submitted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-COMMENT ON COLUMN homework_submissions.solution IS 'Homework solution, usually in form of text or of an URL';
-COMMENT ON COLUMN homework_submissions.comment IS 'Student comment';
-COMMENT ON COLUMN homework_submissions.feedback IS 'Feedback from reviewer';
-COMMENT ON COLUMN homework_submissions.accepted IS 'Whether homework is accepted or rejected by teacher. If set to NULL, it is not reviewed yet.';
-
 -- migrate:down
 
-DROP TABLE IF EXISTS homework_submissions;
-DROP TABLE IF EXISTS homeworks;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS course_students;
 DROP TABLE IF EXISTS course_staff;
