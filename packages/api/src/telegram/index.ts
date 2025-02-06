@@ -1,4 +1,4 @@
-import { Context, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import { env } from "process";
 
 import {
@@ -10,9 +10,7 @@ import type AppConfig from "../config.js";
 import Logger from "../logger.js";
 import setupHandlers from "./handlers/index.js";
 import Database from "../db/index.js";
-import { messageSendout } from "./handlers/sendout.js";
-
-let activeTimers = 0;
+import type { ParseMode } from "telegraf/types";
 
 export default class TelegramBot {
     /** Internal Telegraf instance. */
@@ -47,7 +45,6 @@ export default class TelegramBot {
                     this.ctx.logger.info("Started Telegram bot", {
                         mode: "polling"
                     });
-                    this.startTimers(this.ctx, this.telegraf);
                     resolve();
                 })
                 .finally(() => {
@@ -61,15 +58,12 @@ export default class TelegramBot {
         this.telegraf.stop();
     }
 
-    /** Starts timers for tasks running on interval. */
-    private async startTimers(
-        ctx: StaticBotContext,
-        telegraf: Telegraf<BotContext>
+    /** Sends Telegram message. */
+    public async sendMessage(
+        chatId: string,
+        text: string,
+        extra?: { parse_mode?: ParseMode }
     ) {
-        activeTimers++; // Increment when a timer starts
-        console.log(`Timers running: ${activeTimers}`);
-
-        setInterval(() => messageSendout(ctx, telegraf), 5300);
-        this.ctx.logger.info("Started timer for messageSendout");
+        return await this.telegraf.telegram.sendMessage(chatId, text, extra);
     }
 }

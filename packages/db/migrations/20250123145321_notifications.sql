@@ -2,15 +2,15 @@
 
 CREATE TABLE notifications (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    notification_text TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    sender_id UUID REFERENCES users(id) NULL
+    text TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    sender_id UUID REFERENCES users(id)
 );
 
 CREATE TABLE notification_messages (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     notification_id UUID REFERENCES notifications(id) NOT NULL,
     user_id UUID REFERENCES users(id) NOT NULL,
+    PRIMARY KEY (notification_id, user_id),
     sent_at TIMESTAMPTZ
 );
 
