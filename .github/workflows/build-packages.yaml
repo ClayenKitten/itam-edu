@@ -1,0 +1,35 @@
+name: Build Packages
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build-web:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-web
+      context: .
+      dockerfile: packages/web/Dockerfile
+
+  build-api:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-api
+      context: .
+      dockerfile: packages/api/Dockerfile
+
+  build-db:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-db
+      context: packages/db
+
+  build-media:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-media
+      context: packages/media

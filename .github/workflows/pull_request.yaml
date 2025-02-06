@@ -4,18 +4,14 @@ permissions:
   packages: write
 
 on:
-  workflow_dispatch:
   pull_request:
 
 jobs:
-  check:
-    name: Check Code
-    uses: "./.github/workflows/check.yaml"
+  check-code:
+    uses: "./.github/workflows/check-code.yaml"
 
   check-format:
-    name: Check Format
-    uses: "./.github/workflows/format.yaml"
+    uses: "./.github/workflows/check-format.yaml"
 
   check-db:
-    name: Check Database
     uses: "./.github/workflows/check-db.yaml"
