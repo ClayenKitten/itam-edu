@@ -138,17 +138,16 @@ export interface Lessons {
 }
 
 export interface NotificationMessages {
-  id: Generated<string>;
   notificationId: string;
   sentAt: Timestamp | null;
   userId: string;
 }
 
 export interface Notifications {
-  createdAt: Generated<Timestamp | null>;
+  createdAt: Generated<Timestamp>;
   id: Generated<string>;
-  notificationText: string;
   senderId: string | null;
+  text: string;
 }
 
 export interface SchemaMigrations {

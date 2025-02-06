@@ -5,7 +5,7 @@ import UserRepository from "../api/users/repository";
 import LessonRepository from "../api/courses/lesson/repository";
 import StudentRepository from "../api/courses/student/repository";
 import getDatabaseConnection from "./connection";
-import NotificationRepository from "../api/notifications/repository";
+import NotificationRepository from "../notifications/repository";
 
 export default class Database {
     constructor(connectionString: string, logger: Logger) {

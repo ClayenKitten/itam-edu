@@ -1,7 +1,9 @@
 import { env } from "process";
+import type AppConfig from "./config";
+
 import ApiServer from "./api";
 import TelegramBot from "./telegram";
-import type AppConfig from "./config";
+import NotificationWorker from "./notifications/worker";
 
 const config: AppConfig = {
     db: {
@@ -20,4 +22,6 @@ const config: AppConfig = {
 
 const api = new ApiServer(config);
 const telegram = new TelegramBot(config);
-await Promise.all([api.start(), telegram.start()]);
+const notifications = new NotificationWorker(config, telegram);
+
+await Promise.all([api.start(), telegram.start(), notifications.start()]);
