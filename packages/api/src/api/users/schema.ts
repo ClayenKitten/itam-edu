@@ -25,5 +25,6 @@ export const coursePermissions = t.Object({
     canEditContent: t.Boolean(),
     canManageSubmissions: t.Boolean(),
     canManageBlog: t.Boolean(),
-    canManageFeedback: t.Boolean()
+    canManageFeedback: t.Boolean(),
+    canManageCalls: t.Boolean()
 });

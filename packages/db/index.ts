@@ -13,6 +13,31 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface CallAttendees {
+  callId: string;
+  joinedAt: Timestamp;
+  /**
+   * Duration in seconds that user stayed in the call
+   */
+  joinedDuration: Generated<number>;
+  userId: string;
+}
+
+export interface Calls {
+  courseId: string;
+  /**
+   * Duration of the call in seconds
+   */
+  duration: Generated<number | null>;
+  endedAt: Timestamp | null;
+  id: Generated<string>;
+  scheduledAt: Timestamp | null;
+  scheduledBy: string | null;
+  startedAt: Generated<Timestamp | null>;
+  startedBy: string | null;
+  title: string;
+}
+
 export interface Courses {
   /**
    * Multi-line description of the course
@@ -59,6 +84,7 @@ export interface CourseStaff {
    * Whether user can write posts to blog
    */
   canManageBlog: Generated<boolean>;
+  canManageCalls: Generated<boolean>;
   /**
    * Whether user can modify feedback form
    */
@@ -187,6 +213,8 @@ export interface UserSessions {
 }
 
 export interface DB {
+  callAttendees: CallAttendees;
+  calls: Calls;
   courses: Courses;
   courseStaff: CourseStaff;
   courseStudents: CourseStudents;
