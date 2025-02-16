@@ -8,19 +8,19 @@ on:
   workflow_call:
 
 jobs:
-  build-web:
-    uses: "./.github/workflows/build.yaml"
-    with:
-      image: itam-edu-web
-      context: .
-      dockerfile: packages/web/Dockerfile
-
   build-api:
     uses: "./.github/workflows/build.yaml"
     with:
       image: itam-edu-api
       context: .
       dockerfile: packages/api/Dockerfile
+
+  build-frontend:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-frontend
+      context: .
+      dockerfile: packages/frontend/Dockerfile
 
   build-db:
     uses: "./.github/workflows/build.yaml"
