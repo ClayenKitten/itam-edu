@@ -13,7 +13,7 @@ Each incoming request is authorized via forward auth to `itam-edu-api` with toke
 >
 > **Example**
 >
-> - itam-edu-web: `https://example.com`
+> - itam-edu-frontend: `https://example.com`
 > - itam-edu-media: `https://example.com/media`
 
 ## Configuration

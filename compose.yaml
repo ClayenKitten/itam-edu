@@ -8,14 +8,14 @@ services:
     configs: [{ source: caddy, target: /etc/caddy/Caddyfile }]
     restart: unless-stopped
 
-  web:
-    image: ghcr.io/clayenkitten/itam-edu-web:latest
+  frontend:
+    image: ghcr.io/clayenkitten/itam-edu-frontend:latest
     build: &build
-      dockerfile: ./packages/web/Dockerfile
+      dockerfile: ./packages/frontend/Dockerfile
       context: .
     depends_on: [api]
     expose: [3000]
-    env_file: ./packages/web/.env
+    env_file: ./packages/frontend/.env
     environment: { ITAM_EDU_WEB_PORT: "3000" }
     restart: unless-stopped
 
