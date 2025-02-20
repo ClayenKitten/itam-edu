@@ -92,6 +92,7 @@ export interface Homeworks {
 export interface HomeworkSubmissions {
   attempt: number;
   homeworkId: string;
+  id: Generated<string>;
   reviewAccepted: boolean | null;
   reviewedAt: Timestamp | null;
   reviewerComment: string | null;

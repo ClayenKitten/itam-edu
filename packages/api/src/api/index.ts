@@ -6,6 +6,7 @@ import { userController } from "./users/controller";
 import type AppConfig from "../config";
 import Logger from "../logger";
 import { mediaController } from "./media/controller";
+import { homeworkController } from "./courses/homework/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;

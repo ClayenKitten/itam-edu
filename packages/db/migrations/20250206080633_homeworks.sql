@@ -9,10 +9,10 @@ CREATE TABLE homeworks (
 );
 
 CREATE TABLE homework_submissions (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     student_id UUID REFERENCES users(id) NOT NULL,
     homework_id UUID REFERENCES homeworks(id) NOT NULL,
     attempt INTEGER NOT NULL,
-    PRIMARY KEY (student_id, homework_id, attempt),
     solution TEXT NOT NULL,
     student_comment TEXT,
     submitted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

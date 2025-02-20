@@ -6,6 +6,7 @@ import CourseRepository from "../api/courses/repository";
 import LessonRepository from "../api/courses/lesson/repository";
 import StudentRepository from "../api/courses/student/repository";
 import NotificationRepository from "../notifications/repository";
+import HomeworkRepository from "../api/courses/homework/repository";
 
 export default class Database {
     constructor(connectionString: string, logger: Logger) {
@@ -15,6 +16,7 @@ export default class Database {
         this.lesson = new LessonRepository(connection, logger);
         this.student = new StudentRepository(connection, logger);
         this.notification = new NotificationRepository(connection, logger);
+        this.homework = new HomeworkRepository(connection, logger);
     }
 
     public readonly user: UserRepository;
@@ -22,4 +24,5 @@ export default class Database {
     public readonly lesson: LessonRepository;
     public readonly student: StudentRepository;
     public readonly notification: NotificationRepository;
+    public readonly homework: HomeworkRepository;
 }
