@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-import type { HandleFetch } from "@sveltejs/kit";
+import type { Handle, HandleFetch } from "@sveltejs/kit";
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
     const cookies = event.request.headers.get("cookie");
@@ -19,3 +19,8 @@ const getCookie = (cookies: string, name: string): string | undefined => {
         .find(row => row.startsWith(`${name}=`))
         ?.split("=")[1];
 };
+
+export const handle: Handle = async ({ event, resolve }) =>
+    resolve(event, {
+        filterSerializedResponseHeaders: header => header === "content-type"
+    });
