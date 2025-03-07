@@ -14,7 +14,8 @@ services:
       target: dev
     depends_on: [api]
     expose: [3000]
-    volumes: [./packages/web/.svelte-kit:/app/packages/web/.svelte-kit]
+    volumes:
+      [./packages/frontend/.svelte-kit:/app/packages/frontend/.svelte-kit]
     environment: &environment
       PUBLIC_ITAM_EDU_FRONTEND_API_URL_BROWSER: http://api.localhost
       PUBLIC_ITAM_EDU_FRONTEND_API_URL_SERVER: http://api:3000
