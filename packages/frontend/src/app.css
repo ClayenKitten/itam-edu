@@ -8,10 +8,118 @@
 /* Tailwind */
 @import "tailwindcss";
 
+@theme {
+    --*: initial;
+
+    /* Spacing */
+    --spacing: 4px;
+
+    /* Rounding */
+    --radius-xs: 12px;
+    --radius-sm: 16px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 34px;
+
+    /* Colors */
+    --color-primary: var(--course-primary, #6e7cec);
+    --color-on-primary: var(--course-on-primary, #eff1fb);
+    --color-background: #ffffff;
+    --color-on-background: #33383f;
+    --color-on-background-contrast: #111315;
+    --color-on-background-muted: #6f767e;
+    --color-surface: #ffffff;
+    --color-on-surface: #33383f;
+    --color-on-surface-contrast: #111315;
+    --color-on-surface-muted: #6f767e;
+
+    /* Shadow */
+    --shadow: 0px 0px 63.44px 0px #00000012;
+
+    /* Typography */
+    --text-h1: 48px;
+    --text-h1--line-height: 56.25px;
+    --text-h1--font-weight: 676;
+
+    --text-h2: 40px;
+    --text-h2--line-height: 46.88px;
+    --text-h2--font-weight: 676;
+
+    --text-h3: 26px;
+    --text-h3--line-height: 30.47px;
+    --text-h3--font-weight: 573;
+
+    --text-h4: 17px;
+    --text-h4--line-height: 19.92px;
+    --text-h4--font-weight: 573;
+
+    --text-base: 16px;
+    --text-base--line-height: 18.75px;
+    --text-base--font-weight: 400;
+
+    --text-button: 15px;
+    --text-button--line-height: 17.58px;
+    --text-button--font-weight: 521;
+}
+
+@layer base {
+    * {
+        font-family: "Roboto Flex", sans-serif;
+        font-size: inherit;
+        line-height: inherit;
+        font-weight: inherit;
+    }
+    h1 {
+        font-size: var(--text-h1);
+        line-height: var(--text-h1--line-height);
+        font-weight: var(--text-h1--font-weight);
+    }
+    h2 {
+        font-size: var(--text-h2);
+        line-height: var(--text-h2--line-height);
+        font-weight: var(--text-h2--font-weight);
+    }
+    h3 {
+        font-size: var(--text-h3);
+        line-height: var(--text-h3--line-height);
+        font-weight: var(--text-h3--font-weight);
+    }
+    h4 {
+        font-size: var(--text-h4);
+        line-height: var(--text-h4--line-height);
+        font-weight: var(--text-h4--font-weight);
+    }
+}
+
+@layer components {
+    .btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+
+        font-size: var(--text-button);
+        line-height: var(--text-button--line-height);
+        font-weight: var(--text-button--font-weight);
+
+        color: var(--color-on-primary);
+        background-color: var(--color-primary);
+        border-radius: var(--radius-xs);
+
+        cursor: pointer;
+    }
+}
+
 /* Basic */
 html,
 body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    min-height: 100dvh;
+}
+
+body {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--text-base--font-weight);
 }
