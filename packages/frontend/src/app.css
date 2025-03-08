@@ -29,6 +29,7 @@
     --color-on-background-contrast: #111315;
     --color-on-background-muted: #6f767e;
     --color-surface: #ffffff;
+    --color-surface-tint: #f9fafb;
     --color-on-surface: #33383f;
     --color-on-surface-contrast: #111315;
     --color-on-surface-muted: #6f767e;
@@ -38,7 +39,7 @@
 
     /* Typography */
     --text-h1: 48px;
-    --text-h1--line-height: 56.25px;
+    --text-h1--line-height: 56px;
     --text-h1--font-weight: 676;
 
     --text-h2: 40px;
@@ -60,6 +61,10 @@
     --text-button: 15px;
     --text-button--line-height: 17.58px;
     --text-button--font-weight: 521;
+
+    --text-comment: 18px;
+    --text-button--line-height: 21px;
+    --text-button--font-weight: 500;
 }
 
 @layer base {
@@ -97,7 +102,8 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
-        padding: 12px 20px;
+        height: 44px;
+        padding: 0 20px;
 
         font-size: var(--text-button);
         line-height: var(--text-button--line-height);
