@@ -25,6 +25,7 @@ services:
       ITAM_EDU_API_HOST: 0.0.0.0
       ITAM_EDU_API_PORT: 3000
       ITAM_EDU_API_DB_CONNECTION_STRING: postgres://user:password@postgres:5432/app?sslmode=disable
+      ITAM_EDU_API_REDIS_CONNECTION_STRING: redis://default@redis:6379
       ITAM_EDU_API_WEB_HOST: http://www.localhost
       ITAM_EDU_MEDIA_PORT: 3000
       ITAM_EDU_MEDIA_API_URL: http://api:3000
