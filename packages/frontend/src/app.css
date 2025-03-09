@@ -22,8 +22,8 @@
     --radius-xl: 34px;
 
     /* Colors */
-    --color-primary: var(--course-primary, #6e7cec);
-    --color-on-primary: var(--course-on-primary, #eff1fb);
+    --color-primary: #6e7cec;
+    --color-on-primary: #eff1fb;
     --color-background: #ffffff;
     --color-on-background: #33383f;
     --color-on-background-contrast: #111315;

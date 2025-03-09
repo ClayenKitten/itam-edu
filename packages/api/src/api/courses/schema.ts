@@ -13,7 +13,12 @@ export const course = t.Object({
 
     title: t.String({ minLength: 1, maxLength: 200 }),
     description: t.Nullable(t.String({ maxLength: 1000 })),
+    status: t.Nullable(t.String({ maxLength: 300 })),
+    banner: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
     logo: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
+
+    colorPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
+    colorOnPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
 
     isPublished: t.Boolean(),
     isEnrollmentOpen: t.Boolean(),

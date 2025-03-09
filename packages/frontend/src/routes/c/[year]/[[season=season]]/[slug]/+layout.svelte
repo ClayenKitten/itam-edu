@@ -7,6 +7,8 @@
 <div
     id="wrapper"
     class="grid grid-cols-[278px_1fr] grid-rows-[60px_1fr] min-h-dvh bg-background"
+    style:--color-primary={data.course.colorPrimary}
+    style:--color-on-primary={data.course.colorOnPrimary}
 >
     <CourseSidebar
         isEmployee={data.permissions?.course.some(

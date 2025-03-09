@@ -5,11 +5,21 @@
     let { data } = $props();
 </script>
 
-<div class="banner h-[137px]" aria-hidden="true"></div>
+<div class="banner h-[137px]" aria-hidden="true">
+    {#if data.course.banner}
+        <img
+            src={data.course.banner}
+            alt=""
+            class="w-full h-full object-cover object-center"
+        />
+    {/if}
+</div>
 <div class="flex flex-col gap-10 p-7">
     <header class="flex flex-col gap-2.5 mb-2.5">
         <h1>{data.course.title}</h1>
-        <h4 class="text-on-background-muted">Blah blah</h4>
+        {#if data.course.status}
+            <h4 class="text-on-background-muted">{data.course.status}</h4>
+        {/if}
     </header>
     <section class="flex flex-col gap-5 p-6 pb-8 bg-surface shadow rounded-xl">
         <header class="flex justify-between items-center">
@@ -75,6 +85,10 @@
 
 <style lang="scss">
     .banner {
-        background: linear-gradient(97deg, #8c54d9, #c967ef);
+        background: linear-gradient(
+            -20deg,
+            var(--color-primary),
+            var(--color-on-primary)
+        );
     }
 </style>
