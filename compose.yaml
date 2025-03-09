@@ -56,6 +56,15 @@ services:
         condition: on-failure
         max_attempts: 3
 
+  # Redis
+  redis:
+    image: redis:7.4
+    command: redis-server --save 60 1 --appendonly yes --loglevel notice
+    expose: [6379]
+    ports: [127.0.0.1:6379:6379]
+    volumes: [redis:/root/redis]
+    restart: unless-stopped
+
   # Media
   ## Proxy server (Caddy)
   media:
@@ -71,6 +80,7 @@ configs:
 
 volumes:
   postgres:
+  redis:
   caddy_data:
   caddy_config:
   media:
