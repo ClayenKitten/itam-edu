@@ -26,11 +26,32 @@ export default function authorize() {
                 };
             },
             hasCoursePermission(
-                permissions: MaybeArray<
-                    keyof typeof schema.coursePermissions.static
-                >
+                permissions:
+                    | MaybeArray<keyof typeof schema.coursePermissions.static>
+                    | [
+                          MaybeArray<
+                              keyof typeof schema.coursePermissions.static
+                          >,
+                          number
+                      ]
             ) {
-                const requiredPerms = intoArray(permissions);
+                let requiredPermissions: Array<
+                    keyof typeof schema.coursePermissions.static
+                >;
+                let responseCode = 403; //Forbidden по умолчанию
+                requiredPermissions = intoArray(permissions) as Array<
+                    keyof typeof schema.coursePermissions.static
+                >;
+                if (
+                    Array.isArray(permissions) &&
+                    typeof permissions[1] === "number"
+                ) {
+                    requiredPermissions = intoArray(permissions[0]) as Array<
+                        keyof typeof schema.coursePermissions.static
+                    >;
+                    responseCode = permissions[1];
+                }
+
                 return {
                     resolve: ({ logger, user, error, params }) => {
                         if (!user) return error(401);
@@ -43,12 +64,12 @@ export default function authorize() {
                             return error(403);
                         }
 
-                        const valid = intoArray(permissions).every(
+                        const valid = requiredPermissions.every(
                             key =>
                                 user.permissions.course(courseId)?.[key] ===
                                 true
                         );
-                        if (!valid) return error(403);
+                        if (!valid) return error(responseCode);
                         return { user };
                     }
                 };
