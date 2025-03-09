@@ -81,10 +81,13 @@ The [development environment](./compose.dev.yaml) is setup by running `task dev:
 
 This command starts the reverse proxy, PostgreSQL, and all packages in development mode with hot reloading enabled.
 
-| Service    | Internal URL    | Reverse-proxy URL                                 |
-| ---------- | --------------- | ------------------------------------------------- |
-| api        | `api:3000`      | [api.localhost](http://api.localhost)             |
-| frontend   | `frontend:3000` | [www.localhost](http://www.localhost)             |
-| media      | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
-| dbgate     | `dbgate:3000`   | [db.localhost](http://db.localhost)               |
-| PostgreSQL | `postgres:5432` | localhost:5432                                    |
+Simple navigation page is hosted at http://localhost.
+
+| Service             | Internal URL    | External URL                                      |
+| ------------------- | --------------- | ------------------------------------------------- |
+| api                 | `api:3000`      | [api.localhost](http://api.localhost)             |
+| frontend            | `frontend:3000` | [www.localhost](http://www.localhost)             |
+| media               | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
+| PostgreSQL          | `postgres:5432` | localhost:5432                                    |
+| **Developer tools** |                 |                                                   |
+| dbgate              | Postgres UI     | [db.localhost](http://postgres.localhost)         |
