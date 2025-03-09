@@ -6,8 +6,7 @@ export const course = t.Object({
     slug: t.String({
         minLength: 3,
         maxLength: 12,
-        pattern: "^[a-z\\d-]+$",
-        default: "my-lesson"
+        pattern: "^[a-z\\d-]+$"
     }),
     year: t.Integer({ minimum: 2000, maximum: 3000 }),
     semester: t.Nullable(t.Integer({ minimum: 1, maximum: 2 })),
