@@ -88,6 +88,8 @@ Simple navigation page is hosted at http://localhost.
 | api                 | `api:3000`      | [api.localhost](http://api.localhost)             |
 | frontend            | `frontend:3000` | [www.localhost](http://www.localhost)             |
 | media               | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
+| Redis               | `redis:6379`    | localhost:6379                                    |
 | PostgreSQL          | `postgres:5432` | localhost:5432                                    |
 | **Developer tools** |                 |                                                   |
 | dbgate              | Postgres UI     | [db.localhost](http://postgres.localhost)         |
+| Redis Insight       | Redis UI        | [redis.localhost](http://redis.localhost)         |
