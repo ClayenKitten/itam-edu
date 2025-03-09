@@ -3,6 +3,9 @@ import type AppConfig from "../config";
 import Database from "../db";
 import Logger from "../logger";
 import type TelegramBot from "../telegram";
+import { Worker } from "bullmq";
+import { env } from "process";
+import type { NotificationMsgPayload } from "./service";
 
 /** Worker for sending notifications. */
 export default class NotificationWorker {
@@ -17,31 +20,42 @@ export default class NotificationWorker {
         this.db = new Database(this.config.db.connectionString, this.logger);
     }
 
+    private worker?: Worker;
+
     public async start(): Promise<void> {
-        const limit = 30;
-        this.logger.info("Started notifications worker");
-        while (true) {
-            this.logger.trace("Sending pending notifications");
-            const pending = await this.db.notification.getUnsent(limit);
-            await Promise.allSettled(
-                pending.map(async msg => {
-                    try {
-                        await this.bot.sendMessage(msg.tgChatId, msg.text, {
+        this.worker = new Worker<NotificationMsgPayload>(
+            "telegram.send",
+            async job => {
+                try {
+                    const msg = await this.bot.sendMessage(
+                        job.data.tgChatId,
+                        job.data.text,
+                        {
                             parse_mode: "HTML"
-                        });
-                        await this.db.notification.markAsSent(
-                            msg.id,
-                            msg.userId
-                        );
-                    } catch (error) {
-                        this.logger.error("Failed to send notificatiton", {
-                            messageId: msg.id,
-                            error: (error as any).message
-                        });
-                    }
-                })
-            );
-            await setTimeout(5000);
-        }
+                        }
+                    );
+                    await this.db.notification.createMessage(
+                        job.data.notificationId,
+                        job.data.userId,
+                        msg.message_id.toFixed(0)
+                    );
+                } catch (error) {
+                    this.logger.error("Failed to send notificatiton", {
+                        notificationId: job.data.notificationId,
+                        userId: job.data.userId,
+                        error: (error as any).message
+                    });
+                }
+            },
+            {
+                connection: { url: env.ITAM_EDU_API_REDIS_CONNECTION_STRING },
+                // Telegram bot API allows to send 30 messages per second.
+                // We use a lower limit to account for other messages that bot may be sending.
+                //
+                // https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
+                limiter: { max: 10, duration: 1000 }
+            }
+        );
+        this.logger.info("Started notifications worker");
     }
 }

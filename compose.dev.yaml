@@ -117,7 +117,7 @@ services:
   # Redis
   redis:
     image: redis:7.4
-    command: redis-server --save 60 1 --appendonly yes --loglevel notice
+    command: redis-server --save 60 1 --appendonly yes --loglevel warning
     expose: [6379]
     ports: [127.0.0.1:6379:6379]
     volumes: [redis:/root/redis]
