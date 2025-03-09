@@ -14,6 +14,9 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Courses {
+  banner: string | null;
+  colorOnPrimary: string | null;
+  colorPrimary: string | null;
   /**
    * Multi-line description of the course
    */
@@ -36,6 +39,7 @@ export interface Courses {
    * Machine-readable name of the course that is unique in combination with year and semester
    */
   slug: string;
+  status: string | null;
   /**
    * Human-readable name of the course
    */
