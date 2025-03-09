@@ -130,7 +130,8 @@ export interface Lessons {
 
 export interface NotificationMessages {
   notificationId: string;
-  sentAt: Timestamp | null;
+  sentAt: Generated<Timestamp>;
+  tgMessageId: Int8 | null;
   userId: string;
 }
 
