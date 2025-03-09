@@ -11,11 +11,11 @@ export default async function docs() {
                     tags: [
                         { name: "Courses" },
                         { name: "Lessons" },
+                        { name: "Homeworks" },
                         { name: "Students" },
                         { name: "Users" },
-                        { name: "Telegram Bot" },
-                        { name: "Infra" },
-                        { name: "Homework" }
+                        { name: "Media" },
+                        { name: "Infra" }
                     ]
                 }
             })

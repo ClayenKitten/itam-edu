@@ -5,7 +5,7 @@ import * as schema from "./schema";
 export async function homeworkController<PREFIX extends string>(
     prefix: PREFIX
 ) {
-    return new Elysia({ prefix, tags: ["Homework"] }).use(initContext()).group(
+    return new Elysia({ prefix, tags: ["Homeworks"] }).use(initContext()).group(
         "",
         {
             params: t.Object(
