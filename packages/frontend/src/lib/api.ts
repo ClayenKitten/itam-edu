@@ -5,8 +5,8 @@ import type { ApiTreaty } from "itam-edu-api/src/api";
 
 export default function api(params: ApiParams) {
     const baseUrl = browser
-        ? env.PUBLIC_ITAM_EDU_FRONTEND_API_URL_BROWSER!
-        : env.PUBLIC_ITAM_EDU_FRONTEND_API_URL_SERVER!;
+        ? env.ITAM_EDU_FRONTEND_API_URL_BROWSER!
+        : env.ITAM_EDU_FRONTEND_API_URL_SERVER!;
 
     const client = treaty<ApiTreaty>(baseUrl, {
         fetcher: params.fetch,

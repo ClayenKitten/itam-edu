@@ -41,22 +41,21 @@ All packages are built into OCI images and hosted on [GitHub Container Registry]
 
 ### 🐋 Docker Compose
 
-#### Clone repository
+1. **Clone repository**
 
-`git clone https://github.com/ClayenKitten/itam-edu.git`
+    `git clone https://github.com/ClayenKitten/itam-edu.git`
 
-#### Configure packages
+1. **Configure application**
 
-Copy every `.env.example` in `packages/PACKAGE_NAME` as `.env` and modify values
+    Copy `.env.example` as `.env` and modify values as needed.
 
-> [!NOTE]
-> All services are started at port `3000`, changes to ports in `.env` will be ignored.
+1. **Configure databases**
 
-#### Configure reverse proxy
+    If you host databases, copy `.env.db.example` as `.env.db` and modify values as needed.
 
-Compose deployment includes [Caddy](https://caddyserver.com/) as a reverse-proxy.
+1. **Configure reverse proxy**
 
-Copy [Caddyfile.example](./Caddyfile.example) as `Caddyfile` and adjust its content as needed.
+    Copy `Caddyfile.example` as `Caddyfile` and adjust its content as needed.
 
 #### Start
 
@@ -65,6 +64,10 @@ Copy [Caddyfile.example](./Caddyfile.example) as `Caddyfile` and adjust its cont
 ### ☸️ Helm
 
 _WIP_
+
+### 💻 Baremetal
+
+Non-containerized setup on Linux/Windows/etc is theoretically possible, though not tested. Just make sure to setup everything according to docker compose configuration.
 
 ## 🛠️ Development
 
