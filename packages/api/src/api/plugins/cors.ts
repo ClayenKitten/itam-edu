@@ -7,7 +7,7 @@ export default function cors() {
         corsPlugin({
             origin:
                 env.NODE_ENV === "production"
-                    ? env.ITAM_EDU_API_WEB_HOST!
+                    ? env.ITAM_EDU_FRONTEND_URL!
                     : () => true
         }).as("plugin")
     );

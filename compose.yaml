@@ -15,8 +15,7 @@ services:
       context: .
     depends_on: [api]
     expose: [3000]
-    env_file: ./packages/frontend/.env
-    environment: { ITAM_EDU_WEB_PORT: "3000" }
+    env_file: ./.env
     restart: unless-stopped
 
   api:
@@ -24,7 +23,7 @@ services:
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
     depends_on: { db-migration: { condition: service_completed_successfully } }
     expose: [3000]
-    env_file: ./packages/api/.env
+    env_file: ./.env
     environment: { ITAM_EDU_API_PORT: "3000" }
     restart: unless-stopped
 
@@ -37,7 +36,7 @@ services:
     shm_size: 128mb
     restart: unless-stopped
     volumes: [postgres:/var/lib/postgresql/data]
-    env_file: ./packages/db/.env
+    env_file: ./.env.db
     healthcheck:
       test: pg_isready --dbname="$$POSTGRES_DB" --username="$$POSTGRES_USER"
       interval: 5s
@@ -50,7 +49,7 @@ services:
     image: ghcr.io/clayenkitten/itam-edu-db:latest
     build: ./packages/db
     depends_on: { postgres: { condition: service_healthy } }
-    env_file: ./packages/db/.env
+    env_file: ./.env.db
     deploy:
       restart_policy:
         condition: on-failure
@@ -59,11 +58,12 @@ services:
   # Redis
   redis:
     image: redis:7.4
-    command: redis-server --save 60 1 --appendonly yes --loglevel notice
+    entrypoint: sh -c 'redis-server --save 60 1 --appendonly yes --loglevel notice --requirepass $$REDIS_PASSWORD'
     expose: [6379]
     ports: [127.0.0.1:6379:6379]
-    volumes: [redis:/root/redis]
     restart: unless-stopped
+    volumes: [redis:/root/redis]
+    env_file: ./.env.db
 
   # Media
   ## Proxy server (Caddy)

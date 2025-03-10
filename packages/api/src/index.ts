@@ -17,7 +17,7 @@ const config: AppConfig = {
         token: env.ITAM_EDU_API_TG_TOKEN,
         supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME
     },
-    webUrl: env.ITAM_EDU_API_WEB_HOST
+    webUrl: env.ITAM_EDU_FRONTEND_URL
 };
 
 const api = new ApiServer(config);
