@@ -4,6 +4,7 @@ import { lessonController } from "./lesson/controller";
 import { studentController } from "./student/controller";
 import * as schema from "./schema";
 import { homeworkController } from "./homework/controller";
+import { DEFAULT_SECURITY } from "../plugins/docs";
 
 export async function courseController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ prefix, tags: ["Courses"] })
@@ -11,10 +12,34 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
         .use(lessonController("/:course/lessons"))
         .use(homeworkController("/:course/homeworks"))
         .use(studentController("/:course/students"))
-        .get("", async ({ db }) => {
-            const courses = await db.course.getAll();
-            return courses;
-        })
+        .get(
+            "",
+            async ({ db }) => {
+                const courses = await db.course.getAll();
+                return courses;
+            },
+            {
+                detail: {
+                    summary: "List courses",
+                    description: "Returns all courses"
+                }
+            }
+        )
+        .post(
+            "",
+            async ({ db, body }) => {
+                return await db.course.create(body);
+            },
+            {
+                hasPermission: ["canCreateCourses"],
+                body: schema.createCourse,
+                detail: {
+                    summary: "Create new course",
+                    description: "Creates new course.",
+                    security: DEFAULT_SECURITY
+                }
+            }
+        )
         .get(
             "/lookup/:slug",
             async ({ db, params, query, error }) => {
@@ -35,15 +60,13 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                 ),
                 params: t.Object({
                     slug: schema.course.properties.slug
-                })
+                }),
+                detail: {
+                    summary: "Lookup course id",
+                    description:
+                        "Returns course id by human-readable identifier."
+                }
             }
-        )
-        .post(
-            "",
-            async ({ db, body }) => {
-                return await db.course.create(body);
-            },
-            { hasPermission: ["canCreateCourses"], body: schema.createCourse }
         )
         .group(
             "/:course",
@@ -55,11 +78,20 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
             },
             app =>
                 app
-                    .get("", async ({ db, params, error }) => {
-                        const course = await db.course.get(params.course);
-                        if (!course) return error(404);
-                        return course;
-                    })
+                    .get(
+                        "",
+                        async ({ db, params, error }) => {
+                            const course = await db.course.get(params.course);
+                            if (!course) return error(404);
+                            return course;
+                        },
+                        {
+                            detail: {
+                                summary: "Get course",
+                                description: "Returns course."
+                            }
+                        }
+                    )
                     .put(
                         "",
                         async ({ db, params, body, error }) => {
@@ -72,7 +104,12 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                         },
                         {
                             body: schema.updateCourse,
-                            hasCoursePermission: "canEditInfo"
+                            hasCoursePermission: "canEditInfo",
+                            detail: {
+                                summary: "Update course",
+                                description: "Updates course.",
+                                security: DEFAULT_SECURITY
+                            }
                         }
                     )
         );

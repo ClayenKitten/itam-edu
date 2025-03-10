@@ -7,13 +7,30 @@ export default async function docs() {
             await swagger({
                 provider: "swagger-ui",
                 path: "/docs",
+                swaggerOptions: {
+                    persistAuthorization: true
+                },
                 documentation: {
+                    info: {
+                        title: "ITAM Education API",
+                        description: "REST API for ITAM Education platform.",
+                        version: process.env.npm_package_version!
+                    },
+                    components: {
+                        securitySchemes: {
+                            main: {
+                                type: "apiKey",
+                                name: "Authorization",
+                                in: "header"
+                            }
+                        }
+                    },
                     tags: [
+                        { name: "Users" },
                         { name: "Courses" },
                         { name: "Lessons" },
                         { name: "Homeworks" },
                         { name: "Students" },
-                        { name: "Users" },
                         { name: "Media" },
                         { name: "Infra" }
                     ]
@@ -22,3 +39,5 @@ export default async function docs() {
         )
         .as("plugin");
 }
+
+export const DEFAULT_SECURITY = [{ main: [] }];

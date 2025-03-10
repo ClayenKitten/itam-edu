@@ -23,7 +23,11 @@ export async function mediaController() {
                 headers: t.Object({
                     "x-forwarded-method": t.String(),
                     "x-forwarded-uri": t.String()
-                })
+                }),
+                detail: {
+                    summary: "Authorize media access",
+                    description: "Authorizes media resource access."
+                }
             }
         );
 }

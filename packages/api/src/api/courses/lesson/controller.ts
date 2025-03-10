@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import initContext from "../../plugins";
 import * as schema from "./schema";
+import { DEFAULT_SECURITY } from "../../plugins/docs";
 
 export function lessonController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ name: "lessons", prefix, tags: ["Lessons"] })
@@ -11,10 +12,19 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 { additionalProperties: true }
             )
         })
-        .get("", async ({ db, params }) => {
-            const lessons = await db.lesson.getAll(params.course);
-            return lessons;
-        })
+        .get(
+            "",
+            async ({ db, params }) => {
+                const lessons = await db.lesson.getAll(params.course);
+                return lessons;
+            },
+            {
+                detail: {
+                    summary: "List lessons",
+                    description: "Returns all lessons of the course."
+                }
+            }
+        )
         .post(
             "",
             async ({ db, params, body, error, set }) => {
@@ -28,7 +38,12 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
             },
             {
                 body: t.Object({ lesson: schema.createLesson }),
-                hasCoursePermission: "canEditContent"
+                hasCoursePermission: "canEditContent",
+                detail: {
+                    summary: "Create new lesson",
+                    description: "Creates new lesson.",
+                    security: DEFAULT_SECURITY
+                }
             }
         )
         .put(
@@ -39,7 +54,14 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
             },
             {
                 body: t.Object({ lessons: schema.updateLessonPositions }),
-                hasCoursePermission: "canEditContent"
+                hasCoursePermission: "canEditContent",
+                detail: {
+                    summary: "Reorder lessons",
+                    description:
+                        "Updates lessons ordering.\n\n" +
+                        "All currently added lessons must be present, or error will be returned.",
+                    security: DEFAULT_SECURITY
+                }
             }
         )
         .get(
@@ -56,7 +78,11 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 params: t.Object(
                     { lesson: t.String() },
                     { additionalProperties: true }
-                )
+                ),
+                detail: {
+                    summary: "Get lesson",
+                    description: "Returns lesson with content."
+                }
             }
         );
 }

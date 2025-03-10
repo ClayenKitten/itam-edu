@@ -13,6 +13,12 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
                 const students = await db.student.getAll(params.course);
                 return students;
             },
-            { hasPermission: "isStaff" }
+            {
+                hasPermission: "isStaff",
+                detail: {
+                    summary: "List students",
+                    description: "Returns all students enrolled to the course."
+                }
+            }
         );
 }

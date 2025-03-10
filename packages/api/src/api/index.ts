@@ -62,7 +62,13 @@ export default class ApiServer {
             .use(courseController("/courses"))
             .use(userController("/users"))
             .use(mediaController())
-            .get("/healthz", () => "Ok", { tags: ["Infra"] });
+            .get("/healthz", () => "Ok", {
+                tags: ["Infra"],
+                detail: {
+                    summary: "Healthcheck",
+                    description: "Healthcheck endpoint that always returns 200."
+                }
+            });
     }
 }
 
