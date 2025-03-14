@@ -61,7 +61,6 @@ services:
       POSTGRES_DB: app
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_HOST: postgres
     healthcheck:
       test: pg_isready --dbname="$$POSTGRES_DB" --username="$$POSTGRES_USER"
       interval: 5s
@@ -80,7 +79,7 @@ services:
       postgres: { condition: service_healthy }
     volumes: [./packages/db/migrations:/app/migrations]
     environment:
-      <<: *db_env
+      <<: *environment
       ITAM_EDU_DB_COMMAND: "${ITAM_EDU_DB_COMMAND-up}"
     profiles: [dbmate]
 
@@ -93,7 +92,7 @@ services:
     depends_on:
       dbmate: { condition: service_completed_successfully }
     volumes: [./packages/db/index.ts:/app/index.ts]
-    environment: *db_env
+    environment: *environment
     profiles: [kysely-codegen]
 
   ## dbgate web interface for postgres

@@ -49,7 +49,7 @@ services:
     image: ghcr.io/clayenkitten/itam-edu-db:latest
     build: ./packages/db
     depends_on: { postgres: { condition: service_healthy } }
-    env_file: ./.env.db
+    env_file: ./.env
     deploy:
       restart_policy:
         condition: on-failure

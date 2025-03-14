@@ -8,13 +8,12 @@ ENV DBMATE_MIGRATIONS_DIR="./migrations"
 ENV DBMATE_NO_DUMP_SCHEMA="true"
 ENV DBMATE_STRICT="true"
 
-ENTRYPOINT DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable" dbmate $ITAM_EDU_DB_COMMAND
+ENTRYPOINT DATABASE_URL="$ITAM_EDU_API_DB_CONNECTION_STRING" dbmate $ITAM_EDU_DB_COMMAND
 
 # Run kysely-codegen
 FROM node:22-alpine AS kysely-codegen
 WORKDIR /app
 
-RUN npm install -g kysely-codegen@^0.17.0 kysely@^0.27.5 pg@^8.13.1
-RUN echo "DATABASE_URL=\"postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable\"" > ./.env
+RUN npm install -g kysely-codegen@^0.18.3 kysely@^0.27.5 pg@^8.13.1
 
-ENTRYPOINT DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable" npx kysely-codegen --out-file ./index.ts --camel-case --dialect postgres
+ENTRYPOINT npx kysely-codegen --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --out-file ./index.ts --camel-case --dialect postgres
