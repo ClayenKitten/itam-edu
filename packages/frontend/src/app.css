@@ -94,6 +94,10 @@
         line-height: var(--text-h4--line-height);
         font-weight: var(--text-h4--font-weight);
     }
+    a,
+    button {
+        cursor: pointer;
+    }
 }
 
 @layer components {
