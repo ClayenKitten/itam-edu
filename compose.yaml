@@ -68,6 +68,7 @@ services:
   # Media
   ## Proxy server (Caddy)
   media:
+    image: ghcr.io/clayenkitten/itam-edu-media:latest
     build:
       context: ./packages/media
       dockerfile: ./Dockerfile
