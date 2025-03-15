@@ -82,7 +82,7 @@ export default async function handleLogin(ctx: BotMsgContext) {
                 [
                     {
                         text: "Login",
-                        url: `${ctx.config.webUrl}/signin?code=${loginResult.code}`
+                        url: `${ctx.config.webUrl}?window=login&code=${loginResult.code}`
                     }
                 ]
             ]

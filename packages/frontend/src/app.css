@@ -62,8 +62,8 @@
     --text-button--line-height: 17.58px;
     --text-button--font-weight: 521;
 
-    --text-comment: 18px;
-    --text-button--line-height: 21px;
+    --text-comment: 20px;
+    --text-button--line-height: 23.4px;
     --text-button--font-weight: 500;
 }
 
@@ -118,6 +118,10 @@
         border-radius: var(--radius-xs);
 
         cursor: pointer;
+
+        &:disabled {
+            background-color: var(--color-on-surface-muted);
+        }
     }
 }
 

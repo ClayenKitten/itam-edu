@@ -23,13 +23,14 @@ export default function api(params: ApiParams) {
         onResponse: async response => {
             const path = new URL(response.url).pathname;
             /** Intercept login to set local cookie */
-            if (response.status === 200 && path === "/users/me/session") {
+            if (response.status === 201 && path === "/users/sessions") {
                 const { token, expires } = await response.clone().json();
                 setCookie("itam-edu-token", token, expires);
             }
             if (params.toast) {
                 // TODO: display toast notification
                 const toast = params.toast(response);
+                alert(toast.title);
             }
         }
     });
