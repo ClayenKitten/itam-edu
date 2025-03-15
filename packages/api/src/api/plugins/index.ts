@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 
 import cors from "./cors";
 import docs from "./docs";
-import logger from "./logger";
+import httpLogger from "./logger";
 import db from "./db";
 import authenticate from "./authenticate";
 import authorize from "./authorize";
@@ -13,7 +13,7 @@ export default async function initContext() {
     return new Elysia({ name: "context" })
         .use(cors())
         .use(await docs())
-        .use(logger())
+        .use(httpLogger())
         .use(db())
         .use(authenticate())
         .use(authorize())
