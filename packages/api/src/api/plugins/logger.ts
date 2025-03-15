@@ -1,24 +1,21 @@
 import { Elysia } from "elysia";
 import { randomUUID } from "node:crypto";
-import Logger from "../../logger";
+import logger from "../../logger";
 
 /**
  * Extends context with logger instance and logs HTTP requests.
  * */
-export default function logger(opts?: LoggerOptions) {
-    const base = opts?.base ?? new Logger();
+export default function loggerPlugin(opts?: LoggerOptions) {
     return new Elysia({ name: "logger" })
-        .derive(() => ({
-            logger: base.child({ request: randomUUID() })
-        }))
-        .onTransform(({ logger, request }) => {
+        .onTransform(({ request }) => {
+            logger.extend({ request: randomUUID() });
             if (opts?.enableHttpLogs === false) return;
             logger.debug("HTTP Request", {
                 method: request.method,
                 path: request.url
             });
         })
-        .onAfterResponse(({ logger, set }) => {
+        .onAfterResponse(({ set }) => {
             if (opts?.enableHttpLogs === false) return;
             logger.debug("HTTP Response", {
                 status: set.status
@@ -29,7 +26,6 @@ export default function logger(opts?: LoggerOptions) {
 
 /** Logger plugin options. */
 export type LoggerOptions = {
-    base?: Logger;
     /**
      * Whether to log HTTP requests and responses.
      *

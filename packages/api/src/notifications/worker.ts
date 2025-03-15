@@ -1,7 +1,6 @@
-import { setTimeout } from "timers/promises";
 import type AppConfig from "../config";
 import Database from "../db";
-import Logger from "../logger";
+import logger from "../logger";
 import type TelegramBot from "../telegram";
 import { Worker } from "bullmq";
 import { env } from "process";
@@ -10,14 +9,12 @@ import type { NotificationMsgPayload } from "./service";
 /** Worker for sending notifications. */
 export default class NotificationWorker {
     private db: Database;
-    private logger: Logger;
 
     public constructor(
         private config: AppConfig,
         private bot: TelegramBot
     ) {
-        this.logger = new Logger();
-        this.db = new Database(this.config.db.connectionString, this.logger);
+        this.db = new Database(this.config.db.connectionString);
     }
 
     private worker?: Worker;
@@ -40,7 +37,7 @@ export default class NotificationWorker {
                         msg.message_id.toFixed(0)
                     );
                 } catch (error) {
-                    this.logger.error("Failed to send notificatiton", {
+                    logger.error("Failed to send notificatiton", {
                         notificationId: job.data.notificationId,
                         userId: job.data.userId,
                         error: (error as any).message
@@ -56,6 +53,6 @@ export default class NotificationWorker {
                 limiter: { max: 10, duration: 1000 }
             }
         );
-        this.logger.info("Started notifications worker");
+        logger.info("Started notifications worker");
     }
 }

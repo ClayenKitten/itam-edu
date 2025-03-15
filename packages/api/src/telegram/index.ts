@@ -7,7 +7,7 @@ import {
     type StaticBotContext
 } from "./ctx.js";
 import type AppConfig from "../config.js";
-import Logger from "../logger.js";
+import logger from "../logger.js";
 import setupHandlers from "./handlers/index.js";
 import Database from "../db/index.js";
 import type { ParseMode } from "telegraf/types";
@@ -20,9 +20,8 @@ export default class TelegramBot {
     public readonly ctx: StaticBotContext;
 
     public constructor(config: AppConfig) {
-        const logger = new Logger();
-        const db = new Database(config.db.connectionString, logger);
-        this.ctx = { config, logger, db };
+        const db = new Database(config.db.connectionString);
+        this.ctx = { config, db };
         this.telegraf = new Telegraf<BotContext>(config.tg.token).use(
             async (ctx, next) => {
                 await extendContext(ctx, this.ctx);
@@ -42,13 +41,14 @@ export default class TelegramBot {
         return new Promise(resolve => {
             this.telegraf
                 .launch(() => {
-                    this.ctx.logger.info("Started Telegram bot", {
-                        mode: "polling"
+                    logger.info("Started Telegram bot", {
+                        mode: "polling",
+                        username: this.telegraf.botInfo?.username
                     });
                     resolve();
                 })
                 .finally(() => {
-                    this.ctx.logger.info("Stopped Telegram bot");
+                    logger.info("Stopped Telegram bot");
                 });
         });
     }

@@ -1,5 +1,4 @@
 import { Elysia } from "elysia";
-import type Logger from "../../logger";
 
 import cors from "./cors";
 import docs from "./docs";
@@ -10,11 +9,11 @@ import authorize from "./authorize";
 import NotificationService from "../../notifications/service";
 
 /** Creates an application context. */
-export default async function initContext(baseLogger?: Logger) {
+export default async function initContext() {
     return new Elysia({ name: "context" })
         .use(cors())
         .use(await docs())
-        .use(logger({ base: baseLogger }))
+        .use(logger())
         .use(db())
         .use(authenticate())
         .use(authorize())

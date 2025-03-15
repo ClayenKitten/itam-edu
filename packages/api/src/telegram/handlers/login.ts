@@ -1,5 +1,6 @@
 import { randomInt } from "crypto";
 import type { BotMsgContext } from "../ctx";
+import logger from "../../logger";
 
 export default async function handleLogin(ctx: BotMsgContext) {
     if (!ctx.from.username) {
@@ -12,9 +13,9 @@ export default async function handleLogin(ctx: BotMsgContext) {
         tgUsername: ctx.from.username
     });
     if (!loginResult.success) {
-        ctx.logger.error("Login failed", { error: loginResult.error });
+        logger.error("Login failed", { error: loginResult.error });
     } else {
-        ctx.logger.debug("Login code generated");
+        logger.debug("Login code generated");
     }
     await ctx.reply(getMessage(loginResult), {
         parse_mode: "HTML",

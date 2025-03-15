@@ -1,14 +1,14 @@
 import type Database from "../../db";
-import type Logger from "../../logger";
+import logger from "../../logger";
 import type { User } from "../users/entity";
 
 export default async function authorizeMedia(
-    ctx: { logger: Logger; db: Database; user: User | null },
+    ctx: { db: Database; user: User | null },
     method: RequestMethod,
     path: string
 ): Promise<boolean> {
     const route = getRoute(path);
-    ctx.logger.trace("Media route selected", { path, route });
+    logger.trace("Media route selected", { path, route });
     if (!route) return false;
 
     if (route.kind === "userAvatar") {

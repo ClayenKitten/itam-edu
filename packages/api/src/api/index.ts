@@ -4,16 +4,13 @@ import initContext from "./plugins";
 import { courseController } from "./courses/controller";
 import { userController } from "./users/controller";
 import type AppConfig from "../config";
-import Logger from "../logger";
+import logger from "../logger";
 import { mediaController } from "./media/controller";
-import { homeworkController } from "./courses/homework/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
-    private logger: Logger;
 
     public constructor(public readonly config: AppConfig) {
-        this.logger = new Logger();
         this.elysia = new Promise(async resolve =>
             resolve(await this.createElysia())
         );
@@ -24,12 +21,12 @@ export default class ApiServer {
         const elysia = await this.elysia;
         elysia
             .onStart(() =>
-                this.logger.info("Started API server", {
+                logger.info("Started API server", {
                     host: this.config.api.host,
                     port: this.config.api.port
                 })
             )
-            .onStop(() => this.logger.info("Stopped API server"))
+            .onStop(() => logger.info("Stopped API server"))
             .listen({
                 hostname: this.config.api.host,
                 port: this.config.api.port
@@ -47,8 +44,8 @@ export default class ApiServer {
             serve: { maxRequestBodySize: 50 * 1024 * 1024 },
             strictPath: true
         })
-            .use(await initContext(this.logger))
-            .onError(async ({ logger, ...ctx }) => {
+            .use(await initContext())
+            .onError(async ctx => {
                 if (ctx.code === "UNKNOWN") {
                     logger?.error("Unhandled Exception", {
                         exceptionKind: ctx.error?.constructor?.name,

@@ -4,10 +4,11 @@ import { message } from "telegraf/filters";
 
 import handleLogin from "./login";
 import handleHelp from "./help";
+import logger from "../../logger";
 
 export default function setupHandlers(telegraf: Telegraf<BotContext>) {
     telegraf.catch(async (error, ctx) => {
-        ctx.logger.error("Unhandled Exception", { error });
+        logger.error("Unhandled Exception", { error });
         try {
             await ctx.reply("🚫 Sorry, an unexpected error occurred!");
         } catch {}

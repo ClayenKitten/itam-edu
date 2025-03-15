@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import * as schema from "../users/schema";
 import authenticate from "./authenticate";
 import db from "./db";
+import logger from "../../logger";
 
 /** Plugin that retrieves user permissions and registers macroses for authorization. */
 export default function authorize() {
@@ -53,7 +54,7 @@ export default function authorize() {
                 }
 
                 return {
-                    resolve: ({ logger, user, error, params }) => {
+                    resolve: ({ user, error, params }) => {
                         if (!user) return error(401);
 
                         const courseId: string | undefined = params["course"];

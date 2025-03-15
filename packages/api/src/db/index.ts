@@ -1,4 +1,3 @@
-import Logger from "../logger";
 import getDatabaseConnection from "./connection";
 
 import UserRepository from "../api/users/repository";
@@ -9,14 +8,14 @@ import NotificationRepository from "../notifications/repository";
 import HomeworkRepository from "../api/courses/homework/repository";
 
 export default class Database {
-    constructor(connectionString: string, logger: Logger) {
-        const connection = getDatabaseConnection(connectionString, logger);
-        this.user = new UserRepository(connection, logger);
-        this.course = new CourseRepository(connection, logger);
-        this.lesson = new LessonRepository(connection, logger);
-        this.student = new StudentRepository(connection, logger);
-        this.notification = new NotificationRepository(connection, logger);
-        this.homework = new HomeworkRepository(connection, logger);
+    constructor(connectionString: string) {
+        const connection = getDatabaseConnection(connectionString);
+        this.user = new UserRepository(connection);
+        this.course = new CourseRepository(connection);
+        this.lesson = new LessonRepository(connection);
+        this.student = new StudentRepository(connection);
+        this.notification = new NotificationRepository(connection);
+        this.homework = new HomeworkRepository(connection);
     }
 
     public readonly user: UserRepository;

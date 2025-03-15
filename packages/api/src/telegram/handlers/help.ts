@@ -1,3 +1,4 @@
+import logger from "../../logger";
 import type { BotMsgContext } from "../ctx";
 
 export default async function handleHelp(ctx: BotMsgContext) {
@@ -22,6 +23,6 @@ export default async function handleHelp(ctx: BotMsgContext) {
         `@${supportUsername}`
     ].join("\n");
 
-    ctx.logger.debug("Replied with help");
+    logger.debug("Replied with help");
     await ctx.reply(HELP_MESSAGE, { parse_mode: "HTML" });
 }

@@ -1,12 +1,9 @@
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
 import type { DB } from "itam-edu-db";
 import { Pool } from "pg";
-import type Logger from "../logger";
+import logger from "../logger";
 
-export default function getDatabaseConnection(
-    connectionString: string,
-    logger: Logger
-) {
+export default function getDatabaseConnection(connectionString: string) {
     if (!cache) {
         cache = new Pool({
             application_name: "itam-edu-api",

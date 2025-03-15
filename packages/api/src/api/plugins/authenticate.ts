@@ -1,20 +1,17 @@
 import { Elysia } from "elysia";
 import repositories from "./db";
-import logger from "./logger";
+import logger from "../../logger";
 
 export default function authenticate() {
     return new Elysia({ name: "authenticate" })
-        .use(logger())
         .use(repositories())
-        .derive(async ({ headers, db, logger }) => {
+        .derive(async ({ headers, db }) => {
             let token = headers["authorization"]?.replace(/^Bearer /, "");
             let user =
                 token !== undefined ? await db.user.getByToken(token) : null;
-            return {
-                user,
-                logger: logger.child({ user: user?.id ?? null })
-            };
+            return { user };
         })
+        .onTransform(({ user }) => logger.extend({ user: user?.id }))
         .macro({
             requireAuthentication: {
                 resolve: ({ user, error }) => {

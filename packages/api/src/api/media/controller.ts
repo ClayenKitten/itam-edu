@@ -7,13 +7,13 @@ export async function mediaController() {
         .use(initContext())
         .get(
             "/access",
-            async ({ logger, db, user, headers, error }) => {
+            async ({ db, user, headers, error }) => {
                 const method = headers["x-forwarded-method"];
                 if (!isSupportedMethod(method)) return error(405);
                 const path = headers["x-forwarded-uri"];
 
                 const authorized = await authorizeMedia(
-                    { logger, db, user },
+                    { db, user },
                     method,
                     path
                 );

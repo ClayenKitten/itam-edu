@@ -2,6 +2,7 @@ import * as schema from "./schema";
 import { Repository } from "../../db/repository";
 import { schemaFields } from "../../util";
 import { User, Permissions } from "./entity";
+import logger from "../../logger";
 
 export default class UserRepository extends Repository {
     public async getByToken(token: string): Promise<User | null> {
@@ -80,7 +81,7 @@ export default class UserRepository extends Repository {
                 return result.numInsertedOrUpdatedRows === 1n;
             });
         } catch (e) {
-            this.logger.error("Error during db transaction", { error: e });
+            logger.error("Error during db transaction", { error: e });
             return false;
         }
     }

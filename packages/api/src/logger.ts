@@ -1,48 +1,53 @@
+import { AsyncLocalStorage } from "async_hooks";
 import winston, { format } from "winston";
 
-export default class Logger {
-    public constructor(internal?: winston.Logger) {
-        if (internal) this.internal = internal;
-        else {
-            this.internal = winston.createLogger({
-                levels: this.LEVELS,
-                format: winston.format.json(),
-                defaultMeta: { service: "itam-edu-api" },
-                transports: [
-                    getConsoleTransport(process.env.NODE_ENV === "production")
-                ]
-            });
-        }
+export class Logger {
+    public constructor() {
+        this.internal = winston.createLogger({
+            levels: this.LEVELS,
+            format: winston.format.json(),
+            defaultMeta: { service: "itam-edu-api" },
+            transports: [
+                getConsoleTransport(process.env.NODE_ENV === "production")
+            ]
+        });
     }
+
     protected internal: winston.Logger;
 
-    public child(options: Object): Logger {
-        return new Logger(this.internal.child(options));
+    /** Returns meta of the logger. */
+    public get meta() {
+        return asyncLocalStorage.getStore();
     }
 
-    public log(
-        level: keyof typeof this.LEVELS,
-        message: string,
-        meta?: unknown
-    ) {
-        this.internal.log(level, message, meta);
+    /**
+     * Extends logger context in current async context.
+     *
+     * NOTE: should be called in **non-async** lifecycle handler, e.g. `onTransform(() => { ... })`.
+     * */
+    public extend(meta: Object) {
+        asyncLocalStorage.enterWith({ ...this.meta, ...meta });
     }
-    public fatal(message: string, meta?: unknown) {
+
+    public log(level: keyof typeof this.LEVELS, message: string, meta?: Meta) {
+        this.internal.log(level, message, { ...this.meta, ...meta });
+    }
+    public fatal(message: string, meta?: Meta) {
         this.log("fatal", message, meta);
     }
-    public error(message: string, meta?: unknown) {
+    public error(message: string, meta?: Meta) {
         this.log("error", message, meta);
     }
-    public warning(message: string, meta?: unknown) {
+    public warning(message: string, meta?: Meta) {
         this.log("warning", message, meta);
     }
-    public info(message: string, meta?: unknown) {
+    public info(message: string, meta?: Meta) {
         this.log("info", message, meta);
     }
-    public debug(message: string, meta?: unknown) {
+    public debug(message: string, meta?: Meta) {
         this.log("debug", message, meta);
     }
-    public trace(message: string, meta?: unknown) {
+    public trace(message: string, meta?: Meta) {
         this.log("trace", message, meta);
     }
 
@@ -55,6 +60,12 @@ export default class Logger {
         trace: 5
     };
 }
+const logger = new Logger();
+export { logger as default };
+
+const asyncLocalStorage = new AsyncLocalStorage<Meta>();
+
+export type Meta = Record<keyof {}, unknown>;
 
 function getConsoleTransport(production: boolean) {
     return new winston.transports.Console({

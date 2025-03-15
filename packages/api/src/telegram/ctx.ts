@@ -1,4 +1,4 @@
-import Logger from "../logger";
+import logger from "../logger";
 import Database from "../db";
 import type { Context, NarrowedContext } from "telegraf";
 import type { Message, Update } from "telegraf/types";
@@ -13,23 +13,22 @@ export async function extendContext<T extends Update = Update>(
     let meta: Record<string, unknown> = {};
     let info: Record<string, unknown> = {};
     if (ctx.from) {
-        meta.user = ctx.from.id;
+        meta.tgUserId = ctx.from.id;
         info.username = ctx.from.username;
     }
     if (ctx.message) info.msg = ctx.message.message_id;
     if (ctx.chat) info.chat = ctx.chat.id;
 
-    ctx.logger = staticCtx.logger.child({ update: randomUUID(), ...meta });
-    ctx.logger.debug("Received update", info);
+    logger.extend({ update: randomUUID(), ...meta });
+    logger.debug("Received update", info);
 
     ctx.config = staticCtx.config;
-    ctx.db = new Database(staticCtx.config.db.connectionString, ctx.logger);
+    ctx.db = new Database(staticCtx.config.db.connectionString);
 }
 
 /** Global bot context that can be extended into {@link BotContext}. */
 export type StaticBotContext = {
     config: AppConfig;
-    logger: Logger;
     db: Database;
 };
 
