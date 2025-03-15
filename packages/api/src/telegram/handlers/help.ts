@@ -8,18 +8,14 @@ export default async function handleHelp(ctx: BotMsgContext) {
     } = ctx.config;
 
     const HELP_MESSAGE: string = [
-        "<b>ITAM Education Bot 🎒</b>",
+        "<b>Бот ITAM Education 🎒</b>",
         "",
-        `Companion bot for <a href="${webUrl}">ITAM Education Platform</a>.`,
+        `Бот-компаньон для <a href="${webUrl}">образовательной платформы ITAM Education</a>.`,
         "",
-        "<b>Commands 💬</b>",
-        "/login - login into the web app",
+        "<b>Команды 💬</b>",
+        "/login - получить код для входа на платформу",
         "",
-        "<b>Features ✅</b>",
-        "- Web platform login",
-        "- Notifications",
-        "",
-        "<b>Contacts ☎️</b>",
+        "<b>Поддержка ☎️</b>",
         `@${supportUsername}`
     ].join("\n");
 

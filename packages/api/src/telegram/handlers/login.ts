@@ -57,20 +57,20 @@ export default async function handleLogin(ctx: BotMsgContext) {
     }
 
     function getMessage(loginResult: LoginResult) {
-        let header = `<b>Welcome back, ${ctx.from.username}!</b>`;
+        let header = `<b>Привет, ${ctx.from.username}!</b>`;
         let status = loginResult.success ? "✅" : "🚫";
 
         if (loginResult.success) {
             return (
                 `${header}\n\n` +
-                `${status} Your code is: <code>${loginResult.code}</code>\n\n` +
-                `Expires in ${minutesBefore(loginResult.expires)} minutes`
+                `${status} Код для входа: <code>${loginResult.code}</code>\n\n` +
+                `Истекает через ${minutesBefore(loginResult.expires)} минут`
             );
         } else {
             return (
                 `${header}\n\n` +
-                `${status} Sorry, we could not log you in due to an unexpected error\n\n` +
-                `Please, try again later. If the problem persists, please contact @${ctx.config.tg.supportUsername}.`
+                `${status} Упс! Во время генерации кода произошла ошибка.\n\n` +
+                `Пожалуйста, попробуйте ещё раз. Если проблема останется, напишите @${ctx.config.tg.supportUsername}.`
             );
         }
     }
@@ -81,7 +81,7 @@ export default async function handleLogin(ctx: BotMsgContext) {
             inline_keyboard: [
                 [
                     {
-                        text: "Login",
+                        text: "Войти",
                         url: `${ctx.config.webUrl}?window=login&code=${loginResult.code}`
                     }
                 ]

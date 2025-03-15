@@ -10,7 +10,7 @@ export default function setupHandlers(telegraf: Telegraf<BotContext>) {
     telegraf.catch(async (error, ctx) => {
         logger.error("Unhandled Exception", { error });
         try {
-            await ctx.reply("🚫 Sorry, an unexpected error occurred!");
+            await ctx.reply("🚫 Упс! Произошла неожиданная ошибка!");
         } catch {}
     });
 
