@@ -5,18 +5,21 @@
     let { data } = $props();
 </script>
 
-<div class="banner h-[137px]" aria-hidden="true">
-    {#if data.course.banner}
-        <img
-            src={data.course.banner}
-            alt=""
-            class="w-full h-full object-cover object-center"
-        />
-    {/if}
-</div>
-<div class="flex flex-col gap-10 p-7">
-    <header class="flex flex-col gap-2.5 mb-2.5">
-        <h1>{data.course.title}</h1>
+<div class="flex flex-col gap-10 px-7 pb-7">
+    <header class="flex flex-col mb-2.5">
+        <div
+            class="banner h-[191px] mb-7 rounded-lg overflow-hidden"
+            aria-hidden="true"
+        >
+            {#if data.course.banner}
+                <img
+                    src={data.course.banner}
+                    alt=""
+                    class="w-full h-full object-cover object-center"
+                />
+            {/if}
+        </div>
+        <h1 class="mb-2.5">{data.course.title}</h1>
         {#if data.course.status}
             <h4 class="text-on-background-muted">{data.course.status}</h4>
         {/if}
