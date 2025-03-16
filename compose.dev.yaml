@@ -19,7 +19,9 @@ services:
     expose: [3000]
     volumes:
       [./packages/frontend/.svelte-kit:/app/packages/frontend/.svelte-kit]
-    env_file: ./.env
+    env_file:
+      - path: ./.env
+        required: false
     environment: &environment
       NODE_ENV: development
       ITAM_EDU_FRONTEND_URL: http://www.localhost
@@ -44,7 +46,9 @@ services:
   api:
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
     expose: [3000]
-    env_file: ./.env
+    env_file:
+      - path: ./.env
+        required: false
     environment: *environment
     develop:
       watch:
@@ -59,7 +63,7 @@ services:
     ports: [127.0.0.1:5432:5432]
     shm_size: 128mb
     volumes: [postgres:/var/lib/postgresql/data]
-    environment: &db_env
+    environment:
       POSTGRES_DB: app
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
