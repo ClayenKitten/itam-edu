@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
-import { randomBytes, randomInt } from "node:crypto";
-import initContext from "../plugins";
-import { DEFAULT_SECURITY } from "../plugins/docs";
+import { randomBytes } from "node:crypto";
+import initContext from "../api/plugins";
+import { DEFAULT_SECURITY } from "../api/plugins/docs";
 import { env } from "node:process";
 
 export async function userController<PREFIX extends string>(prefix: PREFIX) {

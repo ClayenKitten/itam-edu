@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import initContext from "../plugins";
+import initContext from "../api/plugins";
 import authorizeMedia, { isSupportedMethod } from "./authorization";
 
 export async function mediaController() {

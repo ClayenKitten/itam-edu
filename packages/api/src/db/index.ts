@@ -1,6 +1,6 @@
 import getDatabaseConnection from "./connection";
 
-import UserRepository from "../api/users/repository";
+import UserRepository from "../users/repository";
 import CourseRepository from "../api/courses/repository";
 import LessonRepository from "../api/courses/lesson/repository";
 import StudentRepository from "../api/courses/student/repository";

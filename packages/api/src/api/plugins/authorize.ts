@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import * as schema from "../users/schema";
+import * as schema from "../../users/schema";
 import authenticate from "./authenticate";
 import db from "./db";
 import logger from "../../logger";
