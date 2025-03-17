@@ -1,10 +1,10 @@
 import { Elysia, t } from "elysia";
-import initContext from "../plugins";
+import initContext from "../api/plugins";
 import { lessonController } from "./lesson/controller";
 import { studentController } from "./student/controller";
 import * as schema from "./schema";
 import { homeworkController } from "./homework/controller";
-import { DEFAULT_SECURITY } from "../plugins/docs";
+import { DEFAULT_SECURITY } from "../api/plugins/docs";
 
 export async function courseController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ prefix, tags: ["Courses"] })

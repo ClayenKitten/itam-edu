@@ -1,7 +1,7 @@
 import { Elysia, type AnyElysia } from "elysia";
 
 import initContext from "./plugins";
-import { courseController } from "./courses/controller";
+import { courseController } from "../courses/controller";
 import { userController } from "../users/controller";
 import type AppConfig from "../config";
 import logger from "../logger";

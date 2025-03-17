@@ -1,6 +1,6 @@
-import { Repository } from "../../../db/repository";
-import { schemaFields } from "../../../util";
-import * as userSchema from "../../../users/schema";
+import { Repository } from "../../db/repository";
+import { schemaFields } from "../../util";
+import * as userSchema from "../../users/schema";
 
 export default class StudentRepository extends Repository {
     public async getAll(

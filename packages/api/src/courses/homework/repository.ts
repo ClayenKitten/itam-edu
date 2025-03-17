@@ -1,5 +1,5 @@
-import { Repository } from "../../../db/repository";
-import { schemaFields } from "../../../util";
+import { Repository } from "../../db/repository";
+import { schemaFields } from "../../util";
 import * as schema from "./schema";
 import { error } from "elysia";
 
