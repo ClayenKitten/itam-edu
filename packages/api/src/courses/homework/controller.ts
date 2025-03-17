@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
-import initContext from "../../plugins";
+import initContext from "../../api/plugins";
 import * as schema from "./schema";
-import { DEFAULT_SECURITY } from "../../plugins/docs";
+import { DEFAULT_SECURITY } from "../../api/plugins/docs";
 
 export async function homeworkController<PREFIX extends string>(
     prefix: PREFIX

@@ -1,7 +1,7 @@
-import { Queue, QueueEvents } from "bullmq";
+import { Queue } from "bullmq";
 import type NotificationRepository from "./repository";
 import { env } from "process";
-import type UserRepository from "../api/users/repository";
+import type UserRepository from "../users/repository";
 
 export default class NotificationService {
     public constructor(

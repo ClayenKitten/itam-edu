@@ -1,9 +1,9 @@
-import { Repository } from "../../../db/repository";
+import { Repository } from "../../db/repository";
 import type { DB } from "itam-edu-db";
 import { sql } from "kysely";
 import * as schema from "./schema";
 import type { ExpressionBuilder } from "kysely";
-import { schemaFields } from "../../../util";
+import { schemaFields } from "../../util";
 import { error } from "elysia";
 
 export default class LessonRepository extends Repository {

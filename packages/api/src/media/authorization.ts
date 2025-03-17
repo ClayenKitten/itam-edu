@@ -1,5 +1,5 @@
-import type Database from "../../db";
-import logger from "../../logger";
+import type Database from "../db";
+import logger from "../logger";
 import type { User } from "../users/entity";
 
 export default async function authorizeMedia(

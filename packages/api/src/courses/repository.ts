@@ -1,7 +1,7 @@
-import { Repository } from "../../db/repository";
+import { Repository } from "../db/repository";
 import { type NotNull, sql } from "kysely";
 import * as schema from "./schema";
-import { schemaFields } from "../../util";
+import { schemaFields } from "../util";
 
 export default class CourseRepository extends Repository {
     public async get(id: string): Promise<typeof schema.course.static | null> {

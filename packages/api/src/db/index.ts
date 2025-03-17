@@ -1,11 +1,11 @@
 import getDatabaseConnection from "./connection";
 
-import UserRepository from "../api/users/repository";
-import CourseRepository from "../api/courses/repository";
-import LessonRepository from "../api/courses/lesson/repository";
-import StudentRepository from "../api/courses/student/repository";
+import UserRepository from "../users/repository";
+import CourseRepository from "../courses/repository";
+import LessonRepository from "../courses/lesson/repository";
+import StudentRepository from "../courses/student/repository";
 import NotificationRepository from "../notifications/repository";
-import HomeworkRepository from "../api/courses/homework/repository";
+import HomeworkRepository from "../courses/homework/repository";
 
 export default class Database {
     constructor(connectionString: string) {
