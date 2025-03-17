@@ -3,16 +3,17 @@ import type { DB } from "itam-edu-db";
 import { Pool } from "pg";
 import logger from "../logger";
 
-export default function getDatabaseConnection(connectionString: string) {
-    if (!cache) {
-        cache = new Pool({
-            application_name: "itam-edu-api",
-            connectionString
-        });
-    }
-    return new Kysely<DB>({
+export default function getDatabaseConnection(
+    connectionString: string
+): Kysely<DB> {
+    if (cache) return cache;
+
+    cache = new Kysely<DB>({
         dialect: new PostgresDialect({
-            pool: cache,
+            pool: new Pool({
+                application_name: "itam-edu-api",
+                connectionString
+            }),
             onCreateConnection: async () => {
                 logger.trace("Database Connection Acquired");
             }
@@ -28,5 +29,6 @@ export default function getDatabaseConnection(connectionString: string) {
             }
         }
     });
+    return cache;
 }
-let cache: Pool | null = null;
+let cache: Kysely<DB> | null = null;
