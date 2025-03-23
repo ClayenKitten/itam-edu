@@ -9,6 +9,11 @@ export class User {
         public permissions: Permissions
     ) {}
 
+    /** Returns `true` if user is part of the course's staff. */
+    public isCourseStaff(courseId: string): boolean {
+        return this.permissions.course(courseId) !== null;
+    }
+
     /** Returns public user DTO. */
     public toPublicDTO(): typeof schema.user.static {
         let val = Value.Clone(this.user);
