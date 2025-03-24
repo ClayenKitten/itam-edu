@@ -23,9 +23,7 @@ export interface Courses {
   description: string | null;
   id: Generated<string>;
   isArchived: Generated<boolean>;
-  isBlogEnabled: Generated<boolean>;
   isEnrollmentOpen: Generated<boolean>;
-  isFeedbackEnabled: Generated<boolean>;
   isPublished: Generated<boolean>;
   /**
    * URL of the course logo
@@ -59,14 +57,6 @@ export interface CourseStaff {
    * Whether user can edit primary course info
    */
   canEditInfo: Generated<boolean>;
-  /**
-   * Whether user can write posts to blog
-   */
-  canManageBlog: Generated<boolean>;
-  /**
-   * Whether user can modify feedback form
-   */
-  canManageFeedback: Generated<boolean>;
   /**
    * Whether user can accept or reject submissions
    */
@@ -165,7 +155,7 @@ export interface Users {
   email: string | null;
   firstName: string | null;
   id: Generated<string>;
-  isStaff: Generated<boolean>;
+  isSupervisor: Generated<boolean>;
   lastName: string | null;
   patronim: string | null;
   tgChatId: Int8;

@@ -9,12 +9,13 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
         })
         .get(
             "",
-            async ({ db, params }) => {
+            async ({ user, db, params, error }) => {
+                if (!user.isCourseStaff(params.course)) return error(403);
                 const students = await db.student.getAll(params.course);
                 return students;
             },
             {
-                hasPermission: "isStaff",
+                requireAuthentication: true,
                 detail: {
                     summary: "List students",
                     description: "Returns all students enrolled to the course."

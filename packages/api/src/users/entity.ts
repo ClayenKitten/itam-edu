@@ -11,6 +11,9 @@ export class User {
 
     /** Returns `true` if user is part of the course's staff. */
     public isCourseStaff(courseId: string): boolean {
+        if (this.permissions.global.isSupervisor) {
+            return true;
+        }
         return this.permissions.course(courseId) !== null;
     }
 

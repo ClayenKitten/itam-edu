@@ -22,9 +22,7 @@ export const course = t.Object({
 
     isPublished: t.Boolean(),
     isEnrollmentOpen: t.Boolean(),
-    isArchived: t.Boolean(),
-    isBlogEnabled: t.Boolean(),
-    isFeedbackEnabled: t.Boolean()
+    isArchived: t.Boolean()
 });
 
 /** Information to create course. */

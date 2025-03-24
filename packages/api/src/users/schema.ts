@@ -13,7 +13,7 @@ export const user = t.Object({
 });
 
 export const globalPermissions = t.Object({
-    isStaff: t.Boolean(),
+    isSupervisor: t.Boolean(),
     canCreateCourses: t.Boolean(),
     canPublishCourses: t.Boolean()
 });
@@ -23,7 +23,5 @@ export const coursePermissions = t.Object({
     isOwner: t.Boolean(),
     canEditInfo: t.Boolean(),
     canEditContent: t.Boolean(),
-    canManageSubmissions: t.Boolean(),
-    canManageBlog: t.Boolean(),
-    canManageFeedback: t.Boolean()
+    canManageSubmissions: t.Boolean()
 });
