@@ -101,26 +101,7 @@ services:
     environment: *environment
     profiles: [kysely-codegen]
 
-  ## dbgate web interface for postgres
-  dbgate:
-    image: dbgate/dbgate:5.3.1-alpine
-    expose: [3000]
-    environment:
-      CONNECTIONS: Database
-      SIGNLE_CONNECTION: Database
-      SINGLE_DATABASE: app
-
-      LABEL_Database: Database
-      ENGINE_Database: postgres@dbgate-plugin-postgres
-      SERVER_Database: postgres
-      PORT_Database: 5432
-      DATABASE_Database: app
-      USER_Database: user
-      PASSWORD_Database: password
-    volumes:
-      - dbgate:/root/.dbgate
-
-  # Redis
+  # Redis server
   redis:
     image: redis:7.4
     command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
@@ -128,26 +109,30 @@ services:
     ports: [127.0.0.1:6379:6379]
     volumes: [redis:/root/redis]
 
-  redis-insight:
-    image: redis/redisinsight:2.66
-    expose: [5540]
-    depends_on: [redis]
-
-  redis-insight-setup:
-    image: curlimages/curl
+  # Web interface for databases
+  dbgate:
+    image: dbgate/dbgate:5.3.1-alpine
+    expose: [3000]
     environment:
-      HEADER: "Content-Type: application/json; charset=utf-8"
-      PATH1: http://redis-insight:5540/api/databases
-      DATA1: '{"host":"redis","name":"itam-edu","port":6379}'
-      PATH2: http://redis-insight:5540/api/settings
-      DATA2: '{"agreements":{"eula":true,"analytics": false,"notifications": false,"encryption": false}}'
-    entrypoint: |
-      sh -c "
-        sleep 5 &&
-        curl --fail-with-body -s -X 'POST' \"$$PATH1\" -H \"$$HEADER\" -d \"$$DATA1\" &&
-        curl --fail-with-body -s -X 'PATCH' \"$$PATH2\" -H \"$$HEADER\" -d \"$$DATA2\"
-      "
-    depends_on: [redis-insight]
+      CONNECTIONS: Postgres,Redis
+
+      LABEL_Postgres: Postgres
+      ENGINE_Postgres: postgres@dbgate-plugin-postgres
+      SERVER_Postgres: postgres
+      PORT_Postgres: 5432
+      DATABASE_Postgres: app
+      USER_Postgres: user
+      PASSWORD_Postgres: password
+
+      LABEL_Redis: Redis
+      ENGINE_Redis: redis@dbgate-plugin-redis
+      SERVER_Redis: redis
+      PORT_Redis: 6379
+      DATABASE_Redis: 0
+      USER_Redis: default
+      PASSWORD_Redis: password
+    volumes:
+      - dbgate:/root/.dbgate
 
   # Media
   ## Proxy server (Caddy)
@@ -183,11 +168,15 @@ configs:
       http://api.localhost {
           reverse_proxy api:3000
       }
-      http://postgres.localhost {
+      http://db.localhost {
           reverse_proxy dbgate:3000
       }
+      # Redirects
+      http://postgres.localhost {
+          redir http://db.localhost
+      }
       http://redis.localhost {
-          reverse_proxy redis-insight:5540
+          redir http://db.localhost
       }
 
 volumes:

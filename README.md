@@ -86,13 +86,11 @@ This command starts the reverse proxy, PostgreSQL, and all packages in developme
 
 Simple navigation page is hosted at http://localhost.
 
-| Service             | Internal URL    | External URL                                      |
-| ------------------- | --------------- | ------------------------------------------------- |
-| api                 | `api:3000`      | [api.localhost](http://api.localhost)             |
-| frontend            | `frontend:3000` | [www.localhost](http://www.localhost)             |
-| media               | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
-| Redis               | `redis:6379`    | localhost:6379                                    |
-| PostgreSQL          | `postgres:5432` | localhost:5432                                    |
-| **Developer tools** |                 |                                                   |
-| dbgate              | Postgres UI     | [db.localhost](http://postgres.localhost)         |
-| Redis Insight       | Redis UI        | [redis.localhost](http://redis.localhost)         |
+| Service           | Description     | Internal URL    | External URL                                      |
+| ----------------- | --------------- | --------------- | ------------------------------------------------- |
+| itam-edu-api      | Backend server  | `api:3000`      | [api.localhost](http://api.localhost)             |
+| itam-edu-frontend | Frontend server | `frontend:3000` | [www.localhost](http://www.localhost)             |
+| itam-edu-media    | File server     | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
+| PostgreSQL        |                 | `postgres:5432` | localhost:5432                                    |
+| Redis             |                 | `redis:6379`    | localhost:6379                                    |
+| dbgate            |                 | `dbgate:3000`   | [db.localhost](http://db.localhost)               |
