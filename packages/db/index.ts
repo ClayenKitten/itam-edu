@@ -86,15 +86,17 @@ export interface CourseStudents {
 }
 
 export interface Homeworks {
-  content: string;
+  acceptingSubmissionsOverride: boolean | null;
+  content: string | null;
   courseId: string;
+  createdAt: Generated<Timestamp>;
+  deadline: Timestamp | null;
   id: Generated<string>;
-  solutionPlaceholder: string | null;
+  position: number;
   title: string;
 }
 
 export interface HomeworkSubmissions {
-  attempt: number;
   homeworkId: string;
   id: Generated<string>;
   reviewAccepted: boolean | null;
@@ -104,7 +106,7 @@ export interface HomeworkSubmissions {
   solution: string;
   studentComment: string | null;
   studentId: string;
-  submittedAt: Generated<Timestamp | null>;
+  submittedAt: Generated<Timestamp>;
 }
 
 export interface Lessons {

@@ -5,12 +5,14 @@ import { studentController } from "./student/controller";
 import * as schema from "./schema";
 import { homeworkController } from "./homework/controller";
 import { DEFAULT_SECURITY } from "../api/plugins/docs";
+import { submissionController } from "./submission/controller";
 
 export async function courseController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ prefix, tags: ["Courses"] })
         .use(initContext())
         .use(lessonController("/:course/lessons"))
         .use(homeworkController("/:course/homeworks"))
+        .use(submissionController("/:course/submissions"))
         .use(studentController("/:course/students"))
         .get(
             "",

@@ -30,6 +30,7 @@ export default async function docs() {
                         { name: "Courses" },
                         { name: "Lessons" },
                         { name: "Homeworks" },
+                        { name: "Submissions" },
                         { name: "Students" },
                         { name: "Media" },
                         { name: "Infra" }

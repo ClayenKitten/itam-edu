@@ -5,7 +5,7 @@
     let { data } = $props();
 </script>
 
-<div class="flex flex-col gap-10 px-7 pb-7">
+<div class="flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col mb-2.5">
         <div
             class="banner h-[191px] mb-7 rounded-lg overflow-hidden"

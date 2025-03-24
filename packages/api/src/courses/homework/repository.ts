@@ -1,236 +1,99 @@
 import { Repository } from "../../db/repository";
-import { schemaFields } from "../../util";
+import Homework from "./entity";
 import * as schema from "./schema";
-import { error } from "elysia";
+import { type ExpressionBuilder, type Selectable } from "kysely";
+import type { DB } from "itam-edu-db";
 
 export default class HomeworkRepository extends Repository {
-    public async review(
-        reviewerId: string,
-        courseId: string,
-        submissionId: string,
-        reviewInfo: typeof schema.reviewOfSubmission.static
-    ) {
-        if ((await this.isCourseStaff(courseId, reviewerId)) === false) {
-            return error(404);
-        }
-        await this.getSubmissionById(reviewerId, courseId, submissionId);
-
-        const newSubmission = this.db
-            .updateTable("homeworkSubmissions")
-            .set({
-                reviewerId: reviewerId,
-                reviewAccepted: reviewInfo.reviewAccepted,
-                reviewerComment: reviewInfo.reviewerComment
-            })
-            .where("id", "=", submissionId)
-            .executeTakeFirstOrThrow();
-        return newSubmission;
-    }
-
-    public async createSubmission(
-        studentId: string,
-        courseId: string,
-        submissionInfo: typeof schema.createSubmission.static
-    ) {
-        if ((await this.isCourseStudent(courseId, studentId)) === false) {
-            return error(404);
-        }
-
-        let current_attempt = 0;
-        const existingSubmission = await this.getSubmission(
-            studentId,
-            submissionInfo.homeworkId
-        );
-        if (existingSubmission) {
-            current_attempt = existingSubmission.attempt;
-        }
-
-        const newSubmission = this.db
-            .insertInto("homeworkSubmissions")
-            .values({
-                studentId: studentId,
-                homeworkId: submissionInfo.homeworkId,
-                attempt: current_attempt + 1,
-                solution: submissionInfo.solution,
-                studentComment: submissionInfo.studentComment,
-                submittedAt: new Date().toISOString()
-            })
-            .returningAll()
-            .executeTakeFirst();
-        return newSubmission;
-    }
-
-    public async getSubmissionById(
-        userId: string,
-        courseId: string,
-        submissionId: string
-    ) {
-        const submission = await this.db
-            .selectFrom("homeworkSubmissions")
-            .selectAll()
-            .where("id", "=", submissionId)
-            .executeTakeFirst();
-        if (!submission) {
-            return error(404);
-        }
-        if (
-            (await this.isCourseStaff(courseId, userId)) === false &&
-            (submission.studentId !== userId ||
-                (await this.isCourseStudent(courseId, userId)) === false)
-        ) {
-            return error(404);
-        }
-        return submission;
-    }
-
-    public async getSubmissions(
-        userId: string,
-        courseId: string,
-        query: {
-            reviewed?: boolean | null;
-            homework?: string;
-            student?: string;
-        }
-    ) {
-        let submissions = this.db.selectFrom("homeworkSubmissions").selectAll();
-        if ((await this.isCourseStaff(courseId, userId)) === false) {
-            if ((await this.isCourseStudent(courseId, userId)) == false) {
-                return error(404);
-            }
-            submissions = this.db
-                .selectFrom("homeworkSubmissions")
-                .selectAll()
-                .where("studentId", "=", userId);
-        }
-
-        if (query.reviewed !== undefined) {
-            submissions = submissions.where(
-                "reviewAccepted",
-                "=",
-                query.reviewed
-            );
-        }
-        if (query.homework !== undefined) {
-            submissions = submissions.where("homeworkId", "=", query.homework);
-        }
-        if (query.student !== undefined) {
-            submissions = submissions.where("studentId", "=", query.student);
-        }
-        return await submissions.execute();
-    }
-
-    public async getAllHomeworks(userId: string, courseId: string) {
-        if (
-            (await this.isCourseStaff(courseId, userId)) === false &&
-            (await this.isCourseStudent(courseId, userId)) === false
-        ) {
-            return error(404);
-        }
-
-        const homeworks = this.db
-            .selectFrom("homeworks")
-            .selectAll()
-            .where("courseId", "=", courseId)
-            .execute();
-        return homeworks;
-    }
-
-    public async getHomework(
-        userId: string,
-        courseId: string,
-        homeworkId: string
-    ) {
-        if (
-            (await this.isCourseStaff(courseId, userId)) === false &&
-            (await this.isCourseStudent(courseId, userId)) === false
-        ) {
-            return error(404);
-        }
-        const homework = await this.db
+    /** Returns homework by id. */
+    public async getById(homeworkId: string): Promise<Homework | null> {
+        const hw = await this.db
             .selectFrom("homeworks")
             .selectAll()
             .where("id", "=", homeworkId)
             .executeTakeFirst();
-
-        if (!homework) {
-            return error(404);
-        }
-        return homework;
+        if (!hw) return null;
+        return this.toEntity(hw);
     }
 
-    public async createHomework(
-        userId: string,
+    /** Returns all homeworks of the course. */
+    public async getAll(courseId: string): Promise<Homework[]> {
+        const homeworksData = await this.db
+            .selectFrom("homeworks")
+            .orderBy("position asc")
+            .selectAll()
+            .where("courseId", "=", courseId)
+            .execute();
+        const homeworks = homeworksData.map(hw => this.toEntity(hw));
+        return homeworks;
+    }
+
+    /** Creates new homework. */
+    public async create(
         courseId: string,
         homeworkInfo: typeof schema.createHomework.static
-    ) {
-        if ((await this.isCourseStaff(courseId, userId)) === false) {
-            return error(404);
-        }
-        const newHomework = await this.db
+    ): Promise<Homework> {
+        const selectPosition = (eb: ExpressionBuilder<DB, "homeworks">) => {
+            return eb
+                .selectFrom("homeworks")
+                .where("courseId", "=", courseId)
+                .select(eb =>
+                    eb(
+                        eb.fn.coalesce(
+                            eb.fn
+                                .max<number>("position")
+                                .filterWhere("courseId", "=", courseId),
+                            eb.lit(0)
+                        ),
+                        "+",
+                        eb.val(1)
+                    ).as("position")
+                );
+        };
+
+        const hw = await this.db
             .insertInto("homeworks")
-            .values({
+            .values(eb => ({
                 title: homeworkInfo.title,
-                solutionPlaceholder: homeworkInfo.solutionPlaceholder,
-                content: homeworkInfo.content,
-                courseId: courseId
-            })
+                courseId: courseId,
+                position: selectPosition(eb)
+            }))
             .returningAll()
             .executeTakeFirstOrThrow();
-        return newHomework;
+
+        return this.toEntity(hw);
     }
 
-    public async updateHomework(
-        userId: string,
-        courseId: string,
+    /** Updates a homework. */
+    public async update(
         homeworkId: string,
         homeworkInfo: typeof schema.updateHomework.static
     ) {
-        if ((await this.isCourseStaff(courseId, userId)) === false) {
-            return error(404);
-        }
-        await this.getHomework(userId, courseId, homeworkId);
-        const newHomework = await this.db
+        const hw = await this.db
             .updateTable("homeworks")
             .where("id", "=", homeworkId)
             .set({
                 title: homeworkInfo.title,
                 content: homeworkInfo.content,
-                solutionPlaceholder: homeworkInfo.solutionPlaceholder
+                deadline: homeworkInfo.deadline,
+                acceptingSubmissionsOverride:
+                    homeworkInfo.overrideAcceptingSubmissions
             })
-            .returning(schemaFields(schema.homework))
+            .returningAll()
             .executeTakeFirst();
-
-        return newHomework ?? null;
+        if (!hw) return null;
+        return this.toEntity(hw);
     }
 
-    public async getSubmission(studentId: string, homeworkId: string) {
-        const submission = await this.db
-            .selectFrom("homeworkSubmissions")
-            .selectAll()
-            .where("studentId", "=", studentId)
-            .where("homeworkId", "=", homeworkId)
-            .orderBy("attempt", "desc")
-            .executeTakeFirst();
-        return submission;
-    }
-
-    public async isCourseStudent(courseId: string, studentId: string) {
-        const student = this.db
-            .selectFrom("courseStudents")
-            .selectAll()
-            .where("courseId", "=", courseId)
-            .where("userId", "=", studentId)
-            .execute();
-        return (await student).length === 1;
-    }
-
-    public async isCourseStaff(courseId: string, userId: string) {
-        const staff = this.db
-            .selectFrom("courseStaff")
-            .selectAll()
-            .where("courseId", "=", courseId)
-            .where("userId", "=", userId)
-            .execute();
-        return (await staff).length === 1;
+    private toEntity(hw: Selectable<DB["homeworks"]>): Homework {
+        return new Homework(
+            hw.id,
+            hw.courseId,
+            hw.title,
+            hw.content,
+            hw.deadline,
+            hw.acceptingSubmissionsOverride,
+            hw.createdAt
+        );
     }
 }
