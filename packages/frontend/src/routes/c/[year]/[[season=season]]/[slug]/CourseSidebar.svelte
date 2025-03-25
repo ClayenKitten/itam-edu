@@ -32,9 +32,8 @@
     {@render btn("/homeworks", "Домашние задания", "book-open-text")}
     {@render btn("/about", "О курсе", "info")}
     {#if isEmployee}
-        <hr class="text-on-surface-muted my-4" />
+        <hr class="text-on-surface-muted my-2" />
         {@render btn("/analytics", "Аналитика", "chart-line")}
-        {@render btn("/students", "Студенты", "student")}
         {@render btn("/settings", "Настройки", "gear-six")}
     {/if}
 </nav>
