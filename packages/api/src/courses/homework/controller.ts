@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia, error, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
 import { DEFAULT_SECURITY } from "../../api/plugins/docs";
@@ -11,7 +11,8 @@ export async function homeworkController<PREFIX extends string>(
         .get(
             "",
             async ({ db, params }) => {
-                return await db.homework.getAll(params.course);
+                const homeworks = await db.homework.getAll(params.course);
+                return homeworks.map(h => h.toDTO());
             },
             {
                 params: t.Object({ course: t.String({ format: "uuid" }) }),
@@ -24,7 +25,8 @@ export async function homeworkController<PREFIX extends string>(
         .post(
             "",
             async ({ db, params, body }) => {
-                return await db.homework.create(params.course, body);
+                const homework = await db.homework.create(params.course, body);
+                return homework.toDTO();
             },
             {
                 hasCoursePermission: ["canEditContent"],
@@ -40,7 +42,9 @@ export async function homeworkController<PREFIX extends string>(
         .get(
             "/:homework",
             async ({ db, params }) => {
-                return await db.homework.getById(params.homework);
+                const homework = await db.homework.getById(params.homework);
+                if (!homework) return error(404);
+                return homework.toDTO();
             },
             {
                 params: t.Object({
@@ -56,9 +60,12 @@ export async function homeworkController<PREFIX extends string>(
         .put(
             "/:homework",
             async ({ db, params, body, error }) => {
-                const found = await db.homework.update(params.homework, body);
-                if (!found) return error(404);
-                return found;
+                const homework = await db.homework.update(
+                    params.homework,
+                    body
+                );
+                if (!homework) return error(404);
+                return homework.toDTO();
             },
             {
                 params: t.Object({
