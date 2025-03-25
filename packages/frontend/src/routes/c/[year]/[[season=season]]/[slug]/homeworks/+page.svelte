@@ -20,9 +20,15 @@
                         <h4>{homework.title}</h4>
                     </header>
                     {#if homework.deadline}
-                        <span>
-                            {formatDate(homework.deadline, "dd.MM.yy / HH:mm")}
-                        </span>
+                        <p class="text-on-surface-contrast opacity-50">
+                            <span>До</span>
+                            <span>
+                                {formatDate(
+                                    homework.deadline,
+                                    "dd.MM.yy / HH:mm"
+                                )}
+                            </span>
+                        </p>
                     {/if}
                 </div>
                 <i class="ph ph-caret-right text-[26px] self-center"></i>
