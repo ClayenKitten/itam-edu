@@ -25,7 +25,7 @@ export default class LessonRepository extends Repository {
     ): Promise<(typeof schema.lessonWithoutContent.static)[]> {
         const lessons = await this.db
             .selectFrom("lessons")
-            .select(["courseId", "slug", "position", "icon", "title"])
+            .select(schemaFields(schema.lessonWithoutContent))
             .where("courseId", "=", courseId)
             .orderBy("position asc")
             .execute();

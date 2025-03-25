@@ -1,11 +1,12 @@
 <script lang="ts">
+    import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath } from "$lib/path";
     import { format as formatDate } from "date-fns";
 
     let { data } = $props();
 </script>
 
-<div class="flex flex-col gap-10 px-7 pb-10">
+<div class="w-max mx-auto flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col mb-2.5">
         <div
             class="banner h-[191px] mb-7 rounded-lg overflow-hidden"
@@ -32,15 +33,19 @@
                 <i class="ph ph-arrow-right text-[26px]"></i>
             </a>
         </header>
-        <ol>
-            {#each data.courseSummary.lessons as lesson}
-                <a
-                    class="flex flex-col"
-                    href={`${coursePath(data.course)}/lessons/${lesson.slug}`}
-                >
-                    <h4>Занятие {lesson.position}</h4>
-                    <p>{lesson.title}</p>
-                </a>
+        <ol
+            class={[
+                "flex gap-4",
+                "@max-[1200px]/main:*:nth-[n+3]:hidden",
+                "@max-[1600px]/main:*:nth-[n+4]:hidden"
+            ]}
+        >
+            {#each data.lessons.toReversed().slice(0, 4) as lesson, i}
+                <LessonCard
+                    course={data.course}
+                    {lesson}
+                    position={data.lessons.length - i}
+                />
             {:else}
                 Пусто!
             {/each}
@@ -52,7 +57,7 @@
         </header>
         <hr class="text-on-primary" />
         <ol class="flex flex-col gap-8 my-5">
-            {#each data.courseSummary.updates as update}
+            {#each data.updates as update}
                 <a class="flex items-center gap-4" href={update.href}>
                     <img
                         class="w-13.5 h-13.5 rounded-sm"

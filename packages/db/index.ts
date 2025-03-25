@@ -101,15 +101,17 @@ export interface HomeworkSubmissions {
 
 export interface Lessons {
   /**
+   * URL of the lesson icon
+   */
+  banner: string | null;
+  /**
    * HTML content of the lesson
    */
   content: string | null;
   courseId: string;
-  /**
-   * URL of the lesson icon
-   */
-  icon: string | null;
+  createdAt: Generated<Timestamp>;
   position: number;
+  scheduledAt: Timestamp | null;
   /**
    * Machine-readable name of the lesson that is unique within a course
    */

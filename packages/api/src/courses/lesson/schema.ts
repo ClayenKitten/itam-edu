@@ -4,9 +4,10 @@ export const lesson = t.Object({
     courseId: t.String({ format: "uuid" }),
     title: t.String({ minLength: 3, maxLength: 80 }),
     slug: t.String({ pattern: "^[a-z][a-z0-9-]*$" }),
-    position: t.Integer(),
     content: t.Nullable(t.String()),
-    icon: t.Nullable(t.String({ format: "uri", maxLength: 1000 }))
+    banner: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
+    createdAt: t.Date(),
+    scheduledAt: t.Nullable(t.Date())
 });
 export const lessonWithoutContent = t.Omit(lesson, ["content"]);
 export const updateLesson = t.Pick(lesson, ["title", "content"]);

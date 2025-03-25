@@ -49,7 +49,7 @@
             >
         {/if}
     </header>
-    <main class="flex flex-col items-stretch">
+    <main class="flex flex-col items-stretch @container/main">
         {@render children()}
     </main>
 </div>
