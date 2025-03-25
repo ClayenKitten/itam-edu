@@ -63,8 +63,12 @@
     --text-button--font-weight: 521;
 
     --text-comment: 20px;
-    --text-button--line-height: 23.4px;
-    --text-button--font-weight: 500;
+    --text-comment--line-height: 23.4px;
+    --text-comment--font-weight: 500;
+
+    --text-date: 14px;
+    --text-date--line-height: 16.4px;
+    --text-date--font-weight: 400;
 }
 
 @layer base {

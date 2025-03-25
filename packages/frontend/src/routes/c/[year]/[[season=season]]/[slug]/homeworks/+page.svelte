@@ -7,7 +7,7 @@
 
 <div class="flex flex-col gap-10 p-10">
     <header class="flex">
-        <h1>Домашние задания</h1>
+        <h2>Домашние задания</h2>
     </header>
     <div class="flex flex-col gap-2.5">
         {#each data.homeworks as homework}
