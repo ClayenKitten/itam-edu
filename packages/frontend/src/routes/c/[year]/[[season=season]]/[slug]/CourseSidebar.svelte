@@ -26,7 +26,9 @@
     </a>
 {/snippet}
 
-<nav class="row-span-2 flex flex-col gap-2 p-5 bg-surface shadow">
+<nav
+    class="sticky top-0 h-dvh row-span-2 flex flex-col gap-2 p-5 bg-surface shadow"
+>
     {@render btn("/", "Главный экран", "house")}
     {@render btn("/lessons", "Занятия", "folder")}
     {@render btn("/homeworks", "Домашние задания", "book-open-text")}
