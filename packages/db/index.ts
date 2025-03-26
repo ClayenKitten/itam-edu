@@ -14,6 +14,7 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Courses {
+  about: Generated<string>;
   banner: string | null;
   colorOnPrimary: string | null;
   colorPrimary: string | null;

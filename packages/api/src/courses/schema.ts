@@ -16,6 +16,7 @@ export const course = t.Object({
     status: t.Nullable(t.String({ maxLength: 300 })),
     banner: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
     logo: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
+    about: t.String({ maxLength: 32768 }),
 
     colorPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
     colorOnPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
