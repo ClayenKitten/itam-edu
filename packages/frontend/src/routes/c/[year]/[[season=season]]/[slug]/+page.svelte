@@ -35,9 +35,12 @@
         </header>
         <ol
             class={[
-                "flex gap-4",
-                "@max-[1200px]/main:*:nth-[n+3]:hidden",
-                "@max-[1600px]/main:*:nth-[n+4]:hidden"
+                "flex flex-wrap gap-4",
+                "h-[291px] overflow-y-hidden ",
+                "@max-[800px]/main:w-[343px]",
+                "@min-[800px]/main:w-[702px]",
+                "@min-[1200px]/main:w-[1061px]",
+                "@min-[1600px]/main:w-[1420px]"
             ]}
         >
             {#each data.lessons.toReversed().slice(0, 4) as lesson, i}
