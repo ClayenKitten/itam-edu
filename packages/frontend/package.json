@@ -17,6 +17,9 @@
         "@phosphor-icons/web": "^2.1.1",
         "@sinclair/typebox": "^0.34.14",
         "@sveltejs/adapter-node": "^5.2.10",
+        "@tiptap/core": "^2.11.5",
+        "@tiptap/html": "^2.11.5",
+        "@tiptap/starter-kit": "^2.11.5",
         "@types/node": "^22.10.2",
         "date-fns": "^4.1.0"
     },
