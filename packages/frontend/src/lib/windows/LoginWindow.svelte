@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
+    import { goto, invalidate } from "$app/navigation";
     import { env } from "$env/dynamic/public";
     import api from "$lib/api";
     import { MyWindow } from ".";
 
-    let { code }: { code?: string } = $props();
+    let { code, redirect }: { code?: string; redirect?: string } = $props();
 
     const login = async () => {
         if (!code) return;
@@ -21,8 +21,14 @@
             return;
         }
         await invalidate("app:user");
-        MyWindow.current?.close();
+        if (redirect && isInternalURL(redirect)) {
+            await goto(redirect);
+        } else {
+            MyWindow.current?.close();
+        }
     };
+
+    const isInternalURL = (url: string) => /^\/[\w\/-]+$/.test(url);
 </script>
 
 <div

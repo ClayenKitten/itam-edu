@@ -85,7 +85,7 @@ export class MyWindow<KIND extends WindowKind> {
 }
 
 export const WindowDefinitions = {
-    login: { fields: ["code"], component: LoginWindow },
+    login: { fields: ["code", "redirect"], component: LoginWindow },
     calendar: { fields: ["month"], component: CalendarWindow }
 };
 export type WindowKind = keyof typeof WindowDefinitions;

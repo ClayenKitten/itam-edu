@@ -9,7 +9,14 @@
         <h1 class="text-h3">
             <a class="itam" href="https://itatmisis.ru">ITAM</a> Education
         </h1>
-        <button class="btn ml-auto" onclick={() => {}}>Войти</button>
+        {#if !data.user}
+            <a class="btn ml-auto" href="?window=login&redirect=/home">Войти</a>
+        {:else}
+            <a class="btn ml-auto" href="/home">
+                На платформу
+                <i class="ph ph-arrow-right text-[20px]"></i>
+            </a>
+        {/if}
     </header>
     <main class="flex flex-col gap-2 mx-auto max-w-[1000px] px-16 py-8">
         <h2 class="mt-8 mb-2">Пространство IT-образования</h2>
