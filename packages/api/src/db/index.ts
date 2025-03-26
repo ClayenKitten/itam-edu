@@ -1,4 +1,4 @@
-import getDatabaseConnection from "./connection";
+import createDatabaseConnection from "./connection";
 
 import UserRepository from "../users/repository";
 import CourseRepository from "../courses/repository";
@@ -10,7 +10,7 @@ import SubmissionRepository from "../courses/submission/repository";
 
 export default class Database {
     constructor(connectionString: string) {
-        const connection = getDatabaseConnection(connectionString);
+        const connection = createDatabaseConnection(connectionString);
         this.user = new UserRepository(connection);
         this.course = new CourseRepository(connection);
         this.lesson = new LessonRepository(connection);

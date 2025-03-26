@@ -1,21 +1,16 @@
-import type AppConfig from "../config";
-import Database from "../db";
 import logger from "../logger";
 import type TelegramBot from "../telegram";
 import { Worker } from "bullmq";
 import { env } from "process";
 import type { NotificationMsgPayload } from "./service";
+import type { AppContext } from "../ctx";
 
 /** Worker for sending notifications. */
 export default class NotificationWorker {
-    private db: Database;
-
     public constructor(
-        private config: AppConfig,
+        private ctx: AppContext,
         private bot: TelegramBot
-    ) {
-        this.db = new Database(this.config.db.connectionString);
-    }
+    ) {}
 
     private worker?: Worker;
 
@@ -31,7 +26,7 @@ export default class NotificationWorker {
                             parse_mode: "HTML"
                         }
                     );
-                    await this.db.notification.createMessage(
+                    await this.ctx.db.notification.createMessage(
                         job.data.notificationId,
                         job.data.userId,
                         msg.message_id.toFixed(0)

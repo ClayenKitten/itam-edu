@@ -1,13 +1,13 @@
 import { Elysia } from "elysia";
 import * as schema from "../../users/schema";
 import authenticate from "./authenticate";
-import db from "./db";
+import ctx from "./ctx";
 import logger from "../../logger";
 
 /** Plugin that retrieves user permissions and registers macroses for authorization. */
 export default function authorize() {
     return new Elysia({ name: "authorize" })
-        .use(db())
+        .use(ctx())
         .use(authenticate())
         .macro({
             hasPermission(

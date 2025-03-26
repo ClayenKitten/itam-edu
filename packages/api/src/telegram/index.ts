@@ -1,28 +1,18 @@
 import { Telegraf } from "telegraf";
 import { env } from "process";
 
-import {
-    extendContext,
-    type BotContext,
-    type StaticBotContext
-} from "./ctx.js";
-import type AppConfig from "../config.js";
+import { extendContext, type BotContext } from "./ctx.js";
 import logger from "../logger.js";
 import setupHandlers from "./handlers/index.js";
-import Database from "../db/index.js";
 import type { ParseMode } from "telegraf/types";
+import type { AppContext } from "../ctx.js";
 
 export default class TelegramBot {
     /** Internal Telegraf instance. */
     private telegraf: Telegraf<BotContext>;
 
-    /** Static context. */
-    public readonly ctx: StaticBotContext;
-
-    public constructor(config: AppConfig) {
-        const db = new Database(config.db.connectionString);
-        this.ctx = { config, db };
-        this.telegraf = new Telegraf<BotContext>(config.tg.token).use(
+    public constructor(public ctx: AppContext) {
+        this.telegraf = new Telegraf<BotContext>(ctx.config.tg.token).use(
             async (ctx, next) => {
                 await extendContext(ctx, this.ctx);
                 await next();

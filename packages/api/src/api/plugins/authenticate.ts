@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import repositories from "./db";
+import repositories from "./ctx";
 import logger from "../../logger";
 
 export default function authenticate() {

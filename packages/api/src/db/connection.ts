@@ -3,12 +3,11 @@ import type { DB } from "itam-edu-db";
 import { Pool } from "pg";
 import logger from "../logger";
 
-export default function getDatabaseConnection(
+/** Creates new database connection pool. */
+export default function createDatabaseConnection(
     connectionString: string
 ): Kysely<DB> {
-    if (cache) return cache;
-
-    cache = new Kysely<DB>({
+    return new Kysely<DB>({
         dialect: new PostgresDialect({
             pool: new Pool({
                 application_name: "itam-edu-api",
@@ -29,6 +28,4 @@ export default function getDatabaseConnection(
             }
         }
     });
-    return cache;
 }
-let cache: Kysely<DB> | null = null;

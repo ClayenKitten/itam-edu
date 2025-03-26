@@ -3,14 +3,14 @@ import { Elysia, type AnyElysia } from "elysia";
 import initContext from "./plugins";
 import { courseController } from "../courses/controller";
 import { userController } from "../users/controller";
-import type AppConfig from "../config";
 import logger from "../logger";
 import { mediaController } from "../media/controller";
+import type { AppContext } from "../ctx";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
 
-    public constructor(public readonly config: AppConfig) {
+    public constructor(public ctx: AppContext) {
         this.elysia = new Promise(async resolve =>
             resolve(await this.createElysia())
         );
@@ -22,14 +22,14 @@ export default class ApiServer {
         elysia
             .onStart(() =>
                 logger.info("Started API server", {
-                    host: this.config.api.host,
-                    port: this.config.api.port
+                    host: this.ctx.config.api.host,
+                    port: this.ctx.config.api.port
                 })
             )
             .onStop(() => logger.info("Stopped API server"))
             .listen({
-                hostname: this.config.api.host,
-                port: this.config.api.port
+                hostname: this.ctx.config.api.host,
+                port: this.ctx.config.api.port
             });
     }
 

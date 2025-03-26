@@ -3,10 +3,9 @@ import { Elysia } from "elysia";
 import cors from "./cors";
 import docs from "./docs";
 import httpLogger from "./logger";
-import db from "./db";
+import ctx from "./ctx";
 import authenticate from "./authenticate";
 import authorize from "./authorize";
-import NotificationService from "../../notifications/service";
 
 /** Creates an application context. */
 export default async function initContext() {
@@ -14,13 +13,8 @@ export default async function initContext() {
         .use(cors())
         .use(await docs())
         .use(httpLogger())
-        .use(db())
+        .use(ctx())
         .use(authenticate())
         .use(authorize())
-        .derive(({ db }) => {
-            return {
-                notification: new NotificationService(db.user, db.notification)
-            };
-        })
         .as("plugin");
 }

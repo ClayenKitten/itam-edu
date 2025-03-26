@@ -1,14 +1,17 @@
 import logger from "../logger";
-import Database from "../db";
 import type { Context, NarrowedContext } from "telegraf";
 import type { Message, Update } from "telegraf/types";
-import type AppConfig from "../config";
 import { randomUUID } from "crypto";
+import type { AppContext } from "../ctx";
 
-/** Adds missing fields into {@link ctx} from {@link staticCtx}, adding update-specific metadata. */
+/**
+ * Adds static context from {@link AppContext} to bot update context.
+ *
+ * {@link ctx} is modified in-place.
+ * */
 export async function extendContext<T extends Update = Update>(
     ctx: BotContext<T>,
-    staticCtx: StaticBotContext
+    staticCtx: AppContext
 ) {
     let meta: Record<string, unknown> = {};
     let info: Record<string, unknown> = {};
@@ -23,18 +26,11 @@ export async function extendContext<T extends Update = Update>(
     logger.debug("Received update", info);
 
     ctx.config = staticCtx.config;
-    ctx.db = new Database(staticCtx.config.db.connectionString);
+    ctx.db = staticCtx.db;
 }
 
-/** Global bot context that can be extended into {@link BotContext}. */
-export type StaticBotContext = {
-    config: AppConfig;
-    db: Database;
-};
-
 /** Bot context associated with update. */
-export type BotContext<T extends Update = Update> = Context<T> &
-    StaticBotContext;
+export type BotContext<T extends Update = Update> = Context<T> & AppContext;
 
 /** Narrowed bot context associated with message update. */
 export type BotMsgContext = NarrowedContext<
