@@ -71,26 +71,31 @@ Non-containerized setup on Linux/Windows/etc is theoretically possible, though n
 
 ## 🛠️ Development
 
-Run `task` to see a list of available commands.
+Local development environment can be easily setup via VS Code's devcontainer.
+VS Code's devcontainer is used for development.
 
-### Prerequisites
+Taskfile is used to execute commands. Run `task` to see a full list.
 
-- [Taskfile](https://taskfile.dev/installation/)
-- [Docker Desktop](https://docs.docker.com/desktop/) or [Docker Engine](https://docs.docker.com/engine/install/)
+### Setup
 
-### Environment
+- Clone repository and open it in devcontainer
+- Install dependencies via `npm ci`
+- Setup environment
+    - Create a Telegram bot to use during local development
+    - Clone `.env.example` as `.env` and fill all variables related to Telegram. Other variables may be skipped.
+- Start development servers via `Run and Debug` menu or CLI
 
-The [development environment](./compose.dev.yaml) is setup by running `task dev:up`.
+### Services
 
-This command starts the reverse proxy, PostgreSQL, and all packages in development mode with hot reloading enabled.
-
-Simple navigation page is hosted at http://localhost.
-
-| Service           | Description     | Internal URL    | External URL                                      |
-| ----------------- | --------------- | --------------- | ------------------------------------------------- |
-| itam-edu-api      | Backend server  | `api:3000`      | [api.localhost](http://api.localhost)             |
-| itam-edu-frontend | Frontend server | `frontend:3000` | [www.localhost](http://www.localhost)             |
-| itam-edu-media    | File server     | `media:3000`    | [www.localhost/media](http://www.localhost/media) |
-| PostgreSQL        |                 | `postgres:5432` | localhost:5432                                    |
-| Redis             |                 | `redis:6379`    | localhost:6379                                    |
-| dbgate            |                 | `dbgate:3000`   | [db.localhost](http://db.localhost)               |
+| Service               | URL                        |
+| --------------------- | -------------------------- |
+| **Packages**          |                            |
+| itam-edu-api          | http://api.localhost       |
+| itam-edu-frontend     | http://www.localhost       |
+| itam-edu-media        | http://www.localhost/media |
+| **Development tools** |                            |
+| Navigation            | http://localhost           |
+| dbgate                | http://db.localhost        |
+| **Infrastructure**    |                            |
+| PostgreSQL            | `postgres:localhost:5432`  |
+| Redis                 | `redis:localhost:6379`     |

@@ -1,0 +1,24 @@
+{
+    "name": "itam-edu",
+    "dockerComposeFile": ["./compose.yaml"],
+    "workspaceFolder": "/itam-edu",
+    "service": "devcontainer",
+    "runServices": ["gateway", "postgres", "redis", "dbgate"],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "matthewpi.caddyfile-support",
+                "svelte.svelte-vscode",
+                "esbenp.prettier-vscode",
+                "vitest.explorer",
+                "github.vscode-github-actions",
+                "oven.bun-vscode"
+            ],
+            "settings": {
+                "remote.autoForwardPorts": false,
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "forwardPorts": ["gateway:80"]
+}

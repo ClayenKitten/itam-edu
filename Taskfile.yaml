@@ -14,44 +14,19 @@ tasks:
     desc: Check code in all packages
     cmd: npm run check --workspaces --if-present
 
-  dev:
-    desc: Basic development environment command
-    cmds: ["docker compose -f ./compose.dev.yaml {{.CLI_ARGS}}"]
-
-  dev:up:
-    desc: Setup development environment
-    interactive: true
-    cmds:
-      - cmd: |
-          docker compose --file="./compose.dev.yaml" up \
-            --build \
-            --no-attach gateway \
-            --no-attach dbgate \
-            --remove-orphans \
-            --watch \
-            {{.CLI_ARGS}}
-      - task: dev:down
-
-  dev:down:
-    desc: Stop development environment
-    cmd: docker compose --profile "*" --file="./compose.dev.yaml" down
-
-  dev:drop:
-    desc: Stop development environment and delete volumes
-    prompt: Are you sure? It will remove all volumes, leading to full data loss.
-    cmd: docker compose --profile "*" --file="./compose.dev.yaml" down -v
-
-  db:
-    desc: Invoke dbmate
-    cmd: ITAM_EDU_DB_COMMAND="{{.CLI_ARGS}}" docker compose -f ./compose.dev.yaml up --menu=false dbmate kysely-codegen
-
   db:up:
     desc: Run database migrations
-    cmd: { task: db, vars: { CLI_ARGS: up } }
+    dir: ./packages/db
+    cmds:
+      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --migrations-dir="./migrations" up --strict
+      - task: db:codegen
 
   db:down:
     desc: Revert database migration
-    cmd: { task: db, vars: { CLI_ARGS: down } }
+    dir: ./packages/db
+    cmds:
+      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --migrations-dir="./migrations" down
+      - task: db:codegen
 
   db:new:
     desc: Create new migration file. Name must be specified as argument.
@@ -59,3 +34,8 @@ tasks:
     env:
       DBMATE_MIGRATIONS_DIR: "./migrations"
     cmd: "npx dbmate new -- {{.CLI_ARGS}}"
+
+  db:codegen:
+    desc: Generate types from database
+    dir: ./packages/db
+    cmd: npx kysely-codegen --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --out-file ./index.ts --camel-case --dialect postgres

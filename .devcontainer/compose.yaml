@@ -1,0 +1,94 @@
+# Development environment
+
+services:
+  devcontainer:
+    build: .
+    volumes:
+      - ..:/itam-edu:cached
+      - .bashrc:/root/.bashrc
+    env_file: [../.env, .env.dev]
+
+  gateway:
+    image: caddy:2-alpine
+    ports: [127.0.0.1:80:80, 127.0.0.1:443:443]
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./index.html:/srv/www/index.html:ro
+      - ./style.css:/srv/www/style.css:ro
+
+  # Databases
+  ## PostgreSQL server
+  postgres:
+    image: postgres:17
+    expose: [5432]
+    ports: [127.0.0.1:5432:5432]
+    shm_size: 128mb
+    volumes: [postgres:/var/lib/postgresql/data]
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: pg_isready --dbname="$$POSTGRES_DB" --username="$$POSTGRES_USER"
+      interval: 5s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+      start_interval: 500ms
+
+  ## Redis server
+  redis:
+    image: redis:7.4
+    command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
+    expose: [6379]
+    ports: [127.0.0.1:6379:6379]
+    volumes: [redis:/root/redis]
+
+  ## Web interface for databases
+  dbgate:
+    image: dbgate/dbgate:5.3.1-alpine
+    expose: [3000]
+    environment:
+      CONNECTIONS: Postgres,Redis
+
+      LABEL_Postgres: Postgres
+      ENGINE_Postgres: postgres@dbgate-plugin-postgres
+      SERVER_Postgres: postgres
+      PORT_Postgres: 5432
+      DATABASE_Postgres: app
+      USER_Postgres: user
+      PASSWORD_Postgres: password
+
+      LABEL_Redis: Redis
+      ENGINE_Redis: redis@dbgate-plugin-redis
+      SERVER_Redis: redis
+      PORT_Redis: 6379
+      DATABASE_Redis: 0
+      USER_Redis: default
+      PASSWORD_Redis: password
+    volumes:
+      - dbgate:/root/.dbgate
+
+  # Media
+  ## Proxy server (Caddy)
+  media:
+    build:
+      context: ../packages/media
+      dockerfile: ./Dockerfile
+    expose: [3000]
+    volumes: [./packages/media/data:/app/data]
+    env_file: [./.env.dev]
+    develop:
+      watch:
+        - action: rebuild
+          path: ./packages/media/Caddyfile
+          target: /app/packages/media
+
+volumes:
+  postgres:
+  dbgate:
+  redis:
+  caddy_data:
+  caddy_config:

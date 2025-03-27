@@ -22,15 +22,11 @@ export default class ApiServer {
         elysia
             .onStart(() =>
                 logger.info("Started API server", {
-                    host: this.ctx.config.api.host,
                     port: this.ctx.config.api.port
                 })
             )
             .onStop(() => logger.info("Stopped API server"))
-            .listen({
-                hostname: this.ctx.config.api.host,
-                port: this.ctx.config.api.port
-            });
+            .listen({ port: this.ctx.config.api.port });
     }
 
     /** Stops serving. */

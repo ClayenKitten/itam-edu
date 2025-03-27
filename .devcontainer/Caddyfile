@@ -1,0 +1,33 @@
+http://localhost {
+    root * /srv/www
+    file_server
+}
+http://www.localhost {
+    handle /media* {
+        reverse_proxy devcontainer:5152
+    }
+    handle {
+        reverse_proxy devcontainer:5150
+    }
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
+}
+http://api.localhost {
+    reverse_proxy devcontainer:5151
+
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
+}
+http://db.localhost {
+    reverse_proxy dbgate:3000
+}
+
+# Redirects
+http://postgres.localhost {
+    redir http://db.localhost
+}
+http://redis.localhost {
+    redir http://db.localhost
+}

@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-import type { Handle, HandleFetch } from "@sveltejs/kit";
+import type { Handle, HandleFetch, ServerInit } from "@sveltejs/kit";
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
     const cookies = event.request.headers.get("cookie");
@@ -24,3 +24,12 @@ export const handle: Handle = async ({ event, resolve }) =>
     resolve(event, {
         filterSerializedResponseHeaders: header => header === "content-type"
     });
+
+export const init: ServerInit = async () => {
+    if (process.env.ITAM_EDU_FRONTEND_PORT) {
+        process.env.PORT = process.env.ITAM_EDU_FRONTEND_PORT;
+    }
+    if (process.env.ITAM_EDU_FRONTEND_HOST) {
+        process.env.HOST = process.env.ITAM_EDU_FRONTEND_HOST;
+    }
+};

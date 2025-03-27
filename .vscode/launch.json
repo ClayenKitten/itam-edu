@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "itam-edu-frontend",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": ["<node_internals>/**"],
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run-script", "dev"],
+            "cwd": "${workspaceFolder}/packages/frontend",
+            "presentation": {
+                "order": 1
+            }
+        },
+        {
+            "name": "itam-edu-api",
+            "type": "bun",
+            "request": "launch",
+            "program": "${file}",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/packages/api",
+            "presentation": {
+                "order": 2
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "itam-edu",
+            "configurations": ["itam-edu-frontend", "itam-edu-api"],
+            "stopAll": true,
+            "presentation": {
+                "order": 0
+            }
+        }
+    ]
+}
