@@ -23,7 +23,6 @@ services:
   postgres:
     image: postgres:17
     expose: [5432]
-    ports: [127.0.0.1:5432:5432]
     shm_size: 128mb
     volumes: [postgres:/var/lib/postgresql/data]
     environment:
@@ -43,7 +42,6 @@ services:
     image: redis:7.4
     command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
     expose: [6379]
-    ports: [127.0.0.1:6379:6379]
     volumes: [redis:/root/redis]
 
   ## Web interface for databases
