@@ -12,7 +12,8 @@
                 "esbenp.prettier-vscode",
                 "vitest.explorer",
                 "github.vscode-github-actions",
-                "oven.bun-vscode"
+                "oven.bun-vscode",
+                "bradlc.vscode-tailwindcss"
             ],
             "settings": {
                 "remote.autoForwardPorts": false,
