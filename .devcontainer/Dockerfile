@@ -1,7 +1,7 @@
 FROM alpine:3.21
 
 # Basic
-RUN apk add --no-cache coreutils bash curl git nano vim htop less
+RUN apk add --no-cache coreutils bash bash-completion curl git nano vim htop less
 
 # NodeJS
 RUN apk add --no-cache nodejs npm

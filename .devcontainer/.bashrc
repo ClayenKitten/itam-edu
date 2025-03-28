@@ -2,3 +2,5 @@ PROMPT_COMMAND='PS1_CMD1=$(git branch --show-current 2>/dev/null)'; PS1='\[\e[32
 
 alias ls='ls --color=auto'
 alias ll='ls -la'
+
+source /etc/bash/bash_completion.sh
