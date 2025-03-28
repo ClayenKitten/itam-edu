@@ -17,9 +17,9 @@
             "name": "itam-edu-api",
             "type": "bun",
             "request": "launch",
-            "program": "${file}",
             "runtimeArgs": ["run", "dev"],
             "cwd": "${workspaceFolder}/packages/api",
+            "program": "./src/index.ts",
             "presentation": {
                 "order": 2
             }
