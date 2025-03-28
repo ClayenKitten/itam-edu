@@ -10,13 +10,32 @@ on:
 jobs:
   check-db:
     runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+
+    env:
+      CONNECTION_STRING: "postgres://postgres:password@localhost:5432/testdb?sslmode=disable"
 
     steps:
       - uses: actions/checkout@v4
-      - name: Migrate
-        env:
-          ITAM_EDU_DB_COMMAND: up
-        run: docker compose --file="./compose.dev.yaml" up dbmate kysely-codegen
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Migrate & codegen
+        run: |
+          npm install -g dbmate@^2.26.0 kysely-codegen@^0.18.3 kysely@^0.27.5 pg@^8.13.1
+          npx dbmate --no-dump-schema --url "$CONNECTION_STRING" --migrations-dir="./packages/db/migrations" up --strict
+          npx kysely-codegen --url "$CONNECTION_STRING" --out-file ./packages/db/index.ts --camel-case --dialect postgres
 
       - name: Verify Changed files
         uses: tj-actions/verify-changed-files@v20
