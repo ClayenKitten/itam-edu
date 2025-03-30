@@ -1,7 +1,7 @@
 import { Elysia, error, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
-import { DEFAULT_SECURITY } from "../../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 
 export async function homeworkController<PREFIX extends string>(
     prefix: PREFIX
@@ -35,7 +35,7 @@ export async function homeworkController<PREFIX extends string>(
                 detail: {
                     summary: "Create new homework",
                     description: "Creates new homework.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -77,7 +77,7 @@ export async function homeworkController<PREFIX extends string>(
                 detail: {
                     summary: "Update homework",
                     description: "Updates homework.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         );

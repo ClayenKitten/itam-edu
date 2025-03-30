@@ -6,6 +6,7 @@ import { userController } from "../users/controller";
 import logger from "../logger";
 import { mediaController } from "../media/controller";
 import type { AppContext } from "../ctx";
+import { NO_AUTHENTICATION } from "./plugins/docs";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -59,7 +60,9 @@ export default class ApiServer {
                 tags: ["Infra"],
                 detail: {
                     summary: "Healthcheck",
-                    description: "Healthcheck endpoint that always returns 200."
+                    description:
+                        "Healthcheck endpoint that always returns 200.",
+                    security: NO_AUTHENTICATION
                 }
             });
     }

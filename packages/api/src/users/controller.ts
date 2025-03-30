@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { randomBytes } from "node:crypto";
 import initContext from "../api/plugins";
-import { DEFAULT_SECURITY } from "../api/plugins/docs";
+import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 import { env } from "node:process";
 
 export async function userController<PREFIX extends string>(prefix: PREFIX) {
@@ -20,7 +20,7 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
                 detail: {
                     summary: "Get current user information",
                     description: "Returns information about the current user.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -55,7 +55,8 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
                     summary: "Authenticate user",
                     description:
                         "Authenticates user and creates a new session.\n\n" +
-                        "Currently only supports OTP (one-time password) authentication."
+                        "Currently only supports OTP (one-time password) authentication.",
+                    security: NO_AUTHENTICATION
                 }
             }
         );

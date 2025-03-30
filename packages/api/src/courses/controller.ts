@@ -4,7 +4,7 @@ import { lessonController } from "./lesson/controller";
 import { studentController } from "./student/controller";
 import * as schema from "./schema";
 import { homeworkController } from "./homework/controller";
-import { DEFAULT_SECURITY } from "../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../api/plugins/docs";
 import { submissionController } from "./submission/controller";
 
 export async function courseController<PREFIX extends string>(prefix: PREFIX) {
@@ -38,7 +38,7 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                 detail: {
                     summary: "Create new course",
                     description: "Creates new course.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -110,7 +110,7 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                             detail: {
                                 summary: "Update course",
                                 description: "Updates course.",
-                                security: DEFAULT_SECURITY
+                                security: REQUIRE_TOKEN
                             }
                         }
                     )
