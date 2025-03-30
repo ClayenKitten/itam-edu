@@ -5,9 +5,17 @@ import { Value } from "@sinclair/typebox/value";
 
 export class User {
     public constructor(
-        private user: Selectable<UserTable>,
+        private info: Selectable<UserTable>,
+        public enrollments: { courseId: string }[],
         public permissions: Permissions
     ) {}
+
+    /** Returns `true` if user is enrolled to the course. */
+    public isCourseStudent(courseId: string) {
+        return this.enrollments.some(
+            enrollment => enrollment.courseId === courseId
+        );
+    }
 
     /** Returns `true` if user is part of the course's staff. */
     public isCourseStaff(courseId: string): boolean {
@@ -19,34 +27,42 @@ export class User {
 
     /** Returns public user DTO. */
     public toPublicDTO(): typeof schema.user.static {
-        let val = Value.Clone(this.user);
-        Value.Clean(schema.user, val);
-        return val;
+        return {
+            id: this.info.id,
+            firstName: this.info.firstName,
+            lastName: this.info.lastName,
+            patronim: this.info.patronim,
+            email: this.info.email,
+            bio: this.info.bio,
+            tgUsername: this.info.tgUsername,
+            avatar: this.info.avatar,
+            enrollments: this.enrollments
+        };
     }
 
     public get id() {
-        return this.user.id;
+        return this.info.id;
     }
     public get firstName() {
-        return this.user.firstName;
+        return this.info.firstName;
     }
     public get lastName() {
-        return this.user.lastName;
+        return this.info.lastName;
     }
     public get patronim() {
-        return this.user.patronim;
+        return this.info.patronim;
     }
     public get email() {
-        return this.user.email;
+        return this.info.email;
     }
     public get tgUsername() {
-        return this.user.tgUsername;
+        return this.info.tgUsername;
     }
     public get tgChatId() {
-        return this.user.tgChatId;
+        return this.info.tgChatId;
     }
     public get tgUserId() {
-        return this.user.tgUserId;
+        return this.info.tgUserId;
     }
 }
 
@@ -70,8 +86,14 @@ export class Permissions {
 
     public toDTO() {
         return {
-            global: this.globalPermissions,
-            course: this.coursePermissions
+            global: Value.Clean(
+                schema.globalPermissions,
+                Value.Clone(this.globalPermissions)
+            ) as typeof schema.globalPermissions.static,
+            course: Value.Clean(
+                schema.coursePermissions,
+                Value.Clone(this.coursePermissions)
+            ) as (typeof schema.coursePermissions.static)[]
         };
     }
 }

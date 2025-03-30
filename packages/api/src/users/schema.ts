@@ -1,5 +1,7 @@
 import { t } from "elysia";
 
+export const enrollment = t.Object({ courseId: t.String({ format: "uuid" }) });
+
 /** Public information about the user. */
 export const user = t.Object({
     id: t.String({ format: "uuid" }),
@@ -9,7 +11,8 @@ export const user = t.Object({
     email: t.Nullable(t.String({ format: "email", maxLength: 500 })),
     avatar: t.Nullable(t.String({ format: "url", maxLength: 1000 })),
     bio: t.Nullable(t.String({ maxLength: 500 })),
-    tgUsername: t.String()
+    tgUsername: t.String(),
+    enrollments: t.Array(enrollment)
 });
 
 export const globalPermissions = t.Object({

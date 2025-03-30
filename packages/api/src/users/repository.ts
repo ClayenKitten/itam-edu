@@ -14,13 +14,23 @@ export default class UserRepository extends Repository {
             .executeTakeFirst();
         if (!user) return null;
 
+        const enrollments = await this.db
+            .selectFrom("courseStudents")
+            .select("courseId")
+            .where("userId", "=", user.id)
+            .execute();
+
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
             .select(schemaFields(schema.coursePermissions))
             .where("userId", "=", user.id)
             .execute();
 
-        return new User(user, new Permissions(user, coursePermissions));
+        return new User(
+            user,
+            enrollments,
+            new Permissions(user, coursePermissions)
+        );
     }
 
     public async getById(id: string): Promise<User | null> {
@@ -31,13 +41,23 @@ export default class UserRepository extends Repository {
             .executeTakeFirst();
         if (!user) return null;
 
+        const enrollments = await this.db
+            .selectFrom("courseStudents")
+            .select("courseId")
+            .where("userId", "=", user.id)
+            .execute();
+
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
             .select(schemaFields(schema.coursePermissions))
             .where("userId", "=", user.id)
             .execute();
 
-        return new User(user, new Permissions(user, coursePermissions));
+        return new User(
+            user,
+            enrollments,
+            new Permissions(user, coursePermissions)
+        );
     }
 
     public async createLoginAttempt({
