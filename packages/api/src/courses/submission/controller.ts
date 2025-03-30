@@ -1,7 +1,7 @@
 import { Elysia, error, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
-import { DEFAULT_SECURITY } from "../../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 
 export async function submissionController<PREFIX extends string>(
     prefix: PREFIX
@@ -47,7 +47,7 @@ export async function submissionController<PREFIX extends string>(
                     summary: "List homework submissions",
                     description:
                         "Returns all homework submissions of the course after optional filtering.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -69,7 +69,7 @@ export async function submissionController<PREFIX extends string>(
                 detail: {
                     summary: "Submit homework",
                     description: "Creates new homework submission.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -98,7 +98,7 @@ export async function submissionController<PREFIX extends string>(
                 detail: {
                     summary: "Get homework submission",
                     description: "Returns homework submission.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -122,7 +122,7 @@ export async function submissionController<PREFIX extends string>(
                 detail: {
                     summary: "Review submission",
                     description: "Creates or updates submission review.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         );

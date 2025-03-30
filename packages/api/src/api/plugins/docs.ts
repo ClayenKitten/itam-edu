@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
+import { main } from "bun";
 
 export default async function docs() {
     return new Elysia({ name: "docs" })
@@ -25,6 +26,10 @@ export default async function docs() {
                             }
                         }
                     },
+                    security: [
+                        {}, // "None" - allow user to call endpoint without authentication
+                        { main: [] }
+                    ],
                     tags: [
                         { name: "Users" },
                         { name: "Courses" },
@@ -41,4 +46,5 @@ export default async function docs() {
         .as("plugin");
 }
 
-export const DEFAULT_SECURITY = [{ main: [] }];
+export const NO_AUTHENTICATION = [{}];
+export const REQUIRE_TOKEN = [{ main: [] }];

@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
-import { DEFAULT_SECURITY } from "../../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 
 export function lessonController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ name: "lessons", prefix, tags: ["Lessons"] })
@@ -42,7 +42,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 detail: {
                     summary: "Create new lesson",
                     description: "Creates new lesson.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
@@ -60,7 +60,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                     description:
                         "Updates lessons ordering.\n\n" +
                         "All currently added lessons must be present, or error will be returned.",
-                    security: DEFAULT_SECURITY
+                    security: REQUIRE_TOKEN
                 }
             }
         )
