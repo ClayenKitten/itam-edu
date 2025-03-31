@@ -111,12 +111,12 @@ export interface Lessons {
   content: string | null;
   courseId: string;
   createdAt: Generated<Timestamp>;
-  position: number;
-  scheduledAt: Timestamp | null;
   /**
    * Machine-readable name of the lesson that is unique within a course
    */
-  slug: string;
+  id: Generated<string>;
+  position: number;
+  scheduledAt: Timestamp | null;
   /**
    * Human-readable name of the lesson
    */

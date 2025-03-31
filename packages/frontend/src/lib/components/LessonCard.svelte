@@ -13,7 +13,7 @@
 </script>
 
 <a
-    href={`${coursePath(course)}/lessons/${lesson.slug}`}
+    href={`${coursePath(course)}/lessons/${lesson.id}`}
     class={[
         "flex flex-col w-[343px] h-[291px] p-3 pb-3.75 rounded-lg border",
         "bg-surface border-on-primary",

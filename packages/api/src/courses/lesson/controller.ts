@@ -67,10 +67,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
         .get(
             "/:lesson",
             async ({ db, params, error }) => {
-                const lesson = await db.lesson.get(
-                    params.course,
-                    params.lesson
-                );
+                const lesson = await db.lesson.getById(params.lesson);
                 if (!lesson) return error(404);
                 return lesson;
             },
