@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
 
     const { course } = await parent();
 
-    const lesson = await getLesson(fetch, course.id, params.lessonSlug);
+    const lesson = await getLesson(fetch, course.id, params.lessonId);
 
     return { lesson };
 };
@@ -15,11 +15,11 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
 async function getLesson(
     fetch: typeof window.fetch,
     courseId: string,
-    lessonSlug: string
+    lessonId: string
 ) {
     const response = await api({ fetch })
         .courses({ course: courseId })
-        .lessons({ lesson: lessonSlug })
+        .lessons({ lesson: lessonId })
         .get();
     if (response.error) error(response.status);
     return response.data;

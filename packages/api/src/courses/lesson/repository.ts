@@ -7,15 +7,13 @@ import { schemaFields } from "../../util";
 import { error } from "elysia";
 
 export default class LessonRepository extends Repository {
-    public async get(
-        courseId: string,
-        lessonSlug: string
+    public async getById(
+        lessonId: string
     ): Promise<typeof schema.lesson.static | null> {
         const lesson = await this.db
             .selectFrom("lessons")
             .select(schemaFields(schema.lesson))
-            .where("courseId", "=", courseId)
-            .where("slug", "=", lessonSlug)
+            .where("id", "=", lessonId)
             .executeTakeFirst();
         return lesson ?? null;
     }
@@ -57,8 +55,8 @@ export default class LessonRepository extends Repository {
         const newLesson = await this.db
             .insertInto("lessons")
             .values(eb => ({
-                courseId,
                 ...lesson,
+                courseId,
                 position: selectPosition(eb)
             }))
             .returning(schemaFields(schema.lesson))
@@ -75,11 +73,11 @@ export default class LessonRepository extends Repository {
             await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
 
             let position = 0;
-            for (const slug of lessons) {
+            for (const lessonId of lessons) {
                 const { numUpdatedRows } = await trx
                     .updateTable("lessons")
                     .where("courseId", "=", courseId)
-                    .where("lessons.slug", "=", slug)
+                    .where("lessons.id", "=", lessonId)
                     .set({ position })
                     .executeTakeFirstOrThrow();
                 if (numUpdatedRows !== 1n) {
