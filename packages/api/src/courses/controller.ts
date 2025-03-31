@@ -18,7 +18,7 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
             "",
             async ({ db }) => {
                 const courses = await db.course.getAll();
-                return courses;
+                return courses.map(c => c.toDTO());
             },
             {
                 detail: {
@@ -29,8 +29,10 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
         )
         .post(
             "",
-            async ({ db, body }) => {
-                return await db.course.create(body);
+            async ({ db, body, error }) => {
+                const course = await db.course.create(body);
+                if (!course) return error(400, "Couldn't create course");
+                return course.toDTO();
             },
             {
                 hasPermission: ["canCreateCourses"],
@@ -45,13 +47,13 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
         .get(
             "/lookup/:slug",
             async ({ db, params, query, error }) => {
-                const course = await db.course.lookup(
+                const course = await db.course.getBySlug(
                     params.slug,
                     query.year,
                     query.semester
                 );
                 if (!course) return error(404);
-                return course;
+                return course.toDTO();
             },
             {
                 query: t.Partial(
@@ -83,9 +85,11 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                     .get(
                         "",
                         async ({ db, params, error }) => {
-                            const course = await db.course.get(params.course);
+                            const course = await db.course.getById(
+                                params.course
+                            );
                             if (!course) return error(404);
-                            return course;
+                            return course.toDTO();
                         },
                         {
                             detail: {
@@ -97,12 +101,12 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                     .put(
                         "",
                         async ({ db, params, body, error }) => {
-                            const found = await db.course.update(
+                            const course = await db.course.update(
                                 params.course,
                                 body
                             );
-                            if (!found) return error(404);
-                            return { success: found };
+                            if (!course) return error(404);
+                            return course.toDTO();
                         },
                         {
                             body: schema.updateCourse,

@@ -2,19 +2,47 @@ import { Repository } from "../db/repository";
 import { type NotNull, sql } from "kysely";
 import * as schema from "./schema";
 import { schemaFields } from "../util";
+import { Course } from "./entity";
 
 export default class CourseRepository extends Repository {
-    public async get(id: string): Promise<typeof schema.course.static | null> {
-        const course = await this.db
+    /** Returns course by its id. */
+    public async getById(id: string): Promise<Course | null> {
+        const result = await this.db
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .where("id", "=", id)
             .executeTakeFirst();
-        return course ?? null;
+        if (!result) return null;
+        return new Course(result);
     }
 
-    public async getAll() {
-        return await this.db
+    /** Returns course by its slug. */
+    public async getBySlug(
+        slug: string,
+        year?: number,
+        semester?: number
+    ): Promise<Course | null> {
+        let query = this.db
+            .selectFrom("courses")
+            .select(schemaFields(schema.course))
+            .where("slug", "=", slug)
+            .orderBy("year desc")
+            .orderBy("semester", sql<string>`asc nulls first`);
+        if (year !== undefined) {
+            query = query.where("year", "=", year);
+        }
+        if (semester !== undefined) {
+            query = query.where("semester", "=", semester);
+        }
+
+        const result = await query.executeTakeFirst();
+        if (!result) return null;
+        return new Course(result) ?? null;
+    }
+
+    /** Returns all courses. */
+    public async getAll(): Promise<Course[]> {
+        const results = await this.db
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .select(eb => [
@@ -28,12 +56,14 @@ export default class CourseRepository extends Repository {
             .orderBy("semester", sql<string>`asc nulls first`)
             .$narrowType<{ studentsCount: NotNull }>()
             .execute();
+        return results.map(c => new Course(c));
     }
 
+    /** Creates new course. */
     public async create(
         course: typeof schema.createCourse.static
-    ): Promise<typeof schema.course.static> {
-        const newCourse = await this.db
+    ): Promise<Course> {
+        const result = await this.db
             .insertInto("courses")
             .values({
                 slug: course.slug,
@@ -43,40 +73,21 @@ export default class CourseRepository extends Repository {
             })
             .returning(schemaFields(schema.course))
             .executeTakeFirstOrThrow();
-        return newCourse;
+        return new Course(result);
     }
 
+    /** Updates course information. */
     public async update(
         id: string,
         course: typeof schema.updateCourse.static
-    ): Promise<typeof schema.course.static | null> {
-        const newCourse = await this.db
+    ): Promise<Course | null> {
+        const result = await this.db
             .updateTable("courses")
             .where("id", "=", id)
             .set(course)
             .returning(schemaFields(schema.course))
             .executeTakeFirst();
-        return newCourse ?? null;
-    }
-
-    public async lookup(
-        slug: string,
-        year?: number,
-        semester?: number
-    ): Promise<{ id: string } | null> {
-        let query = this.db
-            .selectFrom("courses")
-            .select("id")
-            .where("slug", "=", slug)
-            .orderBy("year desc")
-            .orderBy("semester", sql<string>`asc nulls first`);
-        if (year !== undefined) {
-            query = query.where("year", "=", year);
-        }
-        if (semester !== undefined) {
-            query = query.where("semester", "=", semester);
-        }
-
-        return (await query.executeTakeFirst()) ?? null;
+        if (!result) return null;
+        return new Course(result);
     }
 }
