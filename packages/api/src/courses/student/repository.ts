@@ -1,47 +1,45 @@
 import { Repository } from "../../db/repository";
 import { schemaFields } from "../../util";
-import * as userSchema from "../../users/schema";
 import * as schema from "./schema";
+import type { User } from "../../users/entity";
+import type { Course } from "../entity";
 
 export default class StudentRepository extends Repository {
+    /** Returns ids of all enrolled students. */
     public async getAll(
-        courseId: string
-    ): Promise<(typeof userSchema.user.static)[]> {
+        course: Course
+    ): Promise<(typeof schema.enrollment.static)[]> {
         const students = await this.db
-            .selectFrom("users")
-            .leftJoin("courseStudents", "users.id", "courseStudents.userId")
-            .where("courseStudents.courseId", "=", courseId)
+            .selectFrom("courseStudents")
+            .select(["userId", "courseId"])
+            .leftJoin("users", "courseStudents.userId", "users.id")
+            .where("courseStudents.courseId", "=", course.id)
             .orderBy("tgUsername asc")
-            .select(schemaFields(userSchema.user))
             .execute();
         return students;
     }
 
-    public async addStudent(
-        courseId: string,
-        userId: string
-    ): Promise<typeof schema.student.static | null> {
+    /** Adds user to the student list. */
+    public async add(
+        course: Course,
+        user: User
+    ): Promise<typeof schema.enrollment.static | null> {
         const newStudent = await this.db
             .insertInto("courseStudents")
-            .values({
-                courseId: courseId,
-                userId: userId
-            })
+            .values({ courseId: course.id, userId: user.id })
             .onConflict(cb => cb.doNothing())
-            .returning(schemaFields(schema.student))
+            .returning(schemaFields(schema.enrollment))
             .executeTakeFirst();
         if (!newStudent) return null;
         return newStudent;
     }
 
-    public async expelStudent(
-        courseId: string,
-        userId: string
-    ): Promise<boolean> {
+    /** Removes user from the student list. */
+    public async remove(course: Course, user: User): Promise<boolean> {
         const result = await this.db
             .deleteFrom("courseStudents")
-            .where("courseId", "=", courseId)
-            .where("userId", "=", userId)
+            .where("courseId", "=", course.id)
+            .where("userId", "=", user.id)
             .executeTakeFirst();
         return result.numDeletedRows > 0n;
     }

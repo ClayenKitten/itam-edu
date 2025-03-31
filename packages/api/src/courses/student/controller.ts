@@ -14,7 +14,19 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
             "",
             async ({ user, db, params, error }) => {
                 if (!user.isCourseStaff(params.course)) return error(403);
-                const students = await db.student.getAll(params.course);
+
+                const course = await db.course.getById(params.course);
+                if (!course) return error(404);
+
+                const enrollments = await db.student.getAll(course);
+                const students = (
+                    await Promise.all(
+                        enrollments.map(e => db.user.getById(e.userId))
+                    )
+                )
+                    .filter(s => s !== null)
+                    .map(s => s.toPublicDTO());
+
                 return students;
             },
             {
@@ -35,16 +47,24 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
                 ) {
                     return error(403);
                 }
-                const student = await db.student.addStudent(
-                    params.course,
-                    params.student
-                );
-                if (!student)
+
+                const [course, student] = await Promise.all([
+                    db.course.getById(params.course),
+                    db.user.getById(params.student)
+                ]);
+                if (!course || !student) return null;
+
+                if (!course.canEnrollStudents) {
+                    return error(400, "Course doesn't accept enrollments");
+                }
+
+                const enrollment = await db.student.add(course, student);
+                if (!enrollment)
                     return error(
                         409,
                         "User is already enrolled to the course."
                     );
-                return student;
+                return enrollment;
             },
             {
                 requireAuthentication: true,
@@ -67,10 +87,14 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
                 ) {
                     return error(403);
                 }
-                const success = await db.student.expelStudent(
-                    params.course,
-                    params.student
-                );
+
+                const [course, student] = await Promise.all([
+                    db.course.getById(params.course),
+                    db.user.getById(params.student)
+                ]);
+                if (!course || !student) return null;
+
+                const success = await db.student.remove(course, student);
                 if (!success) return error(404);
             },
             {
