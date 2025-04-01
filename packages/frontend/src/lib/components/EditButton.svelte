@@ -3,7 +3,7 @@
 </script>
 
 <button
-    class="bg-on-primary rounded-full w-11.5 h-11.5 basis-11.5 shrink-0"
+    class="flex justify-center items-center w-11.5 h-11.5 bg-on-primary rounded-full basis-11.5 shrink-0"
     {onclick}
     aria-label="Редактировать"
 >
