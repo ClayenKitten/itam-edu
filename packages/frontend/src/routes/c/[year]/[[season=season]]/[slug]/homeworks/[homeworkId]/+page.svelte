@@ -9,7 +9,7 @@
 
     const canEdit =
         data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.canEditContent === true;
+            ?.permissions.canEditContent === true;
 
     async function save() {
         // TODO

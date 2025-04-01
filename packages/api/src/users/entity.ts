@@ -75,9 +75,10 @@ export class User {
 export class Permissions {
     public constructor(
         private globalPermissions: typeof schema.globalPermissions.static,
-        private coursePermissions: ({
+        private coursePermissions: {
             courseId: string;
-        } & typeof schema.coursePermissions.static)[]
+            permissions: typeof schema.coursePermissions.static;
+        }[]
     ) {}
 
     public get global() {
@@ -87,21 +88,15 @@ export class Permissions {
     public course(id: string) {
         const coursePerms = this.coursePermissions.find(
             ({ courseId }) => id === courseId
-        );
+        )?.permissions;
         if (!coursePerms) return null;
         return coursePerms;
     }
 
     public toDTO() {
         return {
-            global: Value.Clean(
-                schema.globalPermissions,
-                Value.Clone(this.globalPermissions)
-            ) as typeof schema.globalPermissions.static,
-            course: Value.Clean(
-                schema.coursePermissions,
-                Value.Clone(this.coursePermissions)
-            ) as (typeof schema.coursePermissions.static)[]
+            global: this.globalPermissions,
+            course: this.coursePermissions
         };
     }
 }

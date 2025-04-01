@@ -22,14 +22,24 @@ export default class UserRepository extends Repository {
 
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
-            .select(schemaFields(schema.coursePermissions))
+            .select(["courseId", ...schemaFields(schema.coursePermissions)])
             .where("userId", "=", user.id)
             .execute();
 
         return new User(
             user,
             enrollments,
-            new Permissions(user, coursePermissions)
+            new Permissions(
+                {
+                    isSupervisor: user.isSupervisor,
+                    canCreateCourses: user.canCreateCourses,
+                    canPublishCourses: user.canPublishCourses
+                },
+                coursePermissions.map(({ courseId, ...permissions }) => ({
+                    courseId,
+                    permissions
+                }))
+            )
         );
     }
 
@@ -49,14 +59,24 @@ export default class UserRepository extends Repository {
 
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
-            .select(schemaFields(schema.coursePermissions))
+            .select(["courseId", ...schemaFields(schema.coursePermissions)])
             .where("userId", "=", user.id)
             .execute();
 
         return new User(
             user,
             enrollments,
-            new Permissions(user, coursePermissions)
+            new Permissions(
+                {
+                    isSupervisor: user.isSupervisor,
+                    canCreateCourses: user.canCreateCourses,
+                    canPublishCourses: user.canPublishCourses
+                },
+                coursePermissions.map(({ courseId, ...permissions }) => ({
+                    courseId,
+                    permissions
+                }))
+            )
         );
     }
 

@@ -26,7 +26,6 @@ export const globalPermissions = t.Object({
 });
 
 export const coursePermissions = t.Object({
-    courseId: t.String({ format: "uuid" }),
     isOwner: t.Boolean(),
     canEditInfo: t.Boolean(),
     canEditContent: t.Boolean(),
