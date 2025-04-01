@@ -37,6 +37,7 @@ export default async function docs() {
                         { name: "Homeworks" },
                         { name: "Submissions" },
                         { name: "Students" },
+                        { name: "Staff" },
                         { name: "Media" },
                         { name: "Infra" }
                     ]

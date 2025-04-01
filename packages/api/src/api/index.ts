@@ -7,6 +7,7 @@ import logger from "../logger";
 import { mediaController } from "../media/controller";
 import type { AppContext } from "../ctx";
 import { NO_AUTHENTICATION } from "./plugins/docs";
+import { staffController } from "../staff/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -55,6 +56,7 @@ export default class ApiServer {
             })
             .use(courseController("/courses"))
             .use(userController("/users"))
+            .use(staffController())
             .use(mediaController())
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
