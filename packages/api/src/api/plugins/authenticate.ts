@@ -9,7 +9,6 @@ export default function authenticate() {
             let token = headers["authorization"]?.replace(/^Bearer /, "");
             let user =
                 token !== undefined ? await db.user.getByToken(token) : null;
-            console.log(token);
             return { user };
         })
         .onTransform(({ user }) => logger.extend({ user: user?.id }))
