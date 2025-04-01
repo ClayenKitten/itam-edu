@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch, depends, parent }) => {
-    depends("app:homeworks");
+    depends("app:homeworks", "app:submissions");
     const { course, user } = await parent();
 
     const homeworksPromise = getHomeworks(fetch, course.id);
