@@ -12,7 +12,8 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
             async ({ user, error }) => {
                 if (!user) return error(401);
                 return {
-                    user: user.toPublicDTO(),
+                    user: user.toPrivateDTO(),
+                    enrollments: user.enrollments,
                     permissions: user.permissions.toDTO()
                 };
             },

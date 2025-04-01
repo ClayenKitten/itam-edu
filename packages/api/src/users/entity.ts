@@ -25,18 +25,24 @@ export class User {
         return this.permissions.course(courseId) !== null;
     }
 
-    /** Returns public user DTO. */
-    public toPublicDTO(): typeof schema.user.static {
+    /** Returns public user information. */
+    public toPublicDTO(): typeof schema.publicUserInfo.static {
         return {
             id: this.info.id,
             firstName: this.info.firstName,
             lastName: this.info.lastName,
             patronim: this.info.patronim,
-            email: this.info.email,
             bio: this.info.bio,
             tgUsername: this.info.tgUsername,
-            avatar: this.info.avatar,
-            enrollments: this.enrollments
+            avatar: this.info.avatar
+        };
+    }
+
+    /** Returns private user information. */
+    public toPrivateDTO(): typeof schema.privateUserInfo.static {
+        return {
+            ...this.toPublicDTO(),
+            email: this.info.email
         };
     }
 
@@ -69,7 +75,9 @@ export class User {
 export class Permissions {
     public constructor(
         private globalPermissions: typeof schema.globalPermissions.static,
-        private coursePermissions: (typeof schema.coursePermissions.static)[]
+        private coursePermissions: ({
+            courseId: string;
+        } & typeof schema.coursePermissions.static)[]
     ) {}
 
     public get global() {
