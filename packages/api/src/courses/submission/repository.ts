@@ -112,7 +112,7 @@ export default class SubmissionRepository extends Repository {
             student: s.studentId,
             submittedAt: s.submittedAt
         };
-        const review: Review | null = s.reviewAccepted
+        const review: Review | null = s.reviewAccepted !== null
             ? {
                   accepted: s.reviewAccepted,
                   reviewer: s.reviewerId!,
