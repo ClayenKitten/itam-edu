@@ -12,11 +12,7 @@ export async function mediaController() {
                 if (!isSupportedMethod(method)) return error(405);
                 const path = headers["x-forwarded-uri"];
 
-                const authorized = await authorizeMedia(
-                    { db, user },
-                    method,
-                    path
-                );
+                const authorized = await authorizeMedia({ user }, method, path);
                 return authorized ? "Ok" : error(404);
             },
             {

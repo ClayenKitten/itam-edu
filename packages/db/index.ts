@@ -100,6 +100,12 @@ export interface HomeworkSubmissions {
   submittedAt: Generated<Timestamp>;
 }
 
+export interface LessonHomeworks {
+  homeworkId: string;
+  lessonId: string;
+  position: number;
+}
+
 export interface Lessons {
   /**
    * URL of the lesson icon
@@ -111,12 +117,16 @@ export interface Lessons {
   content: string | null;
   courseId: string;
   createdAt: Generated<Timestamp>;
-  position: number;
-  scheduledAt: Timestamp | null;
+  description: string | null;
   /**
    * Machine-readable name of the lesson that is unique within a course
    */
-  slug: string;
+  id: Generated<string>;
+  isOffline: boolean;
+  isOnline: boolean;
+  location: string | null;
+  position: number;
+  scheduledAt: Timestamp | null;
   /**
    * Human-readable name of the lesson
    */
@@ -179,6 +189,7 @@ export interface DB {
   courseStudents: CourseStudents;
   homeworks: Homeworks;
   homeworkSubmissions: HomeworkSubmissions;
+  lessonHomeworks: LessonHomeworks;
   lessons: Lessons;
   notificationMessages: NotificationMessages;
   notifications: Notifications;

@@ -126,6 +126,21 @@
 
         &:disabled {
             background-color: var(--color-on-surface-muted);
+            cursor: default;
+        }
+    }
+
+    .input {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        background-color: var(--color-surface);
+        border: 2px var(--color-on-primary) solid;
+        border-radius: var(--radius-sm);
+
+        &:focus {
+            outline: 0;
+            border: 2px var(--color-primary) solid;
         }
     }
 }

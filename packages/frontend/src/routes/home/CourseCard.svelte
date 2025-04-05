@@ -1,6 +1,6 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
-    import type { Course, LessonWithoutContent } from "$lib/types";
+    import type { Course, LessonPartial } from "$lib/types";
 
     const { course }: Props = $props();
 

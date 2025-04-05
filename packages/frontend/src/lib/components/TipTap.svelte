@@ -49,3 +49,9 @@
 {:else}
     <div class="rich-content w-full h-full" bind:this={element}></div>
 {/if}
+
+<style>
+    :global(.ProseMirror:focus) {
+        outline: none;
+    }
+</style>
