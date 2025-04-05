@@ -1,9 +1,8 @@
-import type Database from "../db";
 import logger from "../logger";
 import type { User } from "../users/entity";
 
 export default async function authorizeMedia(
-    ctx: { db: Database; user: User | null },
+    ctx: { user: User | null },
     method: RequestMethod,
     path: string
 ): Promise<boolean> {

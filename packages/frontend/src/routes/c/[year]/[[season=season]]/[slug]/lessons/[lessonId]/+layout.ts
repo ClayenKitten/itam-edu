@@ -1,8 +1,8 @@
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
-import type { PageLoad } from "./$types";
+import type { LayoutLoad } from "./$types";
 
-export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
+export const load: LayoutLoad = async ({ fetch, depends, parent, params }) => {
     depends("app:lesson");
 
     const { course } = await parent();

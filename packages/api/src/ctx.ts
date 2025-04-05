@@ -1,6 +1,7 @@
-import Database from "./db";
 import NotificationService from "./notifications/service";
 import { createConfig } from "./config";
+import { createDatabaseContext } from "./db";
+import createDatabaseConnection from "./db/connection";
 
 /** Returns static application context. */
 export function getAppContext(): AppContext {
@@ -14,7 +15,12 @@ export type AppContext = ReturnType<typeof createAppContext>;
 
 function createAppContext() {
     const config = createConfig();
-    const db = new Database(config.db.connectionString);
+    const databaseConnection = createDatabaseConnection(
+        config.db.connectionString
+    );
+
+    const db = createDatabaseContext(databaseConnection);
+
     return {
         config,
         db,

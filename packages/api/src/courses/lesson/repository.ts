@@ -1,39 +1,65 @@
 import { Repository } from "../../db/repository";
-import type { DB } from "itam-edu-db";
+import type { DB, LessonHomeworks } from "itam-edu-db";
 import { sql } from "kysely";
 import * as schema from "./schema";
-import type { ExpressionBuilder } from "kysely";
-import { schemaFields } from "../../util";
+import type { ExpressionBuilder, Selectable } from "kysely";
 import { error } from "elysia";
+import { Lesson, type LessonSchedule } from "./entity";
 
 export default class LessonRepository extends Repository {
-    public async getById(
-        lessonId: string
-    ): Promise<typeof schema.lesson.static | null> {
+    public async getById(lessonId: string): Promise<Lesson | null> {
         const lesson = await this.db
             .selectFrom("lessons")
-            .select(schemaFields(schema.lesson))
+            .selectAll()
+            .orderBy("position asc")
             .where("id", "=", lessonId)
             .executeTakeFirst();
-        return lesson ?? null;
+        if (!lesson) return null;
+
+        const homeworks = await this.db
+            .selectFrom("lessonHomeworks")
+            .selectAll()
+            .where("lessonId", "=", lesson.id)
+            .orderBy("position")
+            .execute();
+
+        return this.toEntity(lesson, homeworks);
     }
 
-    public async getAll(
-        courseId: string
-    ): Promise<(typeof schema.lessonWithoutContent.static)[]> {
+    public async getAll(courseId: string): Promise<Lesson[]> {
         const lessons = await this.db
             .selectFrom("lessons")
-            .select(schemaFields(schema.lessonWithoutContent))
-            .where("courseId", "=", courseId)
+            .selectAll()
             .orderBy("position asc")
+            .where("courseId", "=", courseId)
             .execute();
-        return lessons;
+
+        let homeworks: Selectable<LessonHomeworks>[] = [];
+        if (lessons.length > 0) {
+            homeworks = await this.db
+                .selectFrom("lessonHomeworks")
+                .selectAll()
+                .where(
+                    "lessonId",
+                    "in",
+                    lessons.map(l => l.id)
+                )
+                .orderBy("position")
+                .execute();
+        }
+
+        return lessons.map(l =>
+            this.toEntity(
+                l,
+                homeworks.filter(h => h.lessonId === l.id)
+            )
+        );
     }
 
     public async create(
         courseId: string,
-        lesson: typeof schema.createLesson.static
-    ): Promise<typeof schema.lesson.static | null> {
+        info: typeof schema.createLesson.static
+    ): Promise<Lesson | null> {
         const selectPosition = (eb: ExpressionBuilder<DB, "lessons">) => {
             return eb
                 .selectFrom("lessons")
@@ -52,17 +78,53 @@ export default class LessonRepository extends Repository {
                 );
         };
 
-        const newLesson = await this.db
+        const lesson = await this.db
             .insertInto("lessons")
             .values(eb => ({
-                ...lesson,
                 courseId,
+                title: info.title,
+                isOnline: info.schedule?.online !== null,
+                isOffline: info.schedule?.offline !== null,
+                location: info.schedule?.offline?.location ?? null,
+                scheduledAt: info.schedule?.date ?? null,
                 position: selectPosition(eb)
             }))
-            .returning(schemaFields(schema.lesson))
+            .returningAll()
             .executeTakeFirst();
+        if (!lesson) return null;
 
-        return newLesson ?? null;
+        return this.toEntity(lesson, []);
+    }
+
+    private toEntity(
+        lesson: Selectable<DB["lessons"]>,
+        lessonHomeworks: Selectable<DB["lessonHomeworks"]>[]
+    ) {
+        let schedule: LessonSchedule | null = null;
+        if (lesson.scheduledAt) {
+            schedule = {
+                date: lesson.scheduledAt,
+                online: lesson.isOnline ? {} : null,
+                offline: lesson.isOffline ? { location: lesson.location } : null
+            };
+        }
+
+        return new Lesson(
+            lesson.id,
+            lesson.courseId,
+            {
+                title: lesson.title,
+                description: lesson.description,
+                banner: lesson.banner,
+                position: lesson.position,
+                createdAt: lesson.createdAt
+            },
+            {
+                body: lesson.content,
+                homeworks: lessonHomeworks.map(x => x.homeworkId)
+            },
+            schedule
+        );
     }
 
     public async updatePositions(
