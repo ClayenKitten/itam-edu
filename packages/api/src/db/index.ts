@@ -1,4 +1,5 @@
-import createDatabaseConnection from "./connection";
+import type { Kysely } from "kysely";
+import type { DB } from "itam-edu-db";
 
 import UserRepository from "../users/repository";
 import CourseRepository from "../courses/repository";
@@ -8,26 +9,20 @@ import StaffRepository from "../staff/repository";
 import NotificationRepository from "../notifications/repository";
 import HomeworkRepository from "../courses/homework/repository";
 import SubmissionRepository from "../courses/submission/repository";
+import { LessonQuery } from "../courses/lesson/query";
 
-export default class Database {
-    constructor(connectionString: string) {
-        const connection = createDatabaseConnection(connectionString);
-        this.user = new UserRepository(connection);
-        this.course = new CourseRepository(connection);
-        this.lesson = new LessonRepository(connection);
-        this.student = new StudentRepository(connection);
-        this.staff = new StaffRepository(connection);
-        this.notification = new NotificationRepository(connection);
-        this.homework = new HomeworkRepository(connection);
-        this.submission = new SubmissionRepository(connection);
-    }
-
-    public readonly user: UserRepository;
-    public readonly course: CourseRepository;
-    public readonly lesson: LessonRepository;
-    public readonly student: StudentRepository;
-    public readonly staff: StaffRepository;
-    public readonly notification: NotificationRepository;
-    public readonly homework: HomeworkRepository;
-    public readonly submission: SubmissionRepository;
+export function createDatabaseContext(connection: Kysely<DB>) {
+    return {
+        user: new UserRepository(connection),
+        course: new CourseRepository(connection),
+        lesson: new LessonRepository(connection),
+        lessonQuery: new LessonQuery(connection),
+        student: new StudentRepository(connection),
+        staff: new StaffRepository(connection),
+        notification: new NotificationRepository(connection),
+        homework: new HomeworkRepository(connection),
+        submission: new SubmissionRepository(connection)
+    };
 }
+
+export type DataAccessServices = ReturnType<typeof createDatabaseContext>;

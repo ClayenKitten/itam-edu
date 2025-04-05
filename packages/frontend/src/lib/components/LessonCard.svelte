@@ -1,6 +1,6 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
-    import type { Course, LessonWithoutContent } from "$lib/types";
+    import type { Course, LessonPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
 
     const { course, position, lesson }: Props = $props();
@@ -8,7 +8,7 @@
     type Props = {
         course: Course;
         position: number;
-        lesson: LessonWithoutContent;
+        lesson: LessonPartial;
     };
 </script>
 
@@ -36,9 +36,9 @@
     {/if}
     <header class="flex justify-between items-center mb-2.5">
         <h4>Занятие {position}</h4>
-        {#if lesson.scheduledAt}
+        {#if lesson.schedule}
             <span class="text-date text-on-surface-muted">
-                {formatDate(lesson.scheduledAt, "dd.MM.yy")}
+                {formatDate(lesson.schedule.date, "dd.MM.yy")}
             </span>
         {/if}
     </header>

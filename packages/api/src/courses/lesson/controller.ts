@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
+import { HttpError } from "../../api/errors";
 
 export function lessonController<PREFIX extends string>(prefix: PREFIX) {
     return new Elysia({ name: "lessons", prefix, tags: ["Lessons"] })
@@ -15,7 +16,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
         .get(
             "",
             async ({ db, params }) => {
-                const lessons = await db.lesson.getAll(params.course);
+                const lessons = await db.lessonQuery.getAll(params.course);
                 return lessons;
             },
             {
@@ -34,7 +35,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 );
                 if (lesson === null) return error(400);
                 set.status = 201;
-                return lesson;
+                return lesson.toDTO();
             },
             {
                 body: t.Object({ lesson: schema.createLesson }),
@@ -67,8 +68,13 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
         .get(
             "/:lesson",
             async ({ db, params, error }) => {
-                const lesson = await db.lesson.getById(params.lesson);
-                if (!lesson) return error(404);
+                const lesson = await db.lessonQuery.get(
+                    params.course,
+                    params.lesson
+                );
+                if (lesson instanceof HttpError) {
+                    return error(lesson.code, lesson.message);
+                }
                 return lesson;
             },
             {
