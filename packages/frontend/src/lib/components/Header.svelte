@@ -13,7 +13,7 @@
 <header
     class={[
         "flex justify-end items-center h-14 px-7 py-2 gap-2.5",
-        standalone ? "shadow" : ""
+        "bg-surface border-b border-surface-border"
     ]}
 >
     {#if standalone}

@@ -22,7 +22,7 @@
             "flex grow items-center justify-between px-5 py-4",
             !isDeleted
                 ? "bg-surface group-hover:bg-on-primary border border-primary"
-                : "bg-[#E9E9E9] border border-on-surface-muted",
+                : "bg-on-surface-disabled border border-on-surface-muted",
             "transition-colors duration-100 rounded-sm"
         ]}
     >

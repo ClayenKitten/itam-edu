@@ -12,6 +12,8 @@
     style:--color-on-primary={data.course.colorOnPrimary}
 >
     <CourseSidebar
+        course={data.course}
+        courses={data.courses}
         isEmployee={data.permissions?.course.some(
             x => x.courseId === data.course.id
         ) ?? false}

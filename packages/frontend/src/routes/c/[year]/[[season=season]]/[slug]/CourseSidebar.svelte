@@ -1,9 +1,17 @@
 <script lang="ts">
+    import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/state";
     import { coursePath } from "$lib/path";
+    import type { Course } from "$lib/types";
 
-    const { isEmployee }: { isEmployee: boolean } = $props();
-    const prefix = coursePath(page.params as any);
+    const { course, courses, isEmployee }: Props = $props();
+    const prefix = $derived(coursePath(course));
+
+    type Props = {
+        course: Course;
+        courses: Course[];
+        isEmployee: boolean;
+    };
 </script>
 
 {#snippet btn(path: string, text: string, icon: string)}
@@ -27,15 +35,42 @@
 {/snippet}
 
 <nav
-    class="sticky top-0 h-dvh row-span-2 flex flex-col gap-2 p-5 bg-surface shadow"
+    class={[
+        "sticky top-0 h-dvh row-span-2 flex flex-col gap-6 p-5",
+        "bg-surface border-r border-surface-border"
+    ]}
 >
-    {@render btn("/", "Главный экран", "house")}
-    {@render btn("/lessons", "Занятия", "folder")}
-    {@render btn("/homeworks", "Домашние задания", "book-open-text")}
-    {@render btn("/about", "О курсе", "info")}
+    <header
+        class="flex items-center w-full h-13 text-button bg-surface-tint rounded-xs px-4"
+    >
+        <select
+            class="w-full h-full"
+            bind:value={() => courses.find(c => c.id === course.id)!,
+            async newCourse => {
+                await goto(coursePath(newCourse));
+            }}
+        >
+            {#each courses as courseItem}
+                <option
+                    value={courseItem}
+                    selected={course.id === courseItem.id}
+                >
+                    {courseItem.title}
+                </option>
+            {/each}
+        </select>
+    </header>
+    <ul>
+        {@render btn("/", "Главный экран", "house")}
+        {@render btn("/lessons", "Занятия", "folder")}
+        {@render btn("/homeworks", "Домашние задания", "book-open-text")}
+        {@render btn("/about", "О курсе", "info")}
+    </ul>
     {#if isEmployee}
-        <hr class="text-on-surface-muted my-2" />
-        {@render btn("/analytics", "Аналитика", "chart-line")}
-        {@render btn("/settings", "Настройки", "gear-six")}
+        <hr class="text-surface-border -mx-5" />
+        <ul>
+            {@render btn("/analytics", "Аналитика", "chart-line")}
+            {@render btn("/settings", "Настройки", "gear-six")}
+        </ul>
     {/if}
 </nav>
