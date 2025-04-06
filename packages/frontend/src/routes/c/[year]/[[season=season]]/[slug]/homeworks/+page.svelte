@@ -21,8 +21,14 @@
                         <header>
                             <h4>{homework.title}</h4>
                         </header>
-                        <Tag 
-                            kind = {data.tags.find(tag => tag.homeworkId === homework.id)?.tag as "new" | "submitted" | "rejected" | "accepted" ?? "new"}
+                        <Tag
+                            kind={(data.tags.find(
+                                tag => tag.homeworkId === homework.id
+                            )?.tag as
+                                | "new"
+                                | "submitted"
+                                | "rejected"
+                                | "accepted") ?? "new"}
                         />
                     </div>
                     {#if homework.deadline}

@@ -19,10 +19,13 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
 
     const tags = homeworks.map(hw => ({
         homeworkId: hw.id,
-        tag: getSubmissionTags(submissions.map(submission => ({
-            homework: submission.homework,
-            review: { accepted: submission.review?.accepted}
-        })), hw.id) as "accepted" | "new" | "submitted" | "rejected"
+        tag: getSubmissionTags(
+            submissions.map(submission => ({
+                homework: submission.homework,
+                review: { accepted: submission.review?.accepted }
+            })),
+            hw.id
+        ) as "accepted" | "new" | "submitted" | "rejected"
     }));
 
     return { homeworks, submissions, tags };
@@ -49,13 +52,20 @@ async function getSubmissions(
 }
 
 function getSubmissionTags(
-    submissions: { homework: string; review: {accepted: boolean|undefined}; }[], homeworkId: string
+    submissions: {
+        homework: string;
+        review: { accepted: boolean | undefined };
+    }[],
+    homeworkId: string
 ) {
-    const homeworkSubmissions = submissions.filter((submission) => (submission.homework === homeworkId));
+    const homeworkSubmissions = submissions.filter(
+        submission => submission.homework === homeworkId
+    );
 
     if (homeworkSubmissions.length === 0) return "new";
 
-    const latestSubmission = homeworkSubmissions[homeworkSubmissions.length-1];
+    const latestSubmission =
+        homeworkSubmissions[homeworkSubmissions.length - 1];
 
     console.log(latestSubmission);
 
