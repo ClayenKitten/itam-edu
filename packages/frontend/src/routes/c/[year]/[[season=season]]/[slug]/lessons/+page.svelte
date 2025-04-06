@@ -1,5 +1,5 @@
 <script lang="ts">
-    import EditButton from "$lib/components/EditButton.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
     import LessonCard from "$lib/components/LessonCard.svelte";
     import LessonEditModal from "./LessonEditModal.svelte";
 
@@ -16,7 +16,11 @@
     <header class="flex gap-8">
         <h2>Занятия</h2>
         {#if canEdit}
-            <EditButton onclick={() => (editing = true)} />
+            <IconButton
+                icon="ph-pencil-simple"
+                title="Редактировать"
+                onclick={() => (editing = true)}
+            />
         {/if}
     </header>
     <div

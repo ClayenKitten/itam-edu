@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import EditButton from "$lib/components/EditButton.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
     import { formatLessonSchedule } from "$lib/format.js";
     import { coursePath } from "$lib/path.js";
@@ -23,7 +23,9 @@
         <header class="flex gap-8">
             <h2>Занятие {data.lesson.position + 1}. {data.lesson.title}</h2>
             {#if canEdit}
-                <EditButton
+                <IconButton
+                    icon="ph-pencil-simple"
+                    title="Редактировать"
                     onclick={() =>
                         goto(
                             `${coursePath(data.course)}/lessons/${data.lesson.id}/edit`

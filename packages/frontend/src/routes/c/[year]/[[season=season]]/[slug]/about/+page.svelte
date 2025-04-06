@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
-    import EditButton from "$lib/components/EditButton.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
 
     let { data } = $props();
@@ -34,7 +34,11 @@
             <h2 class="flex gap-4">
                 <span>{data.course.title}</span>
                 {#if canEdit && !editing}
-                    <EditButton onclick={() => (editing = true)} />
+                    <IconButton
+                        icon="ph-pencil-simple"
+                        title="Редактировать"
+                        onclick={() => (editing = true)}
+                    />
                 {/if}
             </h2>
             {#if data.course.description}

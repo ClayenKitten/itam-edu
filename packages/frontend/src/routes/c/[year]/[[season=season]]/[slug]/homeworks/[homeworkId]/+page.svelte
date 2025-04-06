@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
-    import EditButton from "$lib/components/EditButton.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
 
     let { data } = $props();
@@ -20,7 +20,11 @@
     <header class="flex gap-8">
         <h2>{data.homework.title}</h2>
         {#if canEdit && !editing}
-            <EditButton onclick={() => (editing = true)} />
+            <IconButton
+                icon="ph-pencil-simple"
+                title="Редактировать"
+                onclick={() => (editing = true)}
+            />
         {/if}
     </header>
     <TipTap content={data.homework.content} readonly={!editing} />
