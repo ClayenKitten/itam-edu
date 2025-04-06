@@ -47,8 +47,12 @@
     ]}
 >
     <InfoSection bind:lesson />
-    <ContentSection bind:lesson />
-    <HomeworksSection course={data.course} bind:lesson bind:modifiedHomeworks />
+    <ContentSection bind:content={lesson.content} />
+    <HomeworksSection
+        course={data.course}
+        homeworks={lesson.homeworks}
+        bind:modifiedHomeworks
+    />
     <footer class="flex gap-4">
         <a
             class="btn w-max bg-on-primary text-primary"

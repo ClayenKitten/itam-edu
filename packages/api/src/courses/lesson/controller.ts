@@ -35,6 +35,7 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 );
                 if (lesson === null) return error(400);
                 set.status = 201;
+                return { id: lesson.id };
             },
             {
                 body: t.Object({ lesson: schema.createLesson }),

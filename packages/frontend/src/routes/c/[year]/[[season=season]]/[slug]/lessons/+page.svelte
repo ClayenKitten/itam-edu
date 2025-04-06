@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import IconButton from "$lib/components/IconButton.svelte";
     import LessonCard from "$lib/components/LessonCard.svelte";
+    import { coursePath } from "$lib/path";
     import LessonEditModal from "./LessonEditModal.svelte";
 
     let { data } = $props();
@@ -13,13 +15,18 @@
 </script>
 
 <div class="flex flex-col gap-10 p-10">
-    <header class="flex gap-8">
+    <header class="flex gap-4">
         <h2>Занятия</h2>
         {#if canEdit}
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"
                 onclick={() => (editing = true)}
+            />
+            <IconButton
+                icon="ph-plus"
+                title="Добавить"
+                onclick={() => goto(`${coursePath(data.course)}/lessons/new`)}
             />
         {/if}
     </header>

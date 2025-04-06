@@ -1,38 +1,41 @@
 <script lang="ts">
     import { formatLessonSchedule } from "$lib/format";
-    import type { Lesson } from "$lib/types";
+    import type { CreateLesson, Lesson } from "$lib/types";
 
     let { lesson = $bindable() }: Props = $props();
 
     type Props = {
-        lesson: Lesson;
+        lesson: Lesson | CreateLesson;
     };
 </script>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
-        <h2>Занятие {lesson.position + 1}</h2>
+        {#if "position" in lesson}
+            <h2>Занятие {lesson.position + 1}</h2>
+        {:else}
+            <h2>Новое занятие</h2>
+        {/if}
         {#if lesson.schedule}
             <p class="text-date text-on-surface-muted">
                 {formatLessonSchedule(lesson.schedule)}
             </p>
         {/if}
     </header>
-    <label class="flex flex-col gap-4">
+    <label class="flex flex-col gap-2">
         <h4>Название</h4>
         <input class="input" bind:value={lesson.title} />
     </label>
     <div class=" flex gap-6">
-        <label class="flex-1 flex flex-col gap-4">
+        <label class="flex-1 flex flex-col gap-2">
             <h4>Описание</h4>
             <textarea
                 class="input h-[200px] resize-none"
                 maxlength="1000"
-                placeholder="На этом занятии мы изучим..."
                 bind:value={lesson.description}
             ></textarea>
         </label>
-        <label class="shrink-0 flex flex-col gap-4">
+        <label class="shrink-0 flex flex-col gap-2">
             <h4>Обложка</h4>
             <div
                 class="border-2 border-on-primary rounded-sm overflow-hidden focus-within:border-primary"

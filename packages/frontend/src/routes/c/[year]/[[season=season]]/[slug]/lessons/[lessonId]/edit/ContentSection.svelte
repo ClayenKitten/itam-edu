@@ -1,11 +1,10 @@
 <script lang="ts">
     import TipTap from "$lib/components/TipTap.svelte";
-    import type { Lesson } from "$lib/types";
 
-    let { lesson = $bindable() }: Props = $props();
+    let { content = $bindable() }: Props = $props();
 
     type Props = {
-        lesson: Lesson;
+        content: string | null;
     };
 </script>
 
@@ -21,6 +20,6 @@
     <div
         class="min-h-[300px] p-5 border-2 border-on-primary rounded-sm focus-within:border-primary"
     >
-        <TipTap bind:content={lesson.content} />
+        <TipTap bind:content />
     </div>
 </section>

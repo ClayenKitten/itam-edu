@@ -9,13 +9,13 @@
 
     let {
         course,
-        lesson = $bindable(),
+        homeworks,
         modifiedHomeworks = $bindable()
     }: Props = $props();
 
     type Props = {
         course: Course;
-        lesson: Lesson;
+        homeworks: Lesson["homeworks"];
         modifiedHomeworks: string[];
     };
 
@@ -45,9 +45,9 @@
             задание может быть прикреплено к нескольким занятиям.
         </p>
     </header>
-    {#if lesson.homeworks.length > 0}
+    {#if homeworks.length > 0}
         <ul class="flex flex-col gap-5 w-full" bind:this={sortableList}>
-            {#each lesson.homeworks as homework (homework.id)}
+            {#each homeworks as homework (homework.id)}
                 <ReorderableCard
                     id={homework.id}
                     title={homework.title}

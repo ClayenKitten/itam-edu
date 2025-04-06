@@ -96,17 +96,20 @@ export default class LessonRepository extends Repository {
                 .returningAll()
                 .executeTakeFirstOrThrow();
 
-            const homeworks = await trx
-                .insertInto("lessonHomeworks")
-                .values(
-                    dto.homeworks.map((h, i) => ({
-                        homeworkId: h,
-                        lessonId: lesson.id,
-                        position: i
-                    }))
-                )
-                .returningAll()
-                .execute();
+            let homeworks: Selectable<DB["lessonHomeworks"]>[] = [];
+            if (dto.homeworks.length > 0) {
+                homeworks = await trx
+                    .insertInto("lessonHomeworks")
+                    .values(
+                        dto.homeworks.map((h, i) => ({
+                            homeworkId: h,
+                            lessonId: lesson.id,
+                            position: i
+                        }))
+                    )
+                    .returningAll()
+                    .execute();
+            }
 
             return this.toEntity(lesson, homeworks);
         });
