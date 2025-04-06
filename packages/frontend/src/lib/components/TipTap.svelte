@@ -1,7 +1,7 @@
 <script lang="ts">
     import "./TipTap.css";
 
-    import { onDestroy } from "svelte";
+    import { onDestroy, untrack } from "svelte";
     import { Editor } from "@tiptap/core";
     import StarterKit from "@tiptap/starter-kit";
     import { browser } from "$app/environment";
@@ -32,7 +32,9 @@
     }
 
     $effect(() => {
-        if (!readonly) createEditor();
+        if (!readonly) {
+            untrack(() => createEditor());
+        }
     });
 
     onDestroy(() => {
