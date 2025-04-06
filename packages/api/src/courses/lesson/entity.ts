@@ -10,27 +10,16 @@ export class Lesson {
         /** Basic information of the lesson. */
         public info: LessonInfo,
         /** Content of the lesson. */
-        public content: LessonContent,
+        public content: string | null,
+        /** Homeworks added to the lesson. */
+        public homeworks: string[],
         /** Time and location of the lesson. */
         public schedule: LessonSchedule | null
     ) {}
-
-    public toDTO(): typeof schema.lesson.static {
-        return {
-            id: this.id,
-            courseId: this.courseId,
-            info: this.info,
-            content: this.content,
-            schedule: this.schedule
-        };
-    }
 }
 
 /** Basic information of the lesson. */
 export type LessonInfo = typeof schema.lessonInfo.static;
-
-/** Content of the lesson. */
-export type LessonContent = typeof schema.lessonContent.static;
 
 /** Time and location of the lesson. */
 export type LessonSchedule = typeof schema.lessonSchedule.static;

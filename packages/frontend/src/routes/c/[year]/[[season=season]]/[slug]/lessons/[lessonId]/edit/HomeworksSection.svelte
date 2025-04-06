@@ -3,11 +3,15 @@
     import type { Course, Lesson } from "$lib/types";
     import { format as formatDate } from "date-fns";
 
-    let { course, lesson }: Props = $props();
+    let { course, lesson = $bindable() }: Props = $props();
 
     type Props = {
         course: Course;
         lesson: Lesson;
+    };
+
+    const remove = (id: string) => {
+        lesson.homeworks = lesson.homeworks.filter(h => h.id !== id);
     };
 </script>
 
@@ -15,12 +19,8 @@
     <header class="flex flex-col gap-2">
         <h3>Домашние задания</h3>
         <p class="max-w-[800px] text-balance">
-            Здесь вы можете прикрепить домашние задания к занятию.
-        </p>
-        <p class="max-w-[800px] text-balance">
-            Одно и то же домашнее задание может быть прикреплено к нескольким
-            занятиям. Удаление домашнего задания из этого списка открепит его от
-            урока, но не удалит само задание.
+            К занятию могут быть прикреплены домашние задания. Одно и то же
+            задание может быть прикреплено к нескольким занятиям.
         </p>
     </header>
     {#if lesson.homeworks}
@@ -66,6 +66,7 @@
                             <button
                                 class="flex justify-center items-center w-6 h-6"
                                 aria-label="Удалить"
+                                onclick={() => remove(homework.id)}
                             >
                                 <i class="ph ph-trash text-[18px]"></i>
                             </button>

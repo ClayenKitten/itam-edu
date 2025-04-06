@@ -35,7 +35,6 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 );
                 if (lesson === null) return error(400);
                 set.status = 201;
-                return lesson.toDTO();
             },
             {
                 body: t.Object({ lesson: schema.createLesson }),
@@ -85,6 +84,28 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
                 detail: {
                     summary: "Get lesson",
                     description: "Returns lesson with content."
+                }
+            }
+        )
+        .patch(
+            "/:lesson",
+            async ({ params, body, user, db, error }) => {
+                if (!user.permissions.course(params.course)?.canEditContent) {
+                    return error(403);
+                }
+                const lesson = await db.lesson.update(params.lesson, body);
+                if (!lesson) return error(404);
+            },
+            {
+                requireAuthentication: true,
+                params: t.Object(
+                    { lesson: t.String() },
+                    { additionalProperties: true }
+                ),
+                body: schema.updateLesson,
+                detail: {
+                    summary: "Update lesson",
+                    description: "Updates lesson."
                 }
             }
         );

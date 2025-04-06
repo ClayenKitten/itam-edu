@@ -1,12 +1,16 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { goto, invalidate } from "$app/navigation";
     import { coursePath } from "$lib/path.js";
     import { onMount } from "svelte";
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
     import InfoSection from "./InfoSection.svelte";
+    import type { LessonDTO } from "itam-edu-api/src/courses/lesson/query";
+    import api from "$lib/api";
 
     let { data } = $props();
+
+    let lesson: LessonDTO = $state(structuredClone(data.lesson));
 
     const canEdit =
         data.permissions?.course.find(x => x.courseId === data.course.id)
@@ -14,11 +18,27 @@
     onMount(() => {});
 
     async function save() {
-        // TODO
-    }
+        const update = {
+            info: {
+                title: lesson.title,
+                description: lesson.description,
+                banner: lesson.banner
+            },
+            content: lesson.content,
+            homeworks: lesson.homeworks.map(x => x.id)
+        };
 
-    async function leave() {
-        await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
+        const result = await api({ fetch })
+            .courses({ course: data.course.id })
+            .lessons({ lesson: data.lesson.id })
+            .patch(update);
+
+        if (result.status === 200) {
+            await invalidate("app:lesson");
+            await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
+        } else {
+            alert(result.status);
+        }
     }
 </script>
 
@@ -28,13 +48,13 @@
         "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
-    <InfoSection lesson={data.lesson} />
-    <ContentSection lesson={data.lesson} />
-    <HomeworksSection course={data.course} lesson={data.lesson} />
+    <InfoSection bind:lesson />
+    <ContentSection bind:lesson />
+    <HomeworksSection course={data.course} bind:lesson />
     <footer class="flex gap-4">
         <a
             class="btn w-max bg-on-primary text-primary"
-            href="{coursePath(data.course)}/lessons">Отмена</a
+            href="{coursePath(data.course)}/lessons/${data.lesson.id}">Отмена</a
         >
         <button class="btn w-max" onclick={save}>Сохранить</button>
     </footer>
