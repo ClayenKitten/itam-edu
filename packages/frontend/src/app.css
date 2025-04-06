@@ -15,6 +15,7 @@
     --spacing: 4px;
 
     /* Rounding */
+    --radius-2xs: 8px;
     --radius-xs: 12px;
     --radius-sm: 16px;
     --radius-md: 18px;

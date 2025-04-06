@@ -192,15 +192,28 @@ export default class LessonRepository extends Repository {
         );
     }
 
-    public async updatePositions(
-        courseId: string,
-        lessons: typeof schema.updateLessonPositions.static
-    ) {
+    public async updateAll(courseId: string, lessonIds: string[]) {
         await this.db.transaction().execute(async trx => {
-            await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
+            await trx
+                .deleteFrom("lessonHomeworks")
+                .using("lessons")
+                .whereRef("lessons.id", "=", "lessonHomeworks.lessonId")
+                .where("lessons.courseId", "=", courseId)
+                .$if(lessonIds.length > 0, cb =>
+                    cb.where("lessons.id", "not in", lessonIds)
+                )
+                .execute();
+            await trx
+                .deleteFrom("lessons")
+                .where("courseId", "=", courseId)
+                .$if(lessonIds.length > 0, cb =>
+                    cb.where("id", "not in", lessonIds)
+                )
+                .execute();
 
+            await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
             let position = 0;
-            for (const lessonId of lessons) {
+            for (const lessonId of lessonIds) {
                 const { numUpdatedRows } = await trx
                     .updateTable("lessons")
                     .where("courseId", "=", courseId)

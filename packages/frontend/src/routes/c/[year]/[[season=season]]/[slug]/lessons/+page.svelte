@@ -1,12 +1,23 @@
 <script lang="ts">
+    import EditButton from "$lib/components/EditButton.svelte";
     import LessonCard from "$lib/components/LessonCard.svelte";
+    import LessonEditModal from "./LessonEditModal.svelte";
 
     let { data } = $props();
+
+    const canEdit =
+        data.permissions?.course.find(x => x.courseId === data.course.id)
+            ?.permissions.canEditContent === true;
+
+    let editing = $state(false);
 </script>
 
 <div class="flex flex-col gap-10 p-10">
-    <header class="flex">
+    <header class="flex gap-8">
         <h2>Занятия</h2>
+        {#if canEdit}
+            <EditButton onclick={() => (editing = true)} />
+        {/if}
     </header>
     <div
         class={[
@@ -23,3 +34,11 @@
         {/each}
     </div>
 </div>
+
+{#if editing}
+    <LessonEditModal
+        course={data.course}
+        lessons={data.lessons}
+        onclose={() => (editing = false)}
+    />
+{/if}
