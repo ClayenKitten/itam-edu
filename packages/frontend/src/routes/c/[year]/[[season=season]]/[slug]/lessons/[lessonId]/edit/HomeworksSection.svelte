@@ -2,16 +2,38 @@
     import { coursePath } from "$lib/path";
     import type { Course, Lesson } from "$lib/types";
     import { format as formatDate } from "date-fns";
+    import { SvelteSet } from "svelte/reactivity";
+    import Sortable from "sortablejs";
+    import { onMount } from "svelte";
+    import ReorderableCard from "$lib/components/ReorderableCard.svelte";
 
-    let { course, lesson = $bindable() }: Props = $props();
+    let {
+        course,
+        lesson = $bindable(),
+        modifiedHomeworks = $bindable()
+    }: Props = $props();
 
     type Props = {
         course: Course;
         lesson: Lesson;
+        modifiedHomeworks: string[];
     };
 
-    const remove = (id: string) => {
-        lesson.homeworks = lesson.homeworks.filter(h => h.id !== id);
+    let deleted: SvelteSet<string> = new SvelteSet();
+
+    let sortableList: HTMLUListElement | null = $state(null);
+    let sortable: Sortable;
+
+    onMount(() => {
+        sortable = Sortable.create(sortableList!, {
+            handle: ".dnd-handle",
+            animation: 200,
+            onUpdate: update
+        });
+    });
+
+    const update = () => {
+        modifiedHomeworks = sortable.toArray().filter(id => !deleted.has(id));
     };
 </script>
 
@@ -23,56 +45,26 @@
             задание может быть прикреплено к нескольким занятиям.
         </p>
     </header>
-    {#if lesson.homeworks}
-        <ul class="flex flex-col gap-5 w-full">
-            {#each lesson.homeworks as homework}
-                <li class="flex items-center w-full gap-1 group">
-                    <div class="flex items-center justify-center w-7.5 h-7.5">
-                        <i class="ph ph-dots-six-vertical text-[19px]"></i>
-                    </div>
-                    <div
-                        class={[
-                            "flex grow items-center justify-between px-5 py-4",
-                            "bg-surface group-hover:bg-on-primary",
-                            "border border-on-primary group-hover:border-primary",
-                            "transition-colors duration-100 rounded-sm"
-                        ]}
-                    >
-                        <div class="flex flex-col gap-1.75">
-                            <span class="text-comment">{homework.title}</span>
-                            <span class="text-date">
-                                {#if homework.deadline}
-                                    До {formatDate(
-                                        homework.deadline,
-                                        "dd.mm.yy HH:mm"
-                                    )}
-                                {:else}
-                                    Без дедлайна
-                                {/if}
-                            </span>
-                        </div>
-                        <menu
-                            class="flex gap-4 text-on-surface-muted group-hover:text-on-surface"
-                        >
-                            <a
-                                class="flex justify-center items-center w-6 h-6"
-                                aria-label="Открыть"
-                                href={`${coursePath(course)}/homeworks/${homework.id}`}
-                                target="_blank"
-                            >
-                                <i class="ph ph-arrow-square-out text-[18px]"
-                                ></i>
-                            </a>
-                            <button
-                                class="flex justify-center items-center w-6 h-6"
-                                aria-label="Удалить"
-                                onclick={() => remove(homework.id)}
-                            >
-                                <i class="ph ph-trash text-[18px]"></i>
-                            </button>
-                        </menu>
-                    </div>
-                </li>
+    {#if lesson.homeworks.length > 0}
+        <ul class="flex flex-col gap-5 w-full" bind:this={sortableList}>
+            {#each lesson.homeworks as homework (homework.id)}
+                <ReorderableCard
+                    id={homework.id}
+                    title={homework.title}
+                    subtitle={homework.deadline
+                        ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
+                        : "Без дедлайна"}
+                    href="{coursePath(course)}/homeworks/{homework.id}"
+                    isDeleted={deleted.has(homework.id)}
+                    onDelete={() => {
+                        deleted.add(homework.id);
+                        update();
+                    }}
+                    onRecover={() => {
+                        deleted.delete(homework.id);
+                        update();
+                    }}
+                />
             {/each}
         </ul>
     {/if}

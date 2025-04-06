@@ -11,11 +11,9 @@
     let { data } = $props();
 
     let lesson: LessonDTO = $state(structuredClone(data.lesson));
-
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
-    onMount(() => {});
+    let modifiedHomeworks: string[] = $state(
+        data.lesson.homeworks.map(h => h.id)
+    );
 
     async function save() {
         const update = {
@@ -25,7 +23,7 @@
                 banner: lesson.banner
             },
             content: lesson.content,
-            homeworks: lesson.homeworks.map(x => x.id)
+            homeworks: modifiedHomeworks
         };
 
         const result = await api({ fetch })
@@ -50,11 +48,11 @@
 >
     <InfoSection bind:lesson />
     <ContentSection bind:lesson />
-    <HomeworksSection course={data.course} bind:lesson />
+    <HomeworksSection course={data.course} bind:lesson bind:modifiedHomeworks />
     <footer class="flex gap-4">
         <a
             class="btn w-max bg-on-primary text-primary"
-            href="{coursePath(data.course)}/lessons/${data.lesson.id}">Отмена</a
+            href="{coursePath(data.course)}/lessons/{data.lesson.id}">Отмена</a
         >
         <button class="btn w-max" onclick={save}>Сохранить</button>
     </footer>
