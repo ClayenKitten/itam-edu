@@ -36,4 +36,4 @@ export const createLesson = t.Object({
 
 export const updateLesson = t.Partial(createLesson);
 
-export const updateLessonPositions = t.Array(t.String(), { minItems: 1 });
+export const updateLessonsList = t.Array(t.String(), { minItems: 1 });

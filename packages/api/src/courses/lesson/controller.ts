@@ -49,17 +49,16 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
         .put(
             "",
             async ({ db, params, body }) => {
-                await db.lesson.updatePositions(params.course, body.lessons);
+                await db.lesson.updateAll(params.course, body.lessons);
                 return "Ok";
             },
             {
-                body: t.Object({ lessons: schema.updateLessonPositions }),
+                body: t.Object({ lessons: schema.updateLessonsList }),
                 hasCoursePermission: "canEditContent",
                 detail: {
-                    summary: "Reorder lessons",
+                    summary: "Update lessons",
                     description:
-                        "Updates lessons ordering.\n\n" +
-                        "All currently added lessons must be present, or error will be returned.",
+                        "Updates lessons list ordering. If lesson is not present, it is deleted.",
                     security: REQUIRE_TOKEN
                 }
             }
