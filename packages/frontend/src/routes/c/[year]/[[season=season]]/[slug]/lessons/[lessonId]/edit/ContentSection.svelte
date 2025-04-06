@@ -2,7 +2,7 @@
     import TipTap from "$lib/components/TipTap.svelte";
     import type { Lesson } from "$lib/types";
 
-    let { lesson }: Props = $props();
+    let { lesson = $bindable() }: Props = $props();
 
     type Props = {
         lesson: Lesson;

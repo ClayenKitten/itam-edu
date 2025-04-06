@@ -2,7 +2,7 @@ import { Repository } from "../../db/repository";
 import type { DB, LessonHomeworks } from "itam-edu-db";
 import { sql } from "kysely";
 import * as schema from "./schema";
-import type { ExpressionBuilder, Selectable } from "kysely";
+import type { ExpressionBuilder, Selectable, Updateable } from "kysely";
 import { error } from "elysia";
 import { Lesson, type LessonSchedule } from "./entity";
 
@@ -58,8 +58,8 @@ export default class LessonRepository extends Repository {
 
     public async create(
         courseId: string,
-        info: typeof schema.createLesson.static
-    ): Promise<Lesson | null> {
+        dto: typeof schema.createLesson.static
+    ): Promise<Lesson> {
         const selectPosition = (eb: ExpressionBuilder<DB, "lessons">) => {
             return eb
                 .selectFrom("lessons")
@@ -78,22 +78,89 @@ export default class LessonRepository extends Repository {
                 );
         };
 
-        const lesson = await this.db
-            .insertInto("lessons")
-            .values(eb => ({
-                courseId,
-                title: info.title,
-                isOnline: info.schedule?.online !== null,
-                isOffline: info.schedule?.offline !== null,
-                location: info.schedule?.offline?.location ?? null,
-                scheduledAt: info.schedule?.date ?? null,
-                position: selectPosition(eb)
-            }))
-            .returningAll()
-            .executeTakeFirst();
-        if (!lesson) return null;
+        return this.db.transaction().execute(async trx => {
+            const lesson = await trx
+                .insertInto("lessons")
+                .values(eb => ({
+                    courseId,
+                    title: dto.info.title,
+                    description: dto.info.description,
+                    banner: dto.info.banner,
+                    content: dto.content,
+                    isOnline: dto.schedule?.online !== null,
+                    isOffline: dto.schedule?.offline !== null,
+                    location: dto.schedule?.offline?.location ?? null,
+                    scheduledAt: dto.schedule?.date ?? null,
+                    position: selectPosition(eb)
+                }))
+                .returningAll()
+                .executeTakeFirstOrThrow();
 
-        return this.toEntity(lesson, []);
+            const homeworks = await trx
+                .insertInto("lessonHomeworks")
+                .values(
+                    dto.homeworks.map((h, i) => ({
+                        homeworkId: h,
+                        lessonId: lesson.id,
+                        position: i
+                    }))
+                )
+                .returningAll()
+                .execute();
+
+            return this.toEntity(lesson, homeworks);
+        });
+    }
+
+    public async update(
+        lessonId: string,
+        dto: typeof schema.updateLesson.static
+    ): Promise<Lesson | null> {
+        return await this.db.transaction().execute(async trx => {
+            let update: Updateable<DB["lessons"]> = {};
+            if (dto.info !== undefined) {
+                update.title = dto.info.title;
+                update.description = dto.info.description;
+                update.banner = dto.info.banner;
+            }
+            if (dto.content !== undefined) {
+                update.content = dto.content;
+            }
+            if (dto.schedule !== undefined) {
+                update.isOnline = dto.schedule?.online !== null;
+                update.isOffline = dto.schedule?.offline !== null;
+                update.location = dto.schedule?.offline?.location ?? null;
+                update.scheduledAt = dto.schedule?.date ?? null;
+            }
+            const lesson = await trx
+                .updateTable("lessons")
+                .where("id", "=", lessonId)
+                .set(update)
+                .returningAll()
+                .executeTakeFirst();
+            if (!lesson) return null;
+
+            let homeworks: Selectable<DB["lessonHomeworks"]>[] = [];
+            if (dto.homeworks !== undefined) {
+                await trx
+                    .deleteFrom("lessonHomeworks")
+                    .where("lessonId", "=", lessonId)
+                    .execute();
+                homeworks = await trx
+                    .insertInto("lessonHomeworks")
+                    .values(
+                        dto.homeworks.map((h, i) => ({
+                            homeworkId: h,
+                            lessonId: lessonId,
+                            position: i
+                        }))
+                    )
+                    .returningAll()
+                    .execute();
+            }
+
+            return this.toEntity(lesson, homeworks);
+        });
     }
 
     private toEntity(
@@ -119,10 +186,8 @@ export default class LessonRepository extends Repository {
                 position: lesson.position,
                 createdAt: lesson.createdAt
             },
-            {
-                body: lesson.content,
-                homeworks: lessonHomeworks.map(x => x.homeworkId)
-            },
+            lesson.content,
+            lessonHomeworks.map(x => x.homeworkId),
             schedule
         );
     }

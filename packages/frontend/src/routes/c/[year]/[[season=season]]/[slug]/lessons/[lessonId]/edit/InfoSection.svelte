@@ -2,7 +2,7 @@
     import { formatLessonSchedule } from "$lib/format";
     import type { Lesson } from "$lib/types";
 
-    let { lesson }: Props = $props();
+    let { lesson = $bindable() }: Props = $props();
 
     type Props = {
         lesson: Lesson;

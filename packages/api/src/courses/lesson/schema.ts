@@ -7,15 +7,11 @@ export const lessonInfo = t.Object({
     position: t.Number({ multipleOf: 1 }),
     createdAt: t.Date()
 });
-
-export const lessonContent = t.Object({
-    /** HTML content of the lesson. */
-    body: t.Nullable(t.String()),
-    /** Homeworks that are added to that lesson. */
-    homeworks: t.Nullable(
-        t.Array(t.String({ format: "uuid" }), { maxItems: 10 })
-    )
-});
+export const updateLessonInfo = t.Pick(lessonInfo, [
+    "title",
+    "description",
+    "banner"
+]);
 
 export const lessonSchedule = t.Object({
     /** Date of the lesson. */
@@ -31,17 +27,13 @@ export const lessonSchedule = t.Object({
     )
 });
 
-export const lesson = t.Object({
-    id: t.String({ format: "uuid" }),
-    courseId: t.String({ format: "uuid" }),
-    info: lessonInfo,
-    content: lessonContent,
-    schedule: t.Nullable(lessonSchedule)
-});
-export const lessonWithoutContent = t.Omit(lesson, ["content"]);
-export const updateLesson = t.Pick(lesson, ["title", "content"]);
-export const updateLessonPositions = t.Array(t.String(), { minItems: 1 });
 export const createLesson = t.Object({
-    title: lessonInfo.properties.title,
+    info: updateLessonInfo,
+    content: t.Nullable(t.String()),
+    homeworks: t.Array(t.String({ format: "uuid" }), { maxItems: 10 }),
     schedule: t.Nullable(lessonSchedule)
 });
+
+export const updateLesson = t.Partial(createLesson);
+
+export const updateLessonPositions = t.Array(t.String(), { minItems: 1 });
