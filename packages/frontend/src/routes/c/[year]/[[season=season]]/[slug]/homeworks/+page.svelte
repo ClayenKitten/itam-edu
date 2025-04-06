@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Tag from "$lib/components/Tag.svelte";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
 
@@ -16,9 +17,14 @@
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
             >
                 <div class="flex flex-col gap-3">
-                    <header>
-                        <h4>{homework.title}</h4>
-                    </header>
+                    <div class="flex items-center gap-3">
+                        <header>
+                            <h4>{homework.title}</h4>
+                        </header>
+                        <Tag 
+                            kind = {data.tags.find(tag => tag.homeworkId === homework.id)?.tag as "new" | "submitted" | "rejected" | "accepted" ?? "new"}
+                        />
+                    </div>
                     {#if homework.deadline}
                         <p class="text-on-surface-contrast opacity-50">
                             <span>До</span>
