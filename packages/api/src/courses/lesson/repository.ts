@@ -3,7 +3,6 @@ import type { DB, LessonHomeworks } from "itam-edu-db";
 import { sql } from "kysely";
 import * as schema from "./schema";
 import type { ExpressionBuilder, Selectable, Updateable } from "kysely";
-import { error } from "elysia";
 import { Lesson, type LessonSchedule } from "./entity";
 
 export default class LessonRepository extends Repository {
@@ -217,15 +216,12 @@ export default class LessonRepository extends Repository {
             await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
             let position = 0;
             for (const lessonId of lessonIds) {
-                const { numUpdatedRows } = await trx
+                await trx
                     .updateTable("lessons")
                     .where("courseId", "=", courseId)
                     .where("lessons.id", "=", lessonId)
                     .set({ position })
                     .executeTakeFirstOrThrow();
-                if (numUpdatedRows !== 1n) {
-                    throw error(422, "all lessons need to be present");
-                }
                 position += 1;
             }
         });

@@ -39,6 +39,24 @@ export async function homeworkController<PREFIX extends string>(
                 }
             }
         )
+        .put(
+            "",
+            async ({ db, params, body }) => {
+                await db.homework.updateAll(params.course, body.homeworks);
+                return "Ok";
+            },
+            {
+                body: t.Object({ homeworks: schema.updateHomeworksList }),
+                params: t.Object({ course: t.String({ format: "uuid" }) }),
+                hasCoursePermission: "canEditContent",
+                detail: {
+                    summary: "Update homeworks",
+                    description:
+                        "Updates homeworks list ordering. If homework is not present, it is deleted.",
+                    security: REQUIRE_TOKEN
+                }
+            }
+        )
         .get(
             "/:homework",
             async ({ db, params }) => {

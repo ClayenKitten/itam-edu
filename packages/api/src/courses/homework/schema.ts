@@ -16,3 +16,5 @@ export const updateHomework = t.Pick(homework, [
     "deadline",
     "overrideAcceptingSubmissions"
 ]);
+
+export const updateHomeworksList = t.Array(t.String());

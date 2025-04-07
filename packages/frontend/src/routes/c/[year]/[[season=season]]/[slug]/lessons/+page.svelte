@@ -25,7 +25,7 @@
             />
             <IconButton
                 icon="ph-plus"
-                title="Добавить"
+                title="Создать"
                 onclick={() => goto(`${coursePath(data.course)}/lessons/new`)}
             />
         {/if}

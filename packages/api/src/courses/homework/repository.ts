@@ -1,7 +1,7 @@
 import { Repository } from "../../db/repository";
 import Homework from "./entity";
 import * as schema from "./schema";
-import { type ExpressionBuilder, type Selectable } from "kysely";
+import { sql, type ExpressionBuilder, type Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 
 export default class HomeworkRepository extends Repository {
@@ -83,6 +83,49 @@ export default class HomeworkRepository extends Repository {
             .executeTakeFirst();
         if (!hw) return null;
         return this.toEntity(hw);
+    }
+
+    /** Updates a homework list via reordering and deletion. */
+    public async updateAll(courseId: string, homeworkIds: string[]) {
+        await this.db.transaction().execute(async trx => {
+            await trx
+                .deleteFrom("lessonHomeworks")
+                .using("homeworks")
+                .whereRef("homeworks.id", "=", "lessonHomeworks.homeworkId")
+                .where("homeworks.courseId", "=", courseId)
+                .$if(homeworkIds.length > 0, cb =>
+                    cb.where("homeworks.id", "not in", homeworkIds)
+                )
+                .execute();
+            await trx
+                .deleteFrom("homeworkSubmissions")
+                .using("homeworks")
+                .whereRef("homeworks.id", "=", "homeworkSubmissions.homeworkId")
+                .where("homeworks.courseId", "=", courseId)
+                .$if(homeworkIds.length > 0, cb =>
+                    cb.where("homeworks.id", "not in", homeworkIds)
+                )
+                .execute();
+            await trx
+                .deleteFrom("homeworks")
+                .where("courseId", "=", courseId)
+                .$if(homeworkIds.length > 0, cb =>
+                    cb.where("id", "not in", homeworkIds)
+                )
+                .execute();
+
+            await sql`SET CONSTRAINTS ALL DEFERRED`.execute(trx);
+            let position = 0;
+            for (const homeworkId of homeworkIds) {
+                await trx
+                    .updateTable("homeworks")
+                    .where("courseId", "=", courseId)
+                    .where("homeworks.id", "=", homeworkId)
+                    .set({ position })
+                    .executeTakeFirstOrThrow();
+                position += 1;
+            }
+        });
     }
 
     private toEntity(hw: Selectable<DB["homeworks"]>): Homework {
