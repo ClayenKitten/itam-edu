@@ -12,7 +12,7 @@
 
 <header
     class={[
-        "flex justify-end items-center h-14 px-7 py-2 gap-2.5",
+        "sticky top-0 flex justify-end items-center h-14 px-7 py-2 gap-2.5",
         "bg-surface border-b border-surface-border"
     ]}
 >
