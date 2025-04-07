@@ -148,17 +148,19 @@ export default class LessonRepository extends Repository {
                     .deleteFrom("lessonHomeworks")
                     .where("lessonId", "=", lessonId)
                     .execute();
-                homeworks = await trx
-                    .insertInto("lessonHomeworks")
-                    .values(
-                        dto.homeworks.map((h, i) => ({
-                            homeworkId: h,
-                            lessonId: lessonId,
-                            position: i
-                        }))
-                    )
-                    .returningAll()
-                    .execute();
+                if (dto.homeworks.length > 0) {
+                    homeworks = await trx
+                        .insertInto("lessonHomeworks")
+                        .values(
+                            dto.homeworks.map((h, i) => ({
+                                homeworkId: h,
+                                lessonId: lessonId,
+                                position: i
+                            }))
+                        )
+                        .returningAll()
+                        .execute();
+                }
             }
 
             return this.toEntity(lesson, homeworks);
