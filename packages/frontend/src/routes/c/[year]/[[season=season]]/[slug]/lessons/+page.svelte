@@ -36,12 +36,8 @@
             "grid-cols-[repeat(auto-fit,343px)]"
         ]}
     >
-        {#each data.lessons.toReversed() as lesson, i}
-            <LessonCard
-                course={data.course}
-                position={data.lessons.length - i}
-                {lesson}
-            />
+        {#each data.lessons as lesson, i}
+            <LessonCard course={data.course} position={i + 1} {lesson} />
         {/each}
     </div>
 </div>
