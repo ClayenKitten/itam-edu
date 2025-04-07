@@ -60,7 +60,7 @@
             {/each}
         </select>
     </header>
-    <ul>
+    <ul class="flex flex-col gap-2">
         {@render btn("/", "Главный экран", "house")}
         {@render btn("/lessons", "Занятия", "folder")}
         {@render btn("/homeworks", "Домашние задания", "book-open-text")}
@@ -68,7 +68,7 @@
     </ul>
     {#if isEmployee}
         <hr class="text-surface-border -mx-5" />
-        <ul>
+        <ul class="flex flex-col gap-2">
             {@render btn("/analytics", "Аналитика", "chart-line")}
             {@render btn("/settings", "Настройки", "gear-six")}
         </ul>
