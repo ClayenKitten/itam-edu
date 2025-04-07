@@ -10,6 +10,7 @@ import NotificationRepository from "../notifications/repository";
 import HomeworkRepository from "../courses/homework/repository";
 import SubmissionRepository from "../courses/submission/repository";
 import { LessonQuery } from "../courses/lesson/query";
+import { HomeworksQuery } from "../courses/homework/query";
 
 export function createDatabaseContext(connection: Kysely<DB>) {
     return {
@@ -17,10 +18,11 @@ export function createDatabaseContext(connection: Kysely<DB>) {
         course: new CourseRepository(connection),
         lesson: new LessonRepository(connection),
         lessonQuery: new LessonQuery(connection),
+        homework: new HomeworkRepository(connection),
+        homeworksQuery: new HomeworksQuery(connection),
         student: new StudentRepository(connection),
         staff: new StaffRepository(connection),
         notification: new NotificationRepository(connection),
-        homework: new HomeworkRepository(connection),
         submission: new SubmissionRepository(connection)
     };
 }

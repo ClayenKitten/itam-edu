@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
-    import type { Course, Homework } from "$lib/types";
+    import type { Course, HomeworkPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
     import { SvelteSet } from "svelte/reactivity";
     import Sortable from "sortablejs";
@@ -13,7 +13,7 @@
 
     type Props = {
         course: Course;
-        homeworks: Homework[];
+        homeworks: HomeworkPartial[];
         onclose?: () => void;
     };
 

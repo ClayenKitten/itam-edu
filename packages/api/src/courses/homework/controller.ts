@@ -2,6 +2,7 @@ import { Elysia, error, t } from "elysia";
 import initContext from "../../api/plugins";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
+import { HttpError } from "../../api/errors";
 
 export async function homeworkController<PREFIX extends string>(
     prefix: PREFIX
@@ -11,8 +12,8 @@ export async function homeworkController<PREFIX extends string>(
         .get(
             "",
             async ({ db, params }) => {
-                const homeworks = await db.homework.getAll(params.course);
-                return homeworks.map(h => h.toDTO());
+                const homeworks = await db.homeworksQuery.getAll(params.course);
+                return homeworks;
             },
             {
                 params: t.Object({ course: t.String({ format: "uuid" }) }),
@@ -60,9 +61,14 @@ export async function homeworkController<PREFIX extends string>(
         .get(
             "/:homework",
             async ({ db, params }) => {
-                const homework = await db.homework.getById(params.homework);
-                if (!homework) return error(404);
-                return homework.toDTO();
+                const homework = await db.homeworksQuery.get(
+                    params.course,
+                    params.homework
+                );
+                if (homework instanceof HttpError) {
+                    return error(homework.code, homework.message);
+                }
+                return homework;
             },
             {
                 params: t.Object({

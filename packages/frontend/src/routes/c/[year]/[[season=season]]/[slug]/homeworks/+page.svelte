@@ -4,7 +4,7 @@
     import Tag, { type TagKind } from "$lib/components/Tag.svelte";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
-    import HomeworkEditModal from "./HomeworkEditModal.svelte";
+    import HomeworkListEditModal from "./HomeworkListEditModal.svelte";
 
     let { data } = $props();
 
@@ -73,7 +73,7 @@
 </div>
 
 {#if editing}
-    <HomeworkEditModal
+    <HomeworkListEditModal
         course={data.course}
         homeworks={data.homeworks}
         onclose={() => (editing = false)}
