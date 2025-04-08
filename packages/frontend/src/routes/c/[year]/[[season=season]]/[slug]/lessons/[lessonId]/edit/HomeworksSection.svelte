@@ -3,9 +3,8 @@
     import type { Course, Lesson } from "$lib/types";
     import { format as formatDate } from "date-fns";
     import { SvelteSet } from "svelte/reactivity";
-    import Sortable from "sortablejs";
-    import { onMount } from "svelte";
     import ReorderableCard from "$lib/components/ReorderableCard.svelte";
+    import { sortable } from "$lib/actions/sortable.svelte";
 
     let {
         course,
@@ -19,22 +18,11 @@
         modifiedHomeworks: string[];
     };
 
+    let sorted: string[] = $state(homeworks.map(h => h.id));
     let deleted: SvelteSet<string> = new SvelteSet();
-
-    let sortableList: HTMLUListElement | null = $state(null);
-    let sortable: Sortable;
-
-    onMount(() => {
-        sortable = Sortable.create(sortableList!, {
-            handle: ".dnd-handle",
-            animation: 200,
-            onUpdate: update
-        });
+    $effect(() => {
+        modifiedHomeworks = sorted.filter(id => !deleted.has(id));
     });
-
-    const update = () => {
-        modifiedHomeworks = sortable.toArray().filter(id => !deleted.has(id));
-    };
 </script>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
@@ -46,7 +34,11 @@
         </p>
     </header>
     {#if homeworks.length > 0}
-        <ul class="flex flex-col gap-5 w-full" bind:this={sortableList}>
+        <ul
+            class="flex flex-col gap-5 w-full"
+            use:sortable={{ handle: ".dnd-handle", animation: 200 }}
+            onsortchanged={e => (sorted = e.detail.sortable.toArray())}
+        >
             {#each homeworks as homework (homework.id)}
                 <ReorderableCard
                     id={homework.id}
@@ -56,14 +48,8 @@
                         : "Без дедлайна"}
                     href="{coursePath(course)}/homeworks/{homework.id}"
                     isDeleted={deleted.has(homework.id)}
-                    onDelete={() => {
-                        deleted.add(homework.id);
-                        update();
-                    }}
-                    onRecover={() => {
-                        deleted.delete(homework.id);
-                        update();
-                    }}
+                    onDelete={() => deleted.add(homework.id)}
+                    onRecover={() => deleted.delete(homework.id)}
                 />
             {/each}
         </ul>

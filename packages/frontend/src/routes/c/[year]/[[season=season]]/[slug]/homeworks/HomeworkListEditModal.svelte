@@ -4,8 +4,7 @@
     import type { Course, HomeworkPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
     import { SvelteSet } from "svelte/reactivity";
-    import Sortable from "sortablejs";
-    import { onMount } from "svelte";
+    import { sortable } from "$lib/actions/sortable.svelte";
     import { coursePath } from "$lib/path";
     import ReorderableCard from "$lib/components/ReorderableCard.svelte";
 
@@ -19,15 +18,6 @@
 
     let orderedIds = $state(homeworks.map(h => h.id));
     let deleted: SvelteSet<string> = $state(new SvelteSet());
-
-    let sortableList: HTMLUListElement;
-    onMount(() => {
-        const sortable = Sortable.create(sortableList, {
-            handle: ".dnd-handle",
-            animation: 200,
-            onUpdate: () => (orderedIds = sortable.toArray())
-        });
-    });
 
     async function save() {
         const result = await api({ fetch })
@@ -61,7 +51,8 @@
         </header>
         <ul
             class="flex flex-col gap-5 overflow-y-auto"
-            bind:this={sortableList}
+            use:sortable={{ handle: ".dnd-handle", animation: 200 }}
+            onsortchanged={e => (orderedIds = e.detail.sortable.toArray())}
         >
             {#each homeworks as homework}
                 <ReorderableCard
