@@ -6,6 +6,7 @@
     import InfoSection from "../[lessonId]/edit/InfoSection.svelte";
     import type { CreateLesson } from "$lib/types";
     import api from "$lib/api";
+    import ScheduleSection from "../[lessonId]/edit/ScheduleSection.svelte";
 
     let { data } = $props();
 
@@ -56,6 +57,7 @@
     ]}
 >
     <InfoSection bind:lesson />
+    <ScheduleSection bind:schedule={lesson.schedule} />
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}
