@@ -2,6 +2,7 @@ import NotificationService from "./notifications/service";
 import { createConfig } from "./config";
 import { createDatabaseContext } from "./db";
 import createDatabaseConnection from "./db/connection";
+import { LessonService } from "./courses/lesson/service";
 
 /** Returns static application context. */
 export function getAppContext(): AppContext {
@@ -21,9 +22,13 @@ function createAppContext() {
 
     const db = createDatabaseContext(databaseConnection);
 
+    const notification = new NotificationService(db.user, db.notification);
+    const lesson = new LessonService(config, db, notification);
+
     return {
         config,
         db,
-        notification: new NotificationService(db.user, db.notification)
+        notification,
+        lesson
     };
 }

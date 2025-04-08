@@ -115,46 +115,46 @@ export default class LessonRepository extends Repository {
     }
 
     public async update(
-        lessonId: string,
-        dto: typeof schema.updateLesson.static
+        lesson: Lesson,
+        change: typeof schema.updateLesson.static
     ): Promise<Lesson | null> {
         return await this.db.transaction().execute(async trx => {
             let update: Updateable<DB["lessons"]> = {};
-            if (dto.info !== undefined) {
-                update.title = dto.info.title;
-                update.description = dto.info.description;
-                update.banner = dto.info.banner;
+            if (change.info !== undefined) {
+                update.title = change.info.title;
+                update.description = change.info.description;
+                update.banner = change.info.banner;
             }
-            if (dto.content !== undefined) {
-                update.content = dto.content;
+            if (change.content !== undefined) {
+                update.content = change.content;
             }
-            if (dto.schedule !== undefined) {
-                update.isOnline = dto.schedule?.online !== null;
-                update.isOffline = dto.schedule?.offline !== null;
-                update.location = dto.schedule?.offline?.location ?? null;
-                update.scheduledAt = dto.schedule?.date ?? null;
+            if (change.schedule !== undefined) {
+                update.isOnline = change.schedule?.online !== null;
+                update.isOffline = change.schedule?.offline !== null;
+                update.location = change.schedule?.offline?.location ?? null;
+                update.scheduledAt = change.schedule?.date ?? null;
             }
-            const lesson = await trx
+            const newLesson = await trx
                 .updateTable("lessons")
-                .where("id", "=", lessonId)
+                .where("id", "=", lesson.id)
                 .set(update)
                 .returningAll()
                 .executeTakeFirst();
-            if (!lesson) return null;
+            if (!newLesson) return null;
 
             let homeworks: Selectable<DB["lessonHomeworks"]>[] = [];
-            if (dto.homeworks !== undefined) {
+            if (change.homeworks !== undefined) {
                 await trx
                     .deleteFrom("lessonHomeworks")
-                    .where("lessonId", "=", lessonId)
+                    .where("lessonId", "=", lesson.id)
                     .execute();
-                if (dto.homeworks.length > 0) {
+                if (change.homeworks.length > 0) {
                     homeworks = await trx
                         .insertInto("lessonHomeworks")
                         .values(
-                            dto.homeworks.map((h, i) => ({
+                            change.homeworks.map((h, i) => ({
                                 homeworkId: h,
-                                lessonId: lessonId,
+                                lessonId: lesson.id,
                                 position: i
                             }))
                         )
@@ -163,7 +163,7 @@ export default class LessonRepository extends Repository {
                 }
             }
 
-            return this.toEntity(lesson, homeworks);
+            return this.toEntity(newLesson, homeworks);
         });
     }
 

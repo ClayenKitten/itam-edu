@@ -42,7 +42,7 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
 
                 const user = await db.user.getByToken(token);
                 notification.send(
-                    `<b>Новый вход в платформу ITAM Education</b>\n\nЭто не вы? Напишите @${env.ITAM_EDU_API_TG_SUPPORT_USERNAME}!`,
+                    `<b>🔐 Новый вход в платформу ITAM Education</b>\n\nЭто не вы? Напишите @${env.ITAM_EDU_API_TG_SUPPORT_USERNAME}!`,
                     user ? [user.id] : []
                 );
                 set.status = 201;

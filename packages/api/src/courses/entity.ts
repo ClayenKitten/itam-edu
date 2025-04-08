@@ -15,6 +15,13 @@ export class Course {
         );
     }
 
+    public get path(): string {
+        if (this.info.semester) {
+            return `/c/${this.info.year}/${this.info.semester}/${this.info.slug}`;
+        }
+        return `/c/${this.info.year}/${this.info.slug}`;
+    }
+
     public toDTO(): typeof schema.course.static {
         return this.info;
     }

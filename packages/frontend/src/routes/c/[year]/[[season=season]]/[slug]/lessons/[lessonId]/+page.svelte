@@ -20,6 +20,13 @@
     ]}
 >
     <section class="flex flex-col gap-2">
+        <a
+            class="flex items-center h-min mb-5.5 gap-2 text-h4 text-primary"
+            href="{coursePath(data.course)}/lessons"
+        >
+            <i class="ph ph-caret-left text-[16px]"></i>
+            Назад
+        </a>
         <header class="flex gap-8">
             <h2>Занятие {data.lesson.position + 1}. {data.lesson.title}</h2>
             {#if canEdit}

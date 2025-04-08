@@ -22,5 +22,8 @@ async function getLesson(
         .lessons({ lesson: lessonId })
         .get();
     if (response.error) error(response.status);
+    if (typeof response.data?.schedule?.date === "string") {
+        response.data.schedule.date = new Date(response.data?.schedule?.date);
+    }
     return response.data;
 }

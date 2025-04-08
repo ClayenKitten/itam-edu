@@ -1,12 +1,13 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { coursePath } from "$lib/path.js";
-    import { onMount } from "svelte";
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
     import InfoSection from "./InfoSection.svelte";
     import type { LessonDTO } from "itam-edu-api/src/courses/lesson/query";
     import api from "$lib/api";
+    import ScheduleSection from "./ScheduleSection.svelte";
+    import equal from "fast-deep-equal";
 
     let { data } = $props();
 
@@ -16,6 +17,16 @@
     );
 
     async function save() {
+        let changedSchedule = !equal(data.lesson.schedule, lesson.schedule);
+        if (
+            changedSchedule &&
+            !confirm(
+                "Дата или место проведения изменено, пользователям будет отправлено уведомление. Вы уверены?"
+            )
+        ) {
+            return;
+        }
+
         const update = {
             info: {
                 title: lesson.title,
@@ -23,7 +34,8 @@
                 banner: lesson.banner
             },
             content: lesson.content,
-            homeworks: modifiedHomeworks
+            homeworks: modifiedHomeworks,
+            schedule: changedSchedule ? lesson.schedule : undefined
         };
 
         const result = await api({ fetch })
@@ -47,6 +59,7 @@
     ]}
 >
     <InfoSection bind:lesson />
+    <ScheduleSection bind:schedule={lesson.schedule} />
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}

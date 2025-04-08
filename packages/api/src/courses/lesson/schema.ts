@@ -22,7 +22,7 @@ export const lessonSchedule = t.Object({
     offline: t.Nullable(
         t.Object({
             /** Physical location of the lesson. */
-            location: t.Nullable(t.String({ maxLength: 30 }))
+            location: t.Nullable(t.String({ maxLength: 60 }))
         })
     )
 });

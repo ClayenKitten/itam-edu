@@ -76,10 +76,4 @@
             </div>
         </label>
     </div>
-    <footer class="flex gap-2">
-        <button class="btn bg-on-primary text-primary w-max">
-            <i class="ph ph-calendar-dots text-[20px]"></i>
-            Перенести занятие
-        </button>
-    </footer>
 </section>

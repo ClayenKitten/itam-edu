@@ -131,6 +131,11 @@
             background-color: var(--color-on-surface-muted);
             cursor: default;
         }
+
+        &.secondary {
+            color: var(--color-primary);
+            background-color: var(--color-on-primary);
+        }
     }
 
     .input {
@@ -144,6 +149,42 @@
         &:focus {
             outline: 0;
             border: 2px var(--color-primary) solid;
+        }
+    }
+
+    input[type="checkbox"] {
+        display: grid;
+        place-content: center;
+
+        appearance: none;
+        background-color: #fff;
+        font: inherit;
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: var(--radius-2xs);
+        transform: translateY(-0.075em);
+        border: 1px solid var(--color-on-primary);
+
+        label:has(> &) {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        &::before {
+            color: var(--color-on-primary);
+            font-family: "Phosphor" !important;
+            content: "\e182";
+            box-shadow: var(--shadow);
+        }
+
+        &:checked {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        &:checked::before {
+            transform: scale(1);
         }
     }
 }

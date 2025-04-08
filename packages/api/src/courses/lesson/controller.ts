@@ -89,12 +89,22 @@ export function lessonController<PREFIX extends string>(prefix: PREFIX) {
         )
         .patch(
             "/:lesson",
-            async ({ params, body, user, db, error }) => {
-                if (!user.permissions.course(params.course)?.canEditContent) {
-                    return error(403);
+            async ({ params, lesson: service, body, user, db, error }) => {
+                const [course, lesson] = await Promise.all([
+                    db.course.getById(params.course),
+                    db.lesson.getById(params.lesson)
+                ]);
+                if (!course || !lesson) return error(404);
+
+                const newLesson = await service.update(
+                    user,
+                    course,
+                    lesson,
+                    body
+                );
+                if (newLesson instanceof HttpError) {
+                    return error(newLesson.code, newLesson.message);
                 }
-                const lesson = await db.lesson.update(params.lesson, body);
-                if (!lesson) return error(404);
             },
             {
                 requireAuthentication: true,
