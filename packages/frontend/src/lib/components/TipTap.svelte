@@ -5,6 +5,8 @@
     import { Editor } from "@tiptap/core";
     import StarterKit from "@tiptap/starter-kit";
     import { browser } from "$app/environment";
+    import BubbleMenu from "@tiptap/extension-bubble-menu";
+    import BubbleMenuComponent from "./BubbleMenu.svelte";
 
     let {
         content = $bindable(null),
@@ -12,13 +14,17 @@
     }: { content?: string | null; readonly?: boolean } = $props();
 
     let element: HTMLDivElement | undefined = $state();
+    let bubblemenu: HTMLElement | undefined = $state();
     let editor: Editor | undefined = $state();
 
     function createEditor() {
         editor = new Editor({
             element,
             extensions: [
-                StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } })
+                StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
+                BubbleMenu.configure({
+                    element: bubblemenu
+                })
             ],
             content,
             onUpdate: props => {
@@ -50,6 +56,7 @@
     </div>
 {:else}
     <div class="rich-content w-full h-full" bind:this={element}></div>
+    <BubbleMenuComponent {editor} bind:element={bubblemenu} />
 {/if}
 
 <style>

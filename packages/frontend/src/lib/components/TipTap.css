@@ -41,3 +41,8 @@
         margin-bottom: 8px;
     }
 }
+
+.is-active {
+    color: var(--color-primary);
+    background-color: var(--color-on-primary);
+}
