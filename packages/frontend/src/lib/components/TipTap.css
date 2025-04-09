@@ -31,7 +31,6 @@
         color: var(--color-on-background-contrast);
         font-size: 16px;
         line-height: 1.4;
-        font-weight: normal;
 
         &:first-child {
             margin-top: 0;
