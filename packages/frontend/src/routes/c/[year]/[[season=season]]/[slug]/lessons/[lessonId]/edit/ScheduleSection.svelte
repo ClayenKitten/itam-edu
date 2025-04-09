@@ -8,6 +8,20 @@
     };
 
     let saved: Lesson["schedule"] = $state(null);
+
+    const formatDate = (date: Date): { date: string; time: string } => {
+        let d = date.toLocaleDateString("ru-RU", {
+            timeZone: "Europe/Moscow"
+        });
+        return {
+            date: `${d.substring(6, 10)}-${d.substring(3, 5)}-${d.substring(0, 2)}`,
+            time: date
+                .toLocaleTimeString("ru-RU", {
+                    timeZone: "Europe/Moscow"
+                })
+                .substring(0, 5)
+        };
+    };
 </script>
 
 <section class="flex flex-col gap-8 p-7.5 rounded-xl bg-surface shadow">
@@ -39,15 +53,11 @@
                     class="input"
                     type="date"
                     required
-                    bind:value={() => {
-                        return schedule!.date.toISOString().split("T")[0];
-                    },
+                    bind:value={() => formatDate(schedule!.date).date,
                     val => {
                         if (val === "") return;
                         schedule!.date = new Date(
-                            val +
-                                "T" +
-                                schedule!.date.toTimeString().substring(0, 5)
+                            val + "T" + formatDate(schedule!.date).time
                         );
                     }}
                 />
@@ -58,13 +68,11 @@
                     class="input"
                     type="time"
                     required
-                    bind:value={() => {
-                        return schedule!.date.toTimeString().substring(0, 5);
-                    },
+                    bind:value={() => formatDate(schedule!.date).time,
                     val => {
                         if (val === "") return;
                         schedule!.date = new Date(
-                            `${schedule!.date.toISOString().split("T")[0]}T${val}`
+                            formatDate(schedule!.date).date + "T" + val
                         );
                     }}
                 />
