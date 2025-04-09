@@ -10,5 +10,8 @@
     },
     "workspaces": [
         "packages/*"
-    ]
+    ],
+    "dependencies": {
+        "@tiptap/extension-bubble-menu": "^2.11.7"
+    }
 }
