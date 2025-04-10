@@ -1,30 +1,34 @@
-import * as schema from "./schema";
-
 /** Homework submission. */
-export default class Submission {
+export class Submission {
     public constructor(
-        public id: string,
-        public info: SubmissionInfo,
-        public review: Review | null
+        public homeworkId: string,
+        public studentId: string,
+        /**
+         * Chat messages of the submission.
+         *
+         * Must be sorted by date in ascending order.
+         * */
+        public messages: [SubmissionMessage, ...SubmissionMessage[]]
     ) {}
 
-    public toDTO(): typeof schema.submission.static {
-        return {
-            id: this.id,
-            ...this.info,
-            review: this.review
-        };
+    public get accepted(): boolean | null {
+        return this.messages.at(-1)!.accepted;
+    }
+
+    public get lastMessage(): SubmissionMessage {
+        return this.messages.at(-1)!;
     }
 }
 
-/** Submission information. */
-export type SubmissionInfo = {
-    solution: string;
-    homework: string;
-    student: string;
-    comment: string | null;
-    submittedAt: Date;
+export type SubmissionMessage = {
+    id: string;
+    /**
+     * User that sent the message.
+     *
+     * If null, message is produced by the system.
+     * */
+    userId: string;
+    content: string;
+    sentAt: Date;
+    accepted: boolean | null;
 };
-
-/** Review of the homework submission. */
-export type Review = typeof schema.submissionReview.static;

@@ -87,17 +87,21 @@ export interface Homeworks {
   title: string;
 }
 
-export interface HomeworkSubmissions {
+export interface HomeworkSubmissionMessages {
+  accepted: boolean | null;
+  content: string;
   homeworkId: string;
   id: Generated<string>;
-  reviewAccepted: boolean | null;
-  reviewedAt: Timestamp | null;
-  reviewerComment: string | null;
-  reviewerId: string | null;
-  solution: string;
-  studentComment: string | null;
+  sentAt: Generated<Timestamp>;
   studentId: string;
-  submittedAt: Generated<Timestamp>;
+  userId: string | null;
+}
+
+export interface HomeworkSubmissions {
+  accepted: boolean | null;
+  homeworkId: string | null;
+  lastMessageAt: Timestamp | null;
+  studentId: string | null;
 }
 
 export interface LessonHomeworks {
@@ -188,6 +192,7 @@ export interface DB {
   courseStaff: CourseStaff;
   courseStudents: CourseStudents;
   homeworks: Homeworks;
+  homeworkSubmissionMessages: HomeworkSubmissionMessages;
   homeworkSubmissions: HomeworkSubmissions;
   lessonHomeworks: LessonHomeworks;
   lessons: Lessons;
