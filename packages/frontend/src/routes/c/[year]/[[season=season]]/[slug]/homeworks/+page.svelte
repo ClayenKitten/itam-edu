@@ -8,20 +8,25 @@
 
     let { data } = $props();
 
+    const isStaff = data.permissions?.course.some(
+        c => c.courseId === data.course.id
+    );
+
     const canEdit =
         data.permissions?.course.find(x => x.courseId === data.course.id)
             ?.permissions.canEditContent === true;
 
     let editing = $state(false);
 
-    const getTagKind = (homeworkId: string): TagKind => {
-        const homeworkSubmissions = data.submissions.filter(
-            submission => submission.homework === homeworkId
+    const getTagKind = (homeworkId: string): TagKind | null => {
+        if (isStaff) return null;
+        if (!data.submissions) return null;
+        const submission = data.submissions.find(
+            submission => submission.homework.id === homeworkId
         );
-        const submission = homeworkSubmissions.at(-1);
         if (!submission) return "new";
-        if (!submission.review) return "submitted";
-        return submission.review.accepted ? "accepted" : "rejected";
+        if (submission.accepted === null) return "submitted";
+        return submission.accepted ? "accepted" : "rejected";
     };
 </script>
 
@@ -43,6 +48,7 @@
     </header>
     <div class="flex flex-col gap-2.5">
         {#each data.homeworks as homework}
+            {@const tag = getTagKind(homework.id)}
             <a
                 class="flex justify-between p-5 bg-surface rounded-xs shadow"
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
@@ -50,7 +56,7 @@
                 <div class="flex flex-col gap-3">
                     <header class="flex items-center gap-3">
                         <h4>{homework.title}</h4>
-                        <Tag kind={getTagKind(homework.id)} />
+                        {#if tag}<Tag kind={tag} />{/if}
                     </header>
                     <p class="text-on-surface-contrast opacity-50">
                         {#if homework.deadline}

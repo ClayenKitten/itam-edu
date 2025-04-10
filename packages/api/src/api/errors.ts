@@ -7,6 +7,12 @@ export abstract class HttpError extends Error {
     }
 }
 
+export class BadRequestError extends HttpError {
+    public constructor(message?: string) {
+        super(400, message ?? "Bad Request");
+    }
+}
+
 export class UnauthorizedError extends HttpError {
     public constructor(message?: string) {
         super(401, message ?? "Unauthorized");

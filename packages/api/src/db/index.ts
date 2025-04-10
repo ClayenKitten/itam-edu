@@ -11,6 +11,7 @@ import HomeworkRepository from "../courses/homework/repository";
 import SubmissionRepository from "../courses/submission/repository";
 import { LessonQuery } from "../courses/lesson/query";
 import { HomeworksQuery } from "../courses/homework/query";
+import { SubmissionQuery } from "../courses/submission/query";
 
 export function createDatabaseContext(connection: Kysely<DB>) {
     return {
@@ -23,7 +24,8 @@ export function createDatabaseContext(connection: Kysely<DB>) {
         student: new StudentRepository(connection),
         staff: new StaffRepository(connection),
         notification: new NotificationRepository(connection),
-        submission: new SubmissionRepository(connection)
+        submission: new SubmissionRepository(connection),
+        submissionQuery: new SubmissionQuery(connection)
     };
 }
 

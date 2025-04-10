@@ -5,11 +5,14 @@ import type {
     LessonDTO,
     LessonPartialDTO
 } from "itam-edu-api/src/courses/lesson/query";
-import { submission } from "itam-edu-api/src/courses/submission/schema";
 import type {
     HomeworkDTO,
     HomeworkPartialDTO
 } from "itam-edu-api/src/courses/homework/query";
+import type {
+    SubmissionDTO,
+    SubmissionPartialDTO
+} from "itam-edu-api/src/courses/submission/query";
 
 export type PrivateUserInfo = typeof privateUserInfo.static;
 export type Course = typeof course.static;
@@ -18,4 +21,5 @@ export type LessonPartial = LessonPartialDTO;
 export type CreateLesson = CreateLessonDTO;
 export type Homework = HomeworkDTO;
 export type HomeworkPartial = HomeworkPartialDTO;
-export type Submission = typeof submission.static;
+export type Submission = SubmissionDTO;
+export type SubmissionPartial = SubmissionPartialDTO;
