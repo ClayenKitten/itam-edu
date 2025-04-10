@@ -9,8 +9,7 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
         .use(initContext())
         .get(
             "/me",
-            async ({ user, error }) => {
-                if (!user) return error(401);
+            async ({ user }) => {
                 return {
                     user: user.toPrivateDTO(),
                     enrollments: user.enrollments,
@@ -18,6 +17,7 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
                 };
             },
             {
+                requireAuthentication: true,
                 detail: {
                     summary: "Get current user information",
                     description: "Returns information about the current user.",
