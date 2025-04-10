@@ -1,6 +1,7 @@
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
+import type { SubmissionPartial } from "$lib/types";
 
 export const load: PageLoad = async ({ fetch, depends, parent }) => {
     depends("app:homeworks", "app:submissions");
@@ -31,10 +32,15 @@ async function getSubmissions(
     fetch: typeof window.fetch,
     courseId: string,
     user: string
-) {
+): Promise<SubmissionPartial[] | null> {
     const response = await api({ fetch })
         .courses({ course: courseId })
         .submissions.get({ query: { student: user } });
-    if (response.error) error(response.status);
+    if (response.error) {
+        if (response.error.status === 401) {
+            return null;
+        }
+        error(response.status);
+    }
     return response.data;
 }
