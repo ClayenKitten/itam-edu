@@ -48,10 +48,12 @@
         </button>
         <a
             href="/profile"
-            class="flex justify-center items-center h-full aspect-square ml-2.5 bg-primary rounded-xs"
+            class="flex justify-center items-center h-full aspect-square ml-2.5 bg-primary rounded-xs overflow-hidden"
             aria-label="Профиль"
         >
-            {#if user.avatar}{:else}
+            {#if user.avatar}
+                <img src={user.avatar} alt="" />
+            {:else}
                 <span class="text-on-primary text-comment">
                     {user.tgUsername[0]}
                 </span>
