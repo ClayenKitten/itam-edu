@@ -18,6 +18,7 @@
         "@sinclair/typebox": "^0.34.14",
         "@sveltejs/adapter-node": "^5.2.10",
         "@tiptap/core": "^2.11.5",
+        "@tiptap/extension-bubble-menu": "^2.11.7",
         "@tiptap/html": "^2.11.5",
         "@tiptap/starter-kit": "^2.11.5",
         "@types/node": "^22.10.2",
