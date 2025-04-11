@@ -14,6 +14,10 @@
     let editing = $state(false);
 </script>
 
+<svelte:head>
+    <title>Уроки | {data.course.title}</title>
+</svelte:head>
+
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
         <h2>Уроки</h2>

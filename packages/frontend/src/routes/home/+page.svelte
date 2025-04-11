@@ -22,6 +22,10 @@
     let courses = $derived(data.courses.filter(filter));
 </script>
 
+<svelte:head>
+    <title>Главная | ITAM Education</title>
+</svelte:head>
+
 <div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} standalone />
     <main

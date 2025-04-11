@@ -40,6 +40,10 @@
     let newMessageAccepted = $state(true);
 </script>
 
+<svelte:head>
+    <title>{data.homework.title} | {data.course.title}</title>
+</svelte:head>
+
 <div
     class={[
         "flex flex-col h-full p-10 gap-7",

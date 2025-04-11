@@ -50,6 +50,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Новый урок | {data.course.title}</title>
+</svelte:head>
+
 <div
     class={[
         "flex flex-col h-full py-10 gap-7",

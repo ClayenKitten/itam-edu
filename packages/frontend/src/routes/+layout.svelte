@@ -5,5 +5,10 @@
     let { children } = $props();
 </script>
 
+<svelte:head>
+    <!-- Default title just in case -->
+    <title>ITAM Education</title>
+</svelte:head>
+
 {@render children()}
 <WindowManager />

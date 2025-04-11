@@ -13,6 +13,10 @@
             ?.permissions.canEditContent === true;
 </script>
 
+<svelte:head>
+    <title>{data.lesson.title} | {data.course.title}</title>
+</svelte:head>
+
 <div
     class={[
         "flex flex-col h-full py-10 gap-7",

@@ -16,6 +16,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>О курсе | {data.course.title}</title>
+</svelte:head>
+
 <div class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 gap-3.5">
     <div
         class="banner basis-[191px] shrink-0 mb-5 rounded-lg overflow-hidden"

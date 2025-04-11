@@ -5,6 +5,10 @@
     let { data } = $props();
 </script>
 
+<svelte:head>
+    <title>Профиль | ITAM Education</title>
+</svelte:head>
+
 <div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} standalone />
     <main class="flex flex-col py-15 px-7.5 gap-7.5">Профиль</main>

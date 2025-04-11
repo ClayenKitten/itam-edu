@@ -6,6 +6,10 @@
     let { data } = $props();
 </script>
 
+<svelte:head>
+    <title>Главная | {data.course.title}</title>
+</svelte:head>
+
 <div class="w-max mx-auto flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col mb-2.5">
         <div
