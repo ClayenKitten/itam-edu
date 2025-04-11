@@ -31,11 +31,11 @@
         <div
             class="grow w-full flex items-center justify-center text-h3 text-on-primary bg-primary rounded-md mb-3.5"
         >
-            Занятие {position}
+            Урок {position}
         </div>
     {/if}
     <header class="flex justify-between items-center mb-2.5">
-        <h4>Занятие {position}</h4>
+        <h4>Урок {position}</h4>
         {#if lesson.schedule}
             <span class="text-date text-on-surface-muted">
                 {formatDate(lesson.schedule.date, "dd.MM.yy")}

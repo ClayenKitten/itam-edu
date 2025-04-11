@@ -12,9 +12,9 @@
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
         {#if "position" in lesson}
-            <h2>Занятие {lesson.position + 1}</h2>
+            <h2>Урок {lesson.position + 1}</h2>
         {:else}
-            <h2>Новое занятие</h2>
+            <h2>Новый урок</h2>
         {/if}
         {#if lesson.schedule}
             <p class="text-date text-on-surface-muted">

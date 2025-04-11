@@ -32,7 +32,7 @@
 
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
-        <h2>Домашние задания</h2>
+        <h2>Задания</h2>
         {#if canEdit}
             <IconButton
                 icon="ph-pencil-simple"

@@ -26,9 +26,9 @@
 
 <section class="flex flex-col gap-8 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
-        <h3>Планирование занятия</h3>
+        <h3>Планирование урока</h3>
         <p class="max-w-[800px] text-balance">
-            Запланируйте занятие, чтобы оно отобразилось в календаре. Студенты и
+            Запланируйте урок, чтобы он отобразился в календаре. Студенты и
             преподаватели получат уведомление в зависимости от своих настроек.
         </p>
     </header>
@@ -43,7 +43,7 @@
                 })}
         >
             <i class="ph ph-calendar-check text-[20px]"></i>
-            Запланировать занятие
+            Запланировать урок
         </button>
     {:else}
         <div class="flex flex-wrap gap-8">
@@ -86,18 +86,18 @@
                     bind:checked={() => schedule!.online !== null,
                     val => (schedule!.online = val ? {} : null)}
                 />
-                Провести занятие онлайн
+                Провести урок онлайн
             </label>
         </div>
         <label class="flex flex-col gap-2">
-            <h4>Офлайн-занятие</h4>
+            <h4>Офлайн-урок</h4>
             <label>
                 <input
                     type="checkbox"
                     bind:checked={() => schedule!.offline !== null,
                     val => (schedule!.offline = val ? { location: "" } : null)}
                 />
-                Провести занятие офлайн
+                Провести урок офлайн
             </label>
             {#if schedule.offline}
                 <input
@@ -116,7 +116,7 @@
             }}
         >
             <i class="ph ph-calendar-slash text-[18px]"></i>
-            Не планировать занятие
+            Не планировать урок
         </button>
     {/if}
 </section>

@@ -61,9 +61,9 @@
         </select>
     </header>
     <ul class="flex flex-col gap-2">
-        {@render btn("/", "Главный экран", "house")}
-        {@render btn("/lessons", "Занятия", "folder")}
-        {@render btn("/homeworks", "Домашние задания", "book-open-text")}
+        {@render btn("/", "Главная", "house")}
+        {@render btn("/lessons", "Уроки", "folder")}
+        {@render btn("/homeworks", "Задания", "book-open-text")}
         {@render btn("/about", "О курсе", "info")}
     </ul>
     {#if isEmployee}

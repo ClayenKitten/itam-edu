@@ -28,7 +28,7 @@
             Назад
         </a>
         <header class="flex gap-8">
-            <h2>Занятие {data.lesson.position + 1}. {data.lesson.title}</h2>
+            <h2>Урок {data.lesson.position + 1}. {data.lesson.title}</h2>
             {#if canEdit}
                 <IconButton
                     icon="ph-pencil-simple"
@@ -59,7 +59,7 @@
     {/if}
     {#if data.lesson.homeworks.length > 0}
         <section class="flex flex-col gap-5">
-            <h3>Домашние задания</h3>
+            <h3>Задания</h3>
             <ul class="flex flex-col gap-2.5">
                 {#each data.lesson.homeworks as homework}
                     <a

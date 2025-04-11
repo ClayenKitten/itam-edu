@@ -47,7 +47,7 @@
         ]}
     >
         <header class="flex flex-col">
-            <h2 class="self-start">Занятия</h2>
+            <h2 class="self-start">Уроки</h2>
         </header>
         <ul
             class="flex flex-col gap-5 overflow-y-auto"

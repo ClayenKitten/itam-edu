@@ -63,7 +63,7 @@ export class LessonService {
     ): string {
         if (!lesson.schedule) throw new Error("schedule must be present");
         // Header
-        let lines = [`<b>📅 Занятие '${lesson.info.title}' перенесено</b>.\n`];
+        let lines = [`<b>📅 Урок '${lesson.info.title}' перенесён</b>.\n`];
         if (lesson.info.description) lines.push(`${lesson.info.description}\n`);
         // Date
         lines.push(
@@ -87,7 +87,7 @@ export class LessonService {
         else if (lesson.schedule.offline) lines.push("📍 Офлайн" + postfix);
         // Link
         lines.push(
-            `\n<a href="${this.config.webUrl}${course.path}/lessons/${lesson.id}">🔗 Страница занятия</a>`
+            `\n<a href="${this.config.webUrl}${course.path}/lessons/${lesson.id}">🔗 Страница урока</a>`
         );
 
         return lines.join("\n");

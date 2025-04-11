@@ -27,7 +27,7 @@
     </header>
     <section class="flex flex-col gap-5 p-6 pb-8 bg-surface shadow rounded-xl">
         <header class="flex justify-between items-center">
-            <h3>Занятия</h3>
+            <h3>Уроки</h3>
             <a class="btn" href={`${coursePath(data.course)}/lessons`}>
                 Все
                 <i class="ph ph-arrow-right text-[26px]"></i>
