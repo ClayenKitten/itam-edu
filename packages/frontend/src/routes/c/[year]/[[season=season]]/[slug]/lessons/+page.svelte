@@ -7,10 +7,6 @@
 
     let { data } = $props();
 
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
-
     let editing = $state(false);
 </script>
 
@@ -21,7 +17,7 @@
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
         <h2>Уроки</h2>
-        {#if canEdit}
+        {#if data.user?.hasCoursePermission(data.course.id, "canEditContent")}
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"

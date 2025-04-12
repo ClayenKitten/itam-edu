@@ -7,10 +7,6 @@
 
     let editing = $state(false);
 
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
-
     async function save() {
         // TODO
     }
@@ -37,7 +33,7 @@
         <header class="flex flex-col gap-3.5">
             <h2 class="flex gap-4">
                 <span>{data.course.title}</span>
-                {#if canEdit && !editing}
+                {#if !editing && data.user?.hasCoursePermission(data.course.id, "canEditContent")}
                     <IconButton
                         icon="ph-pencil-simple"
                         title="Редактировать"
@@ -92,7 +88,7 @@
             </ul>
         </section>
         <section class="flex flex-col gap-4.5">
-            {#if data.course.about || canEdit}
+            {#if data.course.about || data.user?.hasCoursePermission(data.course.id, "canEditContent")}
                 <h3>О курсе</h3>
                 {#if !editing && !data.course.about}
                     <p class="text-on-surface-muted italic">Пока пусто...</p>

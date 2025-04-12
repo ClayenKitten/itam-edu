@@ -1,5 +1,5 @@
 import { Repository } from "../../db/repository";
-import type { User } from "../../users/entity";
+import type { User } from "itam-edu-common";
 import type Homework from "../homework/entity";
 
 export default class SubmissionRepository extends Repository {

@@ -2,7 +2,7 @@ import { NotFoundError, UnauthorizedError } from "../../api/errors";
 import type { AppConfig } from "../../config";
 import type NotificationService from "../../notifications/service";
 import type StaffRepository from "../../staff/repository";
-import type { User } from "../../users/entity";
+import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import type StudentRepository from "../student/repository";
 import type { Lesson } from "./entity";
@@ -26,7 +26,7 @@ export class LessonService {
         lesson: Lesson,
         change: typeof schema.updateLesson.static
     ): Promise<Lesson | UnauthorizedError | NotFoundError> {
-        if (!actor.permissions.course(course.id)?.canEditContent) {
+        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
             return new UnauthorizedError();
         }
 

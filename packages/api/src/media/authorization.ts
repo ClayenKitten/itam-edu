@@ -1,5 +1,5 @@
 import logger from "../logger";
-import type { User } from "../users/entity";
+import type { User } from "itam-edu-common";
 
 export default async function authorizeMedia(
     ctx: { user: User | null },
@@ -15,12 +15,15 @@ export default async function authorizeMedia(
     }
     if (route.kind === "courseAvatar") {
         if (method === "GET") return true;
-        return ctx.user?.permissions.course(route.course)?.canEditInfo === true;
+        return (
+            ctx.user?.hasCoursePermission(route.course, "canEditInfo") === true
+        );
     }
     if (route.kind === "courseFile") {
         if (method === "GET") return true;
         return (
-            ctx.user?.permissions.course(route.course)?.canEditContent === true
+            ctx.user?.hasCoursePermission(route.course, "canEditContent") ===
+            true
         );
     }
     return false;

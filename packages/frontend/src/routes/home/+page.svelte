@@ -10,9 +10,8 @@
         switch (filterKind) {
             case "my":
                 return c =>
-                    data.enrollments?.some(e => c.id === e.courseId) === true ||
-                    data.permissions?.course.some(p => c.id === p.courseId) ===
-                        true;
+                    (data.user?.isCourseStudent(c.id) ||
+                        data.user?.isCourseStaff(c.id)) === true;
             case "active":
                 return c => !c.isArchived;
             case "archive":

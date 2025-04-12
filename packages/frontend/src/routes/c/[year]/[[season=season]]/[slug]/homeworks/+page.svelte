@@ -8,18 +8,10 @@
 
     let { data } = $props();
 
-    const isStaff = data.permissions?.course.some(
-        c => c.courseId === data.course.id
-    );
-
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
-
     let editing = $state(false);
 
     const getTagKind = (homeworkId: string): TagKind | null => {
-        if (isStaff) return null;
+        if (data.user?.isCourseStaff(data.course.id)) return null;
         if (!data.submissions) return null;
         const submission = data.submissions.find(
             submission => submission.homework.id === homeworkId
@@ -37,7 +29,7 @@
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
         <h2>Задания</h2>
-        {#if canEdit}
+        {#if data.user?.hasCoursePermission(data.course.id, "canEditContent")}
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"

@@ -11,9 +11,13 @@ export async function userController<PREFIX extends string>(prefix: PREFIX) {
             "/me",
             async ({ user }) => {
                 return {
-                    user: user.toPrivateDTO(),
-                    enrollments: user.enrollments,
-                    permissions: user.permissions.toDTO()
+                    user: {
+                        id: user.id,
+                        info: user.info,
+                        telegram: user.telegram,
+                        enrollments: user.enrollments,
+                        permissions: user.permissions
+                    }
                 };
             },
             {

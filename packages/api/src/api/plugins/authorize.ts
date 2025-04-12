@@ -1,8 +1,8 @@
 import { Elysia } from "elysia";
-import * as schema from "../../users/schema";
 import authenticate from "./authenticate";
 import ctx from "./ctx";
 import logger from "../../logger";
+import type { CoursePermissions, GlobalPermissions } from "itam-edu-common";
 
 /** Plugin that retrieves user permissions and registers macroses for authorization. */
 export default function authorize() {
@@ -10,16 +10,12 @@ export default function authorize() {
         .use(ctx())
         .use(authenticate())
         .macro({
-            hasPermission(
-                permissions: MaybeArray<
-                    keyof typeof schema.globalPermissions.static
-                >
-            ) {
+            hasPermission(permissions: MaybeArray<keyof GlobalPermissions>) {
                 return {
                     resolve: ({ user, error }) => {
                         if (!user) return error(401);
-                        const valid = intoArray(permissions).every(
-                            key => user.permissions.global[key] === true
+                        const valid = intoArray(permissions).every(key =>
+                            user.hasPermission(key)
                         );
                         if (!valid) return error(403);
                         return { user };
@@ -28,27 +24,20 @@ export default function authorize() {
             },
             hasCoursePermission(
                 permissions:
-                    | MaybeArray<keyof typeof schema.coursePermissions.static>
-                    | [
-                          MaybeArray<
-                              keyof typeof schema.coursePermissions.static
-                          >,
-                          number
-                      ]
+                    | MaybeArray<keyof CoursePermissions>
+                    | [MaybeArray<keyof CoursePermissions>, number]
             ) {
-                let requiredPermissions: Array<
-                    keyof typeof schema.coursePermissions.static
-                >;
+                let requiredPermissions: Array<keyof CoursePermissions>;
                 let responseCode = 403; //Forbidden по умолчанию
                 requiredPermissions = intoArray(permissions) as Array<
-                    keyof typeof schema.coursePermissions.static
+                    keyof CoursePermissions
                 >;
                 if (
                     Array.isArray(permissions) &&
                     typeof permissions[1] === "number"
                 ) {
                     requiredPermissions = intoArray(permissions[0]) as Array<
-                        keyof typeof schema.coursePermissions.static
+                        keyof CoursePermissions
                     >;
                     responseCode = permissions[1];
                 }
@@ -65,10 +54,8 @@ export default function authorize() {
                             return error(403);
                         }
 
-                        const valid = requiredPermissions.every(
-                            key =>
-                                user.permissions.course(courseId)?.[key] ===
-                                true
+                        const valid = requiredPermissions.every(key =>
+                            user.hasCoursePermission(courseId, key)
                         );
                         if (!valid) return error(responseCode);
                         return { user };

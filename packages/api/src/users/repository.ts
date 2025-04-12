@@ -1,8 +1,8 @@
-import * as schema from "./schema";
 import { Repository } from "../db/repository";
-import { schemaFields } from "../util";
-import { User, Permissions } from "./entity";
+import { User, type CoursePermissions } from "itam-edu-common";
 import logger from "../logger";
+import type { Selectable } from "kysely";
+import type { DB } from "itam-edu-db";
 
 export default class UserRepository extends Repository {
     public async getByToken(token: string): Promise<User | null> {
@@ -22,25 +22,11 @@ export default class UserRepository extends Repository {
 
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
-            .select(["courseId", ...schemaFields(schema.coursePermissions)])
+            .selectAll("courseStaff")
             .where("userId", "=", user.id)
             .execute();
 
-        return new User(
-            user,
-            enrollments,
-            new Permissions(
-                {
-                    isSupervisor: user.isSupervisor,
-                    canCreateCourses: user.canCreateCourses,
-                    canPublishCourses: user.canPublishCourses
-                },
-                coursePermissions.map(({ courseId, ...permissions }) => ({
-                    courseId,
-                    permissions
-                }))
-            )
-        );
+        return this.toEntity(user, enrollments, coursePermissions);
     }
 
     public async getById(id: string): Promise<User | null> {
@@ -59,25 +45,11 @@ export default class UserRepository extends Repository {
 
         const coursePermissions = await this.db
             .selectFrom("courseStaff")
-            .select(["courseId", ...schemaFields(schema.coursePermissions)])
+            .selectAll("courseStaff")
             .where("userId", "=", user.id)
             .execute();
 
-        return new User(
-            user,
-            enrollments,
-            new Permissions(
-                {
-                    isSupervisor: user.isSupervisor,
-                    canCreateCourses: user.canCreateCourses,
-                    canPublishCourses: user.canPublishCourses
-                },
-                coursePermissions.map(({ courseId, ...permissions }) => ({
-                    courseId,
-                    permissions
-                }))
-            )
-        );
+        return this.toEntity(user, enrollments, coursePermissions);
     }
 
     public async createLoginAttempt({
@@ -152,5 +124,44 @@ export default class UserRepository extends Repository {
 
             return true;
         });
+    }
+
+    private toEntity(
+        user: Selectable<DB["users"]>,
+        enrollments: { courseId: string }[],
+        coursePermissions: Selectable<DB["courseStaff"]>[]
+    ) {
+        return new User(
+            user.id,
+            {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                patronim: user.patronim,
+                email: user.email,
+                avatar: user.avatar,
+                bio: user.bio
+            },
+            { id: user.tgUserId, username: user.tgUsername },
+            enrollments.map(({ courseId }) => ({ courseId })),
+            {
+                global: {
+                    isSupervisor: user.isSupervisor,
+                    canCreateCourses: user.canCreateCourses,
+                    canPublishCourses: user.canPublishCourses
+                },
+                course: coursePermissions.reduce(
+                    (accumulator, { courseId, ...perms }) => {
+                        accumulator[courseId] = {
+                            isOwner: perms.isOwner,
+                            canEditContent: perms.canEditContent,
+                            canEditInfo: perms.canEditInfo,
+                            canManageSubmissions: perms.canManageSubmissions
+                        };
+                        return accumulator;
+                    },
+                    {} as Record<string, CoursePermissions>
+                )
+            }
+        );
     }
 }

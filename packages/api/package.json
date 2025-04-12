@@ -21,6 +21,7 @@
         "@sinclair/typebox": "^0.34.14",
         "bullmq": "^5.41.8",
         "elysia": "^1.2.10",
+        "itam-edu-common": "file:../common",
         "kysely": "^0.27.5",
         "pg": "^8.13.1",
         "telegraf": "^4.16.3",

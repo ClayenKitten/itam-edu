@@ -1,7 +1,7 @@
 import type { Kysely } from "kysely";
 import type { DB } from "itam-edu-db";
 import { NotFoundError, UnauthorizedError } from "../../api/errors";
-import type { User } from "../../users/entity";
+import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 

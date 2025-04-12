@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Build artifacts
+build
+dist
+
+# Frameworks
+.svelte-kit
+.astro
+
+# Package managers
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -1,7 +1,6 @@
 import { Repository } from "../db/repository";
-import type { User } from "../users/entity";
 import type { Course } from "../courses/entity";
-import type { coursePermissions } from "../users/schema";
+import type { CoursePermissions, Permissions, User } from "itam-edu-common";
 
 export default class StaffRepository extends Repository {
     /** Returns ids of course staff members. */
@@ -19,7 +18,7 @@ export default class StaffRepository extends Repository {
         course: Course,
         user: User,
         title: string | null,
-        permissions: typeof coursePermissions.static
+        permissions: CoursePermissions
     ): Promise<void> {
         await this.db
             .insertInto("courseStaff")

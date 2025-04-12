@@ -1,7 +1,7 @@
 import { Repository } from "../../db/repository";
 import { schemaFields } from "../../util";
 import * as schema from "./schema";
-import type { User } from "../../users/entity";
+import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 
 export default class StudentRepository extends Repository {

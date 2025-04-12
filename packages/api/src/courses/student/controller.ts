@@ -25,7 +25,17 @@ export function studentController<PREFIX extends string>(prefix: PREFIX) {
                     )
                 )
                     .filter(s => s !== null)
-                    .map(s => s.toPublicDTO());
+                    .map(s => ({
+                        user: {
+                            id: s.id,
+                            firstName: s.info.firstName,
+                            lastName: s.info.lastName,
+                            patronim: s.info.patronim,
+                            bio: s.info.bio,
+                            avatar: s.info.avatar,
+                            tgUsername: s.telegram.username
+                        }
+                    }));
 
                 return students;
             },

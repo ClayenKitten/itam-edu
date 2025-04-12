@@ -1,6 +1,5 @@
 import { Elysia, t } from "elysia";
 import initContext from "../api/plugins";
-import { coursePermissions } from "../users/schema";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 
 export function staffController() {
@@ -19,7 +18,15 @@ export function staffController() {
                             const user = await db.user.getById(userId);
                             if (!user) return null;
                             return {
-                                user: user.toPublicDTO(),
+                                user: {
+                                    id: user.id,
+                                    firstName: user.info.firstName,
+                                    lastName: user.info.lastName,
+                                    patronim: user.info.patronim,
+                                    bio: user.info.bio,
+                                    avatar: user.info.avatar,
+                                    tgUsername: user.telegram.username
+                                },
                                 title
                             };
                         })
@@ -41,8 +48,7 @@ export function staffController() {
         .put(
             "/courses/:course/staff/:staffMember",
             async ({ db, user, body, params, error }) => {
-                console.log(user.permissions);
-                if (user.permissions.course(params.course)?.isOwner !== true) {
+                if (!user.hasCoursePermission(params.course, "isOwner")) {
                     return error(403);
                 }
 
@@ -67,7 +73,12 @@ export function staffController() {
                 }),
                 body: t.Object({
                     title: t.String(),
-                    permissions: coursePermissions
+                    permissions: t.Object({
+                        isOwner: t.Boolean(),
+                        canEditInfo: t.Boolean(),
+                        canEditContent: t.Boolean(),
+                        canManageSubmissions: t.Boolean()
+                    })
                 }),
                 detail: {
                     summary: "Promote staff member",
@@ -79,8 +90,8 @@ export function staffController() {
         .delete(
             "/courses/:course/staff/:staffMember",
             async ({ db, user, params, error }) => {
-                if (user.permissions.course(params.course)?.isOwner !== true) {
-                    return error(401);
+                if (!user.hasCoursePermission(params.course, "isOwner")) {
+                    return error(403);
                 }
 
                 const [course, staffMember] = await Promise.all([

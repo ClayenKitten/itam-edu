@@ -12,14 +12,14 @@ export const load: LayoutLoad = async ({
 }) => {
     depends("app:homework", "app:submission");
 
-    const { user, permissions, enrollments, course } = await parent();
+    const { user, course } = await parent();
 
     const homework = await getHomework(fetch, course.id, params.homeworkId);
 
     let studentId: string | null = null;
-    if (user && permissions?.course.some(c => c.courseId === course.id)) {
+    if (user && user.isCourseStaff(course.id)) {
         studentId = url.searchParams.get("student");
-    } else if (user && enrollments?.some(e => e.courseId === course.id)) {
+    } else if (user && user.isCourseStudent(course.id)) {
         studentId = user.id;
     }
     if (!studentId) {

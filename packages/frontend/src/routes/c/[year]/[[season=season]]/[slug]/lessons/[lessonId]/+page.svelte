@@ -7,10 +7,6 @@
     import { format as formatDate } from "date-fns";
 
     let { data } = $props();
-
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
 </script>
 
 <svelte:head>
@@ -33,7 +29,7 @@
         </a>
         <header class="flex gap-8">
             <h2>Урок {data.lesson.position + 1}. {data.lesson.title}</h2>
-            {#if canEdit}
+            {#if data.user?.hasCoursePermission(data.course.id, "canEditContent")}
                 <IconButton
                     icon="ph-pencil-simple"
                     title="Редактировать"

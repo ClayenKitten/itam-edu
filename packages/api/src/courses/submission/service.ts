@@ -1,8 +1,8 @@
+import type { User } from "itam-edu-common";
 import { BadRequestError, ForbiddenError } from "../../api/errors";
 import type { AppConfig } from "../../config";
 import type NotificationService from "../../notifications/service";
 import type StaffRepository from "../../staff/repository";
-import type { User } from "../../users/entity";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import type SubmissionRepository from "./repository";
@@ -52,7 +52,7 @@ export class SubmissionService {
             this.notification.send(
                 [
                     "<b>📝 Новый ответ на задание</b>",
-                    `Студент @${student.tgUsername} сдал(а) задание '${homework.title}'.`,
+                    `Студент @${student.telegram.username} сдал(а) задание '${homework.title}'.`,
                     `<a href="${this.config.webUrl}${course.path}/homeworks/${homework.id}?student=${student.id}">🔗 Проверить</a>`
                 ].join("\n\n"),
                 staff.map(s => s.userId)
@@ -75,9 +75,7 @@ export class SubmissionService {
         actor: User,
         course: Course
     ): "student" | "reviewer" | null {
-        if (
-            actor.permissions.course(course.id)?.canManageSubmissions === true
-        ) {
+        if (actor.hasCoursePermission(course.id, "canManageSubmissions")) {
             return "reviewer";
         }
         if (actor.isCourseStudent(course.id)) {

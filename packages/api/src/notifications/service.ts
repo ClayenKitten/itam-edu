@@ -25,7 +25,7 @@ export default class NotificationService {
             const job = await this.queue.add("message", {
                 notificationId: id,
                 userId: user.id,
-                tgChatId: user.tgChatId,
+                tgChatId: user.telegram.id,
                 text
             });
         }

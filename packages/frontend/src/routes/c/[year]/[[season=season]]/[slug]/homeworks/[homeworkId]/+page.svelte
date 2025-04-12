@@ -8,15 +8,17 @@
 
     let { data } = $props();
 
-    const canEdit =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canEditContent === true;
-    const canReview =
-        data.permissions?.course.find(x => x.courseId === data.course.id)
-            ?.permissions.canManageSubmissions === true;
-    const isStudent = data.enrollments?.some(
-        e => e.courseId === data.course.id
+    const canEdit = $derived(
+        data.user?.hasCoursePermission(data.course.id, "canEditContent") ===
+            true
     );
+    const canReview = $derived(
+        data.user?.hasCoursePermission(
+            data.course.id,
+            "canManageSubmissions"
+        ) === true
+    );
+    const isStudent = data.user?.isCourseStudent(data.course.id);
 
     async function sendMessage() {
         if (!data.submission) return;

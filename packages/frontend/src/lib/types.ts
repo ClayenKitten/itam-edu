@@ -1,4 +1,3 @@
-import { privateUserInfo } from "itam-edu-api/src/users/schema";
 import { course } from "itam-edu-api/src/courses/schema";
 import type {
     CreateLessonDTO,
@@ -14,8 +13,6 @@ import type {
     SubmissionDTO,
     SubmissionPartialDTO
 } from "itam-edu-api/src/courses/submission/query";
-
-export type PrivateUserInfo = typeof privateUserInfo.static;
 
 export type Course = typeof course.static;
 

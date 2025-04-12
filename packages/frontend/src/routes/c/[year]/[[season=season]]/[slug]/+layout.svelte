@@ -14,9 +14,7 @@
     <CourseSidebar
         course={data.course}
         courses={data.courses}
-        isEmployee={data.permissions?.course.some(
-            x => x.courseId === data.course.id
-        ) ?? false}
+        isEmployee={data.user?.isCourseStaff(data.course.id) === true}
     />
     <Header user={data.user} />
     <main class="flex flex-col items-stretch @container/main">

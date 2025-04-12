@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { PrivateUserInfo } from "$lib/types";
     import { MyWindow } from "$lib/windows";
+    import type { User } from "itam-edu-common";
 
     let { user, standalone = false }: Props = $props();
 
     type Props = {
-        user: PrivateUserInfo | null;
+        user: User | null;
         standalone?: boolean;
     };
 </script>
@@ -60,11 +60,11 @@
             class="flex justify-center items-center h-full aspect-square ml-2.5 bg-primary rounded-xs overflow-hidden"
             aria-label="Профиль"
         >
-            {#if user.avatar}
-                <img src={user.avatar} alt="" />
+            {#if user.info.avatar}
+                <img src={user.info.avatar} alt="" />
             {:else}
                 <span class="text-on-primary text-comment">
-                    {user.tgUsername[0]}
+                    {user.displayName[0]}
                 </span>
             {/if}
         </a>
