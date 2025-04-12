@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto, invalidate, onNavigate } from "$app/navigation";
+    import { page } from "$app/state";
     import api from "$lib/api.js";
     import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
+    import { getContext, type Snippet } from "svelte";
 
     let { data } = $props();
 
@@ -18,7 +20,7 @@
             "canManageSubmissions"
         ) === true
     );
-    const isStudent = data.user?.isCourseStudent(data.course.id);
+    const isStudent = $derived(data.user?.isCourseStudent(data.course.id));
 
     async function sendMessage() {
         if (!data.submission) return;
@@ -40,6 +42,20 @@
     }
     let newMessageText = $state("");
     let newMessageAccepted = $state(true);
+
+    let layout = getContext<{ additionalSidebar: Snippet | null }>("layout");
+    $effect(() => {
+        if (canReview) {
+            layout.additionalSidebar = additionalSidebar;
+        } else {
+            layout.additionalSidebar = null;
+        }
+    });
+    onNavigate(({ to }) => {
+        if (to && to.route.id !== page.route.id) {
+            layout.additionalSidebar = null;
+        }
+    });
 </script>
 
 <svelte:head>
@@ -48,8 +64,8 @@
 
 <div
     class={[
-        "flex flex-col h-full p-10 gap-7",
-        "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
+        "flex flex-col h-full m-10 gap-7 max-w-[1000px]",
+        canReview ? "mx-10" : "mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
     <section
@@ -224,4 +240,60 @@
                 : "ph ph-thumbs-down bg-[#c94634] text-[white]"
         ]}
     ></i>
+{/snippet}
+
+{#snippet additionalSidebar()}
+    <header class="sticky top-0 flex flex-col gap-4 px-4 pb-4 pt-7 bg-surface">
+        <h3>Ответы на задания</h3>
+        <input class="input text-date h-9 rounded-xs" placeholder="Поиск..." />
+    </header>
+    <nav class="flex flex-col gap-2 m-4">
+        {#each data.submissions ?? [] as submission}
+            {@const unread = submission.accepted === null}
+            {@const active =
+                submission.homework.id === data.homework.id &&
+                submission.student.id === data.submission?.studentId}
+            <li
+                class={[
+                    "flex flex-col gap-3 p-3 border border-on-primary rounded-md",
+                    active ? "bg-on-primary" : "",
+                    unread ? "border-primary" : ""
+                ]}
+            >
+                <header class="flex gap-3">
+                    <img
+                        class="h-8 w-8 rounded-2xs"
+                        src={submission.student.avatar}
+                        alt=""
+                    />
+                    <div
+                        class="flex flex-col overflow-hidden whitespace-nowrap"
+                    >
+                        <p class="overflow-hidden overflow-ellipsis">
+                            {submission.student.firstName}
+                            {submission.student.lastName}
+                        </p>
+                        <a
+                            class="text-[12px] text-primary -mt-1 overflow-hidden overflow-ellipsis"
+                            href="https://t.me/{submission.student.tgUsername}"
+                        >
+                            @{submission.student.tgUsername}
+                        </a>
+                    </div>
+                </header>
+                <a
+                    class={[
+                        "flex gap-2 justify-between items-center px-3 py-2.5 ",
+                        "text-date bg-on-primary rounded-2xs border border-on-primary",
+                        "hover:border-primary transition-colors duration-100",
+                        active ? "bg-surface border-surface" : ""
+                    ]}
+                    href={`${coursePath(data.course)}/homeworks/${submission.homework.id}?student=${submission.student.id}`}
+                >
+                    {submission.homework.title}
+                    <i class="ph ph-caret-right text-[16px]"></i>
+                </a>
+            </li>
+        {/each}
+    </nav>
 {/snippet}

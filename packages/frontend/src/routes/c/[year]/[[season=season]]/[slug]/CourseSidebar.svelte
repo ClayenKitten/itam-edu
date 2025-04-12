@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { page } from "$app/state";
     import { coursePath } from "$lib/path";
     import type { Course } from "$lib/types";

@@ -80,15 +80,16 @@ export class SubmissionQuery {
             .innerJoin("homeworks", "homeworkId", "homeworks.id")
             .innerJoin("users", "studentId", "users.id")
             .select([
-                "users.id",
+                "users.id as studentId",
                 "users.avatar",
                 "users.firstName",
                 "users.lastName",
                 "users.tgUsername",
-                "homeworks.id",
-                "homeworks.title",
+                "homeworks.id as homeworkId",
+                "homeworks.title as homeworkTitle",
                 "homeworkSubmissions.accepted"
             ])
+            .orderBy("lastMessageAt desc")
             .where("courseId", "=", course.id)
             .$if(filters?.homework !== undefined, qb =>
                 qb.where("homeworks.id", "=", filters?.homework!)
@@ -106,9 +107,9 @@ export class SubmissionQuery {
             .orderBy("lastMessageAt asc")
             .execute();
         return submissions.map(s => ({
-            homework: { id: s.id, title: s.title },
+            homework: { id: s.homeworkId, title: s.homeworkTitle },
             student: {
-                id: s.id,
+                id: s.studentId,
                 avatar: s.avatar,
                 firstName: s.firstName,
                 lastName: s.lastName,
