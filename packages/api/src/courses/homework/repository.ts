@@ -97,15 +97,6 @@ export default class HomeworkRepository extends Repository {
                 )
                 .execute();
             await trx
-                .deleteFrom("homeworkSubmissions")
-                .using("homeworks")
-                .whereRef("homeworks.id", "=", "homeworkSubmissions.homeworkId")
-                .where("homeworks.courseId", "=", courseId)
-                .$if(homeworkIds.length > 0, cb =>
-                    cb.where("homeworks.id", "not in", homeworkIds)
-                )
-                .execute();
-            await trx
                 .deleteFrom("homeworks")
                 .where("courseId", "=", courseId)
                 .$if(homeworkIds.length > 0, cb =>
