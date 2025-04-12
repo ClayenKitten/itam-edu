@@ -1,22 +1,16 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
-    import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
 
     let { data } = $props();
-
-    let editing = $state(false);
-
-    async function save() {
-        // TODO
-    }
 </script>
 
 <svelte:head>
     <title>О курсе | {data.course.title}</title>
 </svelte:head>
 
-<div class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 gap-3.5">
+<div
+    class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 pt-0 gap-3.5"
+>
     <div
         class="banner basis-[191px] shrink-0 mb-5 rounded-lg overflow-hidden"
         aria-hidden="true"
@@ -33,13 +27,6 @@
         <header class="flex flex-col gap-3.5">
             <h2 class="flex gap-4">
                 <span>{data.course.title}</span>
-                {#if !editing && data.user?.hasCoursePermission(data.course.id, "canEditContent")}
-                    <IconButton
-                        icon="ph-pencil-simple"
-                        title="Редактировать"
-                        onclick={() => (editing = true)}
-                    />
-                {/if}
             </h2>
             {#if data.course.description}
                 <p>{data.course.description}</p>
@@ -87,43 +74,13 @@
                 {/each}
             </ul>
         </section>
-        <section class="flex flex-col gap-4.5">
-            {#if data.course.about || data.user?.hasCoursePermission(data.course.id, "canEditContent")}
+        {#if data.course.about}
+            <section class="flex flex-col gap-4.5">
                 <h3>О курсе</h3>
-                {#if !editing && !data.course.about}
-                    <p class="text-on-surface-muted italic">Пока пусто...</p>
-                {:else}
-                    <TipTap
-                        bind:content={data.course.about}
-                        readonly={!editing}
-                    />
-                {/if}
-            {/if}
-        </section>
+                <TipTap bind:content={data.course.about} readonly />
+            </section>
+        {/if}
     </div>
-    {#if editing}
-        <footer class="flex gap-4">
-            <button
-                class="btn text-primary bg-on-primary"
-                onclick={async () => {
-                    editing = false;
-                    await invalidate("app:lesson");
-                }}
-            >
-                Отменить
-            </button>
-            <button
-                class="btn"
-                onclick={async () => {
-                    editing = false;
-                    await save();
-                    await invalidate("app:lesson");
-                }}
-            >
-                Сохранить
-            </button>
-        </footer>
-    {/if}
 </div>
 
 <style>
