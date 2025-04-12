@@ -66,10 +66,7 @@
                         {#if homework.deadline}
                             <span>До</span>
                             <span>
-                                {formatDate(
-                                    homework.deadline,
-                                    "dd.MM.yy / HH:mm"
-                                )}
+                                {formatDate(homework.deadline, "dd.MM HH:mm")}
                             </span>
                         {:else}
                             Без дедлайна

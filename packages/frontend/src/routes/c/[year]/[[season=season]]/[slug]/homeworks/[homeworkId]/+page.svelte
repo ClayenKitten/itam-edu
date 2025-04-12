@@ -65,7 +65,7 @@
             <h4 class="text-on-surface-muted">
                 {#if data.homework.deadline}
                     До
-                    {formatDate(data.homework.deadline, "dd.MM.yy / HH:mm")}
+                    {formatDate(data.homework.deadline, "dd.MM HH:mm")}
                 {:else}
                     Без дедлайна
                 {/if}

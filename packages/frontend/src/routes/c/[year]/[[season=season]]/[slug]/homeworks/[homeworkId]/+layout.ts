@@ -46,6 +46,9 @@ async function getHomework(
         .homeworks({ homework: homeworkId })
         .get();
     if (response.error) error(response.status);
+    if (typeof response.data.deadline === "string") {
+        response.data.deadline = new Date(response.data.deadline);
+    }
     return response.data;
 }
 

@@ -76,8 +76,7 @@ export default class HomeworkRepository extends Repository {
                 title: homeworkInfo.title,
                 content: homeworkInfo.content,
                 deadline: homeworkInfo.deadline,
-                acceptingSubmissionsOverride:
-                    homeworkInfo.overrideAcceptingSubmissions
+                acceptingSubmissionsOverride: homeworkInfo.deadlineOverride
             })
             .returningAll()
             .executeTakeFirst();

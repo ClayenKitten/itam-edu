@@ -14,7 +14,7 @@ export default class Homework {
         /** Deadline after which homework can't be submitted. */
         public deadline: Date | null,
         /** If set, overrides automatic submission management. */
-        public acceptingSubmissionsOverride: boolean | null,
+        public deadlineOverride: boolean | null,
         /** Date when homework was created. */
         public createdAt: Date
     ) {}
@@ -24,11 +24,11 @@ export default class Homework {
      *
      * Homework submission is open if it has no deadline or the deadline hasn't passed yet.
      *
-     * Default behaviour may be overridden by {@link acceptingSubmissionsOverride} flag.
+     * Default behaviour may be overridden by {@link deadlineOverride} flag.
      */
     public get isSubmissionOpen(): boolean {
-        if (this.acceptingSubmissionsOverride !== null) {
-            return this.acceptingSubmissionsOverride;
+        if (this.deadlineOverride !== null) {
+            return this.deadlineOverride;
         }
         if (this.deadline === null) {
             return true;
@@ -43,7 +43,7 @@ export default class Homework {
             title: this.title,
             content: this.content,
             deadline: this.deadline,
-            overrideAcceptingSubmissions: this.acceptingSubmissionsOverride,
+            deadlineOverride: this.deadlineOverride,
             createdAt: this.createdAt
         };
     }

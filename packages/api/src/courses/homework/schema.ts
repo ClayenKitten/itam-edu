@@ -7,14 +7,14 @@ export const homework = t.Object({
     title: t.String(),
     content: t.Nullable(t.String()),
     deadline: t.Nullable(t.Date()),
-    overrideAcceptingSubmissions: t.Nullable(t.Boolean())
+    deadlineOverride: t.Nullable(t.Boolean())
 });
 export const createHomework = t.Pick(homework, ["title"]);
 export const updateHomework = t.Pick(homework, [
     "title",
     "content",
     "deadline",
-    "overrideAcceptingSubmissions"
+    "deadlineOverride"
 ]);
 
 export const updateHomeworksList = t.Array(t.String());
