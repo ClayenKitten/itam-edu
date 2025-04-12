@@ -27,20 +27,29 @@
     {/if}
     {#if user}
         <a
-            class="flex justify-center items-center h-full aspect-square hover:bg-on-primary rounded-xs"
+            class={[
+                "flex justify-center items-center h-full aspect-square hover:bg-on-primary rounded-xs",
+                "transition-colors duration-100"
+            ]}
             aria-label="Домой"
             href="/home"
         >
             <i class="ph ph-house text-primary text-[20px]"></i>
         </a>
         <button
-            class="flex justify-center items-center h-full aspect-square hover:bg-on-primary rounded-xs"
+            class={[
+                "flex justify-center items-center h-full aspect-square rounded-xs",
+                "hover:bg-on-primary transition-colors duration-100"
+            ]}
             aria-label="Уведомления"
         >
             <i class="ph ph-bell text-primary text-[20px]"></i>
         </button>
         <button
-            class="flex justify-center items-center h-full aspect-square hover:bg-on-primary rounded-xs"
+            class={[
+                "flex justify-center items-center h-full aspect-square rounded-xs",
+                "hover:bg-on-primary transition-colors duration-100"
+            ]}
             aria-label="Календарь"
             onclick={() => new MyWindow("calendar").open()}
         >

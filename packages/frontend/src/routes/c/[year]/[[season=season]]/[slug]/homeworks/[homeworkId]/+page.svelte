@@ -93,7 +93,8 @@
                     <a
                         class={[
                             "flex items-center gap-2.5 w-min h-10 px-5 text-nowrap",
-                            "text-primary text-button bg-on-primary rounded-2xs"
+                            "text-primary text-button bg-on-primary rounded-2xs",
+                            "border border-on-primary hover:border-primary transition-colors duration-100"
                         ]}
                         href="{coursePath(data.course)}/lessons/{lesson.id}"
                         target="_blank"

@@ -41,7 +41,7 @@
                         !isDeleted
                             ? "group-hover:text-primary group-hover:border-primary"
                             : "",
-                        "hover:bg-surface"
+                        "hover:bg-surface transition-[background] duration-100"
                     ]}
                     aria-label="Открыть"
                     {href}
@@ -57,7 +57,7 @@
                     !isDeleted
                         ? "group-hover:text-primary group-hover:border-primary"
                         : "",
-                    "hover:bg-surface"
+                    "hover:bg-surface transition-[background] duration-100"
                 ]}
                 aria-label="Удалить"
                 onclick={() => (isDeleted ? onRecover() : onDelete())}

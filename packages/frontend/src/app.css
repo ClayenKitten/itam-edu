@@ -164,14 +164,23 @@
         border-radius: var(--radius-2xs);
         transform: translateY(-0.075em);
         border: 1px solid var(--color-on-primary);
+        cursor: pointer;
+        transition-duration: 100ms;
+        transition-property: border-color background-color;
 
         label:has(> &) {
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
+        }
+        label:hover > &:not(:checked) {
+            border-color: var(--color-primary);
+            background-color: var(--color-on-primary);
         }
 
         &::before {
+            display: none;
             color: var(--color-on-primary);
             font-family: "Phosphor" !important;
             content: "\e182";
@@ -181,10 +190,10 @@
         &:checked {
             background-color: var(--color-primary);
             border-color: var(--color-primary);
-        }
 
-        &:checked::before {
-            transform: scale(1);
+            &::before {
+                display: block;
+            }
         }
     }
 }
