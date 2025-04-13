@@ -28,6 +28,10 @@
             ],
             content,
             onUpdate: props => {
+                if (editor?.isEmpty) {
+                    content = "";
+                    return;
+                }
                 content = props.editor.getHTML();
             },
             onTransaction: props => {
