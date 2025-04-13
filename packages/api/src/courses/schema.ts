@@ -17,7 +17,6 @@ export const course = t.Object({
     banner: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
     logo: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
     about: t.String({ maxLength: 32768 }),
-
     colorPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
     colorOnPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
 
@@ -36,5 +35,13 @@ export const createCourse = t.Pick(course, [
 
 /** Update course information. */
 export const updateCourse = t.Partial(
-    t.Omit(course, ["id", "slug", "year", "semester"])
+    t.Pick(course, [
+        "title",
+        "description",
+        "banner",
+        "logo",
+        "about",
+        "colorPrimary",
+        "colorOnPrimary"
+    ])
 );

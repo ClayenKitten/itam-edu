@@ -127,14 +127,25 @@
 
         cursor: pointer;
 
-        &:disabled {
-            background-color: var(--color-on-surface-muted);
-            cursor: default;
-        }
-
         &.secondary {
             color: var(--color-primary);
             background-color: var(--color-on-primary);
+            border-color: var(--color-on-primary);
+            border-width: 1px;
+            &:hover {
+                border-color: var(--color-primary);
+            }
+        }
+
+        &:disabled {
+            color: var(--color-on-surface-muted);
+            background-color: var(--color-on-surface-disabled);
+            border-color: var(--color-on-surface-disabled);
+            &:hover {
+                background-color: var(--color-on-surface-disabled);
+                border-color: var(--color-on-surface-disabled);
+            }
+            cursor: default;
         }
     }
 
@@ -149,6 +160,10 @@
         &:focus {
             outline: 0;
             border: 2px var(--color-primary) solid;
+        }
+
+        &:disabled {
+            border-color: var(--color-on-surface-disabled);
         }
     }
 

@@ -98,7 +98,7 @@ export async function courseController<PREFIX extends string>(prefix: PREFIX) {
                             }
                         }
                     )
-                    .put(
+                    .patch(
                         "",
                         async ({ db, params, body, error }) => {
                             const course = await db.course.update(
