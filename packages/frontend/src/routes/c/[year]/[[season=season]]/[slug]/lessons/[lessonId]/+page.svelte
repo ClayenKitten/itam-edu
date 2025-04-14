@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { page } from "$app/state";
     import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
     import { formatLessonSchedule } from "$lib/format.js";
@@ -11,6 +12,18 @@
 
 <svelte:head>
     <title>{data.lesson.title} | {data.course.title}</title>
+    <meta
+        property="og:title"
+        content="{data.lesson.title} | {data.course.title}"
+    />
+    <meta property="og:type" content="video.movie" />
+    {#if data.lesson.description}
+        <meta property="og:description" content={data.lesson.description} />
+    {/if}
+    <meta property="og:url" content={page.url.toString()} />
+    {#if data.lesson.banner}
+        <meta property="og:image" content={data.lesson.banner} />
+    {/if}
 </svelte:head>
 
 <div
