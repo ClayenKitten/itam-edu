@@ -1,0 +1,48 @@
+name: Handle commands
+permissions:
+  pull-requests: write
+  checks: read
+  contents: read
+  packages: write
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  command:
+    runs-on: ubuntu-22.04
+    outputs:
+      continue: ${{ steps.command.outputs.continue }}
+      comment_id: ${{ steps.command.outputs.comment_id }}
+    steps:
+      - name: Command
+        id: command
+        uses: github/command@v2.0.0
+        with:
+          command: /build
+          reaction: "eyes"
+          allowed_contexts: "pull_request"
+          permissions: "admin"
+          allow_drafts: true
+          skip_ci: true
+          skip_completing: true
+
+  build:
+    uses: "./.github/workflows/build-packages.yaml"
+    needs: [command]
+    with:
+      tag: "pr-${{ github.event.issue.number }}"
+      ref: "refs/pull/${{ github.event.issue.number }}/head"
+    if: ${{ needs.command.outputs.continue == 'true' }}
+  
+  react:
+    runs-on: ubuntu-22.04
+    needs: [build, command]
+    steps:
+      - name: Add reactions
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ needs.command.outputs.comment_id }}
+          reactions: rocket
+          reactions-edit-mode: replace

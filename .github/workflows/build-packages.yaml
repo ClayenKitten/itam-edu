@@ -5,31 +5,45 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      tag: { type: string }
+      ref: { type: string }
   workflow_call:
+    inputs:
+      tag: { type: string }
+      ref: { type: string }
 
 jobs:
   build-api:
     uses: "./.github/workflows/build.yaml"
     with:
       image: itam-edu-api
+      tag: "${{ inputs.tag }}"
       context: .
       dockerfile: packages/api/Dockerfile
+      ref: ${{ inputs.ref }}
 
   build-frontend:
     uses: "./.github/workflows/build.yaml"
     with:
       image: itam-edu-frontend
       context: .
+      tag: "${{ inputs.tag }}"
       dockerfile: packages/frontend/Dockerfile
+      ref: ${{ inputs.ref }}
 
   build-db:
     uses: "./.github/workflows/build.yaml"
     with:
       image: itam-edu-db
+      tag: "${{ inputs.tag }}"
       context: packages/db
+      ref: ${{ inputs.ref }}
 
   build-media:
     uses: "./.github/workflows/build.yaml"
     with:
       image: itam-edu-media
+      tag: "${{ inputs.tag }}"
       context: packages/media
+      ref: ${{ inputs.ref }}
