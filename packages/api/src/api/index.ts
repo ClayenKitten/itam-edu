@@ -9,6 +9,7 @@ import type { AppContext } from "../ctx";
 import { NO_AUTHENTICATION } from "./plugins/docs";
 import { staffController } from "../staff/controller";
 import { HttpError } from "./errors";
+import { callsController } from "../calls/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -58,6 +59,7 @@ export default class ApiServer {
             .use(courseController("/courses"))
             .use(userController("/users"))
             .use(staffController())
+            .use(callsController())
             .use(mediaController())
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
