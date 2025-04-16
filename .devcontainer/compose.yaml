@@ -69,6 +69,14 @@ services:
     volumes:
       - dbgate:/root/.dbgate
 
+  # LiveKit
+  livekit:
+    build:
+      context: .
+      dockerfile: ./livekit.Dockerfile
+    expose: [7880]
+    restart: unless-stopped
+
   # Media
   ## Proxy server (Caddy)
   media:
