@@ -35,7 +35,7 @@ jobs:
       tag: "pr-${{ github.event.issue.number }}"
       ref: "refs/pull/${{ github.event.issue.number }}/head"
     if: ${{ needs.command.outputs.continue == 'true' }}
-  
+
   react:
     runs-on: ubuntu-22.04
     needs: [build, command]
