@@ -4,6 +4,9 @@ import { createDatabaseContext } from "./db";
 import createDatabaseConnection from "./db/connection";
 import { LessonService } from "./courses/lesson/service";
 import { SubmissionService } from "./courses/submission/service";
+import { CallRoomService } from "./calls/room.service";
+import { RoomServiceClient } from "livekit-server-sdk";
+import { CallParticipantService } from "./calls/participant.service";
 
 /** Returns static application context. */
 export function getAppContext(): AppContext {
@@ -27,11 +30,21 @@ function createAppContext() {
     const lesson = new LessonService(config, db, notification);
     const submission = new SubmissionService(config, db, notification);
 
+    const livekit = new RoomServiceClient(
+        config.livekit.url,
+        config.livekit.apiKey,
+        config.livekit.secretKey
+    );
+    const callRoom = new CallRoomService(config.livekit);
+    const callParticipant = new CallParticipantService(config.livekit);
+
     return {
         config,
         db,
         notification,
         lesson,
-        submission
+        submission,
+        callRoom,
+        callParticipant
     };
 }
