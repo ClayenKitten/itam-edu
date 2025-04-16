@@ -1,10 +1,28 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { invalidate } from "$app/navigation";
+    import { page } from "$app/state";
     import { env } from "$env/dynamic/public";
     import api from "$lib/api";
-    import { MyWindow } from ".";
 
-    let { code, redirect }: { code?: string; redirect?: string } = $props();
+    export function show() {
+        code = "";
+        dialog.showModal();
+        input.focus();
+    }
+    $effect(() => {
+        let setCode = page.url.searchParams.get("code");
+        if (setCode) {
+            code = setCode;
+        }
+        if (page.url.searchParams.has("login")) {
+            dialog.showModal();
+            input.focus();
+        }
+    });
+    let dialog: HTMLDialogElement;
+
+    let code: string = $state("");
+    let input: HTMLInputElement;
 
     const login = async () => {
         if (!code) return;
@@ -21,24 +39,23 @@
             return;
         }
         await invalidate("app:user");
-        if (redirect && isInternalURL(redirect)) {
-            await goto(redirect);
-        } else {
-            MyWindow.current?.close();
-        }
+        dialog.close();
     };
-
-    const isInternalURL = (url: string) => /^\/[\w\/-]+$/.test(url);
 </script>
 
-<div
-    class="w-150 flex flex-col px-10 pt-10 pb-12.5 gap-5 text-on-surface bg-surface rounded-xl"
+<dialog
+    class={[
+        "modal",
+        "hidden open:flex flex-col gap-5 w-150 px-10 pt-10 pb-12.5 m-auto text-on-surface bg-surface rounded-xl",
+        "backdrop:bg-[black] backdrop:opacity-30"
+    ]}
+    bind:this={dialog}
 >
     <header class="flex flex-col">
         <button
             class="self-end flex justify-center items-center h-8 w-8 border border-primary rounded-[8px]"
             aria-label="Закрыть"
-            onclick={() => MyWindow.current?.close()}
+            onclick={() => dialog.close()}
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
@@ -49,6 +66,7 @@
         <input
             class="h-17 text-on-background text-comment px-5 border border-primary rounded-sm"
             bind:value={code}
+            bind:this={input}
             placeholder="Код от телеграм-бота"
         />
     </label>
@@ -65,4 +83,4 @@
             @{env.ITAM_EDU_FRONTEND_TG_USERNAME}
         </a>, чтобы получить код
     </footer>
-</div>
+</dialog>

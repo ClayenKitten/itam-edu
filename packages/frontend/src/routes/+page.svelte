@@ -1,8 +1,13 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
+    import LoginWindow from "$lib/windows/LoginWindow.svelte";
 
     let { data } = $props();
+
+    let loginWindow: LoginWindow;
 </script>
+
+<LoginWindow bind:this={loginWindow} />
 
 <div id="wrapper" class="flex flex-col min-h-dvh bg-background">
     <header class="flex items-center self-stretch px-8 py-2 shadow bg-surface">
@@ -10,7 +15,9 @@
             <a class="itam" href="https://itatmisis.ru">ITAM</a> Education
         </h1>
         {#if !data.user}
-            <a class="btn ml-auto" href="?window=login&redirect=/home">Войти</a>
+            <button class="btn ml-auto" onclick={() => loginWindow.show()}>
+                Войти
+            </button>
         {:else}
             <a class="btn ml-auto" href="/home">
                 На платформу

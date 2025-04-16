@@ -220,6 +220,10 @@ body {
     min-height: 100dvh;
 }
 
+body:has(.modal[open]) {
+    overflow: hidden;
+}
+
 body {
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);

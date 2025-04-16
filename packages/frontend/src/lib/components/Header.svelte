@@ -1,14 +1,21 @@
 <script lang="ts">
-    import { MyWindow } from "$lib/windows";
+    import CalendarWindow from "$lib/windows/CalendarWindow.svelte";
+    import LoginWindow from "$lib/windows/LoginWindow.svelte";
     import type { User } from "itam-edu-common";
 
     let { user, standalone = false }: Props = $props();
+
+    let calendarWindow: CalendarWindow;
+    let loginWindow: LoginWindow;
 
     type Props = {
         user: User | null;
         standalone?: boolean;
     };
 </script>
+
+<CalendarWindow bind:this={calendarWindow} />
+<LoginWindow bind:this={loginWindow} />
 
 <header
     class={[
@@ -51,7 +58,7 @@
                 "hover:bg-on-primary transition-colors duration-100"
             ]}
             aria-label="Календарь"
-            onclick={() => new MyWindow("calendar").open()}
+            onclick={() => calendarWindow.show()}
         >
             <i class="ph ph-calendar-dots text-primary text-[20px]"></i>
         </button>
@@ -69,9 +76,8 @@
             {/if}
         </a>
     {:else}
-        <button
-            class="btn h-full ml-2.5"
-            onclick={() => new MyWindow("login").open()}>Войти</button
-        >
+        <button class="btn h-full ml-2.5" onclick={() => loginWindow.show()}>
+            Войти
+        </button>
     {/if}
 </header>

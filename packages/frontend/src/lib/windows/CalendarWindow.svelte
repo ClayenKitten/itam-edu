@@ -1,19 +1,29 @@
 <script lang="ts">
-    import { MyWindow } from ".";
+    const {} = $props();
+
+    export function show() {
+        dialog.showModal();
+    }
+    let dialog: HTMLDialogElement;
 </script>
 
-<div
-    class="w-150 flex flex-col px-10 pt-10 pb-12.5 gap-5 text-on-surface bg-surface rounded-xl"
+<dialog
+    class={[
+        "modal",
+        "hidden open:flex flex-col gap-5 w-150 px-10 pt-10 pb-12.5 m-auto text-on-surface bg-surface rounded-xl",
+        "backdrop:bg-[black] backdrop:opacity-30"
+    ]}
+    bind:this={dialog}
 >
     <header class="flex flex-col">
         <button
             class="self-end flex justify-center items-center h-8 w-8 border border-primary rounded-[8px]"
             aria-label="Закрыть"
-            onclick={() => MyWindow.current?.close()}
+            onclick={() => dialog.close()}
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
         <h2 class="self-start">Календарь</h2>
     </header>
     <div class="h-60"></div>
-</div>
+</dialog>
