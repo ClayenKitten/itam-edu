@@ -26,6 +26,11 @@ export interface AppConfig {
         /** Support account username without a leading `@`, e.g. `durov`. */
         supportUsername: string;
     };
+    livekit: {
+        url: string;
+        apiKey: string;
+        secretKey: string;
+    };
     /** Base path for website (frontend). */
     webUrl: string;
 }
@@ -43,6 +48,11 @@ export function createConfig(): AppConfig {
         tg: {
             token: env.ITAM_EDU_API_TG_TOKEN!,
             supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME!
+        },
+        livekit: {
+            url: env.ITAM_EDU_API_LIVEKIT_URL!,
+            apiKey: env.ITAM_EDU_API_LIVEKIT_APIKEY!,
+            secretKey: env.ITAM_EDU_API_LIVEKIT_SECRET!
         },
         webUrl: env.ITAM_EDU_FRONTEND_URL!
     };
