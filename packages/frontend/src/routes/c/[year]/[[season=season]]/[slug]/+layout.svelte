@@ -12,6 +12,13 @@
     setContext("layout", layout);
 </script>
 
+<svelte:head>
+    {#if data.course.description}
+        <meta name="description" content={data.course.description} />
+        <meta property="og:description" content={data.course.description} />
+    {/if}
+</svelte:head>
+
 <div
     id="wrapper"
     class={[
