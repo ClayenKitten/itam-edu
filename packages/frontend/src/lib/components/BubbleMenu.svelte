@@ -49,7 +49,7 @@
 </script>
 
 <div
-    class="z-10 flex gap-1 p-1 w-min text-on-primary bg-primary rounded-2xs shadow"
+    class="flex gap-1 p-1 w-min text-on-primary bg-primary rounded-2xs shadow"
     bind:this={element}
 >
     {#if !isEditingLink}
