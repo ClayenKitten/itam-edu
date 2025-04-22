@@ -12,9 +12,9 @@ export default async function initContext() {
     return new Elysia({ name: "context" })
         .use(cors())
         .use(await docs())
-        .use(httpLogger())
         .use(ctx())
         .use(authenticate())
         .use(authorize())
+        .use(httpLogger())
         .as("plugin");
 }
