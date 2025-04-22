@@ -18,6 +18,7 @@
     />
     <meta property="og:type" content="video.movie" />
     {#if data.lesson.description}
+        <meta name="description" content={data.lesson.description} />
         <meta property="og:description" content={data.lesson.description} />
     {/if}
     <meta property="og:url" content={page.url.toString()} />
