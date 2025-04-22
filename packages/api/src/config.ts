@@ -22,6 +22,11 @@ export interface AppConfig {
         /** Support account username without a leading `@`, e.g. `durov`. */
         supportUsername: string;
     };
+    livekit: {
+        url: string;
+        apiKey: string;
+        secretKey: string;
+    };
     /** Base path for website (frontend). */
     webUrl: string;
     /** Postgres connection configuration. */
@@ -67,7 +72,6 @@ export function createConfigFromEnv(): AppConfig {
             token: env.ITAM_EDU_API_TG_TOKEN!,
             supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME!
         },
-        webUrl: env.ITAM_EDU_FRONTEND_URL!,
         postgres: {
             connectionString: env.ITAM_EDU_API_POSTGRES_CONNECTION_STRING!
         },
@@ -81,6 +85,12 @@ export function createConfigFromEnv(): AppConfig {
             accessKey: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
             secretKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!,
             bucket: env.ITAM_EDU_S3_PROXY_BUCKET!
-        }
+        },
+        livekit: {
+            url: env.ITAM_EDU_API_LIVEKIT_URL!,
+            apiKey: env.ITAM_EDU_API_LIVEKIT_APIKEY!,
+            secretKey: env.ITAM_EDU_API_LIVEKIT_SECRET!
+        },
+        webUrl: env.ITAM_EDU_FRONTEND_URL!
     };
 }
