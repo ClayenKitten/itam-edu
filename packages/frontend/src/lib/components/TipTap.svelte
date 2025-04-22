@@ -7,6 +7,7 @@
     import { browser } from "$app/environment";
     import BubbleMenu from "@tiptap/extension-bubble-menu";
     import BubbleMenuComponent from "./BubbleMenu.svelte";
+    import Link from "@tiptap/extension-link";
 
     let {
         content = $bindable(null),
@@ -24,6 +25,10 @@
                 StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
                 BubbleMenu.configure({
                     element: bubblemenu
+                }),
+                Link.configure({
+                    openOnClick: false,
+                    defaultProtocol: "https"
                 })
             ],
             content,
