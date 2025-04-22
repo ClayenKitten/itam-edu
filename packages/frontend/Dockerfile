@@ -13,14 +13,6 @@ COPY ./packages/db ./packages/db
 COPY ./packages/api ./packages/api
 COPY ./packages/frontend ./packages/frontend
 
-# Start development server
-FROM node:22-alpine AS dev
-WORKDIR /app
-ENV NODE_ENV=development
-
-COPY --from=prepare /app .
-ENTRYPOINT npm --workspace=itam-edu-frontend run dev -- --host=0.0.0.0 --port=3000
-
 # Build for production and prune dev dependencies
 FROM node:22-alpine AS build
 WORKDIR /app
