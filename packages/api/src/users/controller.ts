@@ -1,12 +1,14 @@
 import { Elysia, t } from "elysia";
 import { randomBytes } from "node:crypto";
-import initContext from "../api/plugins";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 import { env } from "node:process";
+import type { AppContext } from "../ctx";
+import { authenticationPlugin } from "../api/plugins/authenticate";
 
-export async function userController<PREFIX extends string>(prefix: PREFIX) {
-    return new Elysia({ prefix, tags: ["Users"] })
-        .use(initContext())
+export async function userController(ctx: AppContext) {
+    return new Elysia({ prefix: "/users", tags: ["Users"] })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "/me",
             async ({ user }) => {

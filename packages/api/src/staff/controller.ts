@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import initContext from "../api/plugins";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
+import type { AppContext } from "../ctx";
+import { authenticationPlugin } from "../api/plugins/authenticate";
 
-export function staffController() {
+export function staffController(ctx: AppContext) {
     return new Elysia({ name: "staff", tags: ["Staff"] })
-        .use(initContext())
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "/courses/:course/staff",
             async ({ user, db, params, error }) => {

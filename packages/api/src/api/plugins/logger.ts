@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import logger from "../../logger";
 
 /** Logs HTTP requests. **/
-export default function httpLogger() {
+export function httpLoggerPlugin() {
     return new Elysia({ name: "logger" })
         .onTransform(({ request }) => {
             logger.extend({ request: randomUUID() });

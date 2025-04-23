@@ -1,19 +1,13 @@
 import { Elysia, t } from "elysia";
-import initContext from "../api/plugins";
-import { lessonController } from "./lesson/controller";
-import { studentController } from "./student/controller";
 import * as schema from "./schema";
-import { homeworkController } from "./homework/controller";
+import type { AppContext } from "../ctx";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { submissionController } from "./submission/controller";
+import { authenticationPlugin } from "../api/plugins/authenticate";
 
-export async function courseController<PREFIX extends string>(prefix: PREFIX) {
-    return new Elysia({ prefix, tags: ["Courses"] })
-        .use(initContext())
-        .use(lessonController("/:course/lessons"))
-        .use(homeworkController("/:course/homeworks"))
-        .use(submissionController("/:course/submissions"))
-        .use(studentController("/:course/students"))
+export async function courseController(ctx: AppContext) {
+    return new Elysia({ prefix: "/courses", tags: ["Courses"] })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "",
             async ({ db }) => {

@@ -1,13 +1,16 @@
 import { Elysia, t } from "elysia";
-import initContext from "../../api/plugins";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
+import type { AppContext } from "../../ctx";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
 
-export async function submissionController<PREFIX extends string>(
-    prefix: PREFIX
-) {
-    return new Elysia({ prefix, tags: ["Submissions"] })
-        .use(initContext())
+export async function submissionController(ctx: AppContext) {
+    return new Elysia({
+        prefix: "/courses/:course/submissions",
+        tags: ["Submissions"]
+    })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "",
             async ({ db, user, params, query, error }) => {

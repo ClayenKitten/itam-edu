@@ -1,14 +1,18 @@
 import { Elysia, error, t } from "elysia";
-import initContext from "../../api/plugins";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
+import type { AppContext } from "../../ctx";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
 
-export async function homeworkController<PREFIX extends string>(
-    prefix: PREFIX
-) {
-    return new Elysia({ prefix, tags: ["Homeworks"] })
-        .use(initContext())
+export async function homeworkController(ctx: AppContext) {
+    return new Elysia({
+        name: "homeworks",
+        prefix: "/courses/:course/homeworks",
+        tags: ["Homeworks"]
+    })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "",
             async ({ db, params }) => {

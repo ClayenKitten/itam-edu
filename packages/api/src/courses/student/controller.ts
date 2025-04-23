@@ -1,9 +1,15 @@
 import { Elysia, t } from "elysia";
-import initContext from "../../api/plugins";
+import type { AppContext } from "../../ctx";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
 
-export function studentController<PREFIX extends string>(prefix: PREFIX) {
-    return new Elysia({ name: "students", prefix, tags: ["Students"] })
-        .use(initContext())
+export function studentController(ctx: AppContext) {
+    return new Elysia({
+        name: "students",
+        prefix: "/courses/:course/students",
+        tags: ["Students"]
+    })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .guard({
             params: t.Object(
                 { course: t.String({ format: "uuid" }) },

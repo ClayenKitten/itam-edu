@@ -1,12 +1,18 @@
 import { Elysia, t } from "elysia";
-import initContext from "../../api/plugins";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
+import type { AppContext } from "../../ctx";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
 
-export function lessonController<PREFIX extends string>(prefix: PREFIX) {
-    return new Elysia({ name: "lessons", prefix, tags: ["Lessons"] })
-        .use(initContext())
+export function lessonController(ctx: AppContext) {
+    return new Elysia({
+        name: "lessons",
+        prefix: "/courses/:course/lessons",
+        tags: ["Lessons"]
+    })
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .guard({
             params: t.Object(
                 { course: t.String({ format: "uuid" }) },

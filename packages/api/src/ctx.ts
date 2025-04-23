@@ -1,22 +1,15 @@
 import NotificationService from "./notifications/service";
-import { createConfig } from "./config";
+import type { AppConfig } from "./config";
 import { createDatabaseContext } from "./db";
 import createDatabaseConnection from "./db/connection";
 import { LessonService } from "./courses/lesson/service";
 import { SubmissionService } from "./courses/submission/service";
 
-/** Returns static application context. */
-export function getAppContext(): AppContext {
-    if (cache) return cache;
-    cache = createAppContext();
-    return cache;
-}
-let cache: AppContext | null = null;
-
+/** Global context of the application. */
 export type AppContext = ReturnType<typeof createAppContext>;
 
-function createAppContext() {
-    const config = createConfig();
+/** Creates static application context. */
+export function createAppContext(config: AppConfig) {
     const databaseConnection = createDatabaseConnection(
         config.db.connectionString
     );
