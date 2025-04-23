@@ -1,8 +1,7 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
-import { main } from "bun";
 
-export default async function docs() {
+export async function docsPlugin() {
     return new Elysia({ name: "docs" })
         .use(
             await swagger({

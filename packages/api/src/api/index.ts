@@ -1,14 +1,19 @@
 import { Elysia, type AnyElysia } from "elysia";
 
-import initContext from "./plugins";
-import { courseController } from "../courses/controller";
-import { userController } from "../users/controller";
 import logger from "../logger";
-import { mediaController } from "../media/controller";
 import type { AppContext } from "../ctx";
-import { NO_AUTHENTICATION } from "./plugins/docs";
+import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
+import { corsPlugin } from "./plugins/cors";
+import { httpLoggerPlugin } from "./plugins/logger";
+
+import { userController } from "../users/controller";
+import { courseController } from "../courses/controller";
+import { lessonController } from "../courses/lesson/controller";
+import { homeworkController } from "../courses/homework/controller";
+import { studentController } from "../courses/student/controller";
+import { submissionController } from "../courses/submission/controller";
 import { staffController } from "../staff/controller";
-import { HttpError } from "./errors";
+import { mediaController } from "../media/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -43,7 +48,9 @@ export default class ApiServer {
             serve: { maxRequestBodySize: 50 * 1024 * 1024 },
             strictPath: true
         })
-            .use(await initContext())
+            .use(corsPlugin())
+            .use(await docsPlugin())
+            .use(httpLoggerPlugin())
             .onError(async ctx => {
                 if (ctx.code === "UNKNOWN") {
                     logger?.error("Unhandled Exception", {
@@ -55,10 +62,14 @@ export default class ApiServer {
                     });
                 }
             })
-            .use(courseController("/courses"))
-            .use(userController("/users"))
-            .use(staffController())
-            .use(mediaController())
+            .use(userController(this.ctx))
+            .use(courseController(this.ctx))
+            .use(lessonController(this.ctx))
+            .use(homeworkController(this.ctx))
+            .use(submissionController(this.ctx))
+            .use(studentController(this.ctx))
+            .use(staffController(this.ctx))
+            .use(mediaController(this.ctx))
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
                 detail: {

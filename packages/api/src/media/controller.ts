@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import initContext from "../api/plugins";
 import authorizeMedia, { isSupportedMethod } from "./authorization";
+import type { AppContext } from "../ctx";
+import { authenticationPlugin } from "../api/plugins/authenticate";
 
-export async function mediaController() {
+export async function mediaController(ctx: AppContext) {
     return new Elysia({ prefix: "/media", tags: ["Media"] })
-        .use(initContext())
+        .derive(() => ctx)
+        .use(authenticationPlugin(ctx))
         .get(
             "/access",
             async ({ db, user, headers, error }) => {

@@ -31,7 +31,7 @@ export interface AppConfig {
 }
 
 /** Creates application config from environment variables. */
-export function createConfig(): AppConfig {
+export function createConfigFromEnv(): AppConfig {
     return {
         db: {
             connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING!
