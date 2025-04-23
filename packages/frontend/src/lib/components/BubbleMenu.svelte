@@ -190,6 +190,9 @@
     {:else}
         <div class="flex gap-1 w-min">
             <input
+                class={[
+                    "bg-on-primary text-primary outline-none p-1 rounded-[6px]"
+                ]}
                 type="url"
                 placeholder="введите url-адрес"
                 bind:value={inputUrl}
