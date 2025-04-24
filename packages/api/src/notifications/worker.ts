@@ -50,4 +50,9 @@ export default class NotificationWorker {
         );
         logger.info("Started notifications worker");
     }
+
+    public async stop(): Promise<void> {
+        await this.worker?.close();
+        logger.info("Stopped notifications worker");
+    }
 }

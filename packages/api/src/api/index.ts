@@ -40,7 +40,7 @@ export default class ApiServer {
     /** Stops serving. */
     public async stop(dropActiveConnections = false): Promise<void> {
         const elysia = await this.elysia;
-        elysia.stop(dropActiveConnections);
+        await elysia.stop(dropActiveConnections);
     }
 
     private async createElysia() {
