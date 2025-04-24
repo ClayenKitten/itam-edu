@@ -65,17 +65,6 @@ services:
     volumes: [redis:/root/redis]
     env_file: ./.env.db
 
-  # Media
-  ## Proxy server (Caddy)
-  media:
-    image: ghcr.io/clayenkitten/itam-edu-media:latest
-    build:
-      context: ./packages/media
-      dockerfile: ./Dockerfile
-    depends_on: [api]
-    expose: [3000]
-    environment: { ITAM_EDU_MEDIA_PORT: "3000" }
-
 configs:
   caddy: { file: ./Caddyfile }
 
@@ -84,4 +73,3 @@ volumes:
   redis:
   caddy_data:
   caddy_config:
-  media:
