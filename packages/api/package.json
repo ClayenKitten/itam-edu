@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "main": "./src/index.ts",
     "scripts": {
-        "start": "tsx --env-file=.env .",
+        "start": "bun --env-file=.env .",
         "dev": "bun --watch --env-file=.env --clear-screen=false .",
         "build": "tsc",
         "format": "prettier --write .",
@@ -33,7 +33,6 @@
         "@types/pg": "^8.11.10",
         "itam-edu-db": "file:../db",
         "prettier": "^3.3.3",
-        "tsx": "^4.19.1",
         "typescript": "^5.6.2"
     }
 }
