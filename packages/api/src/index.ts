@@ -1,13 +1,20 @@
-import ApiServer from "./api";
-import TelegramBot from "./telegram";
-import NotificationWorker from "./notifications/worker";
-import { createAppContext } from "./ctx";
+import { Application } from "./app";
 import { createConfigFromEnv } from "./config";
+import logger from "./logger";
 
 const config = createConfigFromEnv();
-const ctx = createAppContext(config);
 
-const api = new ApiServer(ctx);
-const telegram = new TelegramBot(ctx);
-const notifications = new NotificationWorker(ctx, telegram);
-await Promise.all([api.start(), telegram.start(), notifications.start()]);
+const application = new Application(config);
+await application.start();
+
+async function handleSignal(signal: NodeJS.Signals) {
+    logger.info(`Received ${signal}`);
+    try {
+        await application.stop();
+        process.exit(0);
+    } catch {
+        process.exit(1);
+    }
+}
+process.once("SIGINT", handleSignal);
+process.once("SIGTERM", handleSignal);

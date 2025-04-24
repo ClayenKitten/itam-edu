@@ -11,6 +11,9 @@ export default class TelegramBot {
     /** Internal Telegraf instance. */
     private telegraf: Telegraf<BotContext>;
 
+    /** Promise that is only resolved when bot has stopped. */
+    private runningPromise: Promise<void> | undefined;
+
     public constructor(public ctx: AppContext) {
         this.telegraf = new Telegraf<BotContext>(ctx.config.tg.token).use(
             async (ctx, next) => {
@@ -18,18 +21,13 @@ export default class TelegramBot {
                 await next();
             }
         );
-
-        if (env.NODE_ENV === "production") {
-            process.once("SIGINT", () => this.telegraf.stop("SIGINT"));
-            process.once("SIGTERM", () => this.telegraf.stop("SIGTERM"));
-        }
         setupHandlers(this.telegraf);
     }
 
     /** Starts bot in polling mode. */
     public async start(): Promise<void> {
         return new Promise(resolve => {
-            this.telegraf
+            this.runningPromise = this.telegraf
                 .launch(() => {
                     logger.info("Started Telegram bot", {
                         mode: "polling",
@@ -45,7 +43,12 @@ export default class TelegramBot {
 
     /** Stops bot. */
     public async stop(): Promise<void> {
-        this.telegraf.stop();
+        return new Promise(resolve => {
+            this.telegraf.stop();
+            this.runningPromise?.finally(() => {
+                resolve();
+            });
+        });
     }
 
     /** Sends Telegram message. */
