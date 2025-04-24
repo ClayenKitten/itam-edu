@@ -20,6 +20,9 @@ http://api.localhost {
 http://db.localhost {
     reverse_proxy dbgate:3000
 }
+http://s3.localhost {
+    reverse_proxy minio:9001
+}
 
 # Redirects
 http://postgres.localhost {
