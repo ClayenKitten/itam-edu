@@ -3,7 +3,7 @@
     "dockerComposeFile": ["./compose.yaml"],
     "workspaceFolder": "/itam-edu",
     "service": "devcontainer",
-    "runServices": ["gateway", "postgres", "redis", "dbgate"],
+    "runServices": ["gateway", "postgres", "redis", "minio", "dbgate"],
     "customizations": {
         "vscode": {
             "extensions": [

@@ -44,7 +44,23 @@ services:
     expose: [6379]
     volumes: [redis:/root/redis]
 
-  ## Web interface for databases
+  ## Minio
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command: server --console-address ":9001" /data
+    expose: ["9000", "9001"]
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Web interface for databases
   dbgate:
     image: dbgate/dbgate:5.3.1-alpine
     expose: [3000]
@@ -71,7 +87,8 @@ services:
 
 volumes:
   postgres:
-  dbgate:
   redis:
+  minio:
+  dbgate:
   caddy_data:
   caddy_config:

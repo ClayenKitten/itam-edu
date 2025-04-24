@@ -87,14 +87,16 @@ Taskfile is used to execute commands. Run `task` to see a full list.
 
 ### Services
 
-| Service               | URL                       |
-| --------------------- | ------------------------- |
-| **Packages**          |                           |
-| itam-edu-api          | http://api.localhost      |
-| itam-edu-frontend     | http://www.localhost      |
-| **Development tools** |                           |
-| Navigation            | http://localhost          |
-| dbgate                | http://db.localhost       |
-| **Infrastructure**    |                           |
-| PostgreSQL            | `postgres:localhost:5432` |
-| Redis                 | `redis:localhost:6379`    |
+| Service               | URL                  |
+| --------------------- | -------------------- |
+| **Packages**          |                      |
+| itam-edu-api          | http://api.localhost |
+| itam-edu-frontend     | http://www.localhost |
+| **Development tools** |                      |
+| Navigation            | http://localhost     |
+| dbgate                | http://db.localhost  |
+| minio                 | http://s3.localhost  |
+| **Infrastructure**    |                      |
+| PostgreSQL            | `postgres:5432`      |
+| Redis                 | `redis:6379`         |
+| PostgreSQL            | `minio:9000`         |
