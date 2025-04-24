@@ -1,7 +1,4 @@
 www.example.com {
-    handle /media* {
-        reverse_proxy media:3000        
-    }
     handle {
         reverse_proxy frontend:3000
     }

@@ -69,21 +69,6 @@ services:
     volumes:
       - dbgate:/root/.dbgate
 
-  # Media
-  ## Proxy server (Caddy)
-  media:
-    build:
-      context: ../packages/media
-      dockerfile: ./Dockerfile
-    expose: [3000]
-    volumes: [./packages/media/data:/app/data]
-    env_file: [./.env.dev]
-    develop:
-      watch:
-        - action: rebuild
-          path: ./packages/media/Caddyfile
-          target: /app/packages/media
-
 volumes:
   postgres:
   dbgate:

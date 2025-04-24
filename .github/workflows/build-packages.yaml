@@ -39,11 +39,3 @@ jobs:
       tag: "${{ inputs.tag }}"
       context: packages/db
       ref: ${{ inputs.ref }}
-
-  build-media:
-    uses: "./.github/workflows/build.yaml"
-    with:
-      image: itam-edu-media
-      tag: "${{ inputs.tag }}"
-      context: packages/media
-      ref: ${{ inputs.ref }}

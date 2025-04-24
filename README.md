@@ -28,12 +28,12 @@ GitHub App manages GitHub organization of the course. Check integration [README]
 
 ITAM Education platform consists of multiple packages that communicate over HTTP.
 
-| Package                                  | Implementation                                          | Description         |
-| ---------------------------------------- | ------------------------------------------------------- | ------------------- |
-| [itam-edu-api](./packages/api)           | [Bun](https://bun.sh)                                   | REST API server     |
-| [itam-edu-frontend](./packages/frontend) | [NodeJS](https://nodejs.org)                            | Frontend server     |
-| [itam-edu-media](./packages/media)       | Caddy proxy and [dufs](https://github.com/sigoden/dufs) | File server         |
-| [itam-edu-db](./packages/db)             | [dbmate](https://github.com/amacneil/dbmate)            | Database migrations |
+| Package                                  | Implementation                               | Description                                 |
+| ---------------------------------------- | -------------------------------------------- | ------------------------------------------- |
+| [itam-edu-api](./packages/api)           | [Bun](https://bun.sh)                        | REST API server                             |
+| [itam-edu-frontend](./packages/frontend) | [NodeJS](https://nodejs.org)                 | Frontend server                             |
+| [itam-edu-common](./packages/common)     | TypeScript library                           | Common classes between frontend and backend |
+| [itam-edu-db](./packages/db)             | [dbmate](https://github.com/amacneil/dbmate) | Database migrations                         |
 
 All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
 
@@ -87,15 +87,14 @@ Taskfile is used to execute commands. Run `task` to see a full list.
 
 ### Services
 
-| Service               | URL                        |
-| --------------------- | -------------------------- |
-| **Packages**          |                            |
-| itam-edu-api          | http://api.localhost       |
-| itam-edu-frontend     | http://www.localhost       |
-| itam-edu-media        | http://www.localhost/media |
-| **Development tools** |                            |
-| Navigation            | http://localhost           |
-| dbgate                | http://db.localhost        |
-| **Infrastructure**    |                            |
-| PostgreSQL            | `postgres:localhost:5432`  |
-| Redis                 | `redis:localhost:6379`     |
+| Service               | URL                       |
+| --------------------- | ------------------------- |
+| **Packages**          |                           |
+| itam-edu-api          | http://api.localhost      |
+| itam-edu-frontend     | http://www.localhost      |
+| **Development tools** |                           |
+| Navigation            | http://localhost          |
+| dbgate                | http://db.localhost       |
+| **Infrastructure**    |                           |
+| PostgreSQL            | `postgres:localhost:5432` |
+| Redis                 | `redis:localhost:6379`    |
