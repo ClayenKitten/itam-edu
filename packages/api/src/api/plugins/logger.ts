@@ -6,10 +6,12 @@ import logger from "../../logger";
 export function httpLoggerPlugin() {
     return new Elysia({ name: "logger" })
         .onTransform(({ request }) => {
+            const url = new URL(request.url);
             logger.extend({ request: randomUUID() });
             logger.debug("HTTP Request", {
                 method: request.method,
-                path: request.url
+                path: url.pathname,
+                origin: url.origin
             });
         })
         .onAfterResponse(({ set }) => {
