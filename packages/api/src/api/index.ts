@@ -4,6 +4,7 @@ import logger from "../logger";
 import type { AppContext } from "../ctx";
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
 import { corsPlugin } from "./plugins/cors";
+import { authenticationPlugin } from "./plugins/authenticate";
 import { httpLoggerPlugin } from "./plugins/logger";
 
 import { userController } from "../users/controller";
@@ -50,6 +51,7 @@ export default class ApiServer {
         })
             .use(corsPlugin())
             .use(await docsPlugin())
+            .use(authenticationPlugin(this.ctx))
             .use(httpLoggerPlugin())
             .onError(async ctx => {
                 if (ctx.code === "UNKNOWN") {
