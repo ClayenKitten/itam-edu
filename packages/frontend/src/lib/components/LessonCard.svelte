@@ -2,6 +2,7 @@
     import { coursePath } from "$lib/path";
     import type { Course, LessonPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
+    import { courseFilePath } from "itam-edu-common";
 
     const { course, position, lesson }: Props = $props();
 
@@ -24,7 +25,7 @@
     {#if lesson.banner}
         <img
             class="grow w-full rounded-md mb-3.5 overflow-hidden object-cover"
-            src={lesson.banner}
+            src={courseFilePath(lesson.courseId).public(lesson.banner)}
             alt=""
         />
     {:else}

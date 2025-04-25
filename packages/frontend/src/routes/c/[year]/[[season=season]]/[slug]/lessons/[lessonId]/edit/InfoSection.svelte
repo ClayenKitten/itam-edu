@@ -1,6 +1,7 @@
 <script lang="ts">
     import { formatLessonSchedule } from "$lib/format";
     import type { CreateLesson, Lesson } from "$lib/types";
+    import { courseFilePath } from "itam-edu-common";
 
     let { lesson = $bindable() }: Props = $props();
 
@@ -47,7 +48,9 @@
                     {#if lesson.banner}
                         <img
                             class="object-contain"
-                            src={lesson.banner}
+                            src={courseFilePath(lesson.courseId).public(
+                                lesson.banner
+                            )}
                             alt=""
                         />
                         <button
