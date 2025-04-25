@@ -1,5 +1,6 @@
 <script lang="ts">
     import TipTap from "$lib/components/TipTap.svelte";
+    import { userFilePath } from "itam-edu-common";
 
     let { data } = $props();
 </script>
@@ -44,7 +45,12 @@
                             aria-hidden="true"
                         >
                             {#if staffMember.user.avatar}
-                                <img src={staffMember.user.avatar} alt="" />
+                                <img
+                                    src={userFilePath(
+                                        staffMember.user.id
+                                    ).avatar(staffMember.user.avatar)}
+                                    alt=""
+                                />
                             {:else}
                                 <span class="text-on-primary text-comment">
                                     {staffMember.user.tgUsername[0]}

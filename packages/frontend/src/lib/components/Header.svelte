@@ -1,7 +1,7 @@
 <script lang="ts">
     import CalendarWindow from "$lib/windows/CalendarWindow.svelte";
     import LoginWindow from "$lib/windows/LoginWindow.svelte";
-    import type { User } from "itam-edu-common";
+    import { userFilePath, type User } from "itam-edu-common";
 
     let { user, standalone = false }: Props = $props();
 
@@ -68,7 +68,10 @@
             aria-label="Профиль"
         >
             {#if user.info.avatar}
-                <img src={user.info.avatar} alt="" />
+                <img
+                    src={userFilePath(user.id).avatar(user.info.avatar)}
+                    alt=""
+                />
             {:else}
                 <span class="text-on-primary text-comment">
                     {user.displayName[0]}
