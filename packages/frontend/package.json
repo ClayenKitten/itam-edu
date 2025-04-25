@@ -23,6 +23,7 @@
         "@tailwindcss/vite": "^4.0.9",
         "@tiptap/core": "^2.11.5",
         "@tiptap/extension-bubble-menu": "^2.11.7",
+        "@tiptap/extension-link": "^2.11.7",
         "@tiptap/html": "^2.11.5",
         "@tiptap/starter-kit": "^2.11.5",
         "@types/node": "^22.10.2",
