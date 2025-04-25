@@ -20,24 +20,29 @@
     let isLink = $state(false);
     let inputUrl = $state("");
     let isEditingLink = $state(false);
+    let isValidLink = $derived(
+        !/^\w+:\/\/.+$/.test(inputUrl) ||
+            inputUrl.startsWith("https://") ||
+            inputUrl.startsWith("http://")
+    );
+
+    const update = () => {
+        if (!editor) return;
+        isBold = editor.isActive("bold");
+        isItalic = editor.isActive("italic");
+        isStrike = editor.isActive("strike");
+        isCode = editor.isActive("code");
+        isH1 = editor.isActive("heading", { level: 1 });
+        isH2 = editor.isActive("heading", { level: 2 });
+        isH3 = editor.isActive("heading", { level: 3 });
+        isH4 = editor.isActive("heading", { level: 4 });
+        isCodeBlock = editor.isActive("codeBlock");
+        isLink = editor.isActive("link");
+        inputUrl = editor.getAttributes("link").href || "";
+        isEditingLink = false;
+    };
 
     $effect(() => {
-        const update = () => {
-            if (!editor) return;
-            isBold = editor.isActive("bold");
-            isItalic = editor.isActive("italic");
-            isStrike = editor.isActive("strike");
-            isCode = editor.isActive("code");
-            isH1 = editor.isActive("heading", { level: 1 });
-            isH2 = editor.isActive("heading", { level: 2 });
-            isH3 = editor.isActive("heading", { level: 3 });
-            isH4 = editor.isActive("heading", { level: 4 });
-            isCodeBlock = editor.isActive("codeBlock");
-            isLink = editor.isActive("link");
-            inputUrl = editor.getAttributes("link").href || "";
-            isEditingLink = false;
-        };
-
         editor?.on("selectionUpdate", update);
         editor?.on("transaction", update);
 
@@ -46,6 +51,13 @@
             editor?.off("transaction", update);
         };
     });
+
+    function handleUrl(url: string): string {
+        if (/^https?:\/\//i.test(url)) {
+            return url;
+        }
+        return "https://" + url;
+    }
 </script>
 
 <div
@@ -198,13 +210,14 @@
                 bind:value={inputUrl}
             />
             <button
+                disabled={!isValidLink}
                 onclick={() =>
                     inputUrl != ""
                         ? editor
                               ?.chain()
                               .focus()
                               .extendMarkRange("link")
-                              .setLink({ href: inputUrl })
+                              .setLink({ href: handleUrl(inputUrl) })
                               .run()
                         : editor
                               ?.chain()
@@ -213,7 +226,7 @@
                               .unsetLink()
                               .run()}
                 class={[
-                    "p-1 hover:text-primary hover:bg-on-primary rounded-[6px]"
+                    "p-1 hover:text-primary hover:bg-on-primary rounded-[6px] disabled:bg-on-background-muted disabled:cursor-not-allowed disabled:text-on-surface-disabled"
                 ]}
                 aria-label="Добавить ссылку"
             >

@@ -28,7 +28,7 @@
                 }),
                 Link.configure({
                     openOnClick: false,
-                    defaultProtocol: "https"
+                    protocols: ["http", "https"]
                 })
             ],
             content,
