@@ -11,6 +11,7 @@
     let { data } = $props();
 
     let lesson: CreateLesson = $state({
+        courseId: data.course.id,
         title: "",
         description: null,
         banner: null,

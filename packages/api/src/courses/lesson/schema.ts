@@ -3,7 +3,7 @@ import { t } from "elysia";
 export const lessonInfo = t.Object({
     title: t.String({ minLength: 3, maxLength: 80 }),
     description: t.Nullable(t.String({ maxLength: 1000 })),
-    banner: t.Nullable(t.String({ format: "uri", maxLength: 1000 })),
+    banner: t.Nullable(t.String({ minLength: 1 })),
     position: t.Number({ multipleOf: 1 }),
     createdAt: t.Date()
 });
