@@ -6,6 +6,7 @@
     import TipTap from "$lib/components/TipTap.svelte";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
+    import { userFilePath } from "itam-edu-common";
     import { getContext, type Snippet } from "svelte";
 
     let { data } = $props();
@@ -156,12 +157,14 @@
                         {/if}
                         <header class="flex items-center gap-3">
                             <div
-                                class="flex justify-center items-center h-10 w-10 bg-primary rounded-xs"
+                                class="flex justify-center h-10 w-10 items-center bg-primary rounded-xs"
                             >
                                 {#if user.avatar}
                                     <img
-                                        class="rounded-xs"
-                                        src={user.avatar}
+                                        class="h-10 w-10 rounded-xs"
+                                        src={userFilePath(user.id).avatar(
+                                            user.avatar
+                                        )}
                                         alt=""
                                     />
                                 {:else}
@@ -261,11 +264,23 @@
                 ]}
             >
                 <header class="flex gap-3">
-                    <img
-                        class="h-8 w-8 rounded-2xs"
-                        src={submission.student.avatar}
-                        alt=""
-                    />
+                    <div
+                        class="flex justify-center h-8 w-8 items-center bg-primary rounded-2xs"
+                    >
+                        {#if submission.student.avatar}
+                            <img
+                                class="h-8 w-8 rounded-2xs"
+                                src={userFilePath(submission.student.id).avatar(
+                                    submission.student.avatar
+                                )}
+                                alt=""
+                            />
+                        {:else}
+                            <span class="text-on-primary text-comment">
+                                {submission.student.tgUsername[0]}
+                            </span>
+                        {/if}
+                    </div>
                     <div
                         class="flex flex-col overflow-hidden whitespace-nowrap"
                     >
