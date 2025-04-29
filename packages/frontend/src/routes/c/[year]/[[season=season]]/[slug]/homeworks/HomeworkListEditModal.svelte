@@ -8,16 +8,20 @@
     import { coursePath } from "$lib/path";
     import ReorderableCard from "$lib/components/ReorderableCard.svelte";
 
-    let { course, homeworks = $bindable(), onclose }: Props = $props();
+    let { course, homeworks = $bindable() }: Props = $props();
 
     type Props = {
         course: Course;
         homeworks: HomeworkPartial[];
-        onclose?: () => void;
     };
 
+    export function show() {
+        dialog.showModal();
+    }
+    let dialog: HTMLDialogElement;
+
     let orderedIds = $state(homeworks.map(h => h.id));
-    let deleted: SvelteSet<string> = $state(new SvelteSet());
+    let deleted = $state(new SvelteSet<string>());
 
     async function save() {
         const result = await api({ fetch })
@@ -28,56 +32,58 @@
 
         if (result.status === 200) {
             await invalidate("app:homeworks");
-            onclose?.();
+            close();
         } else {
             alert(result.status);
         }
     }
+    function close() {
+        orderedIds = homeworks.map(h => h.id);
+        deleted = new SvelteSet();
+        dialog.close();
+    }
 </script>
 
-<div
-    class="backdrop absolute inset-0 bg-[black] opacity-50"
-    aria-hidden="true"
-></div>
-<div class="window absolute inset-0 flex justify-center items-center">
-    <div
-        class={[
-            "w-150 max-h-150 flex flex-col px-10 pt-10 pb-12.5 gap-7.5",
-            "text-on-surface bg-surface rounded-xl"
-        ]}
+<dialog
+    class={[
+        "modal",
+        "hidden open:flex flex-col gap-7.5 w-150 max-h-150 px-10 pt-10 pb-12.5 m-auto",
+        "text-on-surface bg-surface rounded-xl",
+        "backdrop:bg-[black] backdrop:opacity-30"
+    ]}
+    bind:this={dialog}
+>
+    <header class="flex flex-col">
+        <h2 class="self-start">Задания</h2>
+    </header>
+    <ul
+        class="flex flex-col gap-5 overflow-y-auto"
+        use:sortable={{ handle: ".dnd-handle", animation: 200 }}
+        onsortchanged={e => (orderedIds = e.detail.sortable.toArray())}
     >
-        <header class="flex flex-col">
-            <h2 class="self-start">Задания</h2>
-        </header>
-        <ul
-            class="flex flex-col gap-5 overflow-y-auto"
-            use:sortable={{ handle: ".dnd-handle", animation: 200 }}
-            onsortchanged={e => (orderedIds = e.detail.sortable.toArray())}
+        {#each homeworks as homework (homework.id)}
+            <ReorderableCard
+                id={homework.id}
+                title={homework.title}
+                subtitle={homework.deadline
+                    ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
+                    : "Без дедлайна"}
+                href="{coursePath(course)}/homeworks/{homework.id}"
+                isDeleted={deleted.has(homework.id)}
+                onDelete={() => deleted.add(homework.id)}
+                onRecover={() => deleted.delete(homework.id)}
+            />
+        {/each}
+    </ul>
+    <footer class="flex gap-5 text-comment">
+        <button
+            class="grow-1 h-17 btn text-comment bg-on-primary text-primary"
+            onclick={close}
         >
-            {#each homeworks as homework}
-                <ReorderableCard
-                    id={homework.id}
-                    title={homework.title}
-                    subtitle={homework.deadline
-                        ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
-                        : "Без дедлайна"}
-                    href="{coursePath(course)}/homeworks/{homework.id}"
-                    isDeleted={deleted.has(homework.id)}
-                    onDelete={() => deleted.add(homework.id)}
-                    onRecover={() => deleted.delete(homework.id)}
-                />
-            {/each}
-        </ul>
-        <footer class="flex gap-5 text-comment">
-            <button
-                class="grow-1 h-17 btn text-comment bg-on-primary text-primary"
-                onclick={onclose}
-            >
-                Отменить
-            </button>
-            <button class="grow-1 h-17 btn text-comment" onclick={save}>
-                Сохранить
-            </button>
-        </footer>
-    </div>
-</div>
+            Отменить
+        </button>
+        <button class="grow-1 h-17 btn text-comment" onclick={save}>
+            Сохранить
+        </button>
+    </footer>
+</dialog>

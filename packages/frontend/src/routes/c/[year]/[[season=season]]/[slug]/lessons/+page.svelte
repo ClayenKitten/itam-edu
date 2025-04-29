@@ -7,12 +7,18 @@
 
     let { data } = $props();
 
-    let editing = $state(false);
+    let modal: LessonEditModal;
 </script>
 
 <svelte:head>
     <title>Уроки | {data.course.title}</title>
 </svelte:head>
+
+<LessonEditModal
+    bind:this={modal}
+    course={data.course}
+    lessons={data.lessons}
+/>
 
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
@@ -21,7 +27,7 @@
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"
-                onclick={() => (editing = true)}
+                onclick={() => modal.show()}
             />
             <IconButton
                 icon="ph-plus"
@@ -41,11 +47,3 @@
         {/each}
     </div>
 </div>
-
-{#if editing}
-    <LessonEditModal
-        course={data.course}
-        lessons={data.lessons}
-        onclose={() => (editing = false)}
-    />
-{/if}

@@ -8,7 +8,7 @@
 
     let { data } = $props();
 
-    let editing = $state(false);
+    let modal: HomeworkListEditModal;
 
     const getTagKind = (homeworkId: string): TagKind | null => {
         if (data.user?.isCourseStaff(data.course.id)) return null;
@@ -26,6 +26,12 @@
     <title>Задания | {data.course.title}</title>
 </svelte:head>
 
+<HomeworkListEditModal
+    bind:this={modal}
+    course={data.course}
+    homeworks={data.homeworks}
+/>
+
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
         <h2>Задания</h2>
@@ -33,7 +39,7 @@
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"
-                onclick={() => (editing = true)}
+                onclick={() => modal.show()}
             />
             <IconButton
                 icon="ph-plus"
@@ -70,11 +76,3 @@
         {/each}
     </div>
 </div>
-
-{#if editing}
-    <HomeworkListEditModal
-        course={data.course}
-        homeworks={data.homeworks}
-        onclose={() => (editing = false)}
-    />
-{/if}
