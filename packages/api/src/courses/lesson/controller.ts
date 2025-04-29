@@ -95,14 +95,14 @@ export function lessonController(ctx: AppContext) {
         )
         .patch(
             "/:lesson",
-            async ({ params, lesson: service, body, user, db, error }) => {
+            async ({ params, services, body, user, db, error }) => {
                 const [course, lesson] = await Promise.all([
                     db.course.getById(params.course),
                     db.lesson.getById(params.lesson)
                 ]);
                 if (!course || !lesson) return error(404);
 
-                const newLesson = await service.update(
+                const newLesson = await services.lesson.update(
                     user,
                     course,
                     lesson,

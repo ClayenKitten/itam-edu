@@ -19,12 +19,11 @@ export function createAppContext(config: AppConfig) {
     const notification = new NotificationService(db.user, db.notification);
     const lesson = new LessonService(config, db, notification);
     const submission = new SubmissionService(config, db, notification);
+    const services = { notification, lesson, submission };
 
     return {
         config,
         db,
-        notification,
-        lesson,
-        submission
+        services
     };
 }

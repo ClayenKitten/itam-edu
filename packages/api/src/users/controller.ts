@@ -33,7 +33,7 @@ export async function userController(ctx: AppContext) {
         )
         .post(
             "/sessions",
-            async ({ db, body, notification, error, set }) => {
+            async ({ db, body, services, error, set }) => {
                 const token = `itam-edu-${randomBytes(128).toString("base64url")}`;
                 const expires = new Date(
                     new Date().getTime() + 30 * 24 * 60 * 60 * 1000
@@ -47,7 +47,7 @@ export async function userController(ctx: AppContext) {
                 if (!success) return error(401);
 
                 const user = await db.user.getByToken(token);
-                notification.send(
+                services.notification.send(
                     `<b>🔐 Новый вход в платформу ITAM Education</b>\n\nЭто не вы? Напишите @${env.ITAM_EDU_API_TG_SUPPORT_USERNAME}!`,
                     user ? [user.id] : []
                 );

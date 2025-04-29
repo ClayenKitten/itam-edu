@@ -93,14 +93,14 @@ export async function submissionController(ctx: AppContext) {
         )
         .post(
             "/:homework/:student",
-            async ({ submission, db, user, params, body, error }) => {
+            async ({ services, db, user, params, body, error }) => {
                 const [course, homework, student] = await Promise.all([
                     db.course.getById(params.course),
                     db.homework.getById(params.homework),
                     db.user.getById(params.student)
                 ]);
                 if (!course || !homework || !student) return error(404);
-                const result = await submission.sendMessage(
+                const result = await services.submission.sendMessage(
                     user,
                     course,
                     homework,
