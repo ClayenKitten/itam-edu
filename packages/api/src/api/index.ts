@@ -54,15 +54,10 @@ export default class ApiServer {
             .use(authenticationPlugin(this.ctx))
             .use(httpLoggerPlugin())
             .onError(async ctx => {
-                if (ctx.code === "UNKNOWN") {
-                    logger?.error("Unhandled Exception", {
-                        exceptionKind: ctx.error?.constructor?.name,
-                        name: ctx.error.name,
-                        message: ctx.error.message,
-                        cause: ctx.error.cause,
-                        stack: ctx.error.stack
-                    });
-                }
+                logger?.error("Unhandled Exception", {
+                    error: ctx.error,
+                    stack: (ctx.error as Error).stack
+                });
             })
             .use(userController(this.ctx))
             .use(courseController(this.ctx))
