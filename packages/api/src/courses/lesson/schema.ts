@@ -4,13 +4,15 @@ export const lessonInfo = t.Object({
     title: t.String({ minLength: 3, maxLength: 80 }),
     description: t.Nullable(t.String({ maxLength: 1000 })),
     banner: t.Nullable(t.String({ minLength: 1 })),
+    video: t.Nullable(t.String({ minLength: 1 })),
     position: t.Number({ multipleOf: 1 }),
     createdAt: t.Date()
 });
 export const updateLessonInfo = t.Pick(lessonInfo, [
     "title",
     "description",
-    "banner"
+    "banner",
+    "video"
 ]);
 
 export const lessonSchedule = t.Object({
