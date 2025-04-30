@@ -85,6 +85,7 @@ export default class LessonRepository extends Repository {
                     title: dto.info.title,
                     description: dto.info.description,
                     banner: dto.info.banner,
+                    video: dto.info.video,
                     content: dto.content,
                     isOnline: dto.schedule?.online !== null,
                     isOffline: dto.schedule?.offline !== null,
@@ -124,6 +125,7 @@ export default class LessonRepository extends Repository {
                 update.title = change.info.title;
                 update.description = change.info.description;
                 update.banner = change.info.banner;
+                update.video = change.info.video;
             }
             if (change.content !== undefined) {
                 update.content = change.content;
@@ -187,6 +189,7 @@ export default class LessonRepository extends Repository {
                 title: lesson.title,
                 description: lesson.description,
                 banner: lesson.banner,
+                video: lesson.video,
                 position: lesson.position,
                 createdAt: lesson.createdAt
             },

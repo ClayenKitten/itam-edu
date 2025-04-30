@@ -135,6 +135,7 @@ export interface Lessons {
    * Human-readable name of the lesson
    */
   title: string;
+  video: string | null;
 }
 
 export interface NotificationMessages {

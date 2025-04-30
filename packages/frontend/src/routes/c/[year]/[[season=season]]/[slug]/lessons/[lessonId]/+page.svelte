@@ -6,6 +6,7 @@
     import { formatLessonSchedule } from "$lib/format.js";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
+    import { courseFilePath } from "itam-edu-common";
 
     let { data } = $props();
 </script>
@@ -63,6 +64,18 @@
             <p class="mt-4">{data.lesson.description}</p>
         {/if}
     </section>
+    {#if data.lesson.video}
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video
+            controls
+            preload="metadata"
+            class="self-start max-h-150 shadow rounded-xs"
+        >
+            <source
+                src={courseFilePath(data.course.id).public(data.lesson.video)}
+            />
+        </video>
+    {/if}
     {#if data.lesson.content}
         <section class="flex flex-col gap-5">
             <h3>Теория и материалы</h3>

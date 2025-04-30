@@ -8,6 +8,7 @@
     import api from "$lib/api";
     import ScheduleSection from "./ScheduleSection.svelte";
     import equal from "fast-deep-equal";
+    import VideoSection from "./VideoSection.svelte";
 
     let { data } = $props();
 
@@ -15,6 +16,7 @@
     let modifiedHomeworks: string[] = $state(
         data.lesson.homeworks.map(h => h.id)
     );
+    let uploadVideoFile: File | null = $state(null);
 
     async function save() {
         let changedSchedule = !equal(data.lesson.schedule, lesson.schedule);
@@ -27,11 +29,24 @@
             return;
         }
 
+        let video: string | null = lesson.video;
+        if (uploadVideoFile !== null) {
+            const response = await api({ fetch })
+                .courses({ course: data.course.id })
+                .files.post({ file: uploadVideoFile });
+            if (response.error) {
+                alert(response.status);
+                return null;
+            }
+            video = response.data.filename;
+        }
+
         const update = {
             info: {
                 title: lesson.title,
                 description: lesson.description,
-                banner: lesson.banner
+                banner: lesson.banner,
+                video
             },
             content: lesson.content,
             homeworks: modifiedHomeworks,
@@ -64,6 +79,15 @@
 >
     <InfoSection course={data.course} bind:lesson />
     <ScheduleSection bind:schedule={lesson.schedule} />
+    <VideoSection
+        course={data.course}
+        video={lesson.video}
+        onUploaded={file => (uploadVideoFile = file)}
+        onDeleted={() => {
+            lesson.video = null;
+            uploadVideoFile = null;
+        }}
+    />
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}

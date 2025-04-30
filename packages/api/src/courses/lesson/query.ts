@@ -18,6 +18,7 @@ export class LessonQuery {
                 "description",
                 "content",
                 "banner",
+                "video",
                 "position",
                 "createdAt",
                 "location",
@@ -49,6 +50,7 @@ export class LessonQuery {
             description: lesson.description,
             content: lesson.content,
             banner: lesson.banner,
+            video: lesson.video,
             position: lesson.position,
             createdAt: lesson.createdAt,
             homeworks,
@@ -71,6 +73,7 @@ export class LessonQuery {
                 "id",
                 "courseId",
                 "title",
+                "video",
                 "banner",
                 "createdAt",
                 "location",
@@ -86,6 +89,7 @@ export class LessonQuery {
             courseId: l.courseId,
             title: l.title,
             banner: l.banner,
+            video: l.video,
             createdAt: l.createdAt,
             schedule: l.scheduledAt
                 ? {
@@ -104,6 +108,7 @@ export type LessonDTO = {
     title: string;
     description: string | null;
     banner: string | null;
+    video: string | null;
     position: number;
     createdAt: Date;
     content: string | null;
@@ -120,6 +125,7 @@ export type LessonPartialDTO = {
     courseId: string;
     title: string;
     banner: string | null;
+    video: string | null;
     createdAt: Date;
     schedule: LessonScheduleDTO | null;
 };
