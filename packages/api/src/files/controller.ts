@@ -3,26 +3,23 @@ import type { AppContext } from "../ctx";
 import { authenticationPlugin } from "../api/plugins/authenticate";
 import { randomUUID } from "crypto";
 import { S3Client } from "bun";
-import { env } from "process";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
 
 export async function filesController(ctx: AppContext) {
     return new Elysia()
         .derive(() => ctx)
-        .derive(() => ({
+        .derive(({ config }) => ({
             // TODO: extract into the service
             s3client: new S3Client({
-                bucket: env.ITAM_EDU_S3_PROXY_BUCKET!,
                 endpoint:
-                    (!(env.ITAM_EDU_S3_PROXY_SSL! === "false")
-                        ? "https"
-                        : "http") +
+                    (config.s3.useSSL ? "https" : "http") +
                     "://" +
-                    env.ITAM_EDU_S3_PROXY_ENDPOINT! +
+                    config.s3.endpoint +
                     ":" +
-                    env.ITAM_EDU_S3_PROXY_PORT!,
-                accessKeyId: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
-                secretAccessKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!
+                    config.s3.port,
+                accessKeyId: config.s3.accessKey,
+                secretAccessKey: config.s3.secretKey,
+                bucket: config.s3.bucket
             })
         }))
         .use(authenticationPlugin(ctx))

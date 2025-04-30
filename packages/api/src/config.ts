@@ -16,10 +16,6 @@ export interface AppConfig {
          */
         port: string;
     };
-    db: {
-        /** Postgres connection string. */
-        connectionString: string;
-    };
     tg: {
         /** Telegram API token. */
         token: string;
@@ -28,14 +24,25 @@ export interface AppConfig {
     };
     /** Base path for website (frontend). */
     webUrl: string;
+    /** Postgres connection configuration. */
+    db: {
+        /** Postgres connection string. */
+        connectionString: string;
+    };
+    /** S3 connection configuration. */
+    s3: {
+        endpoint: string;
+        port: string;
+        useSSL: boolean;
+        accessKey: string;
+        secretKey: string;
+        bucket: string;
+    };
 }
 
 /** Creates application config from environment variables. */
 export function createConfigFromEnv(): AppConfig {
     return {
-        db: {
-            connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING!
-        },
         api: {
             host: env.ITAM_EDU_API_HOST ?? "0.0.0.0",
             port: env.ITAM_EDU_API_PORT ?? "3000"
@@ -44,6 +51,17 @@ export function createConfigFromEnv(): AppConfig {
             token: env.ITAM_EDU_API_TG_TOKEN!,
             supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME!
         },
-        webUrl: env.ITAM_EDU_FRONTEND_URL!
+        webUrl: env.ITAM_EDU_FRONTEND_URL!,
+        db: {
+            connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING!
+        },
+        s3: {
+            endpoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,
+            port: env.ITAM_EDU_S3_PROXY_PORT!,
+            useSSL: !(env.ITAM_EDU_S3_PROXY_SSL! === "false"),
+            accessKey: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
+            secretKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!,
+            bucket: env.ITAM_EDU_S3_PROXY_BUCKET!
+        }
     };
 }
