@@ -1,11 +1,14 @@
 <script lang="ts">
+    import api from "$lib/api";
+    import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { formatLessonSchedule } from "$lib/format";
-    import type { CreateLesson, Lesson } from "$lib/types";
+    import type { Course, CreateLesson, Lesson } from "$lib/types";
     import { courseFilePath } from "itam-edu-common";
 
-    let { lesson = $bindable() }: Props = $props();
+    let { course, lesson = $bindable() }: Props = $props();
 
     type Props = {
+        course: Course;
         lesson: Lesson | CreateLesson;
     };
 </script>
@@ -38,45 +41,23 @@
         </label>
         <label class="shrink-0 flex flex-col gap-2">
             <h4>Обложка</h4>
-            <div
-                class="border-2 border-on-primary rounded-sm overflow-hidden focus-within:border-primary"
-            >
-                <div
-                    class="group relative flex justify-center items-center h-[200px] aspect-[318/200] cursor-pointer"
-                >
-                    <input class="h-0 w-0 outline-0" type="file" />
-                    {#if lesson.banner}
-                        <img
-                            class="object-contain"
-                            src={courseFilePath(lesson.courseId).public(
-                                lesson.banner
-                            )}
-                            alt=""
-                        />
-                        <button
-                            class={[
-                                "absolute top-4 right-4 flex items-center justify-center h-[46px] w-[46px]",
-                                "rounded-full bg-primary text-on-primary hover:bg-on-primary hover:text-primary",
-                                "transition-colors duration-100"
-                            ]}
-                            onclick={() => (lesson.banner = null)}
-                            aria-label="Удалить"
-                        >
-                            <i class="ph ph-trash text-[20px]"></i>
-                        </button>
-                    {:else}
-                        <div
-                            class={[
-                                "flex items-center justify-center h-[46px] w-[46px]",
-                                "rounded-full bg-primary text-on-primary group-hover:bg-on-primary group-hover:text-primary",
-                                "transition-colors duration-100"
-                            ]}
-                        >
-                            <i class="ph ph-upload-simple text-[20px]"></i>
-                        </div>
-                    {/if}
-                </div>
-            </div>
+            <ImageUploader
+                bind:filename={lesson.banner}
+                aspectRatio="318/200"
+                filenameToSrc={filename =>
+                    courseFilePath(lesson.courseId).public(filename)}
+                onUpload={async file => {
+                    const response = await api({ fetch })
+                        .courses({ course: course.id })
+                        .files.post({ file });
+                    if (response.error) {
+                        alert(response.status);
+                        return null;
+                    }
+                    const { filename } = response.data;
+                    return filename;
+                }}
+            />
         </label>
     </div>
 </section>
