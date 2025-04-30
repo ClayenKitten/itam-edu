@@ -11,7 +11,7 @@ export type AppContext = ReturnType<typeof createAppContext>;
 /** Creates static application context. */
 export function createAppContext(config: AppConfig) {
     const databaseConnection = createDatabaseConnection(
-        config.db.connectionString
+        config.postgres.connectionString
     );
 
     const db = createDatabaseContext(databaseConnection);

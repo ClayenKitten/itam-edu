@@ -18,14 +18,14 @@ tasks:
     desc: Run database migrations
     dir: ./packages/db
     cmds:
-      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --migrations-dir="./migrations" up --strict
+      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_POSTGRES_CONNECTION_STRING" --migrations-dir="./migrations" up --strict
       - task: db:codegen
 
   db:down:
     desc: Revert database migration
     dir: ./packages/db
     cmds:
-      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --migrations-dir="./migrations" down
+      - npx dbmate  --no-dump-schema --url "$ITAM_EDU_API_POSTGRES_CONNECTION_STRING" --migrations-dir="./migrations" down
       - task: db:codegen
 
   db:new:
@@ -38,4 +38,4 @@ tasks:
   db:codegen:
     desc: Generate types from database
     dir: ./packages/db
-    cmd: npx kysely-codegen --url "$ITAM_EDU_API_DB_CONNECTION_STRING" --out-file ./index.ts --camel-case --dialect postgres
+    cmd: npx kysely-codegen --url "$ITAM_EDU_API_POSTGRES_CONNECTION_STRING" --out-file ./index.ts --camel-case --dialect postgres

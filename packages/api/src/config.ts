@@ -25,7 +25,7 @@ export interface AppConfig {
     /** Base path for website (frontend). */
     webUrl: string;
     /** Postgres connection configuration. */
-    db: {
+    postgres: {
         /** Postgres connection string. */
         connectionString: string;
     };
@@ -52,8 +52,8 @@ export function createConfigFromEnv(): AppConfig {
             supportUsername: env.ITAM_EDU_API_TG_SUPPORT_USERNAME!
         },
         webUrl: env.ITAM_EDU_FRONTEND_URL!,
-        db: {
-            connectionString: env.ITAM_EDU_API_DB_CONNECTION_STRING!
+        postgres: {
+            connectionString: env.ITAM_EDU_API_POSTGRES_CONNECTION_STRING!
         },
         s3: {
             endpoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,
