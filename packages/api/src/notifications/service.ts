@@ -1,15 +1,16 @@
 import { Queue } from "bullmq";
 import type NotificationRepository from "./repository";
-import { env } from "process";
 import type UserRepository from "../users/repository";
+import type { AppConfig } from "../config";
 
 export default class NotificationService {
     public constructor(
+        config: AppConfig["redis"],
         private users: UserRepository,
         private notifications: NotificationRepository
     ) {
         this.queue = new Queue("telegram.send", {
-            connection: { url: env.ITAM_EDU_API_REDIS_CONNECTION_STRING }
+            connection: { url: config.connectionString }
         });
     }
 

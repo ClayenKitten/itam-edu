@@ -16,7 +16,11 @@ export function createAppContext(config: AppConfig) {
 
     const db = createDatabaseContext(databaseConnection);
 
-    const notification = new NotificationService(db.user, db.notification);
+    const notification = new NotificationService(
+        config.redis,
+        db.user,
+        db.notification
+    );
     const lesson = new LessonService(config, db, notification);
     const submission = new SubmissionService(config, db, notification);
     const services = { notification, lesson, submission };

@@ -26,7 +26,23 @@ export interface AppConfig {
     webUrl: string;
     /** Postgres connection configuration. */
     postgres: {
-        /** Postgres connection string. */
+        /**
+         * Connection string for Postgres database.
+         *
+         *  ### Example
+         *
+         * `postgres://username:password@hostname:port/databaseName`
+         */
+        connectionString: string;
+    };
+    /** Redis connection configuration. */
+    redis: {
+        /** Connection string for Redis database.
+         *
+         *  ### Example
+         *
+         * `redis://username:password@hostname:port`
+         */
         connectionString: string;
     };
     /** S3 connection configuration. */
@@ -54,6 +70,9 @@ export function createConfigFromEnv(): AppConfig {
         webUrl: env.ITAM_EDU_FRONTEND_URL!,
         postgres: {
             connectionString: env.ITAM_EDU_API_POSTGRES_CONNECTION_STRING!
+        },
+        redis: {
+            connectionString: env.ITAM_EDU_API_REDIS_CONNECTION_STRING!
         },
         s3: {
             endpoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,

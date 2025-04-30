@@ -13,7 +13,11 @@ export class Application {
         this.api = new ApiServer(ctx);
         this.telegram = new TelegramBot(ctx);
         this.workers = {
-            notification: new NotificationWorker(ctx, this.telegram)
+            notification: new NotificationWorker(
+                ctx.config.redis,
+                ctx.db,
+                this.telegram
+            )
         };
     }
 
