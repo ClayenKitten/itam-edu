@@ -28,7 +28,10 @@ export class S3Client {
         // request will probably be sent to public hostname of the api server.
         request.headers.delete("Host");
 
-        const url = await this.client.presignedGetObject("files", fileName);
+        const url = await this.client.presignedGetObject(
+            env.ITAM_EDU_S3_PROXY_BUCKET!,
+            fileName
+        );
         return await fetch(url, { headers: request.headers });
     }
 }
