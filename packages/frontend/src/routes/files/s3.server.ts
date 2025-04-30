@@ -3,7 +3,6 @@ import * as Minio from "minio";
 
 export class S3Client {
     public constructor() {
-        console.log(env);
         if (!cache) {
             cache = new Minio.Client({
                 endPoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,

@@ -14,6 +14,7 @@ import { homeworkController } from "../courses/homework/controller";
 import { studentController } from "../courses/student/controller";
 import { submissionController } from "../courses/submission/controller";
 import { staffController } from "../staff/controller";
+import { filesController } from "../files/controller";
 
 export default class ApiServer {
     private elysia: Promise<AnyElysia>;
@@ -70,6 +71,7 @@ export default class ApiServer {
             .use(submissionController(this.ctx))
             .use(studentController(this.ctx))
             .use(staffController(this.ctx))
+            .use(filesController(this.ctx))
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
                 detail: {
