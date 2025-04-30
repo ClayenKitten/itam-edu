@@ -78,7 +78,7 @@
                 />
             </label>
         </div>
-        <div class="flex flex-col gap-2">
+        <div class="w-80 flex flex-col gap-2">
             <h4>Формат</h4>
             <label>
                 <input
@@ -88,9 +88,6 @@
                 />
                 Провести урок онлайн
             </label>
-        </div>
-        <label class="flex flex-col gap-2">
-            <h4>Офлайн-урок</h4>
             <label>
                 <input
                     type="checkbox"
@@ -107,7 +104,7 @@
                     bind:value={schedule.offline.location}
                 />
             {/if}
-        </label>
+        </div>
         <button
             class="btn secondary w-min text-nowrap"
             onclick={() => {
