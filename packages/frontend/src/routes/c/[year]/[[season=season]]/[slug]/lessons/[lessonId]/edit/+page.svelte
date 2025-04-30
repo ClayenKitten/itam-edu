@@ -62,7 +62,7 @@
         "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
-    <InfoSection bind:lesson />
+    <InfoSection course={data.course} bind:lesson />
     <ScheduleSection bind:schedule={lesson.schedule} />
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
