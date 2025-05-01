@@ -6,22 +6,24 @@ import { S3Client } from "bun";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
 
 export async function filesController(ctx: AppContext) {
+    // TODO: extract into the service
     return new Elysia()
         .derive(() => ctx)
-        .derive(({ config }) => ({
-            // TODO: extract into the service
-            s3client: new S3Client({
-                endpoint:
-                    (config.s3.useSSL ? "https" : "http") +
-                    "://" +
-                    config.s3.endpoint +
-                    ":" +
-                    config.s3.port,
-                accessKeyId: config.s3.accessKey,
-                secretAccessKey: config.s3.secretKey,
-                bucket: config.s3.bucket
-            })
-        }))
+        .derive(({ config }) => {
+            let endpoint =
+                (config.s3.useSSL ? "https" : "http") +
+                "://" +
+                config.s3.endpoint;
+            if (config.s3.port) endpoint += `:${config.s3.port}`;
+            return {
+                s3client: new S3Client({
+                    endpoint,
+                    accessKeyId: config.s3.accessKey,
+                    secretAccessKey: config.s3.secretKey,
+                    bucket: config.s3.bucket
+                })
+            };
+        })
         .use(authenticationPlugin(ctx))
         .get(
             "/courses/:course/files/:file",

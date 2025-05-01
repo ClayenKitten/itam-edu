@@ -48,7 +48,7 @@ export interface AppConfig {
     /** S3 connection configuration. */
     s3: {
         endpoint: string;
-        port: string;
+        port?: string;
         useSSL: boolean;
         accessKey: string;
         secretKey: string;
@@ -76,7 +76,7 @@ export function createConfigFromEnv(): AppConfig {
         },
         s3: {
             endpoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,
-            port: env.ITAM_EDU_S3_PROXY_PORT!,
+            port: env.ITAM_EDU_S3_PROXY_PORT,
             useSSL: !(env.ITAM_EDU_S3_PROXY_SSL! === "false"),
             accessKey: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
             secretKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!,

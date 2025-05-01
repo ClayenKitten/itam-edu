@@ -6,7 +6,9 @@ export class S3Client {
         if (!cache) {
             cache = new Minio.Client({
                 endPoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,
-                port: Number(env.ITAM_EDU_S3_PROXY_PORT!),
+                port: env.ITAM_EDU_S3_PROXY_PORT
+                    ? Number(env.ITAM_EDU_S3_PROXY_PORT)
+                    : undefined,
                 useSSL: !(env.ITAM_EDU_S3_PROXY_SSL! === "false"),
                 accessKey: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
                 secretKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!
@@ -20,7 +22,7 @@ export class S3Client {
     /**
      * Proxies request to S3 server.
      *
-     * Thanks to proxying, caching, ranges and other headers are hanlded by S3 server automatically.
+     * Thanks to proxying, caching, ranges and other headers are handled by S3 server automatically.
      * */
     // TODO: authorization
     public async proxy(fileName: string, request: Request): Promise<Response> {
