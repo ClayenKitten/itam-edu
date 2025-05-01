@@ -61,19 +61,21 @@
         use:sortable={{ handle: ".dnd-handle", animation: 200 }}
         onsortchanged={e => (orderedIds = e.detail.sortable.toArray())}
     >
-        {#each homeworks as homework (homework.id)}
-            <ReorderableCard
-                id={homework.id}
-                title={homework.title}
-                subtitle={homework.deadline
-                    ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
-                    : "Без дедлайна"}
-                href="{coursePath(course)}/homeworks/{homework.id}"
-                isDeleted={deleted.has(homework.id)}
-                onDelete={() => deleted.add(homework.id)}
-                onRecover={() => deleted.delete(homework.id)}
-            />
-        {/each}
+        {#key homeworks}
+            {#each homeworks as homework (homework.id)}
+                <ReorderableCard
+                    id={homework.id}
+                    title={homework.title}
+                    subtitle={homework.deadline
+                        ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
+                        : "Без дедлайна"}
+                    href="{coursePath(course)}/homeworks/{homework.id}"
+                    isDeleted={deleted.has(homework.id)}
+                    onDelete={() => deleted.add(homework.id)}
+                    onRecover={() => deleted.delete(homework.id)}
+                />
+            {/each}
+        {/key}
     </ul>
     <footer class="flex gap-5 text-comment">
         <button

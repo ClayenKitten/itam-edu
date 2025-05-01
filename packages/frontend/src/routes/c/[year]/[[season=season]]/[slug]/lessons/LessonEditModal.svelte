@@ -61,19 +61,21 @@
         use:sortable={{ handle: ".dnd-handle", animation: 200 }}
         onsortchanged={e => (orderedIds = e.detail.sortable.toArray())}
     >
-        {#each lessons as lesson (lesson.id)}
-            <ReorderableCard
-                id={lesson.id}
-                title={lesson.title}
-                subtitle={lesson.schedule
-                    ? `${formatDate(lesson.schedule.date, "dd.MM.yy HH:mm")}`
-                    : "Без даты"}
-                href="{coursePath(course)}/lessons/{lesson.id}"
-                isDeleted={deleted.has(lesson.id)}
-                onDelete={() => deleted.add(lesson.id)}
-                onRecover={() => deleted.delete(lesson.id)}
-            />
-        {/each}
+        {#key lessons}
+            {#each lessons as lesson (lesson.id)}
+                <ReorderableCard
+                    id={lesson.id}
+                    title={lesson.title}
+                    subtitle={lesson.schedule
+                        ? `${formatDate(lesson.schedule.date, "dd.MM.yy HH:mm")}`
+                        : "Без даты"}
+                    href="{coursePath(course)}/lessons/{lesson.id}"
+                    isDeleted={deleted.has(lesson.id)}
+                    onDelete={() => deleted.add(lesson.id)}
+                    onRecover={() => deleted.delete(lesson.id)}
+                />
+            {/each}
+        {/key}
     </ul>
     <footer class="flex gap-5 text-comment">
         <button
