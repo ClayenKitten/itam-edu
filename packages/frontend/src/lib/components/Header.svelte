@@ -1,10 +1,12 @@
 <script lang="ts">
     import CalendarWindow from "$lib/windows/CalendarWindow.svelte";
+    import CreateCallWindow from "$lib/windows/CreateCallWindow.svelte";
     import LoginWindow from "$lib/windows/LoginWindow.svelte";
     import { userFilePath, type User } from "itam-edu-common";
 
     let { user, standalone = false }: Props = $props();
 
+    let createCallWindow: CreateCallWindow;
     let calendarWindow: CalendarWindow;
     let loginWindow: LoginWindow;
 
@@ -14,6 +16,7 @@
     };
 </script>
 
+<CreateCallWindow bind:this={createCallWindow} />
 <CalendarWindow bind:this={calendarWindow} />
 <LoginWindow bind:this={loginWindow} />
 
@@ -48,7 +51,19 @@
                 "flex justify-center items-center h-full aspect-square rounded-xs",
                 "hover:bg-on-primary transition-colors duration-100"
             ]}
+            aria-label="Начать звонок"
+            title="Начать звонок"
+            onclick={() => createCallWindow.show()}
+        >
+            <i class="ph ph-phone-plus text-primary text-[20px]"></i>
+        </button>
+        <button
+            class={[
+                "flex justify-center items-center h-full aspect-square rounded-xs",
+                "hover:bg-on-primary transition-colors duration-100"
+            ]}
             aria-label="Уведомления"
+            title="Уведомления"
         >
             <i class="ph ph-bell text-primary text-[20px]"></i>
         </button>
@@ -58,6 +73,7 @@
                 "hover:bg-on-primary transition-colors duration-100"
             ]}
             aria-label="Календарь"
+            title="Календарь"
             onclick={() => calendarWindow.show()}
         >
             <i class="ph ph-calendar-dots text-primary text-[20px]"></i>
@@ -66,6 +82,7 @@
             href="/profile"
             class="flex justify-center items-center h-full aspect-square ml-2.5 bg-primary rounded-xs overflow-hidden"
             aria-label="Профиль"
+            title="Профиль"
         >
             {#if user.info.avatar}
                 <img

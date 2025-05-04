@@ -36,6 +36,7 @@
         "globals": "^15.0.0",
         "itam-edu-api": "file:../api",
         "itam-edu-common": "file:../common",
+        "livekit-client": "^2.11.4",
         "minio": "^8.0.5",
         "prettier": "^3.3.2",
         "prettier-plugin-svelte": "^3.2.6",
