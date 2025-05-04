@@ -15,6 +15,7 @@ import SubmissionRepository from "./courses/submission/repository";
 import { LessonQuery } from "./courses/lesson/query";
 import { HomeworksQuery } from "./courses/homework/query";
 import { SubmissionQuery } from "./courses/submission/query";
+import { CallService } from "./calls/service";
 
 /** Global context of the application. */
 export type AppContext = ReturnType<typeof createAppContext>;
@@ -46,7 +47,8 @@ export function createAppContext(config: AppConfig) {
     );
     const lesson = new LessonService(config, db, notification);
     const submission = new SubmissionService(config, db, notification);
-    const services = { notification, lesson, submission };
+    const call = new CallService(config.livekit);
+    const services = { notification, lesson, submission, call };
 
     return {
         config,
