@@ -37,6 +37,7 @@ export async function docsPlugin() {
                         { name: "Submissions" },
                         { name: "Students" },
                         { name: "Staff" },
+                        { name: "Calls" },
                         { name: "Files" },
                         { name: "Infra" }
                     ]
