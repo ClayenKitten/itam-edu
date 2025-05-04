@@ -94,7 +94,7 @@
                     <header class="flex items-center gap-2 h-6">
                         <span>
                             {participant.name}
-                            {#if room.localParticipant === participant}
+                            {#if participant === room.localParticipant}
                                 <span class="text-on-surface-muted">(вы)</span>
                             {/if}
                         </span>
@@ -114,7 +114,7 @@
                             ></i>
                         {/if}
                     </header>
-                    {#if participant.microphoneTrack}
+                    {#if participant.microphoneTrack && participant !== room.localParticipant}
                         <ParticipantAudio track={participant.microphoneTrack} />
                     {/if}
                     {#if participant.screenTrack}

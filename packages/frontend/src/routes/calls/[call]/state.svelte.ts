@@ -109,7 +109,6 @@ export class RemoteParticipantState extends ParticipantState {
         }
 
         participant.on("trackUnpublished", track => {
-            alert("Well?");
             if (track.source === "camera") {
                 this.cameraTrack = null;
             } else if (track.source === "screen_share") {
