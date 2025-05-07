@@ -1,28 +1,20 @@
 # ITAM Education
 
-An LMS for the [ITAM](https://itatmisis.ru) community.
+An open-source Learning Management System for student-to-student courses. Built by and for the [ITAM](https://itatmisis.ru) community.
 
 ## ✨ Features
 
-- Courses
-- Homeworks
-- Live Streams
-- Admin panel
+### 📚 Courses
 
-## 🧩 Integrations
+ITAM Education enables any authorized community member to create a fully customizable course. Within a course, teachers organize content into lessons that may include theoretical materials, video content or an associated video call room. Homework assignments can be added to any lesson, and the built-in review system lets teachers provide personalized feedback to the student submissions.
 
-ITAM Education supports integration with some third-party tools.
+### ☎️ Video Calls
+
+The platform features video calls with recording and screen sharing capabilities. Calls that are related to a specific lesson automatically report student attendance, and video recording is shown on the lesson page after the call ends.
 
 ### <img height="16" width="16" src="https://cdn.simpleicons.org/telegram/white" />&nbsp;&nbsp;Telegram Bot
 
-Telegram bot is used for user login and notifications. Check integration [README](/packages/api/src/telegram) for more information.
-
-### <img height="16" width="16" src="https://cdn.simpleicons.org/github/white" />&nbsp;&nbsp;GitHub App
-
-GitHub App manages GitHub organization of the course. Check integration [README](https://www.youtube.com/watch?v=dQw4w9WgXcQ) for more information.
-
-> [!IMPORTANT]
-> GitHub integration is not implemented yet.
+The integrated Telegram bot allows users to log in to the web platform, and receive real-time notifications about upcoming lessons, homework deadlines, calls, and other important updates directly through Telegram.
 
 ## 📦 Packages
 
@@ -35,7 +27,7 @@ ITAM Education platform consists of multiple packages that communicate over HTTP
 | [itam-edu-common](./packages/common)     | TypeScript library                           | Common classes between frontend and backend |
 | [itam-edu-db](./packages/db)             | [dbmate](https://github.com/amacneil/dbmate) | Database migrations                         |
 
-All packages are built into OCI images and hosted on [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
+All deployable packages are built into the OCI images and uploaded to the [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
 
 ## 🚀 Deploy
 
@@ -57,9 +49,9 @@ All packages are built into OCI images and hosted on [GitHub Container Registry]
 
     Copy `Caddyfile.example` as `Caddyfile` and adjust its content as needed.
 
-#### Start
+1. **Create containers**
 
-`docker compose up --detach`
+    `docker compose up --detach`
 
 ### ☸️ Helm
 
@@ -67,36 +59,30 @@ _WIP_
 
 ### 💻 Baremetal
 
-Non-containerized setup on Linux/Windows/etc is theoretically possible, though not tested. Just make sure to setup everything according to docker compose configuration.
+While a non-containerized setup on Linux is theoretically possible, it is not officially supported. Refer to Docker Compose configuration for guidance.
 
 ## 🛠️ Development
 
-Local development environment can be easily setup via VS Code's devcontainer.
-VS Code's devcontainer is used for development.
+Development happens inside a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers). VS Code is a recommended editor of choice.
 
-Taskfile is used to execute commands. Run `task` to see a full list.
-
-### Setup
-
-- Clone repository and open it in devcontainer
+- Clone repository and open it in a devcontainer
 - Install dependencies via `npm ci`
-- Setup environment
+- Configure environment
     - Create a Telegram bot to use during local development
-    - Clone `.env.example` as `.env` and fill all variables related to Telegram. Other variables may be skipped.
-- Start development servers via `Run and Debug` menu or CLI
+    - Copy `.env.example` as `.env` and fill all variables related to Telegram. Other variables may be skipped.
+- Start services in development mode via `Run and Debug` menu (F5 in VS Code)
+- Run `task` in the Terminal to see the list of available commands.
 
-### Services
-
-| Service               | URL                  |
-| --------------------- | -------------------- |
-| **Packages**          |                      |
-| itam-edu-api          | http://api.localhost |
-| itam-edu-frontend     | http://www.localhost |
-| **Development tools** |                      |
-| Navigation            | http://localhost     |
-| dbgate                | http://db.localhost  |
-| minio                 | http://s3.localhost  |
-| **Infrastructure**    |                      |
-| PostgreSQL            | `postgres:5432`      |
-| Redis                 | `redis:6379`         |
-| PostgreSQL            | `minio:9000`         |
+| Service                            | URL                  |
+| ---------------------------------- | -------------------- |
+| **Packages**                       |                      |
+| itam-edu-api                       | http://api.localhost |
+| itam-edu-frontend                  | http://www.localhost |
+| **Development tools**              |                      |
+| Navigation                         | http://localhost     |
+| dbgate (PostgreSQL & Redis Web UI) | http://db.localhost  |
+| Minio Web UI                       | http://s3.localhost  |
+| **Infrastructure**                 |                      |
+| PostgreSQL                         | `postgres:5432`      |
+| Redis                              | `redis:6379`         |
+| Minio                              | `minio:9000`         |
