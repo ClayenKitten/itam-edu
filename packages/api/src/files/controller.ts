@@ -7,7 +7,7 @@ import { REQUIRE_TOKEN } from "../api/plugins/docs";
 
 export async function filesController(ctx: AppContext) {
     // TODO: extract into the service
-    return new Elysia()
+    return new Elysia({ tags: ["Files"] })
         .derive(() => ctx)
         .derive(({ config }) => {
             let endpoint =
@@ -34,8 +34,7 @@ export async function filesController(ctx: AppContext) {
             {
                 detail: {
                     summary: "Get file",
-                    description: "Returns a requested course file",
-                    tags: ["Courses", "Files"]
+                    description: "Returns a requested course file"
                 }
             }
         )
@@ -72,7 +71,6 @@ export async function filesController(ctx: AppContext) {
                 detail: {
                     summary: "Upload file",
                     description: "Uploads a new file to the course",
-                    tags: ["Courses", "Files"],
                     security: REQUIRE_TOKEN
                 }
             }
