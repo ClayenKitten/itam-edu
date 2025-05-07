@@ -1,12 +1,12 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 
-export async function docsPlugin() {
+export function docsPlugin() {
     return new Elysia({ name: "docs" })
         .use(
-            await swagger({
+            swagger({
                 provider: "swagger-ui",
-                path: "/docs",
+                path: "docs",
                 swaggerOptions: {
                     persistAuthorization: true
                 },

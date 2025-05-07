@@ -51,7 +51,7 @@ export default class ApiServer {
             strictPath: true
         })
             .use(corsPlugin())
-            .use(await docsPlugin())
+            .use(docsPlugin())
             .use(authenticationPlugin(this.ctx))
             .use(httpLoggerPlugin())
             .onError(async ctx => {
