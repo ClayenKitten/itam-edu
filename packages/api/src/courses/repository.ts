@@ -45,16 +45,8 @@ export default class CourseRepository extends Repository {
         const results = await this.db
             .selectFrom("courses")
             .select(schemaFields(schema.course))
-            .select(eb => [
-                eb
-                    .selectFrom("courseStudents")
-                    .select(sql<number>`count(*)::int`.as("studentsCount"))
-                    .whereRef("courses.id", "=", "courseStudents.courseId")
-                    .as("studentsCount")
-            ])
             .orderBy("year desc")
             .orderBy("semester", sql<string>`asc nulls first`)
-            .$narrowType<{ studentsCount: NotNull }>()
             .execute();
         return results.map(c => new Course(c));
     }

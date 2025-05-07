@@ -14,17 +14,15 @@ export default class UserRepository extends Repository {
             .executeTakeFirst();
         if (!user) return null;
 
-        const enrollments = await this.db
-            .selectFrom("courseStudents")
-            .select("courseId")
+        const userCourses = await this.db
+            .selectFrom("userCourses")
+            .selectAll()
             .where("userId", "=", user.id)
             .execute();
-
-        const coursePermissions = await this.db
-            .selectFrom("courseStaff")
-            .selectAll("courseStaff")
-            .where("userId", "=", user.id)
-            .execute();
+        const enrollments = userCourses
+            .filter(u => u.isStaff === false)
+            .map(u => ({ courseId: u.courseId }));
+        const coursePermissions = userCourses.filter(u => u.isStaff === true);
 
         return this.toEntity(user, enrollments, coursePermissions);
     }
@@ -37,17 +35,15 @@ export default class UserRepository extends Repository {
             .executeTakeFirst();
         if (!user) return null;
 
-        const enrollments = await this.db
-            .selectFrom("courseStudents")
-            .select("courseId")
+        const userCourses = await this.db
+            .selectFrom("userCourses")
+            .selectAll()
             .where("userId", "=", user.id)
             .execute();
-
-        const coursePermissions = await this.db
-            .selectFrom("courseStaff")
-            .selectAll("courseStaff")
-            .where("userId", "=", user.id)
-            .execute();
+        const enrollments = userCourses
+            .filter(u => u.isStaff === false)
+            .map(u => ({ courseId: u.courseId }));
+        const coursePermissions = userCourses.filter(u => u.isStaff === true);
 
         return this.toEntity(user, enrollments, coursePermissions);
     }
@@ -129,7 +125,7 @@ export default class UserRepository extends Repository {
     private toEntity(
         user: Selectable<DB["users"]>,
         enrollments: { courseId: string }[],
-        coursePermissions: Selectable<DB["courseStaff"]>[]
+        coursePermissions: Selectable<DB["userCourses"]>[]
     ) {
         return new User(
             user.id,

@@ -49,33 +49,6 @@ export interface Courses {
   year: Generated<number>;
 }
 
-export interface CourseStaff {
-  /**
-   * Whether user can edit course content such as lessons, homeworks, etc
-   */
-  canEditContent: Generated<boolean>;
-  /**
-   * Whether user can edit primary course info
-   */
-  canEditInfo: Generated<boolean>;
-  /**
-   * Whether user can accept or reject submissions
-   */
-  canManageSubmissions: Generated<boolean>;
-  courseId: string;
-  /**
-   * Whether user is owner of the course. Course owners can manage staff, add other owners and even delete courses
-   */
-  isOwner: Generated<boolean>;
-  title: string | null;
-  userId: string;
-}
-
-export interface CourseStudents {
-  courseId: string;
-  userId: string;
-}
-
 export interface Homeworks {
   acceptingSubmissionsOverride: boolean | null;
   content: string | null;
@@ -156,6 +129,17 @@ export interface SchemaMigrations {
   version: string;
 }
 
+export interface UserCourses {
+  canEditContent: Generated<boolean>;
+  canEditInfo: Generated<boolean>;
+  canManageSubmissions: Generated<boolean>;
+  courseId: string;
+  isOwner: Generated<boolean>;
+  isStaff: Generated<boolean>;
+  title: string | null;
+  userId: string;
+}
+
 export interface UserLoginAttempts {
   code: string;
   expires: Timestamp;
@@ -190,8 +174,6 @@ export interface UserSessions {
 
 export interface DB {
   courses: Courses;
-  courseStaff: CourseStaff;
-  courseStudents: CourseStudents;
   homeworks: Homeworks;
   homeworkSubmissionMessages: HomeworkSubmissionMessages;
   homeworkSubmissions: HomeworkSubmissions;
@@ -200,6 +182,7 @@ export interface DB {
   notificationMessages: NotificationMessages;
   notifications: Notifications;
   schemaMigrations: SchemaMigrations;
+  userCourses: UserCourses;
   userLoginAttempts: UserLoginAttempts;
   users: Users;
   userSessions: UserSessions;

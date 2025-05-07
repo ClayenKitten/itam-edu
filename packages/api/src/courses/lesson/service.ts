@@ -45,10 +45,7 @@ export class LessonService {
                 await this.notification.send(
                     text,
                     Array.from(
-                        new Set([
-                            ...students.map(s => s.userId),
-                            ...staff.map(s => s.userId)
-                        ])
+                        new Set([...students, ...staff.map(s => s.userId)])
                     )
                 );
             }

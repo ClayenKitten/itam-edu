@@ -27,7 +27,7 @@ export function studentController(ctx: AppContext) {
                 const enrollments = await db.student.getAll(course);
                 const students = (
                     await Promise.all(
-                        enrollments.map(e => db.user.getById(e.userId))
+                        enrollments.map(userId => db.user.getById(userId))
                     )
                 )
                     .filter(s => s !== null)
@@ -74,7 +74,7 @@ export function studentController(ctx: AppContext) {
                     return error(400, "Course doesn't accept enrollments");
                 }
 
-                const enrollment = await db.student.add(course, student);
+                const enrollment = await db.student.set(course, student);
                 if (!enrollment)
                     return error(
                         409,
