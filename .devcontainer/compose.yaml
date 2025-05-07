@@ -62,7 +62,7 @@ services:
 
   # Web interface for databases
   dbgate:
-    image: dbgate/dbgate:5.3.1-alpine
+    image: dbgate/dbgate:6.4.1-alpine
     expose: [3000]
     environment:
       CONNECTIONS: Postgres,Redis
