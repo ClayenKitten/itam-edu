@@ -19,5 +19,5 @@ export function httpLoggerPlugin() {
                 status: set.status
             });
         })
-        .as("plugin");
+        .as("scoped");
 }

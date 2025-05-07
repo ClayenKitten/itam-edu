@@ -44,7 +44,7 @@ export async function docsPlugin() {
                 }
             })
         )
-        .as("plugin");
+        .as("scoped");
 }
 
 export const NO_AUTHENTICATION = [{}];

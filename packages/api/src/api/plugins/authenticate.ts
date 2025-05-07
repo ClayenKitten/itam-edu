@@ -76,7 +76,7 @@ export function authenticationPlugin(ctx: AppContext) {
                 };
             }
         })
-        .as("plugin");
+        .as("scoped");
 }
 
 type MaybeArray<T> = T | T[];

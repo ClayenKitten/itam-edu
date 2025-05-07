@@ -9,6 +9,6 @@ export function corsPlugin() {
                 env.NODE_ENV === "production"
                     ? env.ITAM_EDU_FRONTEND_URL!
                     : () => true
-        }).as("plugin")
+        }).as("scoped")
     );
 }
