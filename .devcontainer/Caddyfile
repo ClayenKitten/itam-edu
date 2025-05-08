@@ -12,22 +12,25 @@ http://www.localhost {
 }
 http://api.localhost {
     reverse_proxy devcontainer:5151
-
     handle_errors {
         respond "{err.status_code} {err.status_text}"
     }
 }
 http://db.localhost {
     reverse_proxy dbgate:3000
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
 }
 http://s3.localhost {
     reverse_proxy minio:9001
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
 }
-
-# Redirects
-http://postgres.localhost {
-    redir http://db.localhost
-}
-http://redis.localhost {
-    redir http://db.localhost
+http://bullmq.localhost {
+    reverse_proxy bull-board:3000
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
 }

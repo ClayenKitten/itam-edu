@@ -73,16 +73,13 @@ Development happens inside a [devcontainer](https://code.visualstudio.com/docs/d
 - Start services in development mode via `Run and Debug` menu (F5 in VS Code)
 - Run `task` in the Terminal to see the list of available commands.
 
-| Service                            | URL                  |
-| ---------------------------------- | -------------------- |
-| **Packages**                       |                      |
-| itam-edu-api                       | http://api.localhost |
-| itam-edu-frontend                  | http://www.localhost |
-| **Development tools**              |                      |
-| Navigation                         | http://localhost     |
-| dbgate (PostgreSQL & Redis Web UI) | http://db.localhost  |
-| Minio Web UI                       | http://s3.localhost  |
-| **Infrastructure**                 |                      |
-| PostgreSQL                         | `postgres:5432`      |
-| Redis                              | `redis:6379`         |
-| Minio                              | `minio:9000`         |
+| Service               | URL                     |
+| --------------------- | ----------------------- |
+| **Packages**          |                         |
+| itam-edu-api          | http://api.localhost    |
+| itam-edu-frontend     | http://www.localhost    |
+| **Development tools** |                         |
+| Navigation            | http://localhost        |
+| Database UI           | http://db.localhost     |
+| Minio UI              | http://s3.localhost     |
+| BullMQ UI             | http://bullmq.localhost |
