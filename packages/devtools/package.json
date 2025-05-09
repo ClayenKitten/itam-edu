@@ -1,0 +1,26 @@
+{
+    "name": "itam-edu-devtools",
+    "main": "./src/index.ts",
+    "scripts": {
+        "start": "bun .",
+        "dev": "bun --watch --clear-screen=false .",
+        "build": "tsc",
+        "format": "prettier --write .",
+        "check": "tsc --noEmit",
+        "check:format": "prettier . --check"
+    },
+    "type": "module",
+    "author": "ClayenKitten",
+    "license": "MIT",
+    "dependencies": {
+        "@faker-js/faker": "^9.7.0",
+        "bullmq": "^5.52.2",
+        "handlebars": "^4.7.8",
+        "itam-edu-common": "file:../../packages/common"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.2.3",
+        "prettier": "^3.3.3",
+        "typescript": "^5.6.2"
+    }
+}

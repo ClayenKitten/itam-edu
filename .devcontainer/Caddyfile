@@ -1,6 +1,10 @@
 http://localhost {
-    root * /srv/www
-    file_server
+    handle {
+        reverse_proxy devcontainer:3000
+    }
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
 }
 http://www.localhost {
     handle {

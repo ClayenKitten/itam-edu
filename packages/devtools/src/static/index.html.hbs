@@ -1,0 +1,138 @@
+<head>
+    <!-- HTMX -->
+    <script
+        src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js"
+        integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://unpkg.com/idiomorph@0.7.3"
+        integrity="sha384-JcorokHTL/m+D6ZHe2+yFVQopVwZ+91GxAPDyEZ6/A/OEPGEx1+MeNSe2OGvoRS9"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://unpkg.com/idiomorph@0.7.3/dist/idiomorph-ext.min.js"
+        integrity="sha384-szktAZju9fwY15dZ6D2FKFN4eZoltuXiHStNDJWK9+FARrxJtquql828JzikODob"
+        crossorigin="anonymous"
+    ></script>
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+
+    <title>ITAM Education | Dev Tools</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body hx-ext="morph">
+    <nav id="sidebar">
+        <header>ITAM Education</header>
+        <h2>Services</h2>
+        <ul>
+            <a target="_blank" href="http://www.localhost">
+                <i class="ph ph-google-chrome-logo"></i>
+                Frontend
+            </a>
+            <a target="_blank" href="http://api.localhost/docs">
+                <i class="ph ph-book-open-text"></i>
+                API (Swagger)
+            </a>
+        </ul>
+        <h2>Infrastructure</h2>
+        <ul>
+            <a target="_blank" href="http://db.localhost">
+                <i class="ph ph-database"></i>
+                Databases
+            </a>
+            <a target="_blank" href="http://s3.localhost">
+                <i class="ph ph-floppy-disk"></i>
+                Minio
+            </a>
+            <a target="_blank" href="http://bullmq.localhost">
+                <i class="ph ph-hammer"></i>
+                BullMQ
+            </a>
+        </ul>
+        <h2>Links</h2>
+        <ul>
+            <a target="_blank" href="https://github.com/ClayenKitten/itam-edu">
+                <i class="ph ph-github-logo"></i>
+                GitHub
+            </a>
+        </ul>
+    </nav>
+    <nav id="users">
+        <header>Users</header>
+        <ul>
+            {{#each users}}
+                <a href="/{{this.id}}">
+                    <div>
+                        <span>{{this.firstName}} {{this.lastName}}</span>
+                        <span>@{{this.tgUsername}}</span>
+                    </div>
+                </a>
+            {{/each}}
+        </ul>
+        <button
+            hx-post="/users"
+            hx-select="#users"
+            hx-target="#users"
+            hx-swap="outerHTML"
+        >
+            <i class="ph ph-plus"></i>
+            Add
+        </button>
+    </nav>
+    <main>
+        {{#if user}}
+            <header>
+                <span>{{user.firstName}} {{user.lastName}}</span>
+                <span>(@{{user.tgUsername}})</span>
+            </header>
+            <ul
+                hx-get=""
+                hx-select="main > ul"
+                hx-target="main > ul"
+                hx-trigger="every 1s"
+                hx-swap="morph:outerHTML"
+                hx-include="input"
+            >
+                {{#if messages.length}}
+                    {{#each messages}}
+                        <div
+                            class="message {{this.author}}"
+                        >{{{this.text}}}</div>
+                    {{/each}}
+                {{else}}
+                    <span class="center">
+                        No messages
+                        <br /><br />
+                        <span class="note">
+                            Note: chat history is cleared on devtools server
+                            restart
+                        </span>
+                    </span>
+                {{/if}}
+            </ul>
+            <menu>
+                <input name="text" placeholder="New message..." />
+                <button
+                    hx-post="/users/{{user.id}}/messages"
+                    hx-select="main > ul"
+                    hx-target="main > ul"
+                    hx-trigger="click"
+                    hx-swap="outerHTML scroll:bottom"
+                    hx-on::after-request="document.querySelector('input').value = ''"
+                    hx-include="input"
+                >
+                    Send
+                </button>
+            </menu>
+        {{else}}
+            <span class="center">Choose a chat to open...</span>
+        {{/if}}
+    </main>
+</body>

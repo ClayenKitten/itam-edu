@@ -1,0 +1,207 @@
+* {
+    color: inherit;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+
+    --background: rgb(250, 250, 250);
+    --on-background: black;
+    --surface: rgb(230, 230, 230);
+    --surface-hover: rgb(220, 220, 220);
+    --on-surface: black;
+    --border: black;
+}
+body {
+    display: flex;
+    width: 100dvw;
+    height: 100dvh;
+    background-color: var(--background);
+
+    > nav {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        height: 100%;
+        color: var(--on-surface);
+        background-color: var(--surface);
+        border-right: 1px solid var(--border);
+    }
+
+    > #sidebar {
+        width: 240px;
+        padding: 16px;
+
+        > header {
+            font-size: 21px;
+            text-align: center;
+            padding: 16px;
+            margin: -16px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        > h2 {
+            font-weight: 300;
+            font-size: 16px;
+            opacity: 90%;
+        }
+        > ul {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 24px;
+        }
+
+        i {
+            font-size: 28px;
+        }
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 21px;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            background-color: var(--surface);
+            &:hover {
+                background-color: var(--surface-hover);
+            }
+        }
+    }
+    > #users {
+        width: 240px;
+        overflow-y: auto;
+
+        > header {
+            font-size: 21px;
+            text-align: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        > ul {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            > a {
+                display: flex;
+                align-items: center;
+                text-align: start;
+                gap: 16px;
+                padding: 8px;
+                font-size: 14px;
+                background-color: var(--surface);
+                border: 0;
+                border-bottom: 1px solid var(--border);
+
+                &:hover {
+                    background-color: var(--surface-hover);
+                }
+
+                > div {
+                    display: flex;
+                    flex-direction: column;
+
+                    span:first-of-type {
+                        font-size: 18px;
+                    }
+                    span:last-of-type {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+        > button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px;
+            padding: 8px;
+            gap: 8px;
+
+            font-size: 18px;
+            color: black;
+            background-color: var(--surface);
+            border: 1px solid black;
+            border-radius: none;
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--surface-hover);
+            }
+        }
+    }
+
+    > main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        color: var(--on-background);
+
+        .center {
+            margin: auto;
+            text-align: center;
+        }
+
+        > ul {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            margin: 16px 16px 0 16px;
+
+            > .message {
+                max-width: 60%;
+                padding: 8px;
+                background-color: var(--background);
+                border: 1px solid black;
+                white-space: pre-wrap;
+                &.user {
+                    max-width: 30%;
+                    align-self: end;
+                    white-space: wrap;
+                    word-break: break-all;
+                }
+            }
+
+            .note {
+                font-style: italic;
+                opacity: 50%;
+                font-size: 90%;
+            }
+        }
+
+        > menu {
+            display: flex;
+            flex-shrink: 0;
+            gap: 16px;
+            padding: 16px;
+
+            > * {
+                height: 50px;
+                background-color: var(--background);
+                border: 1px solid black;
+            }
+
+            input {
+                flex: 1;
+                padding: 0 16px;
+            }
+
+            button {
+                width: 100px;
+            }
+        }
+    }
+}
+
+header {
+    font-size: 21px;
+    text-align: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--surface);
+}

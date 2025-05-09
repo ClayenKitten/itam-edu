@@ -6,6 +6,10 @@ services:
     volumes:
       - ..:/itam-edu:cached
       - .bashrc:/root/.bashrc
+    expose:
+      - 3000 # DevTools
+      - 5150 # Frontend
+      - 5151 # Backend
     env_file: [../.env, .env.dev]
 
   gateway:
@@ -15,8 +19,6 @@ services:
       - caddy_data:/data
       - caddy_config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./index.html:/srv/www/index.html:ro
-      - ./style.css:/srv/www/style.css:ro
 
   # Databases
   ## PostgreSQL server
