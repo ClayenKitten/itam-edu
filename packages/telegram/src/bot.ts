@@ -20,7 +20,7 @@ export default class TelegramBot {
         this.worker = new Worker(
             queues.telegram.OUTBOUND_PRIVATE_MESSAGE_QUEUE,
             async job => this.onOutboundMessage(job.data.chatId, job.data.text),
-            { connection }
+            { connection, autorun: false }
         );
 
         this.grammy.chatType("private").use(async (ctx, next) => {
@@ -69,7 +69,7 @@ export default class TelegramBot {
             { scope: { type: "all_private_chats" } }
         );
 
-        await this.grammy
+        const grammy = this.grammy
             .start({
                 onStart: () => {
                     logger.info("Started Telegram bot");
@@ -78,6 +78,15 @@ export default class TelegramBot {
             .finally(() => {
                 logger.info("Stopped Telegram bot");
             });
+
+        this.worker.waitUntilReady().then(() => {
+            logger.info("Started BullMQ worker");
+        });
+        const worker = this.worker.run().then(() => {
+            logger.info("Stopped BullMQ worker");
+        });
+
+        await Promise.all([grammy, worker]);
     }
 
     /** Sends a text message to the specified chat. */

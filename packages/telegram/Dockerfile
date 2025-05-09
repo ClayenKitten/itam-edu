@@ -1,41 +1,26 @@
 # Install dependencies and copy source code
-FROM node:22-alpine AS prepare
+FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY .npmrc .
 COPY package.json .
 COPY package-lock.json .
-COPY ./packages/api/package.json ./packages/api/package.json
+COPY ./packages/telegram/package.json ./packages/telegram/package.json
 COPY ./packages/common ./packages/common
-RUN npm --workspace=itam-edu-api ci
+RUN npm --workspace=itam-edu-telegram ci
 
-COPY ./packages/db ./packages/db
-COPY ./packages/api ./packages/api
+COPY ./packages/telegram ./packages/telegram
 
-# Start development server
-FROM oven/bun:1.1-alpine AS dev
-WORKDIR /app
-ENV NODE_ENV=development
-
-COPY --from=prepare /app .
-ENTRYPOINT bun --cwd="packages/api" run dev
-
-# Build for production and prune dev dependencies
-FROM node:22-alpine AS build
-WORKDIR /app
-ENV NODE_ENV=production
-
-COPY --from=prepare /app .
-RUN npm --workspace=itam-edu-api run build
-RUN npm --workspace=itam-edu-api prune --omit=dev 
+RUN npm --workspace=itam-edu-telegram run build
+RUN npm --workspace=itam-edu-telegram prune --omit=dev 
 
 # Serve production build
-FROM oven/bun:1.1-alpine AS serve
+FROM oven/bun:1.2-alpine AS serve
 WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package.json .
 COPY --from=build /app/packages/common ./packages/common
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/packages/api/build ./build
+COPY --from=build /app/packages/telegram/build ./build
 CMD ["bun", "./build"]

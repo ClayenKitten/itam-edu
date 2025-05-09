@@ -27,6 +27,13 @@ services:
     environment: { ITAM_EDU_API_PORT: "3000" }
     restart: unless-stopped
 
+  telegram:
+    image: ghcr.io/clayenkitten/itam-edu-telegram:latest
+    build: { <<: *build, dockerfile: ./packages/telegram/Dockerfile }
+    expose: [3000]
+    env_file: ./.env
+    restart: unless-stopped
+
   # Database
   ## PostgreSQL server
   postgres:
