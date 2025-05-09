@@ -52,7 +52,11 @@ export default class TelegramWorker {
 
         let message: string;
         if (msg.text.trim() === "/login") {
-            message = await handleLogin({ loginCode: this.db.loginCode }, user);
+            message = await handleLogin(
+                { loginCode: this.db.loginCode },
+                user,
+                this.config.webUrl
+            );
         } else {
             message = this.helpText;
         }
