@@ -1,44 +1,55 @@
-import { Bot } from "grammy";
-import type { queues } from "itam-edu-common";
+import { Bot as Grammy } from "grammy";
+import { queues } from "itam-edu-common";
 import logger from "./logger";
+import { Queue, Worker } from "bullmq";
+import { env } from "process";
+import type { User as TgUser } from "grammy/types";
 
 export default class TelegramBot {
-    /** Internal grammy instance. */
-    protected grammy: Bot;
+    protected grammy: Grammy;
+    protected queue: Queue<queues.telegram.InboundPrivateMessage>;
+    protected worker: Worker<queues.telegram.OutboundPrivateMessage>;
 
-    public constructor(
-        token: string,
-        private onMessage: (
-            payload: queues.telegram.InboundPrivateMessage
-        ) => void | Promise<void>
-    ) {
-        this.grammy = new Bot(token);
+    public constructor(token: string) {
+        this.grammy = new Grammy(token);
 
-        this.grammy.chatType("private").on("message:text", async msg => {
-            if (!msg.from.username) {
-                this.sendMessage(
-                    msg.chatId.toFixed(0),
+        const connection = { url: env.ITAM_EDU_API_REDIS_CONNECTION_STRING! };
+        this.queue = new Queue(queues.telegram.INBOUND_PRIVATE_MESSAGE_QUEUE, {
+            connection
+        });
+        this.worker = new Worker(
+            queues.telegram.OUTBOUND_PRIVATE_MESSAGE_QUEUE,
+            async job => this.onOutboundMessage(job.data.chatId, job.data.text),
+            { connection }
+        );
+
+        this.grammy.chatType("private").use(async (ctx, next) => {
+            if (!ctx.from.username) {
+                ctx.reply(
                     "Пожалуйста, укажите в Telegram свой ник, чтобы воспользоваться платформой."
                 );
                 return;
             }
-            let payload: queues.telegram.InboundPrivateMessage = {
-                text: msg.message.text,
-                sender: {
-                    id: msg.from.id.toFixed(0),
-                    firstName: msg.from.first_name,
-                    lastName: msg.from.last_name ?? null,
-                    username: msg.from.username
-                }
-            };
-            logger.debug("Inbound message received", {
-                sender: payload.sender,
-                text: payload.text
+            await next();
+        });
+
+        this.grammy.chatType("private").command("start", async (ctx, next) => {
+            if (ctx.match === "login") {
+                logger.debug("Inbound start command received", {
+                    sender: ctx.from,
+                    text: ctx.message.text
+                });
+                await this.onInboundMessage(ctx.from, "/login");
+            }
+            await next();
+        });
+
+        this.grammy.chatType("private").on("message:text", async ctx => {
+            logger.debug("Inbound text message received", {
+                sender: ctx.from,
+                text: ctx.message.text
             });
-            await this.onMessage(payload);
-            logger.debug("Inbound message sent to the queue", {
-                sender: payload.sender
-            });
+            await this.onInboundMessage(ctx.from, ctx.message.text);
         });
     }
 
@@ -60,9 +71,26 @@ export default class TelegramBot {
     }
 
     /** Sends a text message to the specified chat. */
-    public async sendMessage(chatId: string, text: string) {
-        logger.debug("Outbound message received", { chatId, text });
+    protected async onOutboundMessage(chatId: string, text: string) {
         this.grammy.api.sendMessage(chatId, text, { parse_mode: "HTML" });
         logger.debug("Outbound message sent to user", { chatId, text });
+    }
+
+    /** Schedules inbound message into the queue. */
+    protected async onInboundMessage(sender: TgUser, text: string) {
+        let payload: queues.telegram.InboundPrivateMessage = {
+            sender: {
+                id: sender.id.toFixed(0),
+                firstName: sender.first_name,
+                lastName: sender.last_name ?? null,
+                username: sender.username!
+            },
+            text
+        };
+        await this.queue.add("message", payload);
+        logger.debug("Inbound message sent to the queue", {
+            sender: payload.sender,
+            text
+        });
     }
 }
