@@ -24,6 +24,7 @@ ITAM Education platform consists of multiple packages that communicate over HTTP
 | ---------------------------------------- | -------------------------------------------- | ------------------------------------------- |
 | [itam-edu-api](./packages/api)           | [Bun](https://bun.sh)                        | REST API server                             |
 | [itam-edu-frontend](./packages/frontend) | [NodeJS](https://nodejs.org)                 | Frontend server                             |
+| [itam-edu-telegram](./packages/telegram) | [Bun](https://bun.sh)                        | Telegram bot                                |
 | [itam-edu-common](./packages/common)     | TypeScript library                           | Common classes between frontend and backend |
 | [itam-edu-db](./packages/db)             | [dbmate](https://github.com/amacneil/dbmate) | Database migrations                         |
 

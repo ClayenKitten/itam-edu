@@ -1,34 +1,18 @@
-import { Queue } from "bullmq";
-import type NotificationRepository from "./repository";
 import type UserRepository from "../users/repository";
-import type { AppConfig } from "../config";
+import type { TelegramSender } from "../telegram/sender";
 
 export default class NotificationService {
     public constructor(
-        config: AppConfig["redis"],
-        private users: UserRepository,
-        private notifications: NotificationRepository
-    ) {
-        this.queue = new Queue("telegram.send", {
-            connection: { url: config.connectionString }
-        });
-    }
-
-    private queue: Queue<NotificationMsgPayload>;
+        private db: { user: UserRepository },
+        protected telegramSender: TelegramSender
+    ) {}
 
     /** Sends a notification to specified users. */
     public async send(text: string, users: string[]): Promise<void> {
-        const id = await this.notifications.create(text);
         for (const userId of users) {
-            const user = await this.users.getById(userId);
+            const user = await this.db.user.getById(userId);
             if (!user) continue;
-
-            const job = await this.queue.add("message", {
-                notificationId: id,
-                userId: user.id,
-                tgChatId: user.telegram.id,
-                text
-            });
+            await this.telegramSender.send(user, text);
         }
     }
 }

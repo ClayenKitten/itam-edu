@@ -5,6 +5,29 @@ import type { Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 
 export default class UserRepository extends Repository {
+    /** Returns a user by its id. */
+    public async getById(id: string): Promise<User | null> {
+        const user = await this.db
+            .selectFrom("users")
+            .selectAll("users")
+            .where("id", "=", id)
+            .executeTakeFirst();
+        if (!user) return null;
+
+        const userCourses = await this.db
+            .selectFrom("userCourses")
+            .selectAll()
+            .where("userId", "=", user.id)
+            .execute();
+        const enrollments = userCourses
+            .filter(u => u.isStaff === false)
+            .map(u => ({ courseId: u.courseId }));
+        const coursePermissions = userCourses.filter(u => u.isStaff === true);
+
+        return this.toEntity(user, enrollments, coursePermissions);
+    }
+
+    /** Returns a user by its access token. */
     public async getByToken(token: string): Promise<User | null> {
         const user = await this.db
             .selectFrom("users")
@@ -27,13 +50,33 @@ export default class UserRepository extends Repository {
         return this.toEntity(user, enrollments, coursePermissions);
     }
 
-    public async getById(id: string): Promise<User | null> {
+    /**
+     * Creates a user if it does not exist.
+     *
+     * If the user already exists, updates Telegram username. Other fields are unchanged.
+     * */
+    public async create(createUser: {
+        firstName: string;
+        lastName: string | null;
+        tgUserId: string;
+        tgUsername: string;
+    }): Promise<User> {
         const user = await this.db
-            .selectFrom("users")
-            .selectAll("users")
-            .where("id", "=", id)
-            .executeTakeFirst();
-        if (!user) return null;
+            .insertInto("users")
+            .values({
+                firstName: createUser.firstName,
+                lastName: createUser.lastName,
+                tgChatId: createUser.tgUserId,
+                tgUserId: createUser.tgUserId,
+                tgUsername: createUser.tgUsername
+            })
+            .onConflict(oc =>
+                oc
+                    .column("tgUserId")
+                    .doUpdateSet({ tgUsername: createUser.tgUsername })
+            )
+            .returningAll()
+            .executeTakeFirstOrThrow();
 
         const userCourses = await this.db
             .selectFrom("userCourses")
@@ -46,80 +89,6 @@ export default class UserRepository extends Repository {
         const coursePermissions = userCourses.filter(u => u.isStaff === true);
 
         return this.toEntity(user, enrollments, coursePermissions);
-    }
-
-    public async createLoginAttempt({
-        tgUserId,
-        tgChatId,
-        tgUsername,
-        code,
-        expires
-    }: {
-        tgUserId: string;
-        tgChatId: string;
-        tgUsername: string;
-        code: string;
-        expires: Date;
-    }): Promise<boolean> {
-        try {
-            return await this.db.transaction().execute(async trx => {
-                const { id: userId } = await trx
-                    .insertInto("users")
-                    .values({ tgChatId, tgUserId, tgUsername })
-                    .onConflict(oc =>
-                        oc
-                            .column("tgUserId")
-                            .doUpdateSet({ tgChatId, tgUsername })
-                    )
-                    .returning("id")
-                    .executeTakeFirstOrThrow();
-
-                await trx
-                    .deleteFrom("userLoginAttempts")
-                    .where(({ eb, or }) =>
-                        or([eb("userId", "=", userId), eb("code", "=", code)])
-                    )
-                    .execute();
-
-                const result = await trx
-                    .insertInto("userLoginAttempts")
-                    .values({ userId, code, expires })
-                    .executeTakeFirstOrThrow();
-
-                return result.numInsertedOrUpdatedRows === 1n;
-            });
-        } catch (e) {
-            logger.error("Error during db transaction", { error: e });
-            return false;
-        }
-    }
-
-    public async completeLoginAttempt({
-        code,
-        expires,
-        token
-    }: {
-        code: string;
-        token: string;
-        expires: Date;
-    }): Promise<boolean> {
-        return await this.db.transaction().execute(async trx => {
-            const result = await trx
-                .deleteFrom("userLoginAttempts")
-                .where("code", "=", code)
-                .where("expires", ">", new Date())
-                .returning(["userId"])
-                .executeTakeFirst();
-            if (result === undefined) return false;
-            const { userId } = result;
-
-            await trx
-                .insertInto("userSessions")
-                .values({ userId, token, expires })
-                .executeTakeFirst();
-
-            return true;
-        });
     }
 
     private toEntity(

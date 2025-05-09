@@ -1,4 +1,3 @@
-import { AsyncLocalStorage } from "async_hooks";
 import winston, { format } from "winston";
 
 export class Logger {
@@ -6,7 +5,7 @@ export class Logger {
         this.internal = winston.createLogger({
             levels: this.LEVELS,
             format: winston.format.json(),
-            defaultMeta: { service: "itam-edu-api" },
+            defaultMeta: { service: "itam-edu-telegram" },
             transports: [
                 getConsoleTransport(process.env.NODE_ENV === "production")
             ]
@@ -15,27 +14,8 @@ export class Logger {
 
     protected internal: winston.Logger;
 
-    /** Returns meta of the logger. */
-    public get meta() {
-        return asyncLocalStorage.getStore();
-    }
-
-    /**
-     * Extends logger meta in current async context.
-     *
-     * NOTE: should be called in **non-async** lifecycle handler, e.g. `onTransform(() => { ... })`.
-     * */
-    public extend(meta: Object) {
-        asyncLocalStorage.enterWith({ ...this.meta, ...meta });
-    }
-
-    /** Extends logger meta in a callback. */
-    public with(meta: Object, callback: () => void | Promise<void>) {
-        return asyncLocalStorage.run({ ...this.meta, ...meta }, callback);
-    }
-
     public log(level: keyof typeof this.LEVELS, message: string, meta?: Meta) {
-        this.internal.log(level, message, { ...this.meta, ...meta });
+        this.internal.log(level, message, { ...meta });
     }
     public fatal(message: string, meta?: Meta) {
         this.log("fatal", message, meta);
@@ -67,8 +47,6 @@ export class Logger {
 }
 const logger = new Logger();
 export { logger as default };
-
-const asyncLocalStorage = new AsyncLocalStorage<Meta>();
 
 export type Meta = Record<keyof {}, unknown>;
 

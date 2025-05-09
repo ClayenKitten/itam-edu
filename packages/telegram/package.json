@@ -1,0 +1,27 @@
+{
+    "name": "itam-edu-telegram",
+    "main": "./src/index.ts",
+    "scripts": {
+        "start": "bun .",
+        "dev": "bun --watch --clear-screen=false .",
+        "build": "tsc",
+        "format": "prettier --write .",
+        "check": "tsc --noEmit",
+        "check:format": "prettier . --check"
+    },
+    "type": "module",
+    "author": "ClayenKitten",
+    "license": "MIT",
+    "dependencies": {
+        "itam-edu-common": "file:../common",
+        "bullmq": "^5.41.8",
+        "grammy": "^1.36.1",
+        "winston": "^3.17.0"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.2.3",
+        "@types/node": "^22.7.4",
+        "prettier": "^3.3.3",
+        "typescript": "^5.6.2"
+    }
+}

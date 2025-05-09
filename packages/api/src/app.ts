@@ -2,8 +2,7 @@ import type { AppConfig } from "./config";
 import { createAppContext } from "./ctx";
 
 import ApiServer from "./api";
-import TelegramBot from "./telegram";
-import NotificationWorker from "./notifications/worker";
+import TelegramWorker from "./telegram/worker";
 import logger from "./logger";
 
 export class Application {
@@ -11,24 +10,17 @@ export class Application {
         const ctx = createAppContext(config);
 
         this.api = new ApiServer(ctx);
-        this.telegram = new TelegramBot(ctx);
         this.workers = {
-            notification: new NotificationWorker(
-                ctx.config.redis,
-                ctx.db,
-                this.telegram
-            )
+            telegram: new TelegramWorker(ctx.config, ctx.db, ctx.services)
         };
     }
 
     private readonly api: ApiServer;
-    private readonly telegram: TelegramBot;
     private readonly workers: AppWorkers;
 
     public async start(): Promise<void> {
         await Promise.all([
             this.api.start(),
-            this.telegram.start(),
             ...[Object.values(this.workers).map(worker => worker.start())]
         ]);
         logger.info(`Application ready`);
@@ -37,7 +29,6 @@ export class Application {
     public async stop(): Promise<void> {
         await Promise.all([
             this.api.stop(),
-            this.telegram.stop(),
             ...[Object.values(this.workers).map(worker => worker.stop())]
         ]);
         logger.info(`Application stopped`);
@@ -45,5 +36,5 @@ export class Application {
 }
 
 type AppWorkers = {
-    notification: NotificationWorker;
+    telegram: TelegramWorker;
 };

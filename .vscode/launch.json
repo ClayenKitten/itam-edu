@@ -10,7 +10,7 @@
             "runtimeArgs": ["run-script", "dev"],
             "cwd": "${workspaceFolder}/packages/frontend",
             "presentation": {
-                "order": 1
+                "order": 2
             }
         },
         {
@@ -21,17 +21,55 @@
             "cwd": "${workspaceFolder}/packages/api",
             "program": "./src/index.ts",
             "presentation": {
-                "order": 2
+                "order": 3
+            }
+        },
+        {
+            "name": "itam-edu-telegram",
+            "type": "bun",
+            "request": "launch",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/packages/telegram",
+            "program": "./src/index.ts",
+            "presentation": {
+                "order": 4
+            }
+        },
+        {
+            "name": "itam-edu-devtools",
+            "type": "bun",
+            "request": "launch",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/packages/devtools",
+            "program": "./src/index.ts",
+            "presentation": {
+                "order": 5
             }
         }
     ],
     "compounds": [
         {
-            "name": "itam-edu",
-            "configurations": ["itam-edu-frontend", "itam-edu-api"],
+            "name": "itam-edu (dev)",
+            "configurations": [
+                "itam-edu-frontend",
+                "itam-edu-api",
+                "itam-edu-devtools"
+            ],
             "stopAll": true,
             "presentation": {
                 "order": 0
+            }
+        },
+        {
+            "name": "itam-edu (staging)",
+            "configurations": [
+                "itam-edu-frontend",
+                "itam-edu-api",
+                "itam-edu-telegram"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "order": 1
             }
         }
     ]
