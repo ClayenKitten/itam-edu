@@ -38,7 +38,7 @@ export default function api(params: ApiParams) {
 }
 
 type ApiParams = {
-    fetch: Window["fetch"];
+    fetch: typeof fetch;
     /** Gets info to display in toast notification. */
     toast?: (response: Response) => { title: string };
 };
