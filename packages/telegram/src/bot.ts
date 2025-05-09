@@ -59,6 +59,16 @@ export default class TelegramBot {
      * @returns A promise that will only resolve if the bot stops.
      * */
     public async start(): Promise<void> {
+        await this.grammy.api.setMyCommands(
+            [
+                {
+                    command: "/login",
+                    description: "Получить код для входа на платформу"
+                }
+            ],
+            { scope: { type: "all_private_chats" } }
+        );
+
         await this.grammy
             .start({
                 onStart: () => {
