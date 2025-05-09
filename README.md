@@ -18,15 +18,16 @@ The integrated Telegram bot allows users to log in to the web platform, and rece
 
 ## 📦 Packages
 
-ITAM Education platform consists of multiple packages that communicate over HTTP.
+ITAM Education platform consists of multiple packages that communicate over HTTP and BullMQ message queues.
 
-| Package                                  | Implementation                               | Description                                 |
-| ---------------------------------------- | -------------------------------------------- | ------------------------------------------- |
-| [itam-edu-api](./packages/api)           | [Bun](https://bun.sh)                        | REST API server                             |
-| [itam-edu-frontend](./packages/frontend) | [NodeJS](https://nodejs.org)                 | Frontend server                             |
-| [itam-edu-telegram](./packages/telegram) | [Bun](https://bun.sh)                        | Telegram bot                                |
-| [itam-edu-common](./packages/common)     | TypeScript library                           | Common classes between frontend and backend |
-| [itam-edu-db](./packages/db)             | [dbmate](https://github.com/amacneil/dbmate) | Database migrations                         |
+| Package                                  | Technology | Description                              | Deployable? |
+| ---------------------------------------- | :--------: | ---------------------------------------- | :---------: |
+| [itam-edu-frontend](./packages/frontend) |   NodeJS   | SvelteKit server                         |     ✅      |
+| [itam-edu-api](./packages/api)           |    Bun     | REST API server                          |     ✅      |
+| [itam-edu-telegram](./packages/telegram) |    Bun     | Telegram bot                             |     ✅      |
+| [itam-edu-db](./packages/db)             |   dbmate   | Database migrations                      |     ✅      |
+| [itam-edu-common](./packages/common)     | TS library | Library for common code between packages |     ⛔️     |
+| [itam-edu-devtools](./packages/devtools) |    Bun     | Webpage with some tools                  |     ⛔️     |
 
 All deployable packages are built into the OCI images and uploaded to the [GitHub Container Registry](https://github.com/ClayenKitten?tab=packages&repo_name=itam-edu).
 
@@ -44,7 +45,7 @@ All deployable packages are built into the OCI images and uploaded to the [GitHu
 
 1. **Configure databases**
 
-    If you host databases, copy `.env.db.example` as `.env.db` and modify values as needed.
+    If you want to deploy Postgres and Redis via docker, copy `.env.db.example` as `.env.db` and modify values as needed.
 
 1. **Configure reverse proxy**
 
@@ -68,10 +69,7 @@ Development happens inside a [devcontainer](https://code.visualstudio.com/docs/d
 
 - Clone repository and open it in a devcontainer
 - Install dependencies via `npm ci`
-- Configure environment
-    - Create a Telegram bot to use during local development
-    - Copy `.env.example` as `.env` and fill all variables related to Telegram. Other variables may be skipped.
-- Start services in development mode via `Run and Debug` menu (F5 in VS Code)
+- Start devtools and packages in development mode via `Run and Debug` sidebar tab
 - Run `task` in the Terminal to see the list of available commands.
 
 | Service               | URL                     |
