@@ -1,9 +1,12 @@
 <script lang="ts">
+    import { userFilePath } from "itam-edu-common";
+
     let { staff = $bindable(), readonly }: Props = $props();
 
     interface Props {
         staff: {
             user: {
+                id: string;
                 avatar: string | null;
                 firstName: string | null;
                 lastName: string | null;
@@ -33,7 +36,12 @@
                         aria-hidden="true"
                     >
                         {#if staffMember.user.avatar}
-                            <img src={staffMember.user.avatar} alt="" />
+                            <img
+                                src={userFilePath(staffMember.user.id).avatar(
+                                    staffMember.user.avatar
+                                )}
+                                alt=""
+                            />
                         {:else}
                             <span class="text-on-primary text-comment">
                                 {staffMember.user.tgUsername[0]}
