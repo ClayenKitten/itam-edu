@@ -11,19 +11,19 @@
     <title>Главная | {data.course.title}</title>
 </svelte:head>
 
-<div class="w-max mx-auto flex flex-col gap-10 px-7 pb-10">
+<div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col mb-2.5">
-        <div
-            class="banner h-[191px] mb-7 rounded-lg overflow-hidden"
-            aria-hidden="true"
-        >
+        <div class="banner w-full h-[191px] mb-7 rounded-lg overflow-hidden">
             {#if data.course.banner}
                 <img
+                    class={[
+                        "w-full h-[191px] object-cover object-center",
+                        data.course.banner ? `` : ""
+                    ]}
                     src={courseFilePath(data.course.id).public(
                         data.course.banner
                     )}
                     alt=""
-                    class="w-full h-full object-cover object-center"
                 />
             {/if}
         </div>

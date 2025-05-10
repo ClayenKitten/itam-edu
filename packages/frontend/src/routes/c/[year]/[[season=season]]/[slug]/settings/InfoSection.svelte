@@ -2,7 +2,9 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import TipTap from "$lib/components/TipTap.svelte";
+    import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import type { Course } from "$lib/types";
+    import { courseFilePath } from "itam-edu-common";
 
     let { readonly, course = $bindable() }: Props = $props();
 
@@ -48,66 +50,13 @@
     </label>
     <div class=" flex gap-6">
         <label class="flex-1 flex flex-col gap-2">
-            <h4>Описание</h4>
+            <h4>Краткое описание</h4>
             <textarea
                 class="input h-[200px] resize-none"
                 maxlength="1000"
                 disabled={readonly}
                 bind:value={course.description}
             ></textarea>
-        </label>
-        <label class="shrink-0 flex flex-col gap-2">
-            <h4>Логотип</h4>
-            <div
-                class={[
-                    "border-2 rounded-sm overflow-hidden focus-within:border-primary",
-                    !readonly
-                        ? "border-on-primary"
-                        : "border-on-surface-disabled"
-                ]}
-            >
-                <div
-                    class="group relative flex justify-center items-center h-[200px] aspect-[318/200] cursor-pointer"
-                >
-                    <input
-                        class="h-0 w-0 outline-0"
-                        type="file"
-                        disabled={readonly}
-                    />
-                    {#if course.banner}
-                        <img
-                            class="object-contain"
-                            src={course.banner}
-                            alt=""
-                        />
-                        {#if !readonly}
-                            <button
-                                class={[
-                                    "absolute top-4 right-4 flex items-center justify-center h-[46px] w-[46px]",
-                                    "rounded-full bg-primary text-on-primary hover:bg-on-primary hover:text-primary",
-                                    "transition-colors duration-100"
-                                ]}
-                                onclick={() => (course.banner = null)}
-                                aria-label="Удалить"
-                            >
-                                <i class="ph ph-trash text-[20px]"></i>
-                            </button>
-                        {/if}
-                    {:else}
-                        <div
-                            class={[
-                                "flex items-center justify-center h-[46px] w-[46px]",
-                                !readonly
-                                    ? "bg-primary text-on-primary group-hover:bg-on-primary group-hover:text-primary"
-                                    : "bg-on-surface-disabled text-on-surface-contrast",
-                                "rounded-full transition-colors duration-100"
-                            ]}
-                        >
-                            <i class="ph ph-upload-simple text-[20px]"></i>
-                        </div>
-                    {/if}
-                </div>
-            </div>
         </label>
     </div>
     <div class="grid grid-cols-2 gap-y-2 gap-x-8 w-max">
@@ -131,6 +80,34 @@
             />
         </label>
     </div>
+    <label class="shrink-0 flex flex-col gap-2">
+        <header class="flex flex-col gap-2">
+            <h4>Баннер</h4>
+            <p class="max-w-[800px] text-balance">
+                Баннер отображается на главной странице курса и в разделе "О
+                курсе". Рекомендуется загружать изображение размером не менее
+                1600x191 пикселей.
+            </p>
+        </header>
+        <ImageUploader
+            bind:filename={course.banner}
+            aspectRatio="4/1"
+            maxHeight="191px"
+            filenameToSrc={filename =>
+                courseFilePath(course.id).public(filename)}
+            onUpload={async file => {
+                const response = await api({ fetch })
+                    .courses({ course: course.id })
+                    .files.post({ file });
+                if (response.error) {
+                    alert(response.status);
+                    return null;
+                }
+                const { filename } = response.data;
+                return filename;
+            }}
+        />
+    </label>
     <div class="flex flex-col gap-2">
         <h3>О курсе</h3>
         <div
