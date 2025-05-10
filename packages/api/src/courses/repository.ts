@@ -47,6 +47,7 @@ export default class CourseRepository extends Repository {
             .select(schemaFields(schema.course))
             .orderBy("year desc")
             .orderBy("semester", sql<string>`asc nulls first`)
+            .orderBy("slug asc")
             .execute();
         return results.map(c => new Course(c));
     }
