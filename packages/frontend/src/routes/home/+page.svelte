@@ -40,7 +40,7 @@
         </aside>
         <section
             class={[
-                "grid grid-cols-[repeat(auto-fill,343px)] gap-x-4 gap-y-6.5"
+                "grid grid-cols-[repeat(auto-fill,317px)] gap-x-4 gap-y-6.5"
             ]}
         >
             {#each courses as course}
