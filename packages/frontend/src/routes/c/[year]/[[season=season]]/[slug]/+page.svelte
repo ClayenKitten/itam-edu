@@ -2,6 +2,7 @@
     import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath } from "$lib/path";
     import { format as formatDate } from "date-fns";
+    import { courseFilePath } from "itam-edu-common";
 
     let { data } = $props();
 </script>
@@ -18,7 +19,9 @@
         >
             {#if data.course.banner}
                 <img
-                    src={data.course.banner}
+                    src={courseFilePath(data.course.id).public(
+                        data.course.banner
+                    )}
                     alt=""
                     class="w-full h-full object-cover object-center"
                 />

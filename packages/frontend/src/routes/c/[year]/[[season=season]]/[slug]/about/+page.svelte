@@ -1,6 +1,6 @@
 <script lang="ts">
     import TipTap from "$lib/components/TipTap.svelte";
-    import { userFilePath } from "itam-edu-common";
+    import { courseFilePath, userFilePath } from "itam-edu-common";
 
     let { data } = $props();
 </script>
@@ -18,7 +18,7 @@
     >
         {#if data.course.banner}
             <img
-                src={data.course.banner}
+                src={courseFilePath(data.course.id).public(data.course.banner)}
                 alt=""
                 class="w-full h-full object-cover object-center"
             />
