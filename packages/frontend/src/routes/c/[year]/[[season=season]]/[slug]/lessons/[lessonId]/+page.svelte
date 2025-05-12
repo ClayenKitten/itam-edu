@@ -24,7 +24,10 @@
     {/if}
     <meta property="og:url" content={page.url.toString()} />
     {#if data.lesson.banner}
-        <meta property="og:image" content={data.lesson.banner} />
+        <meta
+            property="og:image"
+            content={courseFilePath(data.course.id).public(data.lesson.banner)}
+        />
     {/if}
 </svelte:head>
 
