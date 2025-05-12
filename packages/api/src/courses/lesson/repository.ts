@@ -64,16 +64,18 @@ export default class LessonRepository extends Repository {
                 .selectFrom("lessons")
                 .where("courseId", "=", courseId)
                 .select(eb =>
-                    eb(
-                        eb.fn.coalesce(
-                            eb.fn
-                                .max<number>("position")
-                                .filterWhere("courseId", "=", courseId),
+                    eb.fn
+                        .coalesce(
+                            eb(
+                                eb.fn
+                                    .max<number>("position")
+                                    .filterWhere("courseId", "=", courseId),
+                                "+",
+                                eb.val(1)
+                            ),
                             eb.lit(0)
-                        ),
-                        "+",
-                        eb.val(1)
-                    ).as("position")
+                        )
+                        .as("position")
                 );
         };
 
