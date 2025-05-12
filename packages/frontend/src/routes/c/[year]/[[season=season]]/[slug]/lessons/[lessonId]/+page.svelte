@@ -24,10 +24,14 @@
     {/if}
     <meta property="og:url" content={page.url.toString()} />
     {#if data.lesson.banner}
-        <meta
-            property="og:image"
-            content={courseFilePath(data.course.id).public(data.lesson.banner)}
-        />
+        {@const imgUrl = courseFilePath(data.course.id).public(
+            data.lesson.banner
+        )}
+        <meta property="og:image" content={imgUrl} />
+        <meta property="og:image:width" content="996" />
+        <meta property="og:image:height" content="600" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imgUrl} />
     {/if}
 </svelte:head>
 
