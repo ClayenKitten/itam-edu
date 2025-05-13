@@ -92,7 +92,6 @@
         <ImageUploader
             bind:filename={course.banner}
             aspectRatio="4/1"
-            maxHeight="191px"
             filenameToSrc={filename =>
                 courseFilePath(course.id).public(filename)}
             onUpload={async file => {

@@ -16,26 +16,28 @@
 <a
     href={`${coursePath(course)}/lessons/${lesson.id}`}
     class={[
-        "flex flex-col w-[343px] h-[291px] p-3 pb-3.75 rounded-lg border",
+        "flex flex-col w-[356px] h-[291px] p-3 rounded-lg border",
         "bg-surface border-on-primary",
         "hover:bg-on-primary hover:border-primary",
         "transition-colors duration-100"
     ]}
 >
-    {#if lesson.banner}
-        <img
-            class="grow w-full rounded-md mb-3.5 overflow-hidden object-cover"
-            src={courseFilePath(lesson.courseId).public(lesson.banner)}
-            alt=""
-        />
-    {:else}
-        <div
-            class="grow w-full flex items-center justify-center text-h3 text-on-primary bg-primary rounded-md mb-3.5"
-        >
-            Урок {position}
-        </div>
-    {/if}
-    <header class="flex justify-between items-center mb-2.5">
+    <div class="w-full h-[200px] mb-3 rounded-md overflow-hidden">
+        {#if lesson.banner}
+            <img
+                class="w-full h-full overflow-hidden object-cover"
+                src={courseFilePath(lesson.courseId).public(lesson.banner)}
+                alt=""
+            />
+        {:else}
+            <div
+                class="w-full h-full flex items-center justify-center text-h3 text-on-primary bg-primary"
+            >
+                Урок {position}
+            </div>
+        {/if}
+    </div>
+    <header class="flex justify-between items-center mb-2">
         <h4>Урок {position}</h4>
         {#if lesson.schedule}
             <span class="text-date text-on-surface-muted">

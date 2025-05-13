@@ -3,8 +3,7 @@
         filename = $bindable(null),
         filenameToSrc,
         onUpload,
-        aspectRatio = "1/1",
-        maxHeight = null
+        aspectRatio = "1/1"
     }: Props = $props();
 
     type Props = {
@@ -18,12 +17,11 @@
 
 <div
     class={[
-        "max-w-full",
+        "w-full h-full",
         "group relative flex justify-center items-center cursor-pointer",
         "border-2 border-on-primary rounded-sm overflow-hidden focus-within:border-primary"
     ]}
     style:aspect-ratio={aspectRatio}
-    style:max-height={maxHeight}
 >
     <input
         class="h-0 w-0 outline-0"

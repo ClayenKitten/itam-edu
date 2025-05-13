@@ -39,7 +39,7 @@
     <div
         class={[
             "grid gap-x-4 gap-y-5 gap-2.5",
-            "grid-cols-[repeat(auto-fit,343px)]"
+            "grid-cols-[repeat(auto-fit,356px)]"
         ]}
     >
         {#each data.lessons as lesson, i}

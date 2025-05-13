@@ -43,11 +43,11 @@
         <ol
             class={[
                 "flex flex-wrap gap-4",
-                "h-[291px] overflow-y-hidden ",
-                "@max-[800px]/main:w-[343px]",
-                "@min-[800px]/main:w-[702px]",
-                "@min-[1200px]/main:w-[1061px]",
-                "@min-[1600px]/main:w-[1420px]"
+                "h-[291px] overflow-y-hidden",
+                "@max-[800px]/main:w-[356px]",
+                "@min-[800px]/main:w-[calc(356px_*_2_+_16px)]",
+                "@min-[1200px]/main:w-[calc(356px_*_3_+_16px_*_2)]",
+                "@min-[1600px]/main:w-[calc(356px_*_4_+_16px_*_3)]"
             ]}
         >
             {#each data.lessons.toReversed().slice(0, 4) as lesson, i}

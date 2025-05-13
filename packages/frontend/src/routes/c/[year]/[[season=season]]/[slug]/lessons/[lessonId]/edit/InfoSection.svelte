@@ -30,7 +30,7 @@
         <h4>Название</h4>
         <input class="input" bind:value={lesson.title} />
     </label>
-    <div class=" flex gap-6">
+    <div class="flex gap-6">
         <label class="flex-1 flex flex-col gap-2">
             <h4>Описание</h4>
             <textarea
@@ -41,24 +41,25 @@
         </label>
         <label class="shrink-0 flex flex-col gap-2">
             <h4>Обложка</h4>
-            <ImageUploader
-                bind:filename={lesson.banner}
-                aspectRatio="318/200"
-                maxHeight="200px"
-                filenameToSrc={filename =>
-                    courseFilePath(lesson.courseId).public(filename)}
-                onUpload={async file => {
-                    const response = await api({ fetch })
-                        .courses({ course: course.id })
-                        .files.post({ file });
-                    if (response.error) {
-                        alert(response.status);
-                        return null;
-                    }
-                    const { filename } = response.data;
-                    return filename;
-                }}
-            />
+            <div class="h-[200px]">
+                <ImageUploader
+                    bind:filename={lesson.banner}
+                    aspectRatio="320/200"
+                    filenameToSrc={filename =>
+                        courseFilePath(lesson.courseId).public(filename)}
+                    onUpload={async file => {
+                        const response = await api({ fetch })
+                            .courses({ course: course.id })
+                            .files.post({ file });
+                        if (response.error) {
+                            alert(response.status);
+                            return null;
+                        }
+                        const { filename } = response.data;
+                        return filename;
+                    }}
+                />
+            </div>
         </label>
     </div>
 </section>
