@@ -54,7 +54,7 @@ export function studentController(ctx: AppContext) {
                 }
             }
         )
-        .post(
+        .put(
             "/:student",
             async ({ db, user, params, error }) => {
                 if (

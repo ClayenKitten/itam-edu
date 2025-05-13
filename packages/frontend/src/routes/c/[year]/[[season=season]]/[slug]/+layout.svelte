@@ -33,7 +33,7 @@
     <CourseSidebar
         course={data.course}
         courses={data.courses}
-        isEmployee={data.user?.isCourseStaff(data.course.id) === true}
+        user={data.user}
     />
     {#if layout.additionalSidebar}
         <aside

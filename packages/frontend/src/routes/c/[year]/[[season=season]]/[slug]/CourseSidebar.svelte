@@ -1,38 +1,33 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/state";
+    import api from "$lib/api";
     import { coursePath } from "$lib/path";
     import type { Course } from "$lib/types";
+    import type { User } from "itam-edu-common";
 
-    const { course, courses, isEmployee }: Props = $props();
+    const { course, courses, user }: Props = $props();
     const prefix = $derived(coursePath(course));
 
     type Props = {
         course: Course;
         courses: Course[];
-        isEmployee: boolean;
+        user: User | null;
+    };
+
+    const enroll = async () => {
+        if (!user) return;
+        const result = await api({ fetch })
+            .courses({ course: course.id })
+            .students({ student: user.id })
+            .put();
+        if (result.error) {
+            alert(result.status);
+            return;
+        }
+        await invalidate("app:user");
     };
 </script>
-
-{#snippet btn(path: string, text: string, icon: string)}
-    {@const startsWith = page.url.pathname.startsWith(prefix + path)}
-    {@const enabled =
-        (path === "/" && page.url.pathname === prefix) ||
-        (path !== "/" && startsWith)}
-    <a
-        href={prefix + path}
-        class={[
-            "flex items-center gap-3 text-button p-2.5 rounded-xs",
-            enabled
-                ? "text-on-primary bg-primary"
-                : "text-on-surface bg-transparent hover:bg-surface-tint"
-        ]}
-        data-sveltekit-preload-data="off"
-    >
-        <i class="ph ph-{icon} text-[24px]"></i>
-        <span>{text}</span>
-    </a>
-{/snippet}
 
 <nav
     class={[
@@ -66,11 +61,42 @@
         {@render btn("/homeworks", "Задания", "book-open-text")}
         {@render btn("/about", "О курсе", "info")}
     </ul>
-    {#if isEmployee}
+    {#if user?.isCourseStaff(course.id)}
         <hr class="text-surface-border -mx-5" />
         <ul class="flex flex-col gap-2">
             {@render btn("/analytics", "Аналитика", "chart-line")}
             {@render btn("/settings", "Настройки", "gear-six")}
         </ul>
     {/if}
+    {#if !user?.isCourseStaff(course.id) && !user?.isCourseStudent(course.id)}
+        {@const open = course.isEnrollmentOpen}
+        <button class="btn mt-auto" disabled={!open} onclick={enroll}>
+            <i class="ph ph-student text-[24px]"></i>
+            {#if open}
+                Поступить на курс
+            {:else}
+                Поступление закрыто
+            {/if}
+        </button>
+    {/if}
 </nav>
+
+{#snippet btn(path: string, text: string, icon: string)}
+    {@const startsWith = page.url.pathname.startsWith(prefix + path)}
+    {@const enabled =
+        (path === "/" && page.url.pathname === prefix) ||
+        (path !== "/" && startsWith)}
+    <a
+        href={prefix + path}
+        class={[
+            "flex items-center gap-3 text-button p-2.5 rounded-xs",
+            enabled
+                ? "text-on-primary bg-primary"
+                : "text-on-surface bg-transparent hover:bg-surface-tint"
+        ]}
+        data-sveltekit-preload-data="off"
+    >
+        <i class="ph ph-{icon} text-[24px]"></i>
+        <span>{text}</span>
+    </a>
+{/snippet}

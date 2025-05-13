@@ -26,7 +26,7 @@ export default class StudentRepository extends Repository {
             .insertInto("userCourses")
             .values({ courseId: course.id, userId: user.id, isStaff: false })
             .onConflict(cb =>
-                cb.doUpdateSet({
+                cb.columns(["userId", "courseId"]).doUpdateSet({
                     isStaff: false,
                     title: null,
                     canEditContent: false,
