@@ -5,9 +5,10 @@ import type StaffRepository from "../../staff/repository";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import type StudentRepository from "../student/repository";
-import type { Lesson } from "./entity";
+import { Lesson } from "./entity";
 import type LessonRepository from "./repository";
 import * as schema from "./schema";
+import { randomUUID } from "crypto";
 
 export class LessonService {
     public constructor(
@@ -20,18 +21,51 @@ export class LessonService {
         private notification: NotificationService
     ) {}
 
+    /** Creates new lesson. */
+    public async create(
+        actor: User,
+        course: Course,
+        data: typeof schema.createLesson.static
+    ): Promise<Lesson | UnauthorizedError> {
+        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
+            return new UnauthorizedError();
+        }
+
+        const newLesson = new Lesson(
+            randomUUID(),
+            course.id,
+            data.info,
+            data.content,
+            data.homeworks,
+            data.schedule
+        );
+        await this.db.lesson.set(newLesson);
+        return newLesson;
+    }
+
+    /** Updates existing lesson. */
     public async update(
         actor: User,
         course: Course,
         lesson: Lesson,
         change: typeof schema.updateLesson.static
-    ): Promise<Lesson | UnauthorizedError | NotFoundError> {
+    ): Promise<Lesson | UnauthorizedError> {
         if (!actor.hasCoursePermission(course.id, "canEditContent")) {
             return new UnauthorizedError();
         }
 
-        const newLesson = await this.db.lesson.update(lesson, change);
-        if (!newLesson) return new NotFoundError();
+        const newLesson = new Lesson(
+            lesson.id,
+            lesson.courseId,
+            {
+                ...lesson.info,
+                ...change.info
+            },
+            change.content ?? lesson.content,
+            change.homeworks ?? lesson.homeworks,
+            change.schedule ?? lesson.schedule
+        );
+        await this.db.lesson.set(newLesson);
 
         if (change.schedule !== undefined) {
             const students = await this.db.student.getAll(course);
@@ -52,6 +86,18 @@ export class LessonService {
         }
 
         return newLesson;
+    }
+
+    /** Updates lesson list. */
+    public async updateAll(
+        actor: User,
+        course: Course,
+        update: typeof schema.updateLessonsList.static
+    ): Promise<void | UnauthorizedError> {
+        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
+            return new UnauthorizedError();
+        }
+        await this.db.lesson.updateAll(course, update);
     }
 
     private getRescheduleNotificationText(

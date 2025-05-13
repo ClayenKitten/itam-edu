@@ -4,16 +4,8 @@ export const lessonInfo = t.Object({
     title: t.String({ minLength: 3, maxLength: 80 }),
     description: t.Nullable(t.String({ maxLength: 1000 })),
     banner: t.Nullable(t.String({ minLength: 1 })),
-    video: t.Nullable(t.String({ minLength: 1 })),
-    position: t.Number({ multipleOf: 1 }),
-    createdAt: t.Date()
+    video: t.Nullable(t.String({ minLength: 1 }))
 });
-export const updateLessonInfo = t.Pick(lessonInfo, [
-    "title",
-    "description",
-    "banner",
-    "video"
-]);
 
 export const lessonSchedule = t.Object({
     /** Date of the lesson. */
@@ -30,7 +22,7 @@ export const lessonSchedule = t.Object({
 });
 
 export const createLesson = t.Object({
-    info: updateLessonInfo,
+    info: lessonInfo,
     content: t.Nullable(t.String()),
     homeworks: t.Array(t.String({ format: "uuid" }), { maxItems: 10 }),
     schedule: t.Nullable(lessonSchedule)

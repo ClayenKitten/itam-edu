@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia, status, t } from "elysia";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
@@ -19,6 +19,11 @@ export function lessonController(ctx: AppContext) {
                 { additionalProperties: true }
             )
         })
+        .derive(async ({ db, params, status }) => {
+            const course = await db.course.getById(params.course);
+            if (!course) return status(404);
+            return { course };
+        })
         .get(
             "",
             async ({ db, params }) => {
@@ -34,18 +39,20 @@ export function lessonController(ctx: AppContext) {
         )
         .post(
             "",
-            async ({ db, params, body, error, set }) => {
-                const lesson = await db.lesson.create(
-                    params.course,
+            async ({ user, course, services, body, status }) => {
+                const lesson = await services.lesson.create(
+                    user,
+                    course,
                     body.lesson
                 );
-                if (lesson === null) return error(400);
-                set.status = 201;
+                if (lesson instanceof HttpError) {
+                    return status(lesson.code, lesson.message);
+                }
                 return { id: lesson.id };
             },
             {
+                requireAuthentication: true,
                 body: t.Object({ lesson: schema.createLesson }),
-                hasCoursePermission: "canEditContent",
                 detail: {
                     summary: "Create new lesson",
                     description: "Creates new lesson.",
@@ -55,13 +62,19 @@ export function lessonController(ctx: AppContext) {
         )
         .put(
             "",
-            async ({ db, params, body }) => {
-                await db.lesson.updateAll(params.course, body.lessons);
-                return "Ok";
+            async ({ user, course, services, params, body }) => {
+                const result = await services.lesson.updateAll(
+                    user,
+                    course,
+                    body.lessons
+                );
+                if (result instanceof HttpError) {
+                    return status(result.code, result.message);
+                }
             },
             {
+                requireAuthentication: true,
                 body: t.Object({ lessons: schema.updateLessonsList }),
-                hasCoursePermission: "canEditContent",
                 detail: {
                     summary: "Update lessons",
                     description:
@@ -72,13 +85,13 @@ export function lessonController(ctx: AppContext) {
         )
         .get(
             "/:lesson",
-            async ({ db, params, error }) => {
+            async ({ db, params, status }) => {
                 const lesson = await db.lessonQuery.get(
                     params.course,
                     params.lesson
                 );
                 if (lesson instanceof HttpError) {
-                    return error(lesson.code, lesson.message);
+                    return status(lesson.code, lesson.message);
                 }
                 return lesson;
             },
@@ -95,12 +108,12 @@ export function lessonController(ctx: AppContext) {
         )
         .patch(
             "/:lesson",
-            async ({ params, services, body, user, db, error }) => {
+            async ({ params, services, body, user, db, status }) => {
                 const [course, lesson] = await Promise.all([
                     db.course.getById(params.course),
                     db.lesson.getById(params.lesson)
                 ]);
-                if (!course || !lesson) return error(404);
+                if (!course || !lesson) return status(404);
 
                 const newLesson = await services.lesson.update(
                     user,
@@ -109,7 +122,7 @@ export function lessonController(ctx: AppContext) {
                     body
                 );
                 if (newLesson instanceof HttpError) {
-                    return error(newLesson.code, newLesson.message);
+                    return status(newLesson.code, newLesson.message);
                 }
             },
             {
