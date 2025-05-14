@@ -3,6 +3,7 @@ import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 import type { AppContext } from "../ctx";
 import { authenticationPlugin } from "../api/plugins/authenticate";
 import { Session } from "./session";
+import type { CalendarFilters } from "./calendar";
 
 export async function userController(ctx: AppContext) {
     return new Elysia({ prefix: "/users", tags: ["Users"] })
@@ -60,6 +61,31 @@ export async function userController(ctx: AppContext) {
                         "Authenticates user and creates a new session.",
                     security: NO_AUTHENTICATION
                 }
+            }
+        )
+        .get(
+            "/me/calendar",
+            async ({ user, query, db }) => {
+                const filters: CalendarFilters = {
+                    after: query.after ? new Date(query.after) : undefined,
+                    before: query.before ? new Date(query.before) : undefined
+                };
+                const events = await db.calendarQuery.get(user, filters);
+                return events;
+            },
+            {
+                requireAuthentication: true,
+                detail: {
+                    summary: "Get current user calendar",
+                    description: "Returns calendar events of the current user.",
+                    security: REQUIRE_TOKEN
+                },
+                query: t.Partial(
+                    t.Object({
+                        after: t.String({ format: "date-time" }),
+                        before: t.String({ format: "date-time" })
+                    })
+                )
             }
         );
 }

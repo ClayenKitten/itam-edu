@@ -1,7 +1,10 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
     import type { Course } from "$lib/types";
+    import type { CalendarEvent } from "itam-edu-common";
     import CourseCard from "./CourseCard.svelte";
+    import { coursePath } from "$lib/path";
+    import { format as formatDate } from "date-fns";
 
     let { data } = $props();
 
@@ -19,6 +22,19 @@
         }
     });
     let courses = $derived(data.courses.filter(filter));
+
+    const eventToHref = (course: Course, event: CalendarEvent) => {
+        switch (event.kind) {
+            case "homework":
+                return `${coursePath(course)}/homeworks/${event.id}`;
+            case "lesson":
+                return `${coursePath(course)}/lessons/${event.id}`;
+            default:
+                let _: never = event;
+                break;
+        }
+        return coursePath(course) ?? "/home";
+    };
 </script>
 
 <svelte:head>
@@ -28,19 +44,56 @@
 <div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} standalone />
     <main
-        class="grid grid-cols-[1fr_373px] grid-rows-[auto_1fr] content-start py-15 px-7.5 gap-7.5"
+        class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-15 px-7.5 gap-7.5"
     >
         <menu class="flex gap-2">
             {@render fltr("Мои", "my")}
             {@render fltr("Текущие", "active")}
             {@render fltr("Архивные", "archive")}
         </menu>
-        <aside class="row-span-2">
-            <!-- TODO: calenfar -->
+        <aside
+            class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
+        >
+            <h5>Ближайшие события</h5>
+            <ul class="flex flex-col gap-3">
+                {#each data.calendar as event}
+                    {@const course = data.courses.find(
+                        c => c.id === event.courseId
+                    )!}
+                    {@const href = eventToHref(course, event)}
+                    <a
+                        class="flex items-center gap-2 p-2 bg-surface-tint rounded-sm"
+                        {href}
+                    >
+                        <div class="flex flex-col border-r border-primary p-2">
+                            <span class="text-on-surface">
+                                {formatDate(event.datetime, "dd.MM")}
+                            </span>
+                            <span class="text-on-surface-muted">
+                                {formatDate(event.datetime, "HH.mm")}
+                            </span>
+                        </div>
+                        <div
+                            class="flex flex-col whitespace-nowrap overflow-hidden"
+                        >
+                            <span
+                                class="text-on-surface overflow-hidden overflow-ellipsis"
+                            >
+                                {course.title}
+                            </span>
+                            <span
+                                class="text-on-surface-muted overflow-hidden overflow-ellipsis"
+                            >
+                                {event.title}
+                            </span>
+                        </div>
+                    </a>
+                {/each}
+            </ul>
         </aside>
         <section
             class={[
-                "grid grid-cols-[repeat(auto-fill,317px)] gap-x-4 gap-y-6.5"
+                "grid grid-cols-[repeat(auto-fill,317px)] items-start gap-x-4 gap-y-6.5"
             ]}
         >
             {#each courses as course}

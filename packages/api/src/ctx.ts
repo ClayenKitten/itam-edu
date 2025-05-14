@@ -18,6 +18,7 @@ import { CallService } from "./calls/service";
 import { TelegramSender } from "./telegram/sender";
 import { SessionRepository } from "./users/session";
 import { LoginCodeRepository } from "./users/login";
+import { CalendarQuery } from "./users/calendar";
 
 /** Global context of the application. */
 export type AppContext = ReturnType<typeof createAppContext>;
@@ -30,6 +31,7 @@ export function createAppContext(config: AppConfig) {
 
     const db = {
         user: new UserRepository(databaseConnection),
+        calendarQuery: new CalendarQuery(databaseConnection),
         session: new SessionRepository(databaseConnection),
         loginCode: new LoginCodeRepository(databaseConnection),
         course: new CourseRepository(databaseConnection),
