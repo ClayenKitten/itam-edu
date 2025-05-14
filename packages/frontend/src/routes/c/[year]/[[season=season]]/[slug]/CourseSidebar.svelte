@@ -68,7 +68,7 @@
             {@render btn("/settings", "Настройки", "gear-six")}
         </ul>
     {/if}
-    {#if !user?.isCourseStaff(course.id) && !user?.isCourseStudent(course.id)}
+    {#if user && !user.isCourseStaff(course.id) && !user.isCourseStudent(course.id)}
         {@const open = course.isEnrollmentOpen}
         <button class="btn mt-auto" disabled={!open} onclick={enroll}>
             <i class="ph ph-student text-[24px]"></i>
