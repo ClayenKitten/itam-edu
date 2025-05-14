@@ -59,7 +59,10 @@
             .patch(update);
 
         if (result.status === 200) {
-            await invalidate("app:lesson");
+            await Promise.allSettled([
+                invalidate("app:lesson"),
+                invalidate("app:calendar")
+            ]);
             await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
         } else {
             alert(result.status);

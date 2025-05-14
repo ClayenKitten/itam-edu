@@ -28,7 +28,10 @@
             .homeworks.post(create);
 
         if (result.status === 200) {
-            await invalidate("app:homeworks");
+            await Promise.allSettled([
+                invalidate("app:homeworks"),
+                invalidate("app:calendar")
+            ]);
             await goto(
                 `${coursePath(data.course)}/homeworks/${result.data?.id}`
             );

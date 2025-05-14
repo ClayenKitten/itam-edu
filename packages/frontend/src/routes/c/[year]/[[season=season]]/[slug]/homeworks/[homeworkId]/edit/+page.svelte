@@ -23,7 +23,10 @@
             .put(update);
 
         if (result.status === 200) {
-            await invalidate("app:homework");
+            await Promise.allSettled([
+                invalidate("app:homework"),
+                invalidate("app:calendar")
+            ]);
             await goto(
                 `${coursePath(data.course)}/homeworks/${data.homework.id}`
             );

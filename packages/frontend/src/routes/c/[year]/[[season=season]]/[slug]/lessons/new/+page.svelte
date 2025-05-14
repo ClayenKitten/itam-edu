@@ -59,7 +59,10 @@
             .lessons.post({ lesson: val });
 
         if (!result.error) {
-            await invalidate("app:lessons");
+            await Promise.allSettled([
+                invalidate("app:lessons"),
+                invalidate("app:calendar")
+            ]);
             await goto(`${coursePath(data.course)}/lessons/${result.data.id}`);
         } else {
             alert(result.status);
