@@ -11,7 +11,8 @@
     let modal: HomeworkListEditModal;
 
     const getTagKind = (homeworkId: string): TagKind | null => {
-        if (data.user?.isCourseStaff(data.course.id)) return null;
+        if (!data.user) return null;
+        if (!data.user.isCourseStudent(data.course.id)) return null;
         if (!data.submissions) return null;
         const submission = data.submissions.find(
             submission => submission.homework.id === homeworkId
@@ -55,9 +56,9 @@
                 class="flex justify-between p-5 bg-surface rounded-xs shadow"
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
             >
-                <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-2.5">
                     <header class="flex items-center gap-3">
-                        <h4>{homework.title}</h4>
+                        <h5>{homework.title}</h5>
                         {#if tag}<Tag kind={tag} />{/if}
                     </header>
                     <p class="text-on-surface-contrast opacity-50">
