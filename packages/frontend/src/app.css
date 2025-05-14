@@ -1,5 +1,10 @@
 /* Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=fallback");
+/* Basic */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=fallback");
+/* H1, H2 */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,135,676&display=fallback");
+/* H3, H4, H5 */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,135,573&display=fallback");
 
 /* Icons */
 @import "@phosphor-icons/web/regular";
@@ -43,20 +48,29 @@
 
     /* Typography */
     --text-h1: 48px;
-    --text-h1--line-height: 56px;
+    --text-h1--line-height: 56.3px;
     --text-h1--font-weight: 676;
+    --text-h1--font-stretch: 135%;
 
-    --text-h2: 40px;
+    --text-h2: 36px;
     --text-h2--line-height: 46.88px;
     --text-h2--font-weight: 676;
+    --text-h2--font-stretch: 135%;
 
-    --text-h3: 26px;
+    --text-h3: 30px;
     --text-h3--line-height: 30.47px;
     --text-h3--font-weight: 573;
+    --text-h3--font-stretch: 135%;
 
-    --text-h4: 17px;
+    --text-h4: 24px;
     --text-h4--line-height: 19.92px;
     --text-h4--font-weight: 573;
+    --text-h4--font-stretch: 135%;
+
+    --text-h5: 17px;
+    --text-h5--line-height: 19.92px;
+    --text-h5--font-weight: 573;
+    --text-h5--font-stretch: 135%;
 
     --text-base: 16px;
     --text-base--line-height: 18.75px;
@@ -86,21 +100,31 @@
         font-size: var(--text-h1);
         line-height: var(--text-h1--line-height);
         font-weight: var(--text-h1--font-weight);
+        font-stretch: var(--text-h1--font-stretch);
     }
     h2 {
         font-size: var(--text-h2);
         line-height: var(--text-h2--line-height);
         font-weight: var(--text-h2--font-weight);
+        font-stretch: var(--text-h2--font-stretch);
     }
     h3 {
         font-size: var(--text-h3);
         line-height: var(--text-h3--line-height);
         font-weight: var(--text-h3--font-weight);
+        font-stretch: var(--text-h3--font-stretch);
     }
     h4 {
         font-size: var(--text-h4);
         line-height: var(--text-h4--line-height);
         font-weight: var(--text-h4--font-weight);
+        font-stretch: var(--text-h4--font-stretch);
+    }
+    h5 {
+        font-size: var(--text-h5);
+        line-height: var(--text-h5--line-height);
+        font-weight: var(--text-h5--font-weight);
+        font-stretch: var(--text-h5--font-stretch);
     }
     a,
     button {
