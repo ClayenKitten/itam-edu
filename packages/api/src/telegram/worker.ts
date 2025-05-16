@@ -3,6 +3,7 @@ import logger from "../logger";
 import { Worker } from "bullmq";
 import { AppConfig } from "../config";
 import { queues } from "itam-edu-common";
+import { Redis } from "../infra/redis";
 import { TelegramSender } from "./sender";
 import { UserRepository } from "../users/repository";
 import { handleLogin } from "./login";
@@ -13,6 +14,7 @@ import { LoginCodeRepository } from "../users/login";
 export class TelegramWorker {
     public constructor(
         protected config: AppConfig,
+        protected redis: Redis,
         protected userRepo: UserRepository,
         protected loginCodeRepo: LoginCodeRepository,
         protected telegramSender: TelegramSender
@@ -26,7 +28,7 @@ export class TelegramWorker {
                 );
             },
             {
-                connection: { url: config.redis.connectionString },
+                connection: redis.createConnection(),
                 autorun: false
             }
         );
