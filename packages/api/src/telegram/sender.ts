@@ -1,11 +1,13 @@
+import { injectable } from "inversify";
 import { Queue } from "bullmq";
-import type { AppConfig } from "../config";
+import { AppConfig } from "../config";
 import { queues, User } from "itam-edu-common";
 
+@injectable()
 export class TelegramSender {
-    public constructor(config: AppConfig["redis"]) {
+    public constructor(config: AppConfig) {
         this.queue = new Queue(queues.telegram.OUTBOUND_PRIVATE_MESSAGE_QUEUE, {
-            connection: { url: config.connectionString }
+            connection: { url: config.redis.connectionString }
         });
     }
 

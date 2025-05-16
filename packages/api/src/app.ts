@@ -1,21 +1,16 @@
-import type { AppConfig } from "./config";
-import { createAppContext } from "./ctx";
-
-import ApiServer from "./api";
-import TelegramWorker from "./telegram/worker";
+import { injectable } from "inversify";
+import { ApiServer } from "./api";
+import { TelegramWorker } from "./telegram/worker";
 import logger from "./logger";
 
+@injectable()
 export class Application {
-    public constructor(config: AppConfig) {
-        const ctx = createAppContext(config);
-
-        this.api = new ApiServer(ctx);
-        this.workers = {
-            telegram: new TelegramWorker(ctx.config, ctx.db, ctx.services)
-        };
+    public constructor(
+        private api: ApiServer,
+        telegram: TelegramWorker
+    ) {
+        this.workers = { telegram };
     }
-
-    private readonly api: ApiServer;
     private readonly workers: AppWorkers;
 
     public async start(): Promise<void> {

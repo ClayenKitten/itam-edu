@@ -1,24 +1,24 @@
-import { NotFoundError, UnauthorizedError } from "../../api/errors";
-import type { AppConfig } from "../../config";
-import type NotificationService from "../../notifications/service";
-import type StaffRepository from "../../staff/repository";
+import { injectable } from "inversify";
+import { UnauthorizedError } from "../../api/errors";
+import { AppConfig } from "../../config";
+import { NotificationService } from "../../notifications/service";
+import { StaffRepository } from "../../staff/repository";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
-import type StudentRepository from "../student/repository";
+import { StudentRepository } from "../student/repository";
 import { Lesson } from "./entity";
-import type LessonRepository from "./repository";
+import { LessonRepository } from "./repository";
 import * as schema from "./schema";
 import { randomUUID } from "crypto";
 
+@injectable()
 export class LessonService {
     public constructor(
-        private config: AppConfig,
-        private db: {
-            lesson: LessonRepository;
-            staff: StaffRepository;
-            student: StudentRepository;
-        },
-        private notification: NotificationService
+        protected config: AppConfig,
+        protected lessonRepo: LessonRepository,
+        protected staffRepo: StaffRepository,
+        protected studentRepo: StudentRepository,
+        protected notificationService: NotificationService
     ) {}
 
     /** Creates new lesson. */
@@ -39,7 +39,7 @@ export class LessonService {
             data.homeworks,
             data.schedule
         );
-        await this.db.lesson.set(newLesson);
+        await this.lessonRepo.set(newLesson);
         return newLesson;
     }
 
@@ -65,18 +65,18 @@ export class LessonService {
             change.homeworks ?? lesson.homeworks,
             change.schedule ?? lesson.schedule
         );
-        await this.db.lesson.set(newLesson);
+        await this.lessonRepo.set(newLesson);
 
         if (change.schedule !== undefined) {
-            const students = await this.db.student.getAll(course);
-            const staff = await this.db.staff.getAll(course);
+            const students = await this.studentRepo.getAll(course);
+            const staff = await this.staffRepo.getAll(course);
 
             if (newLesson.schedule !== null) {
                 const text = this.getRescheduleNotificationText(
                     course,
                     newLesson
                 );
-                await this.notification.send(
+                await this.notificationService.send(
                     text,
                     Array.from(
                         new Set([...students, ...staff.map(s => s.userId)])
@@ -97,7 +97,7 @@ export class LessonService {
         if (!actor.hasCoursePermission(course.id, "canEditContent")) {
             return new UnauthorizedError();
         }
-        await this.db.lesson.updateAll(course, update);
+        await this.lessonRepo.updateAll(course, update);
     }
 
     private getRescheduleNotificationText(

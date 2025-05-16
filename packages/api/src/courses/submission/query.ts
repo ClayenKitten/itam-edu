@@ -1,12 +1,13 @@
-import type { Kysely } from "kysely";
-import type { DB } from "itam-edu-db";
+import { injectable } from "inversify";
+import { Postgres } from "../../infra/postgres";
 import { NotFoundError, UnauthorizedError } from "../../api/errors";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 
+@injectable()
 export class SubmissionQuery {
-    public constructor(private db: Kysely<DB>) {}
+    public constructor(protected postgres: Postgres) {}
 
     public async get(
         actor: User,
@@ -19,7 +20,7 @@ export class SubmissionQuery {
             !actor.isCourseStudent(course.id)
         )
             return new NotFoundError();
-        const messages = await this.db
+        const messages = await this.postgres.kysely
             .selectFrom("homeworkSubmissionMessages as msg")
             .select([
                 "msg.id",
@@ -40,7 +41,7 @@ export class SubmissionQuery {
         const users =
             userIds.size === 0
                 ? []
-                : await this.db
+                : await this.postgres.kysely
                       .selectFrom("users")
                       .select([
                           "id",
@@ -75,7 +76,7 @@ export class SubmissionQuery {
             !actor.isCourseStudent(course.id)
         )
             return new UnauthorizedError();
-        const submissions = await this.db
+        const submissions = await this.postgres.kysely
             .selectFrom("homeworkSubmissions")
             .innerJoin("homeworks", "homeworkId", "homeworks.id")
             .innerJoin("users", "studentId", "users.id")

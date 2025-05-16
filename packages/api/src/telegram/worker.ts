@@ -1,18 +1,21 @@
+import { injectable } from "inversify";
 import logger from "../logger";
 import { Worker } from "bullmq";
-import type { AppConfig } from "../config";
+import { AppConfig } from "../config";
 import { queues } from "itam-edu-common";
-import type { TelegramSender } from "./sender";
-import type UserRepository from "../users/repository";
+import { TelegramSender } from "./sender";
+import { UserRepository } from "../users/repository";
 import { handleLogin } from "./login";
-import type { LoginCodeRepository } from "../users/login";
+import { LoginCodeRepository } from "../users/login";
 
 /** Worker for receiving Telegram messages. */
-export default class TelegramWorker {
+@injectable()
+export class TelegramWorker {
     public constructor(
         protected config: AppConfig,
-        protected db: { user: UserRepository; loginCode: LoginCodeRepository },
-        protected services: { telegramSender: TelegramSender }
+        protected userRepo: UserRepository,
+        protected loginCodeRepo: LoginCodeRepository,
+        protected telegramSender: TelegramSender
     ) {
         this.worker = new Worker<queues.telegram.InboundPrivateMessage>(
             queues.telegram.INBOUND_PRIVATE_MESSAGE_QUEUE,
@@ -43,7 +46,7 @@ export default class TelegramWorker {
     }
 
     public async handleMessage(msg: queues.telegram.InboundPrivateMessage) {
-        const user = await this.db.user.create({
+        const user = await this.userRepo.create({
             firstName: msg.sender.firstName,
             lastName: msg.sender.lastName,
             tgUserId: msg.sender.id,
@@ -53,7 +56,7 @@ export default class TelegramWorker {
         let message: string;
         if (msg.text.trim() === "/login") {
             message = await handleLogin(
-                { loginCode: this.db.loginCode },
+                { loginCode: this.loginCodeRepo },
                 user,
                 this.config.webUrl
             );
@@ -61,7 +64,7 @@ export default class TelegramWorker {
             message = this.helpText;
         }
 
-        this.services.telegramSender.send(user, message);
+        this.telegramSender.send(user, message);
     }
 
     protected get helpText(): string {

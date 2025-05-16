@@ -1,13 +1,17 @@
-import { Repository } from "../../db/repository";
+import { injectable } from "inversify";
+import { Postgres } from "../../infra/postgres";
 import Homework from "./entity";
 import * as schema from "./schema";
 import { sql, type ExpressionBuilder, type Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 
-export default class HomeworkRepository extends Repository {
+@injectable()
+export class HomeworkRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Returns homework by id. */
     public async getById(homeworkId: string): Promise<Homework | null> {
-        const hw = await this.db
+        const hw = await this.postgres.kysely
             .selectFrom("homeworks")
             .selectAll()
             .where("id", "=", homeworkId)
@@ -18,7 +22,7 @@ export default class HomeworkRepository extends Repository {
 
     /** Returns all homeworks of the course. */
     public async getAll(courseId: string): Promise<Homework[]> {
-        const homeworksData = await this.db
+        const homeworksData = await this.postgres.kysely
             .selectFrom("homeworks")
             .orderBy("position asc")
             .selectAll()
@@ -51,7 +55,7 @@ export default class HomeworkRepository extends Repository {
                 );
         };
 
-        const hw = await this.db
+        const hw = await this.postgres.kysely
             .insertInto("homeworks")
             .values(eb => ({
                 title: homeworkInfo.title,
@@ -69,7 +73,7 @@ export default class HomeworkRepository extends Repository {
         homeworkId: string,
         homeworkInfo: typeof schema.updateHomework.static
     ) {
-        const hw = await this.db
+        const hw = await this.postgres.kysely
             .updateTable("homeworks")
             .where("id", "=", homeworkId)
             .set({
@@ -86,7 +90,7 @@ export default class HomeworkRepository extends Repository {
 
     /** Updates a homework list via reordering and deletion. */
     public async updateAll(courseId: string, homeworkIds: string[]) {
-        await this.db.transaction().execute(async trx => {
+        await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .deleteFrom("lessonHomeworks")
                 .using("homeworks")

@@ -1,6 +1,7 @@
 import { randomInt } from "crypto";
 import type { User } from "itam-edu-common";
-import { Repository } from "../db/repository";
+import { Postgres } from "../infra/postgres";
+import { injectable } from "inversify";
 
 export class LoginCode {
     public constructor(
@@ -29,9 +30,12 @@ export class LoginCode {
     public static TTL_MINUTES = 5;
 }
 
-export class LoginCodeRepository extends Repository {
+@injectable()
+export class LoginCodeRepository {
+    public constructor(protected postgres: Postgres) {}
+
     public async get(code: string): Promise<LoginCode | null> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .selectFrom("userLoginAttempts")
             .selectAll()
             .where("code", "=", code)
@@ -43,7 +47,7 @@ export class LoginCodeRepository extends Repository {
 
     public async set(loginCode: LoginCode): Promise<void> {
         let { userId, code, expires } = loginCode;
-        await this.db.transaction().execute(async trx => {
+        await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .deleteFrom("userLoginAttempts")
                 .where(({ eb, or }) =>
@@ -58,7 +62,7 @@ export class LoginCodeRepository extends Repository {
     }
 
     public async delete(loginCode: LoginCode) {
-        await this.db
+        await this.postgres.kysely
             .deleteFrom("userLoginAttempts")
             .where("code", "=", loginCode.code)
             .executeTakeFirst();

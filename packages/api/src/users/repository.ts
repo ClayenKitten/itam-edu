@@ -1,20 +1,23 @@
-import { Repository } from "../db/repository";
 import { User, type CoursePermissions } from "itam-edu-common";
-import logger from "../logger";
 import type { Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
+import { injectable } from "inversify";
+import { Postgres } from "../infra/postgres";
 
-export default class UserRepository extends Repository {
+@injectable()
+export class UserRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Returns a user by its id. */
     public async getById(id: string): Promise<User | null> {
-        const user = await this.db
+        const user = await this.postgres.kysely
             .selectFrom("users")
             .selectAll("users")
             .where("id", "=", id)
             .executeTakeFirst();
         if (!user) return null;
 
-        const userCourses = await this.db
+        const userCourses = await this.postgres.kysely
             .selectFrom("userCourses")
             .selectAll()
             .where("userId", "=", user.id)
@@ -29,7 +32,7 @@ export default class UserRepository extends Repository {
 
     /** Returns a user by its access token. */
     public async getByToken(token: string): Promise<User | null> {
-        const user = await this.db
+        const user = await this.postgres.kysely
             .selectFrom("users")
             .selectAll("users")
             .leftJoin("userSessions", "userSessions.userId", "users.id")
@@ -37,7 +40,7 @@ export default class UserRepository extends Repository {
             .executeTakeFirst();
         if (!user) return null;
 
-        const userCourses = await this.db
+        const userCourses = await this.postgres.kysely
             .selectFrom("userCourses")
             .selectAll()
             .where("userId", "=", user.id)
@@ -61,7 +64,7 @@ export default class UserRepository extends Repository {
         tgUserId: string;
         tgUsername: string;
     }): Promise<User> {
-        const user = await this.db
+        const user = await this.postgres.kysely
             .insertInto("users")
             .values({
                 firstName: createUser.firstName,
@@ -78,7 +81,7 @@ export default class UserRepository extends Repository {
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        const userCourses = await this.db
+        const userCourses = await this.postgres.kysely
             .selectFrom("userCourses")
             .selectAll()
             .where("userId", "=", user.id)

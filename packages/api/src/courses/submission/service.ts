@@ -1,20 +1,20 @@
+import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { BadRequestError, ForbiddenError } from "../../api/errors";
-import type { AppConfig } from "../../config";
-import type NotificationService from "../../notifications/service";
-import type StaffRepository from "../../staff/repository";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
-import type SubmissionRepository from "./repository";
+import { AppConfig } from "../../config";
+import { SubmissionRepository } from "./repository";
+import { StaffRepository } from "../../staff/repository";
+import { NotificationService } from "../../notifications/service";
 
+@injectable()
 export class SubmissionService {
     public constructor(
-        private config: AppConfig,
-        private db: {
-            submission: SubmissionRepository;
-            staff: StaffRepository;
-        },
-        private notification: NotificationService
+        protected config: AppConfig,
+        protected submissionRepo: SubmissionRepository,
+        protected staffRepo: StaffRepository,
+        protected notificationService: NotificationService
     ) {}
 
     public async sendMessage(
@@ -33,12 +33,12 @@ export class SubmissionService {
                     "students can't set non-null acceptance"
                 );
             }
-            await this.db.submission.addSubmission(homework, student, content);
+            await this.submissionRepo.addSubmission(homework, student, content);
         } else {
             if (accepted === null) {
                 return new BadRequestError("staff must set acceptance");
             }
-            await this.db.submission.addReview(
+            await this.submissionRepo.addReview(
                 homework,
                 student,
                 actor,
@@ -48,8 +48,8 @@ export class SubmissionService {
         }
 
         if (senderRole === "student") {
-            const staff = await this.db.staff.getAll(course);
-            this.notification.send(
+            const staff = await this.staffRepo.getAll(course);
+            this.notificationService.send(
                 [
                     "<b>📝 Новый ответ на задание</b>",
                     `Студент @${student.telegram.username} сдал(а) задание '${homework.title}'.`,
@@ -58,7 +58,7 @@ export class SubmissionService {
                 staff.map(s => s.userId)
             );
         } else if (senderRole === "reviewer") {
-            this.notification.send(
+            this.notificationService.send(
                 [
                     `<b>${accepted ? "🥇 Задание сдано" : "📖 Задание нужно доработать"}</b>`,
                     accepted

@@ -1,10 +1,15 @@
 import { Application } from "./app";
-import { createConfigFromEnv } from "./config";
+import { AppConfig } from "./config";
 import logger from "./logger";
+import { Container } from "inversify";
 
-const config = createConfigFromEnv();
+export const container = new Container({
+    autobind: true,
+    defaultScope: "Singleton"
+});
+container.bind(AppConfig).toConstantValue(AppConfig.createFromEnv());
 
-const application = new Application(config);
+const application = container.get(Application);
 await application.start();
 
 async function handleSignal(signal: NodeJS.Signals) {

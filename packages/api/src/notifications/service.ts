@@ -1,16 +1,18 @@
-import type UserRepository from "../users/repository";
-import type { TelegramSender } from "../telegram/sender";
+import { injectable } from "inversify";
+import { UserRepository } from "../users/repository";
+import { TelegramSender } from "../telegram/sender";
 
-export default class NotificationService {
+@injectable()
+export class NotificationService {
     public constructor(
-        private db: { user: UserRepository },
+        protected userRepo: UserRepository,
         protected telegramSender: TelegramSender
     ) {}
 
     /** Sends a notification to specified users. */
     public async send(text: string, users: string[]): Promise<void> {
         for (const userId of users) {
-            const user = await this.db.user.getById(userId);
+            const user = await this.userRepo.getById(userId);
             if (!user) continue;
             await this.telegramSender.send(user, text);
         }

@@ -1,13 +1,17 @@
-import { Repository } from "../db/repository";
+import { injectable } from "inversify";
+import { Postgres } from "../infra/postgres";
 import type { Course } from "../courses/entity";
-import type { CoursePermissions, Permissions, User } from "itam-edu-common";
+import type { CoursePermissions, User } from "itam-edu-common";
 
-export default class StaffRepository extends Repository {
+@injectable()
+export class StaffRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Returns ids of course staff members. */
     public async getAll(
         course: Course
     ): Promise<{ userId: string; title: string | null }[]> {
-        const staff = await this.db
+        const staff = await this.postgres.kysely
             .selectFrom("userCourses")
             .select(["userId", "title"])
             .where("courseId", "=", course.id)
@@ -23,7 +27,7 @@ export default class StaffRepository extends Repository {
         title: string | null,
         permissions: CoursePermissions
     ): Promise<void> {
-        await this.db
+        await this.postgres.kysely
             .insertInto("userCourses")
             .values({ courseId: course.id, userId: user.id })
             .onConflict(cb =>
@@ -44,7 +48,7 @@ export default class StaffRepository extends Repository {
      * @returns `true` if staff member is removed, and `false` otherwise.
      * */
     public async remove(course: Course, user: User): Promise<boolean> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .deleteFrom("userCourses")
             .where("courseId", "=", course.id)
             .where("userId", "=", user.id)

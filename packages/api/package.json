@@ -21,10 +21,12 @@
         "@sinclair/typebox": "^0.34.14",
         "bullmq": "^5.41.8",
         "elysia": "^1.3.0",
+        "inversify": "^7.5.1",
         "itam-edu-common": "file:../common",
         "kysely": "^0.27.5",
         "livekit-server-sdk": "^2.12.0",
         "pg": "^8.13.1",
+        "reflect-metadata": "^0.2.2",
         "winston": "^3.17.0"
     },
     "devDependencies": {

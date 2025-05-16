@@ -1,16 +1,15 @@
 import { Elysia } from "elysia";
 import logger from "../../logger";
 import type { CoursePermissions, GlobalPermissions } from "itam-edu-common";
-import type { AppContext } from "../../ctx";
+import { UserRepository } from "../../users/repository";
 
 /** Retrieves user information and permissions, registers macroses for authorization. */
-export function authenticationPlugin(ctx: AppContext) {
+export function authenticationPlugin(userRepo: UserRepository) {
     return new Elysia({ name: "authenticate" })
-        .derive(() => ctx)
-        .derive(async ({ headers, db }) => {
+        .derive(async ({ headers }) => {
             let token = headers["authorization"]?.replace(/^Bearer /, "");
             let user =
-                token !== undefined ? await db.user.getByToken(token) : null;
+                token !== undefined ? await userRepo.getByToken(token) : null;
             return { user };
         })
         .onTransform(({ user }) => logger.extend({ user: user?.id }))

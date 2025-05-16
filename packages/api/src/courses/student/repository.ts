@@ -1,11 +1,15 @@
-import { Repository } from "../../db/repository";
+import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
+import { Postgres } from "../../infra/postgres";
 
-export default class StudentRepository extends Repository {
+@injectable()
+export class StudentRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Returns ids of all enrolled students. */
     public async getAll(course: Course): Promise<string[]> {
-        const students = await this.db
+        const students = await this.postgres.kysely
             .selectFrom("userCourses")
             .select(["userCourses.userId"])
             .leftJoin("users", "userCourses.userId", "users.id")
@@ -22,7 +26,7 @@ export default class StudentRepository extends Repository {
      * @returns `true` if student is added, and `false` if it was already in the list.
      * */
     public async set(course: Course, user: User): Promise<boolean> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .insertInto("userCourses")
             .values({ courseId: course.id, userId: user.id, isStaff: false })
             .onConflict(cb =>
@@ -45,7 +49,7 @@ export default class StudentRepository extends Repository {
      * @returns `true` if student is removed, and `false` otherwise.
      * */
     public async remove(course: Course, user: User): Promise<boolean> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .deleteFrom("userCourses")
             .where("courseId", "=", course.id)
             .where("userId", "=", user.id)

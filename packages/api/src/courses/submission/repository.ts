@@ -1,15 +1,19 @@
-import { Repository } from "../../db/repository";
+import { injectable } from "inversify";
+import { Postgres } from "../../infra/postgres";
 import type { User } from "itam-edu-common";
 import type Homework from "../homework/entity";
 
-export default class SubmissionRepository extends Repository {
+@injectable()
+export class SubmissionRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Creates new homework submission. */
     public async addSubmission(
         homework: Homework,
         student: User,
         content: string
     ): Promise<void> {
-        await this.db
+        await this.postgres.kysely
             .insertInto("homeworkSubmissionMessages")
             .values({
                 homeworkId: homework.id,
@@ -29,7 +33,7 @@ export default class SubmissionRepository extends Repository {
         content: string,
         accepted: boolean
     ): Promise<void> {
-        await this.db
+        await this.postgres.kysely
             .insertInto("homeworkSubmissionMessages")
             .values({
                 homeworkId: homework.id,

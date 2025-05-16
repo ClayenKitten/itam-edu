@@ -1,13 +1,17 @@
-import { Repository } from "../../db/repository";
+import { injectable } from "inversify";
+import { Postgres } from "../../infra/postgres";
 import type { DB, LessonHomeworks } from "itam-edu-db";
 import { sql } from "kysely";
 import type { ExpressionBuilder, Selectable } from "kysely";
 import { Lesson, type LessonSchedule } from "./entity";
 import type { Course } from "../entity";
 
-export default class LessonRepository extends Repository {
+@injectable()
+export class LessonRepository {
+    public constructor(protected postgres: Postgres) {}
+
     public async getById(lessonId: string): Promise<Lesson | null> {
-        const lesson = await this.db
+        const lesson = await this.postgres.kysely
             .selectFrom("lessons")
             .selectAll()
             .orderBy("position asc")
@@ -15,7 +19,7 @@ export default class LessonRepository extends Repository {
             .executeTakeFirst();
         if (!lesson) return null;
 
-        const homeworks = await this.db
+        const homeworks = await this.postgres.kysely
             .selectFrom("lessonHomeworks")
             .selectAll()
             .where("lessonId", "=", lesson.id)
@@ -26,7 +30,7 @@ export default class LessonRepository extends Repository {
     }
 
     public async getAll(courseId: string): Promise<Lesson[]> {
-        const lessons = await this.db
+        const lessons = await this.postgres.kysely
             .selectFrom("lessons")
             .selectAll()
             .orderBy("position asc")
@@ -35,7 +39,7 @@ export default class LessonRepository extends Repository {
 
         let homeworks: Selectable<LessonHomeworks>[] = [];
         if (lessons.length > 0) {
-            homeworks = await this.db
+            homeworks = await this.postgres.kysely
                 .selectFrom("lessonHomeworks")
                 .selectAll()
                 .where(
@@ -81,7 +85,7 @@ export default class LessonRepository extends Repository {
                 );
         };
 
-        await this.db.transaction().execute(async trx => {
+        await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .insertInto("lessons")
                 .values({
@@ -162,7 +166,7 @@ export default class LessonRepository extends Repository {
     }
 
     public async updateAll(course: Course, lessonIds: string[]) {
-        await this.db.transaction().execute(async trx => {
+        await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .deleteFrom("lessonHomeworks")
                 .using("lessons")

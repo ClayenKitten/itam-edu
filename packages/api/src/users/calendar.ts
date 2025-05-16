@@ -1,16 +1,17 @@
+import { injectable } from "inversify";
+import { Postgres } from "../infra/postgres";
 import type { CalendarEvent, User } from "itam-edu-common";
-import type { DB } from "itam-edu-db";
 import { sql, type NotNull } from "kysely";
-import type { Kysely } from "kysely";
 
+@injectable()
 export class CalendarQuery {
-    public constructor(private db: Kysely<DB>) {}
+    public constructor(protected postgres: Postgres) {}
 
     public async get(
         user: User,
         filters?: CalendarFilters
     ): Promise<CalendarEvent[]> {
-        const courseIds = await this.db
+        const courseIds = await this.postgres.kysely
             .selectFrom("userCourses")
             .where("userId", "=", user.id)
             .select("courseId")
@@ -35,7 +36,7 @@ export class CalendarQuery {
         courseIds: string[],
         filters?: CalendarFilters
     ): Promise<CalendarEvent[]> {
-        let query = this.db
+        let query = this.postgres.kysely
             .selectFrom("lessons")
             .innerJoin("courses", "courseId", "courses.id")
             .select([
@@ -61,7 +62,7 @@ export class CalendarQuery {
         courseIds: string[],
         filters?: CalendarFilters
     ): Promise<CalendarEvent[]> {
-        let query = this.db
+        let query = this.postgres.kysely
             .selectFrom("homeworks")
             .innerJoin("courses", "courseId", "courses.id")
             .select([

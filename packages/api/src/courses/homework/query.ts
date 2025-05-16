@@ -1,15 +1,16 @@
-import type { Kysely } from "kysely";
-import type { DB } from "itam-edu-db";
+import { injectable } from "inversify";
+import { Postgres } from "../../infra/postgres";
 import { NotFoundError } from "../../api/errors";
 
-export class HomeworksQuery {
-    public constructor(private db: Kysely<DB>) {}
+@injectable()
+export class HomeworkQuery {
+    public constructor(protected postgres: Postgres) {}
 
     public async get(
         courseId: string,
         homeworkId: string
     ): Promise<HomeworkDTO | NotFoundError> {
-        const homework = await this.db
+        const homework = await this.postgres.kysely
             .selectFrom("homeworks")
             .select([
                 "id",
@@ -26,7 +27,7 @@ export class HomeworksQuery {
             .executeTakeFirst();
         if (!homework) return new NotFoundError();
 
-        const lessons = await this.db
+        const lessons = await this.postgres.kysely
             .selectFrom("lessonHomeworks")
             .innerJoin("lessons", "lessons.id", "lessonId")
             .select(["lessons.id as id", "lessons.title"])
@@ -48,7 +49,7 @@ export class HomeworksQuery {
     }
 
     public async getAll(courseId: string): Promise<HomeworkPartialDTO[]> {
-        const homeworks = await this.db
+        const homeworks = await this.postgres.kysely
             .selectFrom("homeworks")
             .select([
                 "id",

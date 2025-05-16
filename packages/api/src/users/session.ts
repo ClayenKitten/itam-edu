@@ -1,6 +1,7 @@
+import { injectable } from "inversify";
+import { Postgres } from "../infra/postgres";
 import { randomBytes, randomUUID } from "crypto";
 import type { User } from "itam-edu-common";
-import { Repository } from "../db/repository";
 
 export class Session {
     public constructor(
@@ -22,14 +23,17 @@ export class Session {
     public static TTL_MS = 7 * 24 * 60 * 60 * 1000;
 }
 
-export class SessionRepository extends Repository {
+@injectable()
+export class SessionRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /**
      * Returns a user session by its token.
      *
      * Expired sessions are not returned.
      * */
     public async getByToken(token: string): Promise<Session | null> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .selectFrom("userSessions")
             .selectAll()
             .where("token", "=", token)
@@ -43,7 +47,7 @@ export class SessionRepository extends Repository {
     /** Persists a new session. */
     public async add(session: Session): Promise<void> {
         const { id, userId, token, expires } = session;
-        await this.db
+        await this.postgres.kysely
             .insertInto("userSessions")
             .values({
                 id,

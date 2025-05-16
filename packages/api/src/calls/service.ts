@@ -1,15 +1,17 @@
+import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 import { randomUUID } from "crypto";
 import { Call, type CallMetadata } from "./entity";
-import type { AppConfig } from "../config";
+import { AppConfig } from "../config";
 
+@injectable()
 export class CallService {
-    public constructor(private config: AppConfig["livekit"]) {
+    public constructor(protected config: AppConfig) {
         this.client = new RoomServiceClient(
-            config.url,
-            config.apiKey,
-            config.secretKey
+            config.livekit.url,
+            config.livekit.apiKey,
+            config.livekit.secretKey
         );
     }
 
@@ -50,8 +52,8 @@ export class CallService {
     /** Creates new access token for the user. */
     public async createAccessToken(actor: User, call: Call): Promise<string> {
         const token = new AccessToken(
-            this.config.apiKey,
-            this.config.secretKey,
+            this.config.livekit.apiKey,
+            this.config.livekit.secretKey,
             {
                 identity: actor.id,
                 name: actor.displayName,

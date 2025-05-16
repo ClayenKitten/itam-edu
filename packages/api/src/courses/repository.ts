@@ -1,13 +1,17 @@
-import { Repository } from "../db/repository";
-import { type NotNull, sql } from "kysely";
+import { injectable } from "inversify";
+import { sql } from "kysely";
 import * as schema from "./schema";
 import { schemaFields } from "../util";
 import { Course } from "./entity";
+import { Postgres } from "../infra/postgres";
 
-export default class CourseRepository extends Repository {
+@injectable()
+export class CourseRepository {
+    public constructor(protected postgres: Postgres) {}
+
     /** Returns course by its id. */
     public async getById(id: string): Promise<Course | null> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .where("id", "=", id)
@@ -22,7 +26,7 @@ export default class CourseRepository extends Repository {
         year?: number,
         semester?: number
     ): Promise<Course | null> {
-        let query = this.db
+        let query = this.postgres.kysely
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .where("slug", "=", slug)
@@ -42,7 +46,7 @@ export default class CourseRepository extends Repository {
 
     /** Returns all courses. */
     public async getAll(): Promise<Course[]> {
-        const results = await this.db
+        const results = await this.postgres.kysely
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .orderBy("year desc")
@@ -56,7 +60,7 @@ export default class CourseRepository extends Repository {
     public async create(
         course: typeof schema.createCourse.static
     ): Promise<Course> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .insertInto("courses")
             .values({
                 slug: course.slug,
@@ -74,7 +78,7 @@ export default class CourseRepository extends Repository {
         id: string,
         course: typeof schema.updateCourse.static
     ): Promise<Course | null> {
-        const result = await this.db
+        const result = await this.postgres.kysely
             .updateTable("courses")
             .where("id", "=", id)
             .set(course)

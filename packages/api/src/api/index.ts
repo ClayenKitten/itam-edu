@@ -1,26 +1,42 @@
+import { injectable } from "inversify";
 import { Elysia, type AnyElysia } from "elysia";
 
 import logger from "../logger";
-import type { AppContext } from "../ctx";
+import { AppConfig } from "../config";
+import { UserRepository } from "../users/repository";
+
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
 import { corsPlugin } from "./plugins/cors";
 import { authenticationPlugin } from "./plugins/authenticate";
 import { httpLoggerPlugin } from "./plugins/logger";
 
-import { userController } from "../users/controller";
-import { courseController } from "../courses/controller";
-import { lessonController } from "../courses/lesson/controller";
-import { homeworkController } from "../courses/homework/controller";
-import { studentController } from "../courses/student/controller";
-import { submissionController } from "../courses/submission/controller";
-import { staffController } from "../staff/controller";
-import { callController } from "../calls/controller";
-import { filesController } from "../files/controller";
+import { UserController } from "../users/controller";
+import { CourseController } from "../courses/controller";
+import { LessonController } from "../courses/lesson/controller";
+import { HomeworkController } from "../courses/homework/controller";
+import { StudentController } from "../courses/student/controller";
+import { SubmissionController } from "../courses/submission/controller";
+import { StaffController } from "../staff/controller";
+import { CallController } from "../calls/controller";
+import { FileController } from "../files/controller";
 
-export default class ApiServer {
+@injectable()
+export class ApiServer {
     private elysia: Promise<AnyElysia>;
 
-    public constructor(public ctx: AppContext) {
+    public constructor(
+        protected config: AppConfig,
+        protected userRepo: UserRepository,
+        protected userController: UserController,
+        protected courseController: CourseController,
+        protected lessonController: LessonController,
+        protected homeworkController: HomeworkController,
+        protected studentController: StudentController,
+        protected submissionController: SubmissionController,
+        protected staffController: StaffController,
+        protected callController: CallController,
+        protected fileController: FileController
+    ) {
         this.elysia = new Promise(async resolve =>
             resolve(await this.createElysia())
         );
@@ -32,11 +48,11 @@ export default class ApiServer {
         elysia
             .onStart(() =>
                 logger.info("Started API server", {
-                    port: this.ctx.config.api.port
+                    port: this.config.api.port
                 })
             )
             .onStop(() => logger.info("Stopped API server"))
-            .listen({ port: this.ctx.config.api.port });
+            .listen({ port: this.config.api.port });
     }
 
     /** Stops serving. */
@@ -52,7 +68,7 @@ export default class ApiServer {
         })
             .use(corsPlugin())
             .use(docsPlugin())
-            .use(authenticationPlugin(this.ctx))
+            .use(authenticationPlugin(this.userRepo))
             .use(httpLoggerPlugin())
             .onError(async ctx => {
                 logger?.error("Unhandled Exception", {
@@ -60,15 +76,15 @@ export default class ApiServer {
                     stack: (ctx.error as Error).stack
                 });
             })
-            .use(userController(this.ctx))
-            .use(courseController(this.ctx))
-            .use(lessonController(this.ctx))
-            .use(homeworkController(this.ctx))
-            .use(submissionController(this.ctx))
-            .use(studentController(this.ctx))
-            .use(staffController(this.ctx))
-            .use(callController(this.ctx))
-            .use(filesController(this.ctx))
+            .use(this.userController.toElysia())
+            .use(this.courseController.toElysia())
+            .use(this.lessonController.toElysia())
+            .use(this.homeworkController.toElysia())
+            .use(this.studentController.toElysia())
+            .use(this.submissionController.toElysia())
+            .use(this.staffController.toElysia())
+            .use(this.callController.toElysia())
+            .use(this.fileController.toElysia())
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
                 detail: {
