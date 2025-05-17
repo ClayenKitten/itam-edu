@@ -3,14 +3,16 @@ import { Elysia, t } from "elysia";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
 import { authenticationPlugin } from "../api/plugins/authenticate";
-import { CourseRepository } from "./repository";
 import { UserRepository } from "../users/repository";
+import { CourseRepository } from "./repository";
+import { CourseQuery } from "./query";
 
 @injectable()
 export class CourseController {
     public constructor(
         protected userRepo: UserRepository,
-        protected courseRepo: CourseRepository
+        protected courseRepo: CourseRepository,
+        protected courseQuery: CourseQuery
     ) {}
 
     public toElysia() {
@@ -74,52 +76,39 @@ export class CourseController {
                     }
                 }
             )
-            .group(
+            .get(
                 "/:course",
-                {
-                    params: t.Object(
-                        { course: t.String({ format: "uuid" }) },
-                        { additionalProperties: true }
-                    )
+                async ({ params, status }) => {
+                    const course = await this.courseQuery.get(params.course);
+                    if (!course) return status(404);
+                    return course;
                 },
-                app =>
-                    app
-                        .get(
-                            "",
-                            async ({ params, status }) => {
-                                const course = await this.courseRepo.getById(
-                                    params.course
-                                );
-                                if (!course) return status(404);
-                                return course.toDTO();
-                            },
-                            {
-                                detail: {
-                                    summary: "Get course",
-                                    description: "Returns course."
-                                }
-                            }
-                        )
-                        .patch(
-                            "",
-                            async ({ params, body, status }) => {
-                                const course = await this.courseRepo.update(
-                                    params.course,
-                                    body
-                                );
-                                if (!course) return status(404);
-                                return course.toDTO();
-                            },
-                            {
-                                body: schema.updateCourse,
-                                hasCoursePermission: "canEditInfo",
-                                detail: {
-                                    summary: "Update course",
-                                    description: "Updates course.",
-                                    security: REQUIRE_TOKEN
-                                }
-                            }
-                        )
+                {
+                    detail: {
+                        summary: "Get course",
+                        description: "Returns course."
+                    }
+                }
+            )
+            .patch(
+                "/:course",
+                async ({ params, body, status }) => {
+                    const course = await this.courseRepo.update(
+                        params.course,
+                        body
+                    );
+                    if (!course) return status(404);
+                    return course.toDTO();
+                },
+                {
+                    body: schema.updateCourse,
+                    hasCoursePermission: "canEditInfo",
+                    detail: {
+                        summary: "Update course",
+                        description: "Updates course.",
+                        security: REQUIRE_TOKEN
+                    }
+                }
             );
     }
 }
