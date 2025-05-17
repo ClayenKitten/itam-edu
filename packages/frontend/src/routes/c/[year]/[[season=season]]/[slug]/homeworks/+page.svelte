@@ -51,7 +51,6 @@
     </header>
     <div class="flex flex-col gap-2.5">
         {#each data.homeworks as homework}
-            {@const tag = getTagKind(homework.id)}
             <a
                 class="flex justify-between p-5 bg-surface rounded-xs shadow"
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
@@ -59,7 +58,7 @@
                 <div class="flex flex-col gap-2.5">
                     <header class="flex items-center gap-3">
                         <h5>{homework.title}</h5>
-                        {#if tag}<Tag kind={tag} />{/if}
+                        <Tag kind={getTagKind(homework.id)} />
                     </header>
                     <p class="text-on-surface-contrast opacity-50">
                         {#if homework.deadline}

@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    export let kind: TagKind;
+    export let kind: TagKind | null;
 </script>
 
 {#if kind === "new"}
@@ -24,10 +24,13 @@
     >
         На проверке
     </span>
-{:else}
+{:else if kind === "accepted"}
     <span
         class="py-1.5 px-3.5 rounded-2xs bg-[#E9FBE7] text-[#36D624] text-[14px]"
     >
         Принято
     </span>
+{:else}
+    <!-- Transparent -->
+    <span class="py-1.5 px-3.5 text-[14px]">&nbsp;</span>
 {/if}
