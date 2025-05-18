@@ -20,11 +20,6 @@
     let isLink = $state(false);
     let inputUrl = $state("");
     let isEditingLink = $state(false);
-    let isValidLink = $derived(
-        !/^\w+:\/\/.+$/.test(inputUrl) ||
-            inputUrl.startsWith("https://") ||
-            inputUrl.startsWith("http://")
-    );
 
     const update = () => {
         if (!editor) return;
@@ -210,7 +205,7 @@
                 bind:value={inputUrl}
             />
             <button
-                disabled={!isValidLink}
+                disabled={inputUrl === ""}
                 onclick={() =>
                     inputUrl != ""
                         ? editor
