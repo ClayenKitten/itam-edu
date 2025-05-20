@@ -45,8 +45,9 @@ export default class TelegramBot {
                     text: ctx.message.text
                 });
                 await this.onInboundMessage(ctx.from, "/login");
+            } else {
+                await next();
             }
-            await next();
         });
 
         this.grammy.chatType("private").on("message:text", async ctx => {
