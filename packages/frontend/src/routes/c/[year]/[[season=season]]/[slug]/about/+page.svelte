@@ -13,7 +13,7 @@
     class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 pt-0 gap-3.5"
 >
     <div
-        class="banner basis-[191px] shrink-0 mb-5 rounded-lg overflow-hidden"
+        class="banner w-full aspect-[5] shrink-0 mb-5 rounded-lg overflow-hidden"
         aria-hidden="true"
     >
         {#if data.course.banner}

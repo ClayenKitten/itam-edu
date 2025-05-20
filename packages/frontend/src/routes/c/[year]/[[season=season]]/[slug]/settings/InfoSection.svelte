@@ -86,12 +86,12 @@
             <p class="max-w-[800px] text-balance">
                 Баннер отображается на главной странице курса и в разделе "О
                 курсе". Рекомендуется загружать изображение размером не менее
-                1600x191 пикселей.
+                1600x320 пикселей.
             </p>
         </header>
         <ImageUploader
             bind:filename={course.banner}
-            aspectRatio="4/1"
+            aspectRatio="5/1"
             filenameToSrc={filename =>
                 courseFilePath(course.id).public(filename)}
             onUpload={async file => {

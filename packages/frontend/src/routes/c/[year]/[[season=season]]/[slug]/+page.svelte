@@ -87,11 +87,11 @@
 
 <div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col mb-2.5">
-        <div class="banner w-full h-[191px] mb-7 rounded-lg overflow-hidden">
+        <div class="banner w-full aspect-[5] mb-7 rounded-lg overflow-hidden">
             {#if data.course.banner}
                 <img
                     class={[
-                        "w-full h-[191px] object-cover object-center",
+                        "w-full h-full object-cover object-center",
                         data.course.banner ? `` : ""
                     ]}
                     src={courseFilePath(data.course.id).public(

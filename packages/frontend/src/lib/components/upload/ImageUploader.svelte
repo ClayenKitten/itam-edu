@@ -19,8 +19,11 @@
     class={[
         "w-full h-full",
         "group relative flex justify-center items-center cursor-pointer",
-        "border-2 border-on-primary rounded-sm overflow-hidden focus-within:border-primary"
+        "border-2 border-on-primary focus-within:border-primary",
+        "rounded-sm overflow-hidden",
+        "bg-center bg-cover bg-origin-border"
     ]}
+    style:background-image={filename ? `url(${filenameToSrc(filename)})` : null}
     style:aspect-ratio={aspectRatio}
 >
     <input
@@ -36,11 +39,11 @@
         }}
     />
     {#if filename}
-        <img
+        <!-- <img
             class="h-full w-full object-cover object-center"
             src={filenameToSrc(filename)}
             alt=""
-        />
+        /> -->
         <button
             class={[
                 "absolute top-4 right-4 flex items-center justify-center h-[46px] w-[46px]",
