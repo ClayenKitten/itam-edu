@@ -58,10 +58,20 @@
                     title: "Дедлайн задания изменён",
                     href: `/homeworks/${change.payload.homeworkId}`
                 };
-            case "submission-created":
-                return { icon: "scroll", title: "Задание сдано" };
-            case "submission-reviewed":
-                return { icon: "exam", title: "Задание проверено" };
+            case "submission-created": {
+                let href = `/homeworks/${change.payload.homeworkId}`;
+                if (data.user && change.payload.studentId !== data.user.id) {
+                    href += `?student=${change.payload.studentId}`;
+                }
+                return { icon: "scroll", title: "Задание сдано", href };
+            }
+            case "submission-reviewed": {
+                let href = `/homeworks/${change.payload.homeworkId}`;
+                if (data.user && change.payload.studentId !== data.user.id) {
+                    href += `?student=${change.payload.studentId}`;
+                }
+                return { icon: "exam", title: "Задание проверено", href };
+            }
             default:
                 let guard: never = change.payload;
                 return {} as any;

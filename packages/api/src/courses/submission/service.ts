@@ -10,13 +10,15 @@ import {
     SubmissionNotification,
     SubmissionReviewNotification
 } from "./notifications";
+import { CourseChangelog } from "../changes";
 
 @injectable()
 export class SubmissionService {
     public constructor(
         protected config: AppConfig,
         protected submissionRepo: SubmissionRepository,
-        protected notificationSender: NotificationSender
+        protected notificationSender: NotificationSender,
+        protected courseChangelog: CourseChangelog
     ) {}
 
     public async sendMessage(
@@ -36,9 +38,16 @@ export class SubmissionService {
                 );
             }
             await this.submissionRepo.addSubmission(homework, student, content);
-            await this.notificationSender.send(
-                new SubmissionNotification(course, homework, student)
-            );
+            await Promise.allSettled([
+                this.courseChangelog.add(actor, course, {
+                    kind: "submission-created",
+                    homeworkId: homework.id,
+                    studentId: student.id
+                }),
+                this.notificationSender.send(
+                    new SubmissionNotification(course, homework, student)
+                )
+            ]);
         } else {
             if (accepted === null) {
                 return new BadRequestError("staff must set acceptance");
@@ -50,14 +59,21 @@ export class SubmissionService {
                 content,
                 accepted
             );
-            await this.notificationSender.send(
-                new SubmissionReviewNotification(
-                    course,
-                    homework,
-                    student,
-                    accepted
+            await Promise.allSettled([
+                this.courseChangelog.add(actor, course, {
+                    kind: "submission-reviewed",
+                    homeworkId: homework.id,
+                    studentId: student.id
+                }),
+                this.notificationSender.send(
+                    new SubmissionReviewNotification(
+                        course,
+                        homework,
+                        student,
+                        accepted
+                    )
                 )
-            );
+            ]);
         }
     }
 

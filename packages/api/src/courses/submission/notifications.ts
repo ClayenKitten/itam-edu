@@ -48,7 +48,7 @@ export class SubmissionReviewNotification extends Notification {
     public get html() {
         if (this.accepted) {
             return [
-                "<b>🥇 Задание сдано",
+                "<b>🥇 Задание сдано</b>",
                 `Ваш ответ на задание '${this.homework.title}' принят.`
             ].join("\n\n");
         } else {
