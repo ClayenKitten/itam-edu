@@ -95,12 +95,11 @@ export class CourseController {
             .patch(
                 "/:course",
                 async ({ params, body, status }) => {
-                    const course = await this.courseRepo.update(
+                    const result = await this.courseRepo.update(
                         params.course,
                         body
                     );
-                    if (!course) return status(404);
-                    return course.toDTO();
+                    if (!result) return status(404);
                 },
                 {
                     body: schema.updateCourse,

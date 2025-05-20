@@ -1,7 +1,11 @@
 import * as schema from "./schema";
 
 export class Course {
-    public constructor(private info: typeof schema.course.static) {}
+    public constructor(
+        private info: typeof schema.course.static,
+        public readonly staffIds: ReadonlyArray<string>,
+        public readonly studentIds: ReadonlyArray<string>
+    ) {}
 
     public get id(): string {
         return this.info.id;

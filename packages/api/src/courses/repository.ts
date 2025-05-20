@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
-import { sql } from "kysely";
+import { sql, type Selectable } from "kysely";
 import * as schema from "./schema";
 import { schemaFields } from "../util";
 import { Course } from "./entity";
 import { Postgres } from "../infra/postgres";
+import type { DB } from "itam-edu-db";
 
 @injectable()
 export class CourseRepository {
@@ -11,13 +12,20 @@ export class CourseRepository {
 
     /** Returns course by its id. */
     public async getById(id: string): Promise<Course | null> {
-        const result = await this.postgres.kysely
+        const courseInfo = await this.postgres.kysely
             .selectFrom("courses")
             .select(schemaFields(schema.course))
             .where("id", "=", id)
             .executeTakeFirst();
-        if (!result) return null;
-        return new Course(result);
+        if (!courseInfo) return null;
+
+        const members = await this.postgres.kysely
+            .selectFrom("userCourses")
+            .where("courseId", "=", courseInfo.id)
+            .select(["userId", "isStaff"])
+            .execute();
+
+        return this.toEntity(courseInfo, members);
     }
 
     /** Returns course by its slug. */
@@ -38,10 +46,16 @@ export class CourseRepository {
         if (semester !== undefined) {
             query = query.where("semester", "=", semester);
         }
+        const courseInfo = await query.executeTakeFirst();
+        if (!courseInfo) return null;
 
-        const result = await query.executeTakeFirst();
-        if (!result) return null;
-        return new Course(result) ?? null;
+        const members = await this.postgres.kysely
+            .selectFrom("userCourses")
+            .where("courseId", "=", courseInfo.id)
+            .select(["userId", "isStaff"])
+            .execute();
+
+        return this.toEntity(courseInfo, members);
     }
 
     /** Creates new course. */
@@ -58,21 +72,35 @@ export class CourseRepository {
             })
             .returning(schemaFields(schema.course))
             .executeTakeFirstOrThrow();
-        return new Course(result);
+        return this.toEntity(result, []);
     }
 
-    /** Updates course information. */
+    /**
+     * Updates course information.
+     *
+     * @returns true if course was updated, false otherwise.
+     * */
     public async update(
         id: string,
         course: typeof schema.updateCourse.static
-    ): Promise<Course | null> {
+    ): Promise<boolean> {
         const result = await this.postgres.kysely
             .updateTable("courses")
             .where("id", "=", id)
             .set(course)
-            .returning(schemaFields(schema.course))
             .executeTakeFirst();
-        if (!result) return null;
-        return new Course(result);
+        if (result.numUpdatedRows === 0n) return false;
+        return true;
+    }
+
+    protected toEntity(
+        course: Selectable<DB["courses"]>,
+        members: Pick<Selectable<DB["userCourses"]>, "userId" | "isStaff">[]
+    ): Course {
+        return new Course(
+            course,
+            members.filter(m => m.isStaff).map(m => m.userId),
+            members.filter(m => !m.isStaff).map(m => m.userId)
+        );
     }
 }
