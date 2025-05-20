@@ -1,6 +1,6 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import type { Course } from "$lib/types";
+    import type { Course, CoursePartial } from "$lib/types";
     import type { CalendarEvent } from "itam-edu-common";
     import CourseCard from "./CourseCard.svelte";
     import { coursePath } from "$lib/path";
@@ -9,7 +9,7 @@
     let { data } = $props();
 
     let filterKind: "my" | "active" | "archive" = $state("my");
-    let filter = $derived.by((): ((c: Course) => boolean) => {
+    let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
         switch (filterKind) {
             case "my":
                 return c =>
@@ -23,7 +23,7 @@
     });
     let courses = $derived(data.courses.filter(filter));
 
-    const eventToHref = (course: Course, event: CalendarEvent) => {
+    const eventToHref = (course: CoursePartial, event: CalendarEvent) => {
         switch (event.kind) {
             case "homework":
                 return `${coursePath(course)}/homeworks/${event.id}`;

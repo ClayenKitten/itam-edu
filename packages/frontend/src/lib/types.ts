@@ -1,4 +1,8 @@
-import { course } from "itam-edu-api/src/courses/schema";
+import type {
+    CourseDTO,
+    CoursePartialDTO
+} from "itam-edu-api/src/courses/query";
+
 import type {
     CreateLessonDTO,
     LessonDTO,
@@ -14,7 +18,8 @@ import type {
     SubmissionPartialDTO
 } from "itam-edu-api/src/courses/submission/query";
 
-export type Course = typeof course.static;
+export type Course = CourseDTO;
+export type CoursePartial = CoursePartialDTO;
 
 export type Lesson = LessonDTO;
 export type LessonPartial = LessonPartialDTO;

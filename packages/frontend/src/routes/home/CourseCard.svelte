@@ -1,12 +1,12 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
-    import type { Course } from "$lib/types";
+    import type { Course, CoursePartial } from "$lib/types";
     import { courseFilePath } from "itam-edu-common";
 
     const { course }: Props = $props();
 
     type Props = {
-        course: Course;
+        course: CoursePartial;
     };
 </script>
 

@@ -44,6 +44,28 @@ export class CourseQuery {
             homeworks
         };
     }
+
+    public async getAll(): Promise<CoursePartialDTO[]> {
+        const courses = await this.postgres.kysely
+            .selectFrom("courses")
+            .select([
+                "id",
+                "slug",
+                "year",
+                "semester",
+                "title",
+                "description",
+                "banner",
+                "logo",
+                "colorPrimary",
+                "colorOnPrimary",
+                "isPublished",
+                "isEnrollmentOpen",
+                "isArchived"
+            ])
+            .execute();
+        return courses;
+    }
 }
 
 export type CourseDTO = {
@@ -64,4 +86,20 @@ export type CourseDTO = {
     isArchived: boolean;
     lessons: LessonPartialDTO[];
     homeworks: HomeworkPartialDTO[];
+};
+
+export type CoursePartialDTO = {
+    id: string;
+    slug: string;
+    year: number;
+    semester: number | null;
+    title: string;
+    description: string | null;
+    banner: string | null;
+    logo: string | null;
+    colorPrimary: string | null;
+    colorOnPrimary: string | null;
+    isPublished: boolean;
+    isEnrollmentOpen: boolean;
+    isArchived: boolean;
 };

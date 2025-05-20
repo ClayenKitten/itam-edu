@@ -23,8 +23,8 @@ export class CourseController {
             .get(
                 "",
                 async () => {
-                    const courses = await this.courseRepo.getAll();
-                    return courses.map(c => c.toDTO());
+                    const courses = await this.courseQuery.getAll();
+                    return courses;
                 },
                 {
                     detail: {

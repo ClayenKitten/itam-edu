@@ -3,7 +3,7 @@
     import { page } from "$app/state";
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
-    import type { Course } from "$lib/types";
+    import type { Course, CoursePartial } from "$lib/types";
     import type { User } from "itam-edu-common";
 
     const { course, courses, user }: Props = $props();
@@ -11,7 +11,7 @@
 
     type Props = {
         course: Course;
-        courses: Course[];
+        courses: CoursePartial[];
         user: User | null;
     };
 

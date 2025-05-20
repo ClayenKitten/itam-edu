@@ -44,18 +44,6 @@ export class CourseRepository {
         return new Course(result) ?? null;
     }
 
-    /** Returns all courses. */
-    public async getAll(): Promise<Course[]> {
-        const results = await this.postgres.kysely
-            .selectFrom("courses")
-            .select(schemaFields(schema.course))
-            .orderBy("year desc")
-            .orderBy("semester", sql<string>`asc nulls first`)
-            .orderBy("slug asc")
-            .execute();
-        return results.map(c => new Course(c));
-    }
-
     /** Creates new course. */
     public async create(
         course: typeof schema.createCourse.static

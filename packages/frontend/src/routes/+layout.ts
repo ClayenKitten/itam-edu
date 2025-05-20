@@ -2,7 +2,7 @@ import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { User, type CalendarEvent } from "itam-edu-common";
-import type { Course } from "$lib/types";
+import type { Course, CoursePartial } from "$lib/types";
 
 export const load: LayoutLoad = async ({ fetch, depends }) => {
     depends("app:user", "app:courses", "app:calendar");
@@ -36,7 +36,9 @@ async function getUser(fetch: typeof window.fetch): Promise<User | null> {
     );
 }
 
-async function getCourses(fetch: typeof window.fetch): Promise<Course[]> {
+async function getCourses(
+    fetch: typeof window.fetch
+): Promise<CoursePartial[]> {
     const response = await api({ fetch }).courses.get();
     if (response.error) error(response.status);
     return response.data;
