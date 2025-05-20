@@ -5,6 +5,70 @@
     import { courseFilePath } from "itam-edu-common";
 
     let { data } = $props();
+
+    function displayChange(change: (typeof data.changes)[number]): Change {
+        switch (change.payload.kind) {
+            case "user-joined": {
+                let title: string | null = null;
+                if (change.payload.role === "staff") {
+                    title =
+                        change.payload.userId === data.user?.id
+                            ? "Вы поступили на курс"
+                            : "Студент зачислен на курс";
+                } else {
+                    title =
+                        change.payload.userId === data.user?.id
+                            ? "Вы стали сотрудником этого курса"
+                            : "Сотрудник добавлен на курс";
+                }
+                return { icon: "hand-waving", title };
+            }
+            case "user-left": {
+                let title: string | null = null;
+                if (change.payload.userId === data.user?.id) {
+                    title = "Вы покинули курс";
+                } else if (change.payload.role === "staff") {
+                    title = "Сотрудник покинул курс";
+                } else {
+                    title = "Студент покинул курс";
+                }
+                return { icon: "mask-sad", title };
+            }
+            case "lesson-created":
+                return {
+                    icon: "folder-plus",
+                    title: "Урок создан",
+                    href: `/lessons/${change.payload.lessonId}`
+                };
+            case "lesson-schedule-changed":
+                return {
+                    icon: "alarm",
+                    title: "Урок перенесён",
+                    href: `/lessons/${change.payload.lessonId}`
+                };
+            case "homework-created":
+                return {
+                    icon: "books",
+                    title: "Задание создано",
+                    href: `/homeworks/${change.payload.homeworkId}`
+                };
+            case "homework-deadline-changed":
+                return {
+                    icon: "alarm",
+                    title: "Дедлайн задания изменён",
+                    href: `/homeworks/${change.payload.homeworkId}`
+                };
+            case "submission-created":
+                return { icon: "scroll", title: "Задание сдано" };
+            case "submission-reviewed":
+                return { icon: "exam", title: "Задание проверено" };
+            default:
+                let guard: never = change.payload;
+                return {} as any;
+        }
+    }
+
+    type Change = { icon: string; title: string; href?: string };
 </script>
 
 <svelte:head>
@@ -67,32 +131,28 @@
         </header>
         <hr class="text-on-primary" />
         <ol class="flex flex-col gap-8 my-5">
-            {#each data.updates as update}
-                <a class="flex items-center gap-4" href={update.href}>
-                    <img
-                        class="w-13.5 h-13.5 rounded-sm"
-                        src={update.avatarSrc}
-                        alt=""
-                    />
+            {#each data.changes as change}
+                {@const { icon, title, href } = displayChange(change)}
+                <a
+                    class="flex items-center gap-4"
+                    href={href ? coursePath(data.course) + href : null}
+                >
+                    <i
+                        class={[
+                            `ph ph-${icon}`,
+                            "flex justify-center items-center w-14.5 h-14.5",
+                            "text-[24px] text-primary bg-on-primary rounded-sm"
+                        ]}
+                    ></i>
                     <header class="flex flex-col gap-1.5">
                         <p class="text-comment text-on-background">
-                            {update.title}
+                            {title}
                         </p>
-                        <p class="text-base text-on-background-muted">
-                            {update.detail}
-                        </p>
+                        <p class="text-base text-on-background-muted">...</p>
                     </header>
                     <p class="ml-auto text-on-surface-muted">
-                        {formatDate(update.date, "dd.MM.yy / HH:mm")}
+                        {formatDate(change.createdAt, "dd.MM.yy / HH:mm")}
                     </p>
-                    <button
-                        class="h-2.5 w-2.5 rounded-full"
-                        class:bg-primary={update.unread}
-                        title={update.unread ? "Не прочитано" : undefined}
-                        aria-label={update.unread
-                            ? "Не прочитано"
-                            : "Прочитано"}
-                    ></button>
                 </a>
             {:else}
                 Пусто!

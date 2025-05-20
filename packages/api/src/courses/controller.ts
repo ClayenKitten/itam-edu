@@ -6,13 +6,15 @@ import { authenticationPlugin } from "../api/plugins/authenticate";
 import { UserRepository } from "../users/repository";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
+import { CourseChangelog } from "./changes";
 
 @injectable()
 export class CourseController {
     public constructor(
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
-        protected courseQuery: CourseQuery
+        protected courseQuery: CourseQuery,
+        protected courseChangelog: CourseChangelog
     ) {}
 
     public toElysia() {
@@ -107,6 +109,20 @@ export class CourseController {
                         summary: "Update course",
                         description: "Updates course.",
                         security: REQUIRE_TOKEN
+                    }
+                }
+            )
+            .get(
+                "/:course/changes",
+                async ({ user, params, status }) => {
+                    const course = await this.courseRepo.getById(params.course);
+                    if (!course) return status(404);
+                    return await this.courseChangelog.get(course, user);
+                },
+                {
+                    detail: {
+                        summary: "Get course changes",
+                        description: "Returns course changelog."
                     }
                 }
             );

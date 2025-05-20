@@ -126,7 +126,7 @@
         font-weight: var(--text-h5--font-weight);
         font-stretch: var(--text-h5--font-stretch);
     }
-    a,
+    a[href],
     button {
         cursor: pointer;
     }

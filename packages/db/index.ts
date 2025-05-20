@@ -11,7 +11,27 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [x: string]: JsonValue | undefined;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export interface CourseChanges {
+  actorId: string;
+  courseId: string;
+  createdAt: Generated<Timestamp>;
+  id: Generated<string>;
+  payload: Json;
+}
 
 export interface Courses {
   about: Generated<string>;
@@ -173,6 +193,7 @@ export interface UserSessions {
 }
 
 export interface DB {
+  courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;
   homeworkSubmissionMessages: HomeworkSubmissionMessages;
