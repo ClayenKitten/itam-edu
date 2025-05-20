@@ -13,7 +13,15 @@ export class TelegramSender {
 
     protected queue: Queue<queues.telegram.OutboundPrivateMessage>;
 
-    public async send(user: User, text: string) {
-        await this.queue.add("message", { chatId: user.telegram.id, text });
+    public async send(
+        user: User,
+        text: string,
+        link?: { text: string; url: string }
+    ) {
+        await this.queue.add("message", {
+            chatId: user.telegram.id,
+            text,
+            link
+        });
     }
 }

@@ -19,7 +19,12 @@ export default class TelegramBot {
         });
         this.worker = new Worker(
             queues.telegram.OUTBOUND_PRIVATE_MESSAGE_QUEUE,
-            async job => this.onOutboundMessage(job.data.chatId, job.data.text),
+            async job =>
+                this.onOutboundMessage(
+                    job.data.chatId,
+                    job.data.text,
+                    job.data.link
+                ),
             { connection, autorun: false }
         );
 
@@ -90,8 +95,24 @@ export default class TelegramBot {
     }
 
     /** Sends a text message to the specified chat. */
-    protected async onOutboundMessage(chatId: string, text: string) {
-        this.grammy.api.sendMessage(chatId, text, { parse_mode: "HTML" });
+    protected async onOutboundMessage(
+        chatId: string,
+        text: string,
+        link?: { text: string; url: string }
+    ) {
+        if (link && link.url.includes("localhost")) {
+            text += `\n\n<a href="${link.url}">${link.text}</a>`;
+        }
+
+        this.grammy.api.sendMessage(chatId, text, {
+            parse_mode: "HTML",
+            link_preview_options: link
+                ? {
+                      url: link.url,
+                      prefer_small_media: true
+                  }
+                : undefined
+        });
         logger.debug("Outbound message sent to user", { chatId, text });
     }
 

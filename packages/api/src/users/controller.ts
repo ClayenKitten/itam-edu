@@ -7,7 +7,8 @@ import { UserRepository } from "./repository";
 import { Session, SessionRepository } from "./session";
 import { LoginCodeRepository } from "./login";
 import { CalendarQuery, type CalendarFilters } from "./calendar";
-import { NotificationService } from "../notifications/service";
+import { NotificationSender } from "../notifications";
+import { LoginNotification } from "./notifications";
 
 @injectable()
 export class UserController {
@@ -17,7 +18,7 @@ export class UserController {
         protected sessionRepo: SessionRepository,
         protected loginCodeRepo: LoginCodeRepository,
         protected calendarQuery: CalendarQuery,
-        protected notificationService: NotificationService
+        protected notificationSender: NotificationSender
     ) {}
 
     public toElysia() {
@@ -60,9 +61,8 @@ export class UserController {
                     const session = Session.create(user);
                     await this.sessionRepo.add(session);
 
-                    this.notificationService.send(
-                        `<b>🔐 Новый вход в платформу ITAM Education</b>\n\nЭто не вы? Напишите @${this.config.tg.supportUsername}!`,
-                        user ? [user.id] : []
+                    await this.notificationSender.send(
+                        new LoginNotification(user)
                     );
                     return status(201, {
                         token: session.token,

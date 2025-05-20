@@ -5,16 +5,18 @@ import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { AppConfig } from "../../config";
 import { SubmissionRepository } from "./repository";
-import { StaffRepository } from "../staff/repository";
-import { NotificationService } from "../../notifications/service";
+import { NotificationSender } from "../../notifications";
+import {
+    SubmissionNotification,
+    SubmissionReviewNotification
+} from "./notifications";
 
 @injectable()
 export class SubmissionService {
     public constructor(
         protected config: AppConfig,
         protected submissionRepo: SubmissionRepository,
-        protected staffRepo: StaffRepository,
-        protected notificationService: NotificationService
+        protected notificationSender: NotificationSender
     ) {}
 
     public async sendMessage(
@@ -34,6 +36,9 @@ export class SubmissionService {
                 );
             }
             await this.submissionRepo.addSubmission(homework, student, content);
+            await this.notificationSender.send(
+                new SubmissionNotification(course, homework, student)
+            );
         } else {
             if (accepted === null) {
                 return new BadRequestError("staff must set acceptance");
@@ -45,28 +50,13 @@ export class SubmissionService {
                 content,
                 accepted
             );
-        }
-
-        if (senderRole === "student") {
-            const staff = await this.staffRepo.getAll(course);
-            this.notificationService.send(
-                [
-                    "<b>📝 Новый ответ на задание</b>",
-                    `Студент @${student.telegram.username} сдал(а) задание '${homework.title}'.`,
-                    `<a href="${this.config.webUrl}${course.path}/homeworks/${homework.id}?student=${student.id}">🔗 Проверить</a>`
-                ].join("\n\n"),
-                staff.map(s => s.userId)
-            );
-        } else if (senderRole === "reviewer") {
-            this.notificationService.send(
-                [
-                    `<b>${accepted ? "🥇 Задание сдано" : "📖 Задание нужно доработать"}</b>`,
+            await this.notificationSender.send(
+                new SubmissionReviewNotification(
+                    course,
+                    homework,
+                    student,
                     accepted
-                        ? `Ваш ответ на задание '${homework.title}' принят.`
-                        : `В вашем ответе на задание '${homework.title}' есть недочёты.`,
-                    `<a href="${this.config.webUrl}${course.path}/homeworks/${homework.id}">🔗 Посмотреть</a>`
-                ].join("\n\n"),
-                [student.id]
+                )
             );
         }
     }
