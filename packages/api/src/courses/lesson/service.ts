@@ -10,6 +10,7 @@ import { Lesson } from "./entity";
 import { LessonRepository } from "./repository";
 import * as schema from "./schema";
 import { randomUUID } from "crypto";
+import { CourseChangelog } from "../changes";
 
 @injectable()
 export class LessonService {
@@ -18,7 +19,8 @@ export class LessonService {
         protected lessonRepo: LessonRepository,
         protected staffRepo: StaffRepository,
         protected studentRepo: StudentRepository,
-        protected notificationService: NotificationService
+        protected notificationService: NotificationService,
+        protected changelog: CourseChangelog
     ) {}
 
     /** Creates new lesson. */
@@ -40,6 +42,10 @@ export class LessonService {
             data.schedule
         );
         await this.lessonRepo.set(newLesson);
+        await this.changelog.add(actor, course, {
+            kind: "lesson-created",
+            lessonId: newLesson.id
+        });
         return newLesson;
     }
 
@@ -82,6 +88,10 @@ export class LessonService {
                         new Set([...students, ...staff.map(s => s.userId)])
                     )
                 );
+                await this.changelog.add(actor, course, {
+                    kind: "lesson-schedule-changed",
+                    lessonId: lesson.id
+                });
             }
         }
 
