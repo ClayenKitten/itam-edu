@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { UnauthorizedError } from "../../api/errors";
 import { AppConfig } from "../../config";
 import { NotificationService } from "../../notifications/service";
-import { StaffRepository } from "../../staff/repository";
+import { StaffRepository } from "../staff/repository";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import { StudentRepository } from "../student/repository";

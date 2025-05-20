@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
-import type { Course } from "../courses/entity";
+import { Postgres } from "../../infra/postgres";
+import type { Course } from "../../courses/entity";
 import type { CoursePermissions, User } from "itam-edu-common";
 
 @injectable()

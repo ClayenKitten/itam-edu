@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
-import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
-import { authenticationPlugin } from "../api/plugins/authenticate";
-import { UserRepository } from "../users/repository";
-import { CourseRepository } from "../courses/repository";
+import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../../api/plugins/docs";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
+import { UserRepository } from "../../users/repository";
+import { CourseRepository } from "../../courses/repository";
 import { StaffRepository } from "./repository";
 
 @injectable()

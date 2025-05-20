@@ -5,7 +5,7 @@ import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { AppConfig } from "../../config";
 import { SubmissionRepository } from "./repository";
-import { StaffRepository } from "../../staff/repository";
+import { StaffRepository } from "../staff/repository";
 import { NotificationService } from "../../notifications/service";
 
 @injectable()
