@@ -86,8 +86,8 @@
 </svelte:head>
 
 <div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
-    <header class="flex flex-col mb-2.5">
-        <div class="banner w-full aspect-[5] mb-7 rounded-lg overflow-hidden">
+    <header class="flex flex-col">
+        <div class="banner w-full aspect-[5] mb-7.5 rounded-lg overflow-hidden">
             {#if data.course.banner}
                 <img
                     class={[
@@ -101,7 +101,7 @@
                 />
             {/if}
         </div>
-        <h1 class="mb-2.5">{data.course.title}</h1>
+        <h1>{data.course.title}</h1>
         {#if data.course.status}
             <h4 class="text-on-background-muted">{data.course.status}</h4>
         {/if}
@@ -135,16 +135,16 @@
             {/each}
         </ol>
     </section>
-    <section class="flex flex-col gap-5 p-6 pb-8 bg-surface shadow rounded-xl">
+    <section class="flex flex-col p-6 pb-8 bg-surface shadow rounded-xl">
         <header class="flex justify-between items-center h-11">
             <h3>Обновления по курсу</h3>
         </header>
-        <hr class="text-on-primary" />
-        <ol class="flex flex-col gap-8 my-5">
+        <hr class="text-primary-border mt-5" />
+        <ol class="flex flex-col max-h-120 overflow-auto my-5 -m-6 -mb-8">
             {#each data.changes as change}
                 {@const { icon, title, href } = displayChange(change)}
                 <a
-                    class="flex items-center gap-4 group"
+                    class="flex items-center gap-4 group px-6 py-4"
                     href={href ? coursePath(data.course) + href : null}
                 >
                     <i
