@@ -48,21 +48,21 @@
                             </span>
                         {/if}
                     </div>
-
                     <header
-                        class="flex flex-col justify-center items-start overflow-hidden"
+                        class="flex flex-col gap-1 justify-center items-start overflow-hidden"
                     >
-                        <h3 class="text-nowrap">
+                        <h4 class="text-nowrap">
                             {#if staffMember.user.firstName}
                                 {staffMember.user.firstName}
                                 {staffMember.user.lastName}
                             {:else}
                                 {staffMember.user.tgUsername}
                             {/if}
-                        </h3>
+                        </h4>
                         <a
                             class="text-primary text-date hover:underline"
                             href={`https://t.me/${staffMember.user.tgUsername}`}
+                            target="_blank"
                         >
                             @{staffMember.user.tgUsername}
                         </a>

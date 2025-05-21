@@ -1,0 +1,20 @@
+import type { PageLoad } from "./$types";
+import api from "$lib/api";
+import { error } from "@sveltejs/kit";
+
+export const load: PageLoad = async ({ fetch, depends, parent }) => {
+    depends("app:students");
+    const { course } = await parent();
+
+    const students = await getStudents(fetch, course.id);
+
+    return { students };
+};
+
+async function getStudents(fetch: typeof window.fetch, courseId: string) {
+    const response = await api({ fetch })
+        .courses({ course: courseId })
+        .students.get();
+    if (response.error) error(response.status);
+    return response.data;
+}
