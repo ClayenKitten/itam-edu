@@ -30,7 +30,8 @@
 
     /* Colors */
     --color-primary: #6e7cec;
-    --color-on-primary: #eff1fb;
+    --color-primary-border: #cfd4ff;
+    --color-on-primary: #eceeff;
     --color-background: #ffffff;
     --color-on-background: #33383f;
     --color-on-background-contrast: #111315;
@@ -147,6 +148,8 @@
 
         color: var(--color-on-primary);
         background-color: var(--color-primary);
+        border-width: 1px;
+        border-color: var(--color-primary);
         border-radius: var(--radius-xs);
 
         cursor: pointer;
@@ -155,7 +158,6 @@
             color: var(--color-primary);
             background-color: var(--color-on-primary);
             border-color: var(--color-on-primary);
-            border-width: 1px;
             &:hover {
                 border-color: var(--color-primary);
             }
@@ -178,7 +180,7 @@
         align-items: center;
         padding: 20px;
         background-color: var(--color-surface);
-        border: 2px var(--color-on-primary) solid;
+        border: 2px var(--color-primary-border) solid;
         border-radius: var(--radius-sm);
 
         &:focus {

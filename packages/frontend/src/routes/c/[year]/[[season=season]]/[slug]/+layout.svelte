@@ -2,14 +2,19 @@
     import Header from "$lib/components/Header.svelte";
     import { setContext, type Snippet } from "svelte";
     import CourseSidebar from "./CourseSidebar.svelte";
+    import { getColors, type Theme } from "$lib/theme";
 
     let { data, children } = $props();
 
     const layout: { additionalSidebar: Snippet | null } = $state({
         additionalSidebar: null
     });
-
     setContext("layout", layout);
+
+    const themeContainer = $state({ theme: data.course.theme as Theme });
+    setContext("theme", themeContainer);
+
+    const colors = $derived(getColors(themeContainer.theme));
 </script>
 
 <svelte:head>
@@ -27,8 +32,9 @@
             ? "grid-cols-[278px_1fr]"
             : "grid-cols-[278px_278px_1fr]"
     ]}
-    style:--color-primary={data.course.colorPrimary}
-    style:--color-on-primary={data.course.colorOnPrimary}
+    style:--color-primary={colors.primary}
+    style:--color-on-primary={colors.onPrimary}
+    style:--color-primary-border={colors.primaryBorder}
 >
     <CourseSidebar
         course={data.course}

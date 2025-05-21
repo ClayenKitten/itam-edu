@@ -14,7 +14,7 @@
     href={`${coursePath(course)}`}
     class={[
         "flex flex-col w-[317px] h-full p-3 pb-3.75 rounded-lg border",
-        `bg-surface border-on-primary`,
+        `bg-surface border-primary-border`,
         `hover:bg-on-primary hover:border-primary`,
         "transition-colors duration-100"
     ]}

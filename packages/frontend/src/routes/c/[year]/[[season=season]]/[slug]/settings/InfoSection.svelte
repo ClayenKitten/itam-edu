@@ -1,12 +1,15 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
+    import { invalidate, onNavigate } from "$app/navigation";
     import api from "$lib/api";
     import TipTap from "$lib/components/TipTap.svelte";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
+    import { getColors, themes } from "$lib/theme";
     import type { Course } from "$lib/types";
     import { courseFilePath } from "itam-edu-common";
+    import { getContext } from "svelte";
 
     let { readonly, course = $bindable() }: Props = $props();
+    let themeContainer = getContext<{ theme: string }>("theme");
 
     type Props = {
         readonly: boolean;
@@ -19,8 +22,7 @@
             .patch({
                 title: course.title,
                 description: course.description,
-                colorPrimary: course.colorPrimary,
-                colorOnPrimary: course.colorOnPrimary,
+                theme: course.theme,
                 about: course.about,
                 logo: course.logo,
                 banner: course.banner
@@ -37,6 +39,10 @@
         }
 
         await invalidate("app:course");
+    }
+
+    function applyTheme() {
+        themeContainer.theme = course.theme;
     }
 </script>
 
@@ -59,28 +65,45 @@
             ></textarea>
         </label>
     </div>
-    <div class="grid grid-cols-2 gap-y-2 gap-x-8 w-max">
-        <h3 class="col-span-2">Стиль</h3>
-        <label class="flex flex-col gap-2">
-            <span>Акцентный цвет</span>
-            <input
-                class=""
-                type="color"
-                disabled={readonly}
-                bind:value={course.colorPrimary}
-            />
-        </label>
-        <label class="flex flex-col gap-2">
-            <span>Цвет на акцентном</span>
-            <input
-                class=""
-                type="color"
-                disabled={readonly}
-                bind:value={course.colorOnPrimary}
-            />
-        </label>
+    <div class="flex flex-col gap-2 w-full">
+        <h4 class="col-span-2">Стиль</h4>
+        <ul
+            class={[
+                "grid grid-cols-[repeat(auto-fit,60px)] auto-rows-[60px]",
+                "gap-2 content-center items-center"
+            ]}
+        >
+            {#each themes as theme (theme)}
+                {@const colors = getColors(theme)}
+                <label
+                    class={[
+                        "self-center justify-self-center",
+                        "flex justify-center items-center",
+                        "transition-all duration-200",
+                        "size-12 has-checked:size-15 border rounded-full",
+                        "bg-conic from-primary to-on-primary from-50% to-50%",
+                        "border-primary-border opacity-60",
+                        !readonly ? "hover:opacity-100 cursor-pointer" : "",
+                        "has-checked:border-primary has-checked:opacity-100"
+                    ]}
+                    style:--color-primary={colors.primary}
+                    style:--color-primary-border={colors.primaryBorder}
+                    style:--color-on-primary={colors.onPrimary}
+                >
+                    <input
+                        class="hidden"
+                        type="radio"
+                        name="theme"
+                        value={theme}
+                        bind:group={course.theme}
+                        disabled={readonly}
+                        onchange={applyTheme}
+                    />
+                </label>
+            {/each}
+        </ul>
     </div>
-    <label class="shrink-0 flex flex-col gap-2">
+    <div class="shrink-0 flex flex-col gap-2">
         <header class="flex flex-col gap-2">
             <h4>Баннер</h4>
             <p class="max-w-[800px] text-balance">
@@ -106,7 +129,7 @@
                 return filename;
             }}
         />
-    </label>
+    </div>
     <div class="flex flex-col gap-2">
         <h3>О курсе</h3>
         <div

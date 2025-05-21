@@ -3,10 +3,17 @@
     import InfoSection from "./InfoSection.svelte";
     import StaffSection from "./StaffSection.svelte";
     import DangerSection from "./DangerSection.svelte";
+    import { onNavigate } from "$app/navigation";
+    import { getContext } from "svelte";
 
     let { data } = $props();
 
     let course: Course = $state(structuredClone(data.course));
+    const themeContainer = getContext<{ theme: string }>("theme");
+
+    onNavigate(() => {
+        themeContainer.theme = data.course.theme;
+    });
 </script>
 
 <svelte:head>

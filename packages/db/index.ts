@@ -36,8 +36,6 @@ export interface CourseChanges {
 export interface Courses {
   about: Generated<string>;
   banner: string | null;
-  colorOnPrimary: string | null;
-  colorPrimary: string | null;
   /**
    * Multi-line description of the course
    */
@@ -59,6 +57,7 @@ export interface Courses {
    */
   slug: string;
   status: string | null;
+  theme: Generated<string>;
   /**
    * Human-readable name of the course
    */

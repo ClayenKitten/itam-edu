@@ -17,7 +17,7 @@
     href={`${coursePath(course)}/lessons/${lesson.id}`}
     class={[
         "flex flex-col w-[356px] h-[291px] p-3 rounded-lg border",
-        "bg-surface border-on-primary",
+        "bg-surface border-primary-border",
         "hover:bg-on-primary hover:border-primary",
         "transition-colors duration-100"
     ]}

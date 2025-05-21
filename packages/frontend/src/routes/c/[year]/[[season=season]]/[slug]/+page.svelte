@@ -144,14 +144,16 @@
             {#each data.changes as change}
                 {@const { icon, title, href } = displayChange(change)}
                 <a
-                    class="flex items-center gap-4"
+                    class="flex items-center gap-4 group"
                     href={href ? coursePath(data.course) + href : null}
                 >
                     <i
                         class={[
                             `ph ph-${icon}`,
                             "flex justify-center items-center w-14.5 h-14.5",
-                            "text-[24px] text-primary bg-on-primary rounded-sm"
+                            "text-[24px] text-primary bg-on-primary rounded-sm",
+                            "border border-primary-border group-hover:border-primary",
+                            "transition-colors duration-100"
                         ]}
                     ></i>
                     <header class="flex flex-col gap-1.5">

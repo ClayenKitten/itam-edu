@@ -105,7 +105,7 @@
 
 {#snippet fltr(text: string, key: typeof filterKind)}
     <button
-        class={["btn", filterKind === key ? "" : "text-primary bg-on-primary"]}
+        class={["btn", filterKind === key ? "" : "secondary"]}
         onclick={() => (filterKind = key)}>{text}</button
     >
 {/snippet}

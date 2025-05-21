@@ -25,8 +25,7 @@ export class CourseQuery {
                 "banner",
                 "logo",
                 "about",
-                "colorPrimary",
-                "colorOnPrimary",
+                "theme",
                 "isPublished",
                 "isEnrollmentOpen",
                 "isArchived"
@@ -57,8 +56,7 @@ export class CourseQuery {
                 "description",
                 "banner",
                 "logo",
-                "colorPrimary",
-                "colorOnPrimary",
+                "theme",
                 "isPublished",
                 "isEnrollmentOpen",
                 "isArchived"
@@ -79,8 +77,7 @@ export type CourseDTO = {
     banner: string | null;
     logo: string | null;
     about: string;
-    colorPrimary: string | null;
-    colorOnPrimary: string | null;
+    theme: string;
     isPublished: boolean;
     isEnrollmentOpen: boolean;
     isArchived: boolean;
@@ -97,8 +94,7 @@ export type CoursePartialDTO = {
     description: string | null;
     banner: string | null;
     logo: string | null;
-    colorPrimary: string | null;
-    colorOnPrimary: string | null;
+    theme: string;
     isPublished: boolean;
     isEnrollmentOpen: boolean;
     isArchived: boolean;

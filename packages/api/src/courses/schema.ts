@@ -17,8 +17,7 @@ export const course = t.Object({
     banner: t.Nullable(t.String({ maxLength: 100 })),
     logo: t.Nullable(t.String({ maxLength: 100 })),
     about: t.String({ maxLength: 32768 }),
-    colorPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
-    colorOnPrimary: t.Nullable(t.String({ pattern: "^#[0-9a-fA-F]{6}$" })),
+    theme: t.String({ pattern: "^[a-z]+$" }),
 
     isPublished: t.Boolean(),
     isEnrollmentOpen: t.Boolean(),
@@ -35,13 +34,5 @@ export const createCourse = t.Pick(course, [
 
 /** Update course information. */
 export const updateCourse = t.Partial(
-    t.Pick(course, [
-        "title",
-        "description",
-        "banner",
-        "logo",
-        "about",
-        "colorPrimary",
-        "colorOnPrimary"
-    ])
+    t.Pick(course, ["title", "description", "banner", "logo", "about", "theme"])
 );
