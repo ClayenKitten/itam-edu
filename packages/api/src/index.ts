@@ -13,7 +13,7 @@ const application = container.get(Application);
 await application.start();
 
 async function handleSignal(signal: NodeJS.Signals) {
-    logger.info(`Received ${signal}`);
+    logger.warning(`Received ${signal}`);
     try {
         await application.stop();
         process.exit(0);

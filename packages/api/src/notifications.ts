@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { UserRepository } from "./users/repository";
-import { TelegramSender } from "./telegram/sender";
+import { TelegramBot } from "./telegram";
 import { AppConfig } from "./config";
 
 export abstract class Notification {
@@ -30,7 +30,7 @@ export class NotificationSender {
     public constructor(
         protected config: AppConfig,
         protected userRepo: UserRepository,
-        protected telegramSender: TelegramSender
+        protected telegramBot: TelegramBot
     ) {}
 
     /** Sends a notification to specified users. */
@@ -45,7 +45,7 @@ export class NotificationSender {
         for (const userId of audience) {
             const user = await this.userRepo.getById(userId);
             if (!user) continue;
-            await this.telegramSender.send(user, notification.html, link);
+            await this.telegramBot.send(user, notification.html, link);
         }
     }
 

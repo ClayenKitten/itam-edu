@@ -1,35 +1,22 @@
 import { injectable } from "inversify";
-import { ApiServer } from "./api";
-import { TelegramWorker } from "./telegram/worker";
 import logger from "./logger";
+import { ApiServer } from "./api";
+import { TelegramBot } from "./telegram";
 
 @injectable()
 export class Application {
     public constructor(
-        private api: ApiServer,
-        telegram: TelegramWorker
-    ) {
-        this.workers = { telegram };
-    }
-    private readonly workers: AppWorkers;
+        protected api: ApiServer,
+        protected telegramBot: TelegramBot
+    ) {}
 
     public async start(): Promise<void> {
-        await Promise.all([
-            this.api.start(),
-            ...[Object.values(this.workers).map(worker => worker.start())]
-        ]);
-        logger.info(`Application ready`);
+        await Promise.all([this.api.start(), this.telegramBot.start()]);
+        logger.info(`Application started`);
     }
 
     public async stop(): Promise<void> {
-        await Promise.all([
-            this.api.stop(),
-            ...[Object.values(this.workers).map(worker => worker.stop())]
-        ]);
+        await Promise.all([this.api.stop(), this.telegramBot.stop()]);
         logger.info(`Application stopped`);
     }
 }
-
-type AppWorkers = {
-    telegram: TelegramWorker;
-};
