@@ -131,20 +131,6 @@ export interface Lessons {
   video: string | null;
 }
 
-export interface NotificationMessages {
-  notificationId: string;
-  sentAt: Generated<Timestamp>;
-  tgMessageId: Int8 | null;
-  userId: string;
-}
-
-export interface Notifications {
-  createdAt: Generated<Timestamp>;
-  id: Generated<string>;
-  senderId: string | null;
-  text: string;
-}
-
 export interface SchemaMigrations {
   version: string;
 }
@@ -175,7 +161,7 @@ export interface Users {
   canCreateCourses: Generated<boolean>;
   canPublishCourses: Generated<boolean>;
   email: string | null;
-  firstName: string | null;
+  firstName: string;
   id: Generated<string>;
   isSupervisor: Generated<boolean>;
   lastName: string | null;
@@ -200,8 +186,6 @@ export interface DB {
   homeworkSubmissions: HomeworkSubmissions;
   lessonHomeworks: LessonHomeworks;
   lessons: Lessons;
-  notificationMessages: NotificationMessages;
-  notifications: Notifications;
   schemaMigrations: SchemaMigrations;
   userCourses: UserCourses;
   userLoginAttempts: UserLoginAttempts;
