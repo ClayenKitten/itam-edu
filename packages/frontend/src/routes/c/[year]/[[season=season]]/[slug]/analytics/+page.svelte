@@ -40,7 +40,9 @@
             ]}
         >
             {#each data.students as student (student.user.id)}
-                <li class="flex-1 flex gap-4 min-w-100 p-4 bg-surface-tint rounded-md shadow">
+                <li
+                    class="flex-1 flex gap-4 min-w-100 p-4 bg-surface-tint rounded-md shadow"
+                >
                     <div
                         class="flex justify-center items-center w-16 h-16 overflow-hidden rounded-2xs bg-primary"
                         aria-hidden="true"

@@ -15,7 +15,7 @@
     };
 </script>
 
-<div
+<label
     class={[
         "w-full h-full",
         "group relative flex justify-center items-center cursor-pointer",
@@ -66,4 +66,4 @@
             <i class="ph ph-upload-simple text-[20px]"></i>
         </div>
     {/if}
-</div>
+</label>
