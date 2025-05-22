@@ -99,7 +99,7 @@
     />
     <footer class="flex gap-4">
         <a
-            class="btn w-max bg-on-primary text-primary"
+            class="btn secondary w-max"
             href="{coursePath(data.course)}/lessons/{data.lesson.id}">Отмена</a
         >
         <button class="btn w-max" onclick={save}>Сохранить</button>

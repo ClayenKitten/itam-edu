@@ -98,9 +98,8 @@
         bind:modifiedHomeworks
     />
     <footer class="flex gap-4">
-        <a
-            class="btn w-max bg-on-primary text-primary"
-            href="{coursePath(data.course)}/lessons">Отмена</a
+        <a class="btn secondary w-max" href="{coursePath(data.course)}/lessons"
+            >Отмена</a
         >
         <button class="btn w-max" onclick={create}>Опубликовать</button>
     </footer>
