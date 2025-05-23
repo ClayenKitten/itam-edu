@@ -50,14 +50,9 @@ export class UserController {
             .post(
                 "/sessions",
                 async ({ body, status }) => {
-                    const loginCode = await this.loginCodeRepo.get(body.code);
-                    if (!loginCode)
-                        return status(404, "Login code does not match");
-                    await this.loginCodeRepo.delete(loginCode);
+                    const user = await this.loginCodeRepo.pop(body.code);
+                    if (!user) return status(404, "Login code does not match");
 
-                    const user = (await this.userRepo.getById(
-                        loginCode.userId
-                    ))!;
                     const session = Session.create(user);
                     await this.sessionRepo.add(session);
 

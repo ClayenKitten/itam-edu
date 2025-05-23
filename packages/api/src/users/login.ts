@@ -1,70 +1,48 @@
+import { injectable } from "inversify";
 import { randomInt } from "crypto";
 import type { User } from "itam-edu-common";
-import { Postgres } from "../infra/postgres";
-import { injectable } from "inversify";
+import { Redis } from "../infra/redis";
+import { UserRepository } from "./repository";
 
-export class LoginCode {
+@injectable()
+export class LoginCodeRepository {
     public constructor(
-        public userId: string,
-        public code: string,
-        public expires: Date
+        protected userRepo: UserRepository,
+        protected redis: Redis
     ) {}
 
-    /** Creates a new login code. */
-    public static create(user: User): LoginCode {
+    protected getKey(code: string) {
+        return `login-codes:${code}`;
+    }
+    public readonly EXPIRATION_SECONDS = 300;
+
+    /** Creates new login code for the user. */
+    public async create(user: User): Promise<string> {
+        const code = this.generateCode();
+        const key = this.getKey(code);
+        await this.redis.exec(r =>
+            r.setex(key, this.EXPIRATION_SECONDS, user.id)
+        );
+        return code;
+    }
+
+    /** Removes login code and returns associated user. */
+    public async pop(code: string): Promise<User | null> {
+        const key = this.getKey(code);
+        const userId = await this.redis.exec(r => r.getdel(key));
+        if (!userId) return null;
+        const user = await this.userRepo.getById(userId);
+        if (!user) return null;
+        return user;
+    }
+
+    protected generateCode(): string {
         const codeLength = 6;
         const codeRadix = 16;
         const code = randomInt(0, codeRadix ** codeLength)
             .toString(codeRadix)
             .padStart(codeLength, "0")
             .toUpperCase();
-
-        const expires = new Date(
-            new Date().getTime() + this.TTL_MINUTES * 60000
-        );
-
-        return new LoginCode(user.id, code, expires);
-    }
-
-    /** Time-to-live for the login code in minutes. */
-    public static TTL_MINUTES = 5;
-}
-
-@injectable()
-export class LoginCodeRepository {
-    public constructor(protected postgres: Postgres) {}
-
-    public async get(code: string): Promise<LoginCode | null> {
-        const result = await this.postgres.kysely
-            .selectFrom("userLoginAttempts")
-            .selectAll()
-            .where("code", "=", code)
-            .where("expires", ">", new Date())
-            .executeTakeFirst();
-        if (!result) return null;
-        return new LoginCode(result.userId, result.code, result.expires);
-    }
-
-    public async set(loginCode: LoginCode): Promise<void> {
-        let { userId, code, expires } = loginCode;
-        await this.postgres.kysely.transaction().execute(async trx => {
-            await trx
-                .deleteFrom("userLoginAttempts")
-                .where(({ eb, or }) =>
-                    or([eb("userId", "=", userId), eb("code", "=", code)])
-                )
-                .execute();
-            await trx
-                .insertInto("userLoginAttempts")
-                .values({ userId, code, expires })
-                .executeTakeFirstOrThrow();
-        });
-    }
-
-    public async delete(loginCode: LoginCode) {
-        await this.postgres.kysely
-            .deleteFrom("userLoginAttempts")
-            .where("code", "=", loginCode.code)
-            .executeTakeFirst();
+        return code;
     }
 }

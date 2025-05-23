@@ -4,7 +4,7 @@ import { queues, User } from "itam-edu-common";
 import { AppConfig } from "./config";
 import { Redis } from "./infra/redis";
 import { UserRepository } from "./users/repository";
-import { LoginCode, LoginCodeRepository } from "./users/login";
+import { LoginCodeRepository } from "./users/login";
 import logger from "./logger";
 
 @injectable()
@@ -72,17 +72,14 @@ export class TelegramBot {
     }
 
     protected async handleLogin(user: User): Promise<void> {
-        const minutesBefore = (before: Date) =>
-            Math.ceil((before.getTime() - new Date().getTime()) / 60000);
-        const loginCode = LoginCode.create(user);
-        await this.loginCodeRepo.set(loginCode);
+        const code = await this.loginCodeRepo.create(user);
         await this.send(
             user,
             [
                 `<b>Привет, ${user.telegram.username}!</b>`,
-                `✅ Код для входа: <code>${loginCode.code}</code>`,
-                `Истекает через ${minutesBefore(loginCode.expires)} минут`,
-                `<a href="${this.config.webUrl}?login&code=${loginCode.code}">🔗 Войти</a>`
+                `✅ Код для входа: <code>${code}</code>`,
+                `Истекает через ${Math.ceil(this.loginCodeRepo.EXPIRATION_SECONDS) / 60} минут`,
+                `<a href="${this.config.webUrl}?login&code=${code}">🔗 Войти</a>`
             ].join("\n\n")
         );
     }

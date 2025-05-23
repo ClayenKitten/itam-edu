@@ -145,12 +145,6 @@ export interface UserCourses {
   userId: string;
 }
 
-export interface UserLoginAttempts {
-  code: string;
-  expires: Timestamp;
-  userId: string;
-}
-
 export interface Users {
   /**
    * URL of the user avatar
@@ -187,7 +181,6 @@ export interface DB {
   lessons: Lessons;
   schemaMigrations: SchemaMigrations;
   userCourses: UserCourses;
-  userLoginAttempts: UserLoginAttempts;
   users: Users;
   userSessions: UserSessions;
 }
