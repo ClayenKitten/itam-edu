@@ -1,43 +1,26 @@
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import Elysia, { t } from "elysia";
-import { authenticationPlugin } from "../api/plugins/authenticate";
+import { authenticationPlugin } from "../../api/plugins/authenticate";
 import { randomUUID } from "crypto";
-import { S3Client } from "bun";
-import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { AppConfig } from "../config";
-import { UserRepository } from "../users/repository";
+import { REQUIRE_TOKEN } from "../../api/plugins/docs";
+import { UserRepository } from "../../users/repository";
+import { S3 } from "../../infra/s3";
 
 @injectable()
 export class FileController {
     public constructor(
-        protected config: AppConfig,
-        protected userRepo: UserRepository
+        protected userRepo: UserRepository,
+        protected s3: S3
     ) {}
 
     public toElysia() {
-        // TODO: extract into the service
         return new Elysia({ tags: ["Files"] })
             .use(authenticationPlugin(this.userRepo))
-            .derive(() => {
-                let endpoint =
-                    (this.config.s3.useSSL ? "https" : "http") +
-                    "://" +
-                    this.config.s3.endpoint;
-                if (this.config.s3.port) endpoint += `:${this.config.s3.port}`;
-                return {
-                    s3client: new S3Client({
-                        endpoint,
-                        accessKeyId: this.config.s3.accessKey,
-                        secretAccessKey: this.config.s3.secretKey,
-                        bucket: this.config.s3.bucket
-                    })
-                };
-            })
             .get(
                 "/courses/:course/files/:file",
-                async ({ s3client, params }) => {
+                async ({ params }) => {
                     const path = `/courses/${params.course}/${params.file}`;
-                    return new Response(s3client.file(path).stream());
+                    return new Response(await this.s3.download(path));
                 },
                 {
                     detail: {
@@ -48,21 +31,21 @@ export class FileController {
             )
             .post(
                 "/courses/:course/files",
-                async ({ user, s3client, body, params, error }) => {
+                async ({ user, body, params, status }) => {
                     if (
                         !user.hasCoursePermission(
                             params.course,
                             "canEditContent"
                         )
-                    )
-                        return error(403);
+                    ) {
+                        return status(403);
+                    }
 
                     const extension = body.file.name.split(".").pop();
                     const id = randomUUID();
                     const filename = `${id}.${extension}`;
                     const path = `/courses/${params.course}/${filename}`;
-
-                    await s3client.write(path, body.file);
+                    await this.s3.upload(path, body.file);
 
                     return { filename };
                 },
