@@ -7,6 +7,7 @@ import { UserRepository } from "../users/repository";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
+import { CourseCache } from "./cache";
 
 @injectable()
 export class CourseController {
@@ -14,7 +15,8 @@ export class CourseController {
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected courseQuery: CourseQuery,
-        protected courseChangelog: CourseChangelog
+        protected courseChangelog: CourseChangelog,
+        protected courseCache: CourseCache
     ) {}
 
     public toElysia() {
@@ -99,6 +101,7 @@ export class CourseController {
                         params.course,
                         body
                     );
+                    await this.courseCache.delete(params.course);
                     if (!result) return status(404);
                 },
                 {
