@@ -12,7 +12,9 @@ export class Postgres {
         this.connectionString = config.postgres.connectionString;
         this.pool = new Pool({
             application_name: "itam-edu-api",
-            connectionString: this.connectionString
+            connectionString: this.connectionString,
+            max: 16,
+            min: 1
         });
         this.kysely = new Kysely<DB>({
             dialect: new PostgresDialect({
