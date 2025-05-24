@@ -2,50 +2,41 @@ import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { authenticationPlugin } from "../../api/plugins/authenticate";
+import { HttpError } from "../../api/errors";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../../courses/repository";
-import { StaffRepository } from "./repository";
+import { StaffQuery } from "./query";
+import { PromoteStaff } from "./promote";
+import { DemoteStaff } from "./demote";
 
 @injectable()
 export class StaffController {
     public constructor(
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
-        protected staffRepo: StaffRepository
+        protected query: StaffQuery,
+        protected promote: PromoteStaff,
+        protected demote: DemoteStaff
     ) {}
 
     public toElysia() {
-        return new Elysia({ name: "staff", tags: ["Staff"] })
+        return new Elysia({
+            name: "staff",
+            prefix: "/courses/:course/staff",
+            tags: ["Staff"]
+        })
             .use(authenticationPlugin(this.userRepo))
             .get(
-                "/courses/:course/staff",
-                async ({ user, params, error }) => {
+                "",
+                async ({ params, status }) => {
                     const course = await this.courseRepo.getById(params.course);
-                    if (!course) return error(404);
+                    if (!course) return status(404);
 
-                    const staffIds = await this.staffRepo.getAll(course);
-                    const staffMembers = (
-                        await Promise.all(
-                            staffIds.map(async ({ userId, title }) => {
-                                const user =
-                                    await this.userRepo.getById(userId);
-                                if (!user) return null;
-                                return {
-                                    user: {
-                                        id: user.id,
-                                        firstName: user.info.firstName,
-                                        lastName: user.info.lastName,
-                                        patronim: user.info.patronim,
-                                        bio: user.info.bio,
-                                        avatar: user.info.avatar,
-                                        tgUsername: user.telegram.username
-                                    },
-                                    title
-                                };
-                            })
-                        )
-                    ).filter(s => s !== null);
-                    return staffMembers;
+                    const staff = await this.query.getAll(course);
+                    if (staff instanceof HttpError) {
+                        return status(staff.code, staff.message);
+                    }
+                    return staff;
                 },
                 {
                     params: t.Object({
@@ -58,79 +49,85 @@ export class StaffController {
                     }
                 }
             )
-            .put(
-                "/courses/:course/staff/:staffMember",
-                async ({ user, body, params, error }) => {
-                    if (!user.hasCoursePermission(params.course, "isOwner")) {
-                        return error(403);
-                    }
-
-                    const [course, staffMember] = await Promise.all([
-                        this.courseRepo.getById(params.course),
-                        this.userRepo.getById(params.staffMember)
-                    ]);
-                    if (!course || !staffMember) return error(404);
-
-                    await this.staffRepo.set(
-                        course,
-                        staffMember,
-                        body.title,
-                        body.permissions
-                    );
-                },
+            .group(
+                "/:staffMember",
                 {
-                    requireAuthentication: true,
                     params: t.Object({
                         course: t.String({ format: "uuid" }),
                         staffMember: t.String({ format: "uuid" })
-                    }),
-                    body: t.Object({
-                        title: t.String(),
-                        permissions: t.Object({
-                            isOwner: t.Boolean(),
-                            canEditInfo: t.Boolean(),
-                            canEditContent: t.Boolean(),
-                            canManageSubmissions: t.Boolean()
+                    })
+                },
+                app =>
+                    app
+                        .derive(async ({ params, status }) => {
+                            const [course, staffMember] = await Promise.all([
+                                this.courseRepo.getById(params.course),
+                                this.userRepo.getById(params.staffMember)
+                            ]);
+                            if (!course || !staffMember) return status(404);
+                            return { course, staffMember };
                         })
-                    }),
-                    detail: {
-                        summary: "Promote staff member",
-                        description: "Promotes staff member to the course.",
-                        security: REQUIRE_TOKEN
-                    }
-                }
-            )
-            .delete(
-                "/courses/:course/staff/:staffMember",
-                async ({ user, params, error }) => {
-                    if (!user.hasCoursePermission(params.course, "isOwner")) {
-                        return error(403);
-                    }
-
-                    const [course, staffMember] = await Promise.all([
-                        this.courseRepo.getById(params.course),
-                        this.userRepo.getById(params.staffMember)
-                    ]);
-                    if (!course || !staffMember) return error(404);
-
-                    const success = await this.staffRepo.remove(
-                        course,
-                        staffMember
-                    );
-                    if (!success) return error(404);
-                },
-                {
-                    requireAuthentication: true,
-                    params: t.Object({
-                        course: t.String({ format: "uuid" }),
-                        staffMember: t.String({ format: "uuid" })
-                    }),
-                    detail: {
-                        summary: "Demote staff member",
-                        description: "Demotes staff member from the course.",
-                        security: REQUIRE_TOKEN
-                    }
-                }
+                        .put(
+                            "",
+                            async ({
+                                user,
+                                body,
+                                course,
+                                staffMember,
+                                status
+                            }) => {
+                                const result = await this.promote.invoke(
+                                    user,
+                                    course,
+                                    staffMember,
+                                    body.title,
+                                    body.permissions
+                                );
+                                if (result instanceof HttpError) {
+                                    return status(result.code, result.message);
+                                }
+                            },
+                            {
+                                requireAuthentication: true,
+                                body: t.Object({
+                                    title: t.String(),
+                                    permissions: t.Object({
+                                        isOwner: t.Boolean(),
+                                        canEditInfo: t.Boolean(),
+                                        canEditContent: t.Boolean(),
+                                        canManageSubmissions: t.Boolean()
+                                    })
+                                }),
+                                detail: {
+                                    summary: "Promote staff member",
+                                    description:
+                                        "Promotes staff member to the course.",
+                                    security: REQUIRE_TOKEN
+                                }
+                            }
+                        )
+                        .delete(
+                            "",
+                            async ({ user, course, staffMember, status }) => {
+                                const result = await this.demote.invoke(
+                                    user,
+                                    course,
+                                    staffMember
+                                );
+                                if (result instanceof HttpError) {
+                                    return status(result.code, result.message);
+                                }
+                            },
+                            {
+                                requireAuthentication: true,
+                                detail: {
+                                    summary: "Demote staff member",
+                                    description:
+                                        "Demotes staff member from the course.",
+                                    security: REQUIRE_TOKEN
+                                }
+                            }
+                        )
             );
     }
 }

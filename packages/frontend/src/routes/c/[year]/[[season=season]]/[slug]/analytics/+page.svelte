@@ -2,6 +2,8 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import { userFilePath } from "itam-edu-common";
+    import Chart from "./Chart.svelte";
+    import Loader from "$lib/components/Loader.svelte";
 
     const { data } = $props();
 
@@ -20,10 +22,30 @@
     <title>Аналитика | {data.course.title}</title>
 </svelte:head>
 
-<div class="flex flex-col gap-10 p-10">
+<div class="flex flex-col gap-6 p-10">
     <header class="flex gap-4">
         <h2>Аналитика</h2>
     </header>
+    <section class="flex flex-wrap gap-6">
+        <div
+            class="flex-1 relative overflow-hidden aspect-[2.5] min-w-100 p-6 pb-8 bg-surface shadow rounded-xl"
+        >
+            {#await data.stats}
+                <Loader />
+            {:then stats}
+                <Chart label="Студенты" data={stats.students} />
+            {/await}
+        </div>
+        <div
+            class="flex-1 relative aspect-[2.5] min-w-100 p-6 pb-8 bg-surface shadow rounded-xl"
+        >
+            {#await data.stats}
+                <Loader />
+            {:then stats}
+                <Chart label="Сотрудники" data={stats.staff} />
+            {/await}
+        </div>
+    </section>
     <section class="flex flex-col p-6 pb-8 bg-surface shadow rounded-xl">
         <header class="flex justify-between items-center h-11">
             <h3 class="text-on-surface-contrast">Студенты</h3>
@@ -39,7 +61,7 @@
                 "max-h-120 overflow-y-auto"
             ]}
         >
-            {#each data.students as student (student.user.id)}
+            {#each data.students as student (student.id)}
                 <li
                     class="flex-1 flex gap-4 min-w-100 p-4 bg-surface-tint rounded-md shadow"
                 >
@@ -47,16 +69,16 @@
                         class="flex justify-center items-center w-16 h-16 overflow-hidden rounded-2xs bg-primary"
                         aria-hidden="true"
                     >
-                        {#if student.user.avatar}
+                        {#if student.avatar}
                             <img
-                                src={userFilePath(student.user.id).avatar(
-                                    student.user.avatar
+                                src={userFilePath(student.id).avatar(
+                                    student.avatar
                                 )}
                                 alt=""
                             />
                         {:else}
                             <span class="text-on-primary text-comment">
-                                {student.user.tgUsername[0]}
+                                {student.tgUsername[0]}
                             </span>
                         {/if}
                     </div>
@@ -64,15 +86,15 @@
                         class="flex flex-col gap-1 justify-center items-start overflow-hidden"
                     >
                         <h4 class="text-nowrap">
-                            {student.user.firstName}
-                            {student.user.lastName}
+                            {student.firstName}
+                            {student.lastName}
                         </h4>
                         <a
                             class="text-primary text-date hover:underline"
-                            href={`https://t.me/${student.user.tgUsername}`}
+                            href={`https://t.me/${student.tgUsername}`}
                             target="_blank"
                         >
-                            @{student.user.tgUsername}
+                            @{student.tgUsername}
                         </a>
                     </div>
                     <button
@@ -86,7 +108,7 @@
                         ]}
                         title="Отчислить студента"
                         aria-label="Отчислить студента"
-                        onclick={() => expelStudent(student.user.id)}
+                        onclick={() => expelStudent(student.id)}
                     >
                         <i class="ph ph-x text-[20px] mt-[1px]"></i>
                     </button>

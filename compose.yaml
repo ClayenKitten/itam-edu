@@ -64,7 +64,7 @@ services:
 
   # Redis
   redis:
-    image: redis:7.4
+    image: redis:8.0
     entrypoint: sh -c 'redis-server --save 60 1 --appendonly yes --loglevel notice --requirepass $$REDIS_PASSWORD'
     expose: [6379]
     ports: [127.0.0.1:6379:6379]

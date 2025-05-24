@@ -3,7 +3,7 @@ import { Postgres } from "../infra/postgres";
 import { LessonQuery, type LessonPartialDTO } from "./lesson/query";
 import { HomeworkQuery, type HomeworkPartialDTO } from "./homework/query";
 import { CourseCache } from "./cache";
-import logger from "../logger";
+import { CourseStatsRepository } from "./stats";
 
 @injectable()
 export class CourseQuery {
@@ -11,7 +11,8 @@ export class CourseQuery {
         protected postgres: Postgres,
         protected lessonQuery: LessonQuery,
         protected homeworkQuery: HomeworkQuery,
-        protected cache: CourseCache
+        protected cache: CourseCache,
+        protected statsRepo: CourseStatsRepository
     ) {}
 
     public async get(id: string): Promise<CourseDTO | null> {

@@ -8,6 +8,7 @@ import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
 import { CourseCache } from "./cache";
+import { CourseStatsRepository } from "./stats";
 
 @injectable()
 export class CourseController {
@@ -16,7 +17,8 @@ export class CourseController {
         protected courseRepo: CourseRepository,
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
-        protected courseCache: CourseCache
+        protected courseCache: CourseCache,
+        protected courseStats: CourseStatsRepository
     ) {}
 
     public toElysia() {
@@ -125,6 +127,20 @@ export class CourseController {
                     detail: {
                         summary: "Get course changes",
                         description: "Returns course changelog."
+                    }
+                }
+            )
+            .get(
+                "/:course/statistics",
+                async ({ user, params, status }) => {
+                    if (!user.isCourseStaff(params.course)) return status(403);
+                    return await this.courseStats.getAll(params.course);
+                },
+                {
+                    requireAuthentication: true,
+                    detail: {
+                        summary: "Get course statistics",
+                        description: "Returns course statistics."
                     }
                 }
             );

@@ -5,13 +5,11 @@
 
     interface Props {
         staff: {
-            user: {
-                id: string;
-                avatar: string | null;
-                firstName: string | null;
-                lastName: string | null;
-                tgUsername: string;
-            };
+            id: string;
+            avatar: string | null;
+            firstName: string | null;
+            lastName: string | null;
+            tgUsername: string;
             title: string | null;
         }[];
         readonly: boolean;
@@ -35,16 +33,16 @@
                         class="flex justify-center items-center w-16 h-16 overflow-hidden rounded-2xs bg-primary"
                         aria-hidden="true"
                     >
-                        {#if staffMember.user.avatar}
+                        {#if staffMember.avatar}
                             <img
-                                src={userFilePath(staffMember.user.id).avatar(
-                                    staffMember.user.avatar
+                                src={userFilePath(staffMember.id).avatar(
+                                    staffMember.avatar
                                 )}
                                 alt=""
                             />
                         {:else}
                             <span class="text-on-primary text-comment">
-                                {staffMember.user.tgUsername[0]}
+                                {staffMember.tgUsername[0]}
                             </span>
                         {/if}
                     </div>
@@ -52,19 +50,19 @@
                         class="flex flex-col gap-1 justify-center items-start overflow-hidden"
                     >
                         <h4 class="text-nowrap">
-                            {#if staffMember.user.firstName}
-                                {staffMember.user.firstName}
-                                {staffMember.user.lastName}
+                            {#if staffMember.firstName}
+                                {staffMember.firstName}
+                                {staffMember.lastName}
                             {:else}
-                                {staffMember.user.tgUsername}
+                                {staffMember.tgUsername}
                             {/if}
                         </h4>
                         <a
                             class="text-primary text-date hover:underline"
-                            href={`https://t.me/${staffMember.user.tgUsername}`}
+                            href={`https://t.me/${staffMember.tgUsername}`}
                             target="_blank"
                         >
-                            @{staffMember.user.tgUsername}
+                            @{staffMember.tgUsername}
                         </a>
                     </header>
                     {#if !readonly}

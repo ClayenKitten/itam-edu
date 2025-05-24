@@ -44,37 +44,37 @@
                             class="flex justify-center items-center shrink-0 h-full aspect-square overflow-hidden rounded-lg bg-primary"
                             aria-hidden="true"
                         >
-                            {#if staffMember.user.avatar}
+                            {#if staffMember.avatar}
                                 <img
-                                    src={userFilePath(
-                                        staffMember.user.id
-                                    ).avatar(staffMember.user.avatar)}
+                                    src={userFilePath(staffMember.id).avatar(
+                                        staffMember.avatar
+                                    )}
                                     alt=""
                                 />
                             {:else}
                                 <span class="text-on-primary text-comment">
-                                    {staffMember.user.tgUsername[0]}
+                                    {staffMember.tgUsername[0]}
                                 </span>
                             {/if}
                         </div>
                         <div class="flex flex-col gap-5 overflow-hidden">
                             <header class="flex flex-col">
                                 <h3 class="text-nowrap">
-                                    {#if staffMember.user.firstName}
-                                        {staffMember.user.firstName}
-                                        {staffMember.user.lastName}
+                                    {#if staffMember.firstName}
+                                        {staffMember.firstName}
+                                        {staffMember.lastName}
                                     {:else}
-                                        {staffMember.user.tgUsername}
+                                        {staffMember.tgUsername}
                                     {/if}
                                 </h3>
                                 <a
                                     class="text-primary text-date hover:underline"
-                                    href={`https://t.me/${staffMember.user.tgUsername}`}
+                                    href={`https://t.me/${staffMember.tgUsername}`}
                                 >
-                                    @{staffMember.user.tgUsername}
+                                    @{staffMember.tgUsername}
                                 </a>
                             </header>
-                            <p class="flex-[1]">{staffMember.user.bio}</p>
+                            <p class="flex-[1]">{staffMember.bio}</p>
                         </div>
                     </li>
                 {/each}
