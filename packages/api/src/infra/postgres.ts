@@ -20,7 +20,7 @@ export class Postgres {
             dialect: new PostgresDialect({
                 pool: this.pool,
                 onCreateConnection: async () => {
-                    logger.trace("Database Connection Acquired");
+                    logger.trace("Postgres connection acquired");
                 }
             }),
             plugins: [new CamelCasePlugin()],

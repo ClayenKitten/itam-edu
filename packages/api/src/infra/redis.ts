@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { Redis as IORedis } from "ioredis";
 import { Pool, createPool } from "generic-pool";
 import { AppConfig } from "../config";
+import logger from "../logger";
 
 /** Redis database. */
 @injectable()
@@ -12,9 +13,11 @@ export class Redis {
         this.pool = createPool<IORedis>(
             {
                 create: async () => {
+                    logger.trace("Redis connection acquired");
                     return new IORedis(this.connectionString);
                 },
                 destroy: async ioredis => {
+                    logger.trace("Redis connection released");
                     await ioredis.quit();
                 }
             },
