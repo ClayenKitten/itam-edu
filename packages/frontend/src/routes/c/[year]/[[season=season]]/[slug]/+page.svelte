@@ -13,13 +13,13 @@
                 if (change.payload.role === "staff") {
                     title =
                         change.payload.userId === data.user?.id
-                            ? "Вы поступили на курс"
-                            : "Студент зачислен на курс";
+                            ? "Вы стали сотрудником этого курса"
+                            : "Сотрудник добавлен на курс";
                 } else {
                     title =
                         change.payload.userId === data.user?.id
-                            ? "Вы стали сотрудником этого курса"
-                            : "Сотрудник добавлен на курс";
+                            ? "Вы поступили на курс"
+                            : "Студент зачислен на курс";
                 }
                 return { icon: "hand-waving", title };
             }
