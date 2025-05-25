@@ -57,7 +57,10 @@ export class CourseChangelog {
         switch (change.payload.kind) {
             case "user-joined":
             case "user-left":
-                return user?.id === change.actorId;
+                return (
+                    user?.id === change.actorId ||
+                    user?.id === change.payload.userId
+                );
             case "lesson-created":
             case "lesson-schedule-changed":
             case "homework-created":
