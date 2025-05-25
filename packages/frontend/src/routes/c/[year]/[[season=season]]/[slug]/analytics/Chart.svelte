@@ -28,10 +28,6 @@
                 },
                 scales: {
                     x: {
-                        title: {
-                            display: true,
-                            text: "Дата"
-                        },
                         type: "time",
                         time: {
                             unit: "day",

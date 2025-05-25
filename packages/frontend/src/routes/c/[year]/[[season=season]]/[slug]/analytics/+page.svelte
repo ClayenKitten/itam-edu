@@ -46,72 +46,98 @@
             {/await}
         </div>
     </section>
-    <section class="flex flex-col p-6 pb-8 bg-surface shadow rounded-xl">
-        <header class="flex justify-between items-center h-11">
-            <h3 class="text-on-surface-contrast">Студенты</h3>
-            <span class="text-h4 text-on-surface">
-                {data.students.length} чел.
-            </span>
-        </header>
-        <hr class="text-primary-border my-5" />
+    <section class="flex flex-col p-6 pb-8 gap-4 bg-surface shadow rounded-xl">
+        <h3 class="flex items-center gap-4 h-11 text-on-surface-contrast">
+            Студенты ({data.students.length})
+        </h3>
         <ol
             class={[
-                "grid gap-4 grid-cols-1",
-                "@min-[1200px]/main:grid-cols-2",
-                "max-h-120 overflow-y-auto"
+                "grid grid-cols-[repeat(auto-fill,_minmax(360px,1fr))]",
+                "gap-x-4 gap-y-6"
             ]}
         >
             {#each data.students as student (student.id)}
+                {@const uncheckedSubmissions =
+                    student.totalSubmissions -
+                    student.acceptedSubmissions -
+                    student.rejectedSubmissions}
                 <li
-                    class="flex-1 flex gap-4 min-w-100 p-4 bg-surface-tint rounded-md shadow"
+                    class={[
+                        "flex flex-col gap-4 p-4",
+                        "bg-surface-tint shadow",
+                        "border border-primary-border rounded-sm"
+                    ]}
                 >
-                    <div
-                        class="flex justify-center items-center w-16 h-16 overflow-hidden rounded-2xs bg-primary"
-                        aria-hidden="true"
-                    >
-                        {#if student.avatar}
-                            <img
-                                src={userFilePath(student.id).avatar(
-                                    student.avatar
-                                )}
-                                alt=""
-                            />
-                        {:else}
-                            <span class="text-on-primary text-comment">
-                                {student.tgUsername[0]}
-                            </span>
-                        {/if}
-                    </div>
-                    <div
-                        class="flex flex-col gap-1 justify-center items-start overflow-hidden"
-                    >
-                        <h4 class="text-nowrap">
-                            {student.firstName}
-                            {student.lastName}
-                        </h4>
-                        <a
-                            class="text-primary text-date hover:underline"
-                            href={`https://t.me/${student.tgUsername}`}
-                            target="_blank"
+                    <header class="flex gap-4">
+                        <div
+                            class="flex justify-center items-center size-12 overflow-hidden rounded-2xs bg-primary"
+                            aria-hidden="true"
                         >
-                            @{student.tgUsername}
-                        </a>
-                    </div>
-                    <button
-                        class={[
-                            "flex justify-center items-center",
-                            "ml-auto self-center shrink-0",
-                            "size-12 rounded-xs p-2",
-                            "bg-on-primary text-primary",
-                            "border border-primary-border hover:border-primary",
-                            "transition-colors duration-100"
-                        ]}
-                        title="Отчислить студента"
-                        aria-label="Отчислить студента"
-                        onclick={() => expelStudent(student.id)}
-                    >
-                        <i class="ph ph-x text-[20px] mt-[1px]"></i>
-                    </button>
+                            {#if student.avatar}
+                                <img
+                                    src={userFilePath(student.id).avatar(
+                                        student.avatar
+                                    )}
+                                    alt=""
+                                />
+                            {:else}
+                                <span class="text-on-primary text-comment">
+                                    {student.tgUsername[0]}
+                                </span>
+                            {/if}
+                        </div>
+                        <div
+                            class="flex flex-col gap-1 justify-center items-start overflow-hidden"
+                        >
+                            <h5 class="text-nowrap">
+                                {student.firstName}
+                                {student.lastName}
+                            </h5>
+                            <a
+                                class="text-primary text-date hover:underline"
+                                href={`https://t.me/${student.tgUsername}`}
+                                target="_blank"
+                            >
+                                @{student.tgUsername}
+                            </a>
+                        </div>
+                    </header>
+                    <hr class="border-primary-border -mx-4" />
+                    <ul class="flex gap-2">
+                        <li
+                            class={[
+                                "flex items-center gap-1 px-4 py-2",
+                                "text-primary bg-on-primary rounded-full",
+                                "border border-primary-border hover:border-primary",
+                                "transition-colors duration-100",
+                                "cursor-help"
+                            ]}
+                            title={`${student.acceptedSubmissions} заданий сдано${uncheckedSubmissions > 0 ? `, ${uncheckedSubmissions} на проверке` : ""} (${Math.ceil((student.acceptedSubmissions / data.homeworks.length) * 100)}%)`}
+                        >
+                            <i class="ph ph-book-open-text text-[20px]"></i>
+                            <span>
+                                {student.acceptedSubmissions}
+                                {#if uncheckedSubmissions > 0}
+                                    + {uncheckedSubmissions}
+                                {/if}
+                            </span>
+                        </li>
+                        <button
+                            class={[
+                                "flex justify-center items-center",
+                                "ml-auto self-center shrink-0",
+                                "rounded-xs h-full aspect-square",
+                                "bg-on-primary text-primary",
+                                "border border-primary-border hover:border-primary",
+                                "transition-colors duration-100"
+                            ]}
+                            title="Отчислить студента"
+                            aria-label="Отчислить студента"
+                            onclick={() => expelStudent(student.id)}
+                        >
+                            <i class="ph ph-x text-[16px] mt-[1px]"></i>
+                        </button>
+                    </ul>
                 </li>
             {:else}
                 Пока никого!
