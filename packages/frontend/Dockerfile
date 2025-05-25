@@ -23,7 +23,7 @@ RUN npm --workspace=itam-edu-frontend run build
 RUN npm --workspace=itam-edu-frontend prune --omit=dev 
 
 # Serve production build
-FROM node:22-alpine AS serve
+FROM oven/bun:1.2-alpine AS serve
 WORKDIR /app
 ENV NODE_ENV=production
 
@@ -31,4 +31,4 @@ COPY package.json .
 COPY --from=build /app/packages/common ./packages/common
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/frontend/build ./build
-CMD ["node", "./build"]
+CMD ["bun", "./build"]
