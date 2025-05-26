@@ -2,6 +2,7 @@ import { env } from "$env/dynamic/public";
 import type { Handle, HandleFetch, ServerInit } from "@sveltejs/kit";
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
+    console.log(`Fetch ${request.url}`);
     const cookies = event.request.headers.get("cookie");
     const token = cookies ? getCookie(cookies, "itam-edu-token") : undefined;
     if (
