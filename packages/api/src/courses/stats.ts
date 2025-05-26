@@ -40,8 +40,16 @@ export class CourseStatsRepository {
         courseId: string,
         value: number
     ): Promise<void> {
-        const key = `courses:${courseId}:stats:${kind}`;
-        await this.redis.exec(r => r.call("TS.ADD", key, "*", value));
+        try {
+            const key = `courses:${courseId}:stats:${kind}`;
+            await this.redis.exec(r => r.call("TS.ADD", key, "*", value));
+        } catch (e) {
+            logger.error("Failed to add course statistics entry", {
+                kind,
+                courseId,
+                error: e
+            });
+        }
     }
 }
 
