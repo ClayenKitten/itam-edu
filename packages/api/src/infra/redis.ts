@@ -13,7 +13,10 @@ export class Redis {
         this.pool = createPool<IORedis>(
             {
                 create: async () => {
-                    logger.trace("Redis connection acquired");
+                    logger.trace("Redis connection acquired", {
+                        borrowed: this.pool.borrowed,
+                        available: this.pool.available
+                    });
                     return new IORedis(this.connectionString);
                 },
                 destroy: async ioredis => {
@@ -38,7 +41,13 @@ export class Redis {
      * */
     public async exec<T>(cb: (redis: IORedis) => T | Promise<T>): Promise<T> {
         const redis = await this.pool.acquire();
-        const result = await cb(redis);
+        let result: T;
+        try {
+            result = await cb(redis);
+        } catch (e) {
+            await this.pool.release(redis);
+            throw e;
+        }
         await this.pool.release(redis);
         return result;
     }
