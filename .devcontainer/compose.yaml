@@ -44,7 +44,7 @@ services:
     image: redis:8.0
     command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
     expose: [6379]
-    volumes: [redis:/root/redis]
+    volumes: [redis:/data]
 
   ## Minio
   minio:
