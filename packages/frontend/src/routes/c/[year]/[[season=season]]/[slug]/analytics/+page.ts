@@ -4,7 +4,11 @@ import { error } from "@sveltejs/kit";
 
 export const load: PageLoad = async ({ fetch, depends, parent }) => {
     depends("app:students", "app:stats");
-    const { course } = await parent();
+    const { course, user } = await parent();
+
+    if (!user || !user.isCourseStaff(course.id)) {
+        error(404);
+    }
 
     const students = await getStudents(fetch, course.id);
     const stats = getStats(fetch, course.id);

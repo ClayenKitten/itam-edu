@@ -4,11 +4,15 @@ import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch, depends, parent }) => {
     depends("app:staff");
-    const { course } = await parent();
+    const { course, user } = await parent();
+
+    if (!user || !user.isCourseStaff(course.id)) {
+        error(404);
+    }
 
     const staff = await getStaff(fetch, course.id);
 
-    return { staff };
+    return { user, staff };
 };
 
 async function getStaff(fetch: typeof window.fetch, courseId: string) {
