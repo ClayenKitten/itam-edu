@@ -89,12 +89,10 @@ services:
 
   # BullMQ UI
   bull-board:
-    # image: venatum/bull-board:2.2
-    build: https://github.com/ClayenKitten/bull-board-docker.git#host
+    image: venatum/bull-board:2.4
     restart: unless-stopped
     expose: [3000]
     environment:
-      HOST: 0.0.0.0
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_USER: default
