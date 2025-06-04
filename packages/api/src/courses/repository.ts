@@ -75,24 +75,6 @@ export class CourseRepository {
         return this.toEntity(result, []);
     }
 
-    /**
-     * Updates course information.
-     *
-     * @returns true if course was updated, false otherwise.
-     * */
-    public async update(
-        id: string,
-        course: typeof schema.updateCourse.static
-    ): Promise<boolean> {
-        const result = await this.postgres.kysely
-            .updateTable("courses")
-            .where("id", "=", id)
-            .set(course)
-            .executeTakeFirst();
-        if (result.numUpdatedRows === 0n) return false;
-        return true;
-    }
-
     protected toEntity(
         course: Selectable<DB["courses"]>,
         members: Pick<Selectable<DB["userCourses"]>, "userId" | "isStaff">[]

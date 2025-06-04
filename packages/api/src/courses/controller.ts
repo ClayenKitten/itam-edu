@@ -9,6 +9,8 @@ import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
 import { CourseCache } from "./cache";
 import { CourseStatsRepository } from "./stats";
+import { UpdateCourse, updateCourseDto } from "./update";
+import { HttpError } from "../api/errors";
 
 @injectable()
 export class CourseController {
@@ -18,7 +20,8 @@ export class CourseController {
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
         protected courseCache: CourseCache,
-        protected courseStats: CourseStatsRepository
+        protected courseStats: CourseStatsRepository,
+        protected updateCourse: UpdateCourse
     ) {}
 
     public toElysia() {
@@ -98,17 +101,21 @@ export class CourseController {
             )
             .patch(
                 "/:course",
-                async ({ params, body, status }) => {
-                    const result = await this.courseRepo.update(
-                        params.course,
+                async ({ user, params, body, status }) => {
+                    const course = await this.courseRepo.getById(params.course);
+                    if (!course) return status(404);
+
+                    const result = await this.updateCourse.invoke(
+                        user,
+                        course,
                         body
                     );
-                    await this.courseCache.delete(params.course);
-                    if (!result) return status(404);
+                    if (result instanceof HttpError)
+                        return status(result.code, result.message);
                 },
                 {
-                    body: schema.updateCourse,
-                    hasCoursePermission: "canEditInfo",
+                    requireAuthentication: true,
+                    body: updateCourseDto,
                     detail: {
                         summary: "Update course",
                         description: "Updates course.",

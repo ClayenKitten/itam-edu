@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Course } from "$lib/types.js";
     import InfoSection from "./InfoSection.svelte";
     import StaffSection from "./StaffSection.svelte";
     import DangerSection from "./DangerSection.svelte";
@@ -8,7 +7,6 @@
 
     let { data } = $props();
 
-    let course: Course = $state(structuredClone(data.course));
     const themeContainer = getContext<{ theme: string }>("theme");
 
     onNavigate(() => {
@@ -27,15 +25,15 @@
     ]}
 >
     <InfoSection
-        bind:course
-        readonly={!data.user?.hasCoursePermission(course.id, "canEditInfo")}
+        course={data.course}
+        readonly={!data.user?.hasCoursePermission(
+            data.course.id,
+            "canEditInfo"
+        )}
     />
     <StaffSection
         bind:staff={data.staff}
-        readonly={!data.user?.hasCoursePermission(course.id, "isOwner")}
+        readonly={!data.user?.hasCoursePermission(data.course.id, "isOwner")}
     />
-    <DangerSection
-        bind:course
-        readonly={!data.user?.hasCoursePermission(course.id, "isOwner")}
-    />
+    <DangerSection course={data.course} user={data.user} />
 </div>

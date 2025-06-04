@@ -1,11 +1,29 @@
 <script lang="ts">
+    import { invalidate } from "$app/navigation";
+    import api from "$lib/api";
     import type { Course } from "$lib/types";
+    import type { User } from "itam-edu-common";
 
-    let { readonly, course = $bindable() }: Props = $props();
+    let { user, course = $bindable() }: Props = $props();
 
     type Props = {
-        readonly: boolean;
+        user: User;
         course: Course;
+    };
+
+    const save = async (
+        changes: Partial<
+            Pick<Course, "isArchived" | "isPublished" | "isEnrollmentOpen">
+        >
+    ) => {
+        const result = await api({ fetch })
+            .courses({ course: course.id })
+            .patch(changes);
+        if (result.status !== 200) {
+            alert(result.status);
+            return;
+        }
+        await invalidate("app:course");
     };
 </script>
 
@@ -21,11 +39,10 @@
                 e
                     ? "Курс будет доступен только сотрудникам"
                     : "Курс станет публично доступен",
-            onclick: () => {
-                course.isPublished = !course.isPublished;
-                // TODO: allow (un)publishing course
-                alert("Not implemented");
-            }
+            onclick: () => save({ isPublished: !course.isPublished }),
+            disabled:
+                !user.hasPermission("canPublishCourses") ||
+                !user.hasCoursePermission(course.id, "isOwner")
         })}
         {@render veryScaryToggle({
             enabled: course.isArchived,
@@ -34,11 +51,8 @@
                 e
                     ? "Курс снова станет редактируемым, а студенты смогут сдавать работы"
                     : "Курс будет доступен только для чтения, а приём работ закрыт",
-            onclick: () => {
-                course.isArchived = !course.isArchived;
-                // TODO: allow course archiving
-                alert("Not implemented");
-            }
+            onclick: () => save({ isArchived: !course.isArchived }),
+            disabled: !user.hasCoursePermission(course.id, "isOwner")
         })}
         {@render veryScaryToggle({
             enabled: course.isEnrollmentOpen,
@@ -48,11 +62,8 @@
                 e
                     ? "Новые студенты не смогут поступить на курс"
                     : "Новые студенты смогут поступать на курс",
-            onclick: () => {
-                course.isEnrollmentOpen = !course.isEnrollmentOpen;
-                // TODO: allow course enrollment closure
-                alert("Not implemented");
-            }
+            onclick: () => save({ isEnrollmentOpen: !course.isEnrollmentOpen }),
+            disabled: !user.hasCoursePermission(course.id, "isOwner")
         })}
     </div>
 </section>
@@ -62,10 +73,11 @@
     text: (enabled: boolean) => string;
     description: (enabled: boolean) => string;
     onclick: () => void;
+    disabled: boolean;
 })}
     <button
         class="btn secondary"
-        disabled={readonly}
+        disabled={val.disabled}
         title={val.description(val.enabled)}
         onclick={() => {
             if (!confirm(val.description(val.enabled) + ".\n\nВы уверены?"))

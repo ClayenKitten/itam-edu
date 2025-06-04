@@ -31,8 +31,3 @@ export const createCourse = t.Pick(course, [
     "semester",
     "title"
 ]);
-
-/** Update course information. */
-export const updateCourse = t.Partial(
-    t.Pick(course, ["title", "description", "banner", "logo", "about", "theme"])
-);
