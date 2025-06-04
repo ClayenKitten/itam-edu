@@ -39,7 +39,7 @@
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
-        <h2 class="self-start">Новый звонок</h2>
+        <h2 class="self-center">Новый звонок</h2>
     </header>
     <div class="flex flex-col gap-5">
         <label class="flex flex-col gap-2.5">

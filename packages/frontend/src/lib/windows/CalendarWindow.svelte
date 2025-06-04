@@ -23,7 +23,7 @@
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
-        <h2 class="self-start">Календарь</h2>
+        <h2 class="self-center">Календарь</h2>
     </header>
-    <div class="h-60"></div>
+    <h3 class="self-center p-12 pt-16">В разработке! 🚧</h3>
 </dialog>

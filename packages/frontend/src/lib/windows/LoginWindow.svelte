@@ -59,7 +59,7 @@
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
-        <h2 class="self-start">Вход</h2>
+        <h2 class="self-center">Вход</h2>
     </header>
     <label class="flex flex-col gap-1.5">
         <span class="text-on-surface-muted text-button">Код</span>
