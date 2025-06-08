@@ -131,7 +131,18 @@
                     position={data.lessons.length - i}
                 />
             {:else}
-                Пусто!
+                <div
+                    class="self-center mx-auto flex flex-col items-center gap-2"
+                >
+                    <h4 class="text-on-surface-contrast">Уроков ещё нет 🫠</h4>
+                    <!-- TODO: make changelog actually expire and specify how long it is stored. -->
+                    <span
+                        class="text-lg-regular text-on-surface-muted text-center"
+                    >
+                        Но скоро будут! А пока можете сходить на пары, вас там
+                        заждались.
+                    </span>
+                </div>
             {/each}
         </ol>
     </section>
@@ -169,7 +180,15 @@
                     </p>
                 </a>
             {:else}
-                Пусто!
+                <div class="self-center flex flex-col items-center gap-2 py-16">
+                    <h4 class="text-on-surface-contrast">А где? 🫨</h4>
+                    <!-- TODO: make changelog actually expire and specify how long it is stored. -->
+                    <span
+                        class="text-lg-regular text-on-surface-muted text-center"
+                    >
+                        Обновления по курсу хранятся ограниченное время.
+                    </span>
+                </div>
             {/each}
         </ol>
     </section>

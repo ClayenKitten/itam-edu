@@ -73,6 +73,17 @@
                 </div>
                 <i class="ph ph-caret-right text-[26px] self-center"></i>
             </a>
+        {:else}
+            <div class="flex flex-col mt-[25dvh] items-center gap-2">
+                <h4 class="text-on-surface-contrast">Заданий ещё нет 🫡</h4>
+                <span class="text-lg-regular text-on-surface-muted">
+                    Но скоро будут! А пока можете потрогать траву
+                    <a
+                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                        target="_blank">🌱🌿🍃</a
+                    >
+                </span>
+            </div>
         {/each}
     </div>
 </div>

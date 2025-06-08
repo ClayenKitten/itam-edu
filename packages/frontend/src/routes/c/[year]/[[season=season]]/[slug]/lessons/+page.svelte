@@ -37,13 +37,20 @@
         {/if}
     </header>
     <div
-        class={[
-            "grid gap-x-4 gap-y-5 gap-2.5",
-            "grid-cols-[repeat(auto-fit,356px)]"
-        ]}
+        class={data.lessons.length > 0
+            ? "grid gap-x-4 gap-y-5 gap-2.5 grid-cols-[repeat(auto-fit,356px)]"
+            : ""}
     >
         {#each data.lessons as lesson, i}
             <LessonCard course={data.course} position={i + 1} {lesson} />
+        {:else}
+            <div class="flex flex-col mt-[25dvh] items-center gap-2">
+                <h4 class="text-on-surface-contrast">Уроков ещё нет 🫠</h4>
+                <span class="text-lg-regular text-on-surface-muted">
+                    Но скоро будут! А пока можете сходить на пары, вас там
+                    заждались.
+                </span>
+            </div>
         {/each}
     </div>
 </div>
