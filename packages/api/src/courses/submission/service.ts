@@ -63,7 +63,8 @@ export class SubmissionService {
                 this.courseChangelog.add(actor, course, {
                     kind: "submission-reviewed",
                     homeworkId: homework.id,
-                    studentId: student.id
+                    studentId: student.id,
+                    accepted
                 }),
                 this.notificationSender.send(
                     new SubmissionReviewNotification(

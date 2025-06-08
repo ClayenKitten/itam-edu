@@ -17,9 +17,11 @@ import type {
     SubmissionDTO,
     SubmissionPartialDTO
 } from "itam-edu-api/src/courses/submission/query";
+import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/courses/changes";
 
 export type Course = CourseDTO;
 export type CoursePartial = CoursePartialDTO;
+export type CourseChange = CourseChangeDto;
 
 export type Lesson = LessonDTO;
 export type LessonPartial = LessonPartialDTO;

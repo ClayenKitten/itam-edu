@@ -2,6 +2,7 @@ import type { User } from "itam-edu-common";
 import type { Course } from "./entity";
 import { injectable } from "inversify";
 import { Postgres } from "../infra/postgres";
+import logger from "../logger";
 
 /**
  * Change that occured in the course.
@@ -25,7 +26,12 @@ export type CourseChangePayload =
     | { kind: "homework-created"; homeworkId: string }
     | { kind: "homework-deadline-changed"; homeworkId: string }
     | { kind: "submission-created"; homeworkId: string; studentId: string }
-    | { kind: "submission-reviewed"; homeworkId: string; studentId: string };
+    | {
+          kind: "submission-reviewed";
+          homeworkId: string;
+          studentId: string;
+          accepted: boolean;
+      };
 
 /** Course changelog for audit purposes. */
 @injectable()
@@ -89,5 +95,10 @@ export class CourseChangelog {
                 payload
             })
             .execute();
+        logger.trace("Course changelog entry added", {
+            actorId: actor.id,
+            courseId: course.id,
+            payload
+        });
     }
 }

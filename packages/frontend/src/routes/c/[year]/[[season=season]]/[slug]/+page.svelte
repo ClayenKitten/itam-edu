@@ -1,84 +1,10 @@
 <script lang="ts">
     import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath } from "$lib/path";
-    import { format as formatDate } from "date-fns";
     import { courseFilePath } from "itam-edu-common";
+    import CourseUpdateCard from "./CourseUpdateCard.svelte";
 
     let { data } = $props();
-
-    function displayChange(change: (typeof data.changes)[number]): Change {
-        switch (change.payload.kind) {
-            case "user-joined": {
-                let title: string | null = null;
-                if (change.payload.role === "staff") {
-                    title =
-                        change.payload.userId === data.user?.id
-                            ? "Вы стали сотрудником этого курса"
-                            : "Сотрудник добавлен на курс";
-                } else {
-                    title =
-                        change.payload.userId === data.user?.id
-                            ? "Вы поступили на курс"
-                            : "Студент зачислен на курс";
-                }
-                return { icon: "hand-waving", title };
-            }
-            case "user-left": {
-                let title: string | null = null;
-                if (change.payload.userId === data.user?.id) {
-                    title = "Вы покинули курс";
-                } else if (change.payload.role === "staff") {
-                    title = "Сотрудник покинул курс";
-                } else {
-                    title = "Студент покинул курс";
-                }
-                return { icon: "mask-sad", title };
-            }
-            case "lesson-created":
-                return {
-                    icon: "folder-plus",
-                    title: "Урок создан",
-                    href: `/lessons/${change.payload.lessonId}`
-                };
-            case "lesson-schedule-changed":
-                return {
-                    icon: "alarm",
-                    title: "Урок перенесён",
-                    href: `/lessons/${change.payload.lessonId}`
-                };
-            case "homework-created":
-                return {
-                    icon: "books",
-                    title: "Задание создано",
-                    href: `/homeworks/${change.payload.homeworkId}`
-                };
-            case "homework-deadline-changed":
-                return {
-                    icon: "alarm",
-                    title: "Дедлайн задания изменён",
-                    href: `/homeworks/${change.payload.homeworkId}`
-                };
-            case "submission-created": {
-                let href = `/homeworks/${change.payload.homeworkId}`;
-                if (data.user && change.payload.studentId !== data.user.id) {
-                    href += `?student=${change.payload.studentId}`;
-                }
-                return { icon: "scroll", title: "Задание сдано", href };
-            }
-            case "submission-reviewed": {
-                let href = `/homeworks/${change.payload.homeworkId}`;
-                if (data.user && change.payload.studentId !== data.user.id) {
-                    href += `?student=${change.payload.studentId}`;
-                }
-                return { icon: "exam", title: "Задание проверено", href };
-            }
-            default:
-                let guard: never = change.payload;
-                return {} as any;
-        }
-    }
-
-    type Change = { icon: string; title: string; href?: string };
 </script>
 
 <svelte:head>
@@ -151,34 +77,9 @@
             <h3>Обновления по курсу</h3>
         </header>
         <hr class="text-primary-border mt-5" />
-        <ol class="flex flex-col max-h-120 overflow-auto my-5 -m-6 -mb-8">
+        <ol class="flex flex-col max-h-120 overflow-auto mt-5 -mb-6 -mx-6">
             {#each data.changes as change}
-                {@const { icon, title, href } = displayChange(change)}
-                <a
-                    class="flex items-center gap-4 group px-6 py-4"
-                    href={href ? coursePath(data.course) + href : null}
-                >
-                    <i
-                        class={[
-                            `ph ph-${icon}`,
-                            "flex justify-center items-center w-14.5 h-14.5",
-                            "text-[24px] text-primary bg-on-primary rounded-sm",
-                            "border border-primary-border group-hover:border-primary",
-                            "transition-colors duration-100"
-                        ]}
-                    ></i>
-                    <header class="flex flex-col">
-                        <p class="text-lg-medium text-on-background">
-                            {title}
-                        </p>
-                        <p class="text-md-regular text-on-background-muted">
-                            ...
-                        </p>
-                    </header>
-                    <p class="ml-auto text-on-surface-muted">
-                        {formatDate(change.createdAt, "dd.MM.yy / HH:mm")}
-                    </p>
-                </a>
+                <CourseUpdateCard {data} {change} />
             {:else}
                 <div class="self-center flex flex-col items-center gap-2 py-16">
                     <h4 class="text-on-surface-contrast">А где? 🫨</h4>
