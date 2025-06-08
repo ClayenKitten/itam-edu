@@ -48,46 +48,55 @@
     --shadow: 0px 0px 63.44px 0px #00000012;
 
     /* Typography */
+    /** Headers **/
     --text-h1: 48px;
-    --text-h1--line-height: 56.3px;
+    --text-h1--line-height: normal;
     --text-h1--font-weight: 676;
     --text-h1--font-stretch: 135%;
 
     --text-h2: 36px;
-    --text-h2--line-height: 46.88px;
+    --text-h2--line-height: normal;
     --text-h2--font-weight: 676;
     --text-h2--font-stretch: 135%;
 
     --text-h3: 30px;
-    --text-h3--line-height: 30.47px;
+    --text-h3--line-height: normal;
     --text-h3--font-weight: 573;
     --text-h3--font-stretch: 135%;
 
     --text-h4: 24px;
-    --text-h4--line-height: 19.92px;
+    --text-h4--line-height: normal;
     --text-h4--font-weight: 573;
     --text-h4--font-stretch: 135%;
 
     --text-h5: 17px;
-    --text-h5--line-height: 19.92px;
+    --text-h5--line-height: normal;
     --text-h5--font-weight: 573;
     --text-h5--font-stretch: 135%;
 
-    --text-base: 16px;
-    --text-base--line-height: 18.75px;
-    --text-base--font-weight: 400;
+    /** Body **/
+    --text-xl-medium: 20px;
+    --text-xl-medium--line-height: 140%;
+    --text-xl-medium--font-weight: 500;
 
-    --text-button: 15px;
-    --text-button--line-height: 17.58px;
-    --text-button--font-weight: 521;
+    --text-lg-medium: 17px;
+    --text-lg-medium--line-height: 140%;
+    --text-lg-medium--font-weight: 500;
+    --text-lg-regular: 17px;
+    --text-lg-regular--line-height: 140%;
+    --text-lg-regular--font-weight: 400;
 
-    --text-comment: 20px;
-    --text-comment--line-height: 23.4px;
-    --text-comment--font-weight: 500;
+    --text-md-medium: 15px;
+    --text-md-medium--font-weight: 500;
+    --text-md-regular: 15px;
+    --text-md-regular--font-weight: 400;
 
-    --text-date: 14px;
-    --text-date--line-height: 16.4px;
-    --text-date--font-weight: 400;
+    --text-sm-medium: 13px;
+    --text-sm-regular--line-height: 18px;
+    --text-sm-medium--font-weight: 500;
+    --text-sm-regular: 13px;
+    --text-sm-regular--line-height: 18px;
+    --text-sm-regular--font-weight: 400;
 }
 
 @layer base {
@@ -142,9 +151,9 @@
         height: 44px;
         padding: 0 20px;
 
-        font-size: var(--text-button);
-        line-height: var(--text-button--line-height);
-        font-weight: var(--text-button--font-weight);
+        font-size: var(--text-lg-medium);
+        line-height: var(--text-lg-medium--line-height);
+        font-weight: var(--text-lg-medium--font-weight);
 
         color: var(--color-on-primary);
         background-color: var(--color-primary);
@@ -154,10 +163,18 @@
 
         cursor: pointer;
 
+        &.big {
+            height: 68px;
+            font-size: var(--text-xl-medium);
+            line-height: var(--text-xl-medium--line-height);
+            font-weight: var(--text-xl-medium--font-weight);
+        }
+
         &.secondary {
             color: var(--color-primary);
             background-color: var(--color-on-primary);
             border-color: var(--color-on-primary);
+
             &:hover {
                 border-color: var(--color-primary);
             }
@@ -167,11 +184,12 @@
             color: var(--color-on-surface-muted);
             background-color: var(--color-on-surface-disabled);
             border-color: var(--color-on-surface-disabled);
+            cursor: default;
+
             &:hover {
                 background-color: var(--color-on-surface-disabled);
                 border-color: var(--color-on-surface-disabled);
             }
-            cursor: default;
         }
     }
 
@@ -251,7 +269,7 @@ body:has(.modal[open]) {
 }
 
 body {
-    font-size: var(--text-base);
-    line-height: var(--text-base--line-height);
-    font-weight: var(--text-base--font-weight);
+    font-size: var(--text-lg-regular);
+    line-height: var(--text-lg-regular--line-height);
+    font-weight: var(--text-lg-regular--font-weight);
 }

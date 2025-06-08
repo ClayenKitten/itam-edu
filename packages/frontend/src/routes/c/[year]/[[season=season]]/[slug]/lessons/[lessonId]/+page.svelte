@@ -63,7 +63,7 @@
             {/if}
         </header>
         {#if data.lesson.schedule}
-            <p class="text-date text-on-background-muted">
+            <p class="text-md-regular text-on-background-muted">
                 {formatLessonSchedule(data.lesson.schedule)}
             </p>
         {/if}

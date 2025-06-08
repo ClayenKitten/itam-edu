@@ -21,7 +21,7 @@
             <h2>Новый урок</h2>
         {/if}
         {#if lesson.schedule}
-            <p class="text-date text-on-surface-muted">
+            <p class="text-md-regular text-on-surface-muted">
                 {formatLessonSchedule(lesson.schedule)}
             </p>
         {/if}

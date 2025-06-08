@@ -156,11 +156,13 @@
                             "transition-colors duration-100"
                         ]}
                     ></i>
-                    <header class="flex flex-col gap-1.5">
-                        <p class="text-comment text-on-background">
+                    <header class="flex flex-col">
+                        <p class="text-lg-medium text-on-background">
                             {title}
                         </p>
-                        <p class="text-base text-on-background-muted">...</p>
+                        <p class="text-md-regular text-on-background-muted">
+                            ...
+                        </p>
                     </header>
                     <p class="ml-auto text-on-surface-muted">
                         {formatDate(change.createdAt, "dd.MM.yy / HH:mm")}

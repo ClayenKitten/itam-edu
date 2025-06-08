@@ -27,8 +27,10 @@
         ]}
     >
         <div class="flex flex-col gap-1.75">
-            <span class="text-comment">{title}</span>
-            <span class="text-date">{subtitle}</span>
+            <span class="text-xl-medium text-on-surface">{title}</span>
+            <span class="text-sm-regular text-on-surface-muted">
+                {subtitle}
+            </span>
         </div>
         <menu
             class="flex gap-4 text-on-surface-muted group-hover:text-on-surface"

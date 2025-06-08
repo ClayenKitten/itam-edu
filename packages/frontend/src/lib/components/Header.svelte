@@ -90,7 +90,7 @@
                     alt=""
                 />
             {:else}
-                <span class="text-on-primary text-comment">
+                <span class="text-on-primary text-md-medium">
                     {user.displayName[0]}
                 </span>
             {/if}

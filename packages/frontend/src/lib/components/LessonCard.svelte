@@ -22,7 +22,10 @@
         "transition-colors duration-100"
     ]}
 >
-    <div class="w-full h-[200px] mb-3 rounded-md overflow-hidden">
+    <div
+        class="w-full h-[200px] mb-3 rounded-md overflow-hidden"
+        aria-hidden="true"
+    >
         {#if lesson.banner}
             <img
                 class="w-full h-full overflow-hidden object-cover"
@@ -40,10 +43,10 @@
     <header class="flex justify-between items-center mb-2">
         <h4>Урок {position}</h4>
         {#if lesson.schedule}
-            <span class="text-date text-on-surface-muted">
+            <span class="text-md-regular text-on-surface-muted">
                 {formatDate(lesson.schedule.date, "dd.MM.yy")}
             </span>
         {/if}
     </header>
-    <p class="text-base text-on-surface-muted">{lesson.title}</p>
+    <p class="text-md-regular text-on-surface-muted">{lesson.title}</p>
 </a>

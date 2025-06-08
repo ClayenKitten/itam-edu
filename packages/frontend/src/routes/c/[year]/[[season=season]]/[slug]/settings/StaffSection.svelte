@@ -41,7 +41,7 @@
                                 alt=""
                             />
                         {:else}
-                            <span class="text-on-primary text-comment">
+                            <span class="text-on-primary text-md-medium">
                                 {staffMember.tgUsername[0]}
                             </span>
                         {/if}
@@ -58,7 +58,7 @@
                             {/if}
                         </h4>
                         <a
-                            class="text-primary text-date hover:underline"
+                            class="text-primary text-md-regular hover:underline"
                             href={`https://t.me/${staffMember.tgUsername}`}
                             target="_blank"
                         >

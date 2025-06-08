@@ -73,7 +73,7 @@
         class="relative flex flex-col gap-7.5 px-6 py-5.5 rounded-xl bg-surface shadow"
     >
         <a
-            class="flex items-center h-min gap-2 text-h4 text-primary"
+            class="flex items-center h-min gap-2 text-h5 text-primary"
             href="{coursePath(data.course)}/homeworks"
         >
             <i class="ph ph-caret-left text-[16px]"></i>
@@ -81,14 +81,14 @@
         </a>
         <header class="flex flex-col gap-2">
             <h2>{data.homework.title}</h2>
-            <h4 class="text-on-surface-muted">
+            <h5 class="text-on-surface-muted">
                 {#if data.homework.deadline}
                     До
                     {formatDate(data.homework.deadline, "dd.MM HH:mm")}
                 {:else}
                     Без дедлайна
                 {/if}
-            </h4>
+            </h5>
             {#if canEdit}
                 <div class="absolute top-5.5 right-6">
                     <IconButton
@@ -112,7 +112,7 @@
                     <a
                         class={[
                             "flex items-center gap-2.5 w-min h-10 px-5 text-nowrap",
-                            "text-primary text-button bg-on-primary rounded-2xs",
+                            "text-primary text-md-medium bg-on-primary rounded-2xs",
                             "border border-on-primary hover:border-primary transition-colors duration-100"
                         ]}
                         href="{coursePath(data.course)}/lessons/{lesson.id}"
@@ -168,7 +168,9 @@
                                         alt=""
                                     />
                                 {:else}
-                                    <span class="text-on-primary text-comment">
+                                    <span
+                                        class="text-on-primary text-md-medium"
+                                    >
                                         {user.tgUsername[0]}
                                     </span>
                                 {/if}
@@ -185,7 +187,7 @@
                         <div class="shrink-0 break-words text-balance">
                             {message.content}
                         </div>
-                        <footer class="text-date text-on-surface-muted">
+                        <footer class="text-md-regular text-on-surface-muted">
                             {formatDate(message.sentAt, "dd.MM.yy HH:mm")}
                         </footer>
                     </li>
@@ -195,7 +197,7 @@
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <label
             class={[
-                "flex items-center gap-3 w-full min-h-15 px-5 text-comment text-on-surface-muted",
+                "flex items-center gap-3 w-full min-h-15 px-5 text-lg-medium text-on-surface-muted",
                 "bg-surface border border-on-primary focus-within:border-primary rounded-sm shadow"
             ]}
             onkeydown={e => {
@@ -248,7 +250,10 @@
 {#snippet additionalSidebar()}
     <header class="sticky top-0 flex flex-col gap-4 px-4 pb-4 pt-7 bg-surface">
         <h3>Ответы на задания</h3>
-        <input class="input text-date h-9 rounded-xs" placeholder="Поиск..." />
+        <input
+            class="input text-md-medium h-9 rounded-xs px-3"
+            placeholder="Поиск..."
+        />
     </header>
     <nav class="flex flex-col gap-2 m-4">
         {#each data.submissions ?? [] as submission}
@@ -276,7 +281,7 @@
                                 alt=""
                             />
                         {:else}
-                            <span class="text-on-primary text-comment">
+                            <span class="text-on-primary text-md-medium">
                                 {submission.student.tgUsername[0]}
                             </span>
                         {/if}
@@ -299,7 +304,7 @@
                 <a
                     class={[
                         "flex gap-2 justify-between items-center px-3 py-2.5 ",
-                        "text-date bg-on-primary rounded-2xs border border-on-primary",
+                        "text-md-regular bg-on-primary rounded-2xs border border-on-primary",
                         "hover:border-primary transition-colors duration-100",
                         active ? "bg-surface border-surface" : ""
                     ]}

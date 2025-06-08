@@ -38,9 +38,9 @@
         {/if}
     </div>
     <header class="flex justify-between items-center mb-2.5">
-        <h4 class="text-comment">{course.title}</h4>
+        <h4>{course.title}</h4>
     </header>
-    <p class="text-base text-on-surface-muted line-clamp-3 text-ellipsis">
+    <p class="text-md-regular text-on-surface-muted line-clamp-3 text-ellipsis">
         {course.description}
     </p>
 </a>

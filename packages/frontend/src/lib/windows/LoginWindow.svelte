@@ -62,18 +62,17 @@
         <h2 class="self-center">Вход</h2>
     </header>
     <label class="flex flex-col gap-1.5">
-        <span class="text-on-surface-muted text-button">Код</span>
+        <span class="text-md-medium text-on-surface-muted"
+            >Код от телеграм-бота</span
+        >
         <input
-            class="h-17 text-on-background text-comment px-5 border border-primary rounded-sm"
+            class="h-17 text-on-background text-lg-regular px-5 border border-primary rounded-sm"
             bind:value={code}
             bind:this={input}
-            placeholder="Код от телеграм-бота"
         />
     </label>
-    <button class="btn h-17 text-comment" disabled={!code} onclick={login}>
-        Войти
-    </button>
-    <footer class="text-comment text-center">
+    <button class="btn big" disabled={!code} onclick={login}> Войти </button>
+    <footer class="text-xl-medium text-center">
         Напишите
         <a
             class="text-primary underline"

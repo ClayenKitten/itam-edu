@@ -77,12 +77,10 @@
             {/each}
         {/key}
     </ul>
-    <footer class="flex gap-5 text-comment">
-        <button class="grow-1 h-17 btn secondary text-comment" onclick={close}>
+    <footer class="flex gap-5">
+        <button class="grow-1 btn big secondary" onclick={close}>
             Отменить
         </button>
-        <button class="grow-1 h-17 btn text-comment" onclick={save}>
-            Сохранить
-        </button>
+        <button class="grow-1 btn big" onclick={save}> Сохранить </button>
     </footer>
 </dialog>

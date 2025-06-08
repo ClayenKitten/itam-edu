@@ -36,7 +36,7 @@
     ]}
 >
     <header
-        class="flex items-center w-full h-13 text-button bg-surface-tint rounded-xs px-4"
+        class="flex items-center w-full h-13 text-lg-regular bg-surface-tint rounded-xs px-4"
     >
         <select
             class="w-full h-full"
@@ -89,7 +89,7 @@
     <a
         href={prefix + path}
         class={[
-            "flex items-center gap-3 text-button p-2.5 rounded-xs",
+            "flex items-center gap-3 text-md-medium p-2.5 rounded-xs",
             enabled
                 ? "text-on-primary bg-primary"
                 : "text-on-surface bg-transparent hover:bg-surface-tint"

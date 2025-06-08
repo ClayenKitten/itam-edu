@@ -46,11 +46,7 @@
             <span>Название</span>
             <input class="input" bind:value={title} />
         </label>
-        <button
-            class="btn h-15 text-button"
-            disabled={!title}
-            onclick={createCall}
-        >
+        <button class="btn big" disabled={!title} onclick={createCall}>
             Начать звонок
         </button>
     </div>

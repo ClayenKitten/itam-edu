@@ -52,23 +52,19 @@
                                     alt=""
                                 />
                             {:else}
-                                <span class="text-on-primary text-comment">
+                                <span class="text-on-primary text-md-medium">
                                     {staffMember.tgUsername[0]}
                                 </span>
                             {/if}
                         </div>
                         <div class="flex flex-col gap-5 overflow-hidden">
                             <header class="flex flex-col">
-                                <h3 class="text-nowrap">
-                                    {#if staffMember.firstName}
-                                        {staffMember.firstName}
-                                        {staffMember.lastName}
-                                    {:else}
-                                        {staffMember.tgUsername}
-                                    {/if}
-                                </h3>
+                                <h4 class="text-nowrap">
+                                    {staffMember.firstName}
+                                    {staffMember.lastName}
+                                </h4>
                                 <a
-                                    class="text-primary text-date hover:underline"
+                                    class="text-primary text-md-regular hover:underline"
                                     href={`https://t.me/${staffMember.tgUsername}`}
                                 >
                                     @{staffMember.tgUsername}
