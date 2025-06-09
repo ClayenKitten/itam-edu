@@ -1,12 +1,14 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import type { Course, CoursePartial } from "$lib/types";
-    import type { CalendarEvent } from "itam-edu-common";
+    import type { CoursePartial } from "$lib/types";
     import CourseCard from "./CourseCard.svelte";
-    import { coursePath } from "$lib/path";
-    import { format as formatDate } from "date-fns";
+    import TinyCalendar from "./TinyCalendar.svelte";
+    import EventsList from "./EventsList.svelte";
 
     let { data } = $props();
+
+    let highlightedDate: Date | null = $state(null);
+    let selectedDate: Date | null = $state(null);
 
     let filterKind: "my" | "active" | "archive" = $state("my");
     let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
@@ -22,19 +24,6 @@
         }
     });
     let courses = $derived(data.courses.filter(filter));
-
-    const eventToHref = (course: CoursePartial, event: CalendarEvent) => {
-        switch (event.kind) {
-            case "homework":
-                return `${coursePath(course)}/homeworks/${event.id}`;
-            case "lesson":
-                return `${coursePath(course)}/lessons/${event.id}`;
-            default:
-                let _: never = event;
-                break;
-        }
-        return coursePath(course) ?? "/home";
-    };
 </script>
 
 <svelte:head>
@@ -54,47 +43,18 @@
         <aside
             class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
         >
-            <h5>Ближайшие события</h5>
-            <ul class="flex flex-col gap-3">
-                {#each data.calendar as event}
-                    {@const course = data.courses.find(
-                        c => c.id === event.courseId
-                    )!}
-                    {@const href = eventToHref(course, event)}
-                    <a
-                        class="flex items-center gap-2 p-2 bg-surface-tint rounded-sm"
-                        {href}
-                    >
-                        <div class="flex flex-col border-r border-primary p-2">
-                            <span class="text-on-surface">
-                                {formatDate(event.datetime, "dd.MM")}
-                            </span>
-                            <span class="text-on-surface-muted">
-                                {formatDate(event.datetime, "HH.mm")}
-                            </span>
-                        </div>
-                        <div
-                            class="flex flex-col whitespace-nowrap overflow-hidden"
-                        >
-                            <span
-                                class="text-on-surface overflow-hidden overflow-ellipsis"
-                            >
-                                {course.title}
-                            </span>
-                            <span
-                                class="text-on-surface-muted overflow-hidden overflow-ellipsis"
-                            >
-                                {event.title}
-                            </span>
-                        </div>
-                    </a>
-                {/each}
-            </ul>
+            <TinyCalendar
+                bind:selected={selectedDate}
+                bind:highlighted={highlightedDate}
+            />
+            <EventsList
+                {data}
+                bind:selected={selectedDate}
+                bind:highlighted={highlightedDate}
+            />
         </aside>
         <section
-            class={[
-                "grid grid-cols-[repeat(auto-fill,317px)] items-start gap-x-4 gap-y-6.5"
-            ]}
+            class="grid grid-cols-[repeat(auto-fill,317px)] h-min items-start gap-x-4 gap-y-6.5"
         >
             {#each courses as course}
                 <CourseCard {course} />
