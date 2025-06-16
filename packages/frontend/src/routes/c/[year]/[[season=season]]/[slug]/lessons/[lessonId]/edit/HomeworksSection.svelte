@@ -5,6 +5,7 @@
     import { SvelteSet } from "svelte/reactivity";
     import ReorderableCard from "$lib/components/ReorderableCard.svelte";
     import { sortable } from "$lib/actions/sortable.svelte";
+    import HomeworkAttachmentWindow from "$lib/windows/HomeworkAttachmentWindow.svelte";
 
     let {
         course,
@@ -23,7 +24,15 @@
     $effect(() => {
         modifiedHomeworks = sorted.filter(id => !deleted.has(id));
     });
+
+    let homeworkAttachmentWindow: HomeworkAttachmentWindow;
 </script>
+
+<HomeworkAttachmentWindow
+    bind:this={homeworkAttachmentWindow}
+    {course}
+    bind:modifiedHomeworks
+/>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
@@ -56,7 +65,7 @@
             {/key}
         </ul>
     {/if}
-    <button class="btn w-min">
+    <button class="btn w-min" onclick={() => homeworkAttachmentWindow.show()}>
         Добавить
         <i class="ph ph-plus text-[18px]"></i>
     </button>
