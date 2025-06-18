@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Course } from "$lib/types";
     import { formatDate } from "date-fns";
 
     export function show() {
@@ -6,12 +7,18 @@
     }
 
     function addHomework(id: string) {
-        modifiedHomeworks.push(id);
+        onHomeworkAdded(id);
         dialog.close();
     }
 
     let dialog: HTMLDialogElement;
-    let { course, modifiedHomeworks = $bindable() } = $props();
+    let { course, addedHomeworks, onHomeworkAdded }: Props = $props();
+
+    type Props = {
+        course: Course;
+        addedHomeworks: string[];
+        onHomeworkAdded: (id: string) => void;
+    };
 </script>
 
 <dialog
@@ -30,27 +37,29 @@
         >
             <i class="ph ph-x text-[12.5px]"></i>
         </button>
-        <h2 class="self-center">Прикрепление задания</h2>
+        <h4>Прикрепление задания</h4>
     </header>
 
     <ul class="flex flex-col gap-2.5">
-        {#each course.homeworks as homework}
-            {#if !modifiedHomeworks.includes(homework.id)}
+        {#each course.homeworks as homework (homework.id)}
+            {#if !addedHomeworks.includes(homework.id)}
                 <button
                     onclick={() => addHomework(homework.id)}
-                    class="flex grow items-center justify-between px-5 py-4"
+                    class="flex grow items-center justify-between p-5 shadow rounded-xs"
                 >
                     <div class="flex flex-col gap-3 items-start">
                         <header>
-                            <h4>{homework.title}</h4>
+                            <h5>{homework.title}</h5>
                         </header>
-                        <p class="text-on-surface-contrast opacity-50">
+                        <p
+                            class="text-md-regular text-on-surface-contrast opacity-50"
+                        >
                             {#if homework.deadline}
-                                <span>До</span>
+                                <span>Дедлайн до</span>
                                 <span>
                                     {formatDate(
                                         homework.deadline,
-                                        "dd.MM.yy / HH:mm"
+                                        "dd.MM.yy HH:mm"
                                     )}
                                 </span>
                             {:else}

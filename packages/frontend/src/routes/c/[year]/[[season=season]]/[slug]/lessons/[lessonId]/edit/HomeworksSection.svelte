@@ -5,7 +5,7 @@
     import { SvelteSet } from "svelte/reactivity";
     import ReorderableCard from "$lib/components/ReorderableCard.svelte";
     import { sortable } from "$lib/actions/sortable.svelte";
-    import HomeworkAttachmentWindow from "$lib/windows/HomeworkAttachmentWindow.svelte";
+    import HomeworkAttachmentWindow from "./HomeworkAttachmentWindow.svelte";
 
     let {
         course,
@@ -21,6 +21,7 @@
 
     let sorted: string[] = $state(homeworks.map(h => h.id));
     let deleted: SvelteSet<string> = new SvelteSet();
+
     $effect(() => {
         modifiedHomeworks = sorted.filter(id => !deleted.has(id));
     });
@@ -31,7 +32,8 @@
 <HomeworkAttachmentWindow
     bind:this={homeworkAttachmentWindow}
     {course}
-    bind:modifiedHomeworks
+    addedHomeworks={sorted}
+    onHomeworkAdded={id => sorted.push(id)}
 />
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
@@ -42,14 +44,17 @@
             Одно и то же задание может быть прикреплено к нескольким урокам.
         </p>
     </header>
-    {#if homeworks.length > 0}
-        <ul
-            class="flex flex-col gap-5 w-full"
-            use:sortable={{ handle: ".dnd-handle", animation: 200 }}
-            onsortchanged={e => (sorted = e.detail.sortable.toArray())}
-        >
-            {#key homeworks}
-                {#each homeworks as homework (homework.id)}
+    {#if sorted.length > 0}
+        {#key sorted}
+            <ul
+                class="flex flex-col gap-5 w-full"
+                use:sortable={{ handle: ".dnd-handle", animation: 200 }}
+                onsortchanged={e => (sorted = e.detail.sortable.toArray())}
+            >
+                {#each sorted as homeworkId (homeworkId)}
+                    {@const homework = course.homeworks.find(
+                        h => h.id === homeworkId
+                    )!}
                     <ReorderableCard
                         id={homework.id}
                         title={homework.title}
@@ -62,11 +67,16 @@
                         onRecover={() => deleted.delete(homework.id)}
                     />
                 {/each}
-            {/key}
-        </ul>
+            </ul>
+        {/key}
     {/if}
-    <button class="btn w-min" onclick={() => homeworkAttachmentWindow.show()}>
-        Добавить
-        <i class="ph ph-plus text-[18px]"></i>
-    </button>
+    {#if sorted.length !== course.homeworks.length}
+        <button
+            class="btn w-min"
+            onclick={() => homeworkAttachmentWindow.show()}
+        >
+            Добавить
+            <i class="ph ph-plus text-[18px]"></i>
+        </button>
+    {/if}
 </section>
