@@ -67,18 +67,21 @@ While a non-containerized setup on Linux is theoretically possible, it is not of
 
 Development happens inside a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers). VS Code is a recommended editor of choice.
 
-- Clone repository and open it in a devcontainer
-- Install dependencies via `npm ci`
-- Start devtools and packages in development mode via `Run and Debug` sidebar tab
-- Run `task` in the Terminal to see the list of available commands.
+1. Clone repository and open it in a devcontainer
+1. Install dependencies via `npm ci`
+1. Create `.env` file in project root and configure values that are omitted in [.devcontainer/.env.dev](.devcontainer/.env.dev)
+1. Use VS Code `Run and Debug` sidebar tab to start packages
+1. All URLs listed below should be accessible via your browser
 
-| Service               | URL                     |
-| --------------------- | ----------------------- |
-| **Packages**          |                         |
-| itam-edu-api          | http://api.localhost    |
-| itam-edu-frontend     | http://www.localhost    |
-| **Development tools** |                         |
-| Navigation            | http://localhost        |
-| Database UI           | http://db.localhost     |
-| Minio UI              | http://s3.localhost     |
-| BullMQ UI             | http://bullmq.localhost |
+Run `task` in the Terminal to see the list of available commands.
+
+| Service               | URL                      |
+| --------------------- | ------------------------ |
+| **Packages**          |                          |
+| itam-edu-frontend     | http://www.localhost     |
+| itam-edu-api          | http://www.localhost/api |
+| **Development tools** |                          |
+| Navigation            | http://localhost         |
+| Database UI           | http://db.localhost      |
+| Minio UI              | http://s3.localhost      |
+| BullMQ UI             | http://bullmq.localhost  |

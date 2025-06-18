@@ -1,9 +1,9 @@
-www.example.com {
+example.com {
+    handle_path /api/* {
+        reverse_proxy api:3000
+    }
+
     handle {
         reverse_proxy frontend:3000
     }
-}
-
-api.example.com {
-    reverse_proxy api:3000
 }

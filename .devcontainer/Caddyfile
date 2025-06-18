@@ -7,6 +7,9 @@ http://localhost {
     }
 }
 http://www.localhost {
+    handle_path /api/* {
+        reverse_proxy devcontainer:5151
+    }
     handle {
         reverse_proxy devcontainer:5150
     }
@@ -14,12 +17,7 @@ http://www.localhost {
         respond "{err.status_code} {err.status_text}"
     }
 }
-http://api.localhost {
-    reverse_proxy devcontainer:5151
-    handle_errors {
-        respond "{err.status_code} {err.status_text}"
-    }
-}
+
 http://db.localhost {
     reverse_proxy dbgate:3000
     handle_errors {
