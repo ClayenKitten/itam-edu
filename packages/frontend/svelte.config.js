@@ -6,7 +6,7 @@ const config = {
     preprocess: vitePreprocess(),
     kit: {
         adapter: adapter(),
-        env: { publicPrefix: "ITAM_EDU_FRONTEND_" }
+        env: { publicPrefix: "ITAMEDU_PUBLIC_" }
     }
 };
 

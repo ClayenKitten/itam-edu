@@ -13,7 +13,7 @@
     let room = new RoomState();
     let focus: ParticipantState | null = $state(null);
     let token: string | undefined = $state();
-    const url = env.ITAM_EDU_FRONTEND_LIVEKIT_URL!;
+    const url = env.ITAMEDU_PUBLIC_LIVEKIT_URL!;
 
     onMount(() => {
         return () => room.disconnect();

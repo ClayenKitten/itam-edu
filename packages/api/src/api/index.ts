@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Elysia, type AnyElysia } from "elysia";
 
 import logger from "../logger";
-import { AppConfig } from "../config";
+import type { AppConfig } from "itam-edu-common/config";
 import { UserRepository } from "../users/repository";
 
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
@@ -25,6 +25,7 @@ export class ApiServer {
     private elysia: Promise<AnyElysia>;
 
     public constructor(
+        @inject("AppConfig")
         protected config: AppConfig,
         protected userRepo: UserRepository,
         protected userController: UserController,
@@ -48,11 +49,11 @@ export class ApiServer {
         elysia
             .onStart(() =>
                 logger.info("Started API server", {
-                    port: this.config.api.port
+                    port: this.config.server.ports.backend
                 })
             )
             .onStop(() => logger.info("Stopped API server"))
-            .listen({ port: this.config.api.port });
+            .listen({ port: this.config.server.ports.backend });
     }
 
     /** Stops serving. */

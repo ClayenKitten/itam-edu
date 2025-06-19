@@ -1,7 +1,7 @@
 import type { User } from "itam-edu-common";
 import { Notification } from "../notifications";
 import { container } from "..";
-import { AppConfig } from "../config";
+import type { AppConfig } from "itam-edu-common/config";
 
 export class LoginNotification extends Notification {
     public constructor(protected user: User) {
@@ -12,10 +12,10 @@ export class LoginNotification extends Notification {
     public readonly audience: string;
 
     public get html() {
-        const config = container.get(AppConfig);
+        const config: AppConfig = container.get("AppConfig");
         return [
             `<b>🔐 Новый вход в платформу ITAM Education</b>`,
-            `Это не вы? Напишите @${config.tg.supportUsername}!`
+            `Это не вы? Напишите @${config.telegram.supportUsername}!`
         ].join("\n\n");
     }
 }

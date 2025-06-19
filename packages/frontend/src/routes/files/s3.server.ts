@@ -3,15 +3,14 @@ import * as Minio from "minio";
 
 export class S3Client {
     public constructor() {
+        const url = new URL(env.ITAMEDU_S3_ENDPOINT!);
         if (!cache) {
             cache = new Minio.Client({
-                endPoint: env.ITAM_EDU_S3_PROXY_ENDPOINT!,
-                port: env.ITAM_EDU_S3_PROXY_PORT
-                    ? Number(env.ITAM_EDU_S3_PROXY_PORT)
-                    : undefined,
-                useSSL: !(env.ITAM_EDU_S3_PROXY_SSL! === "false"),
-                accessKey: env.ITAM_EDU_S3_PROXY_ACCESS_KEY!,
-                secretKey: env.ITAM_EDU_S3_PROXY_SECRET_KEY!
+                endPoint: url.hostname,
+                port: url.port ? Number(url.port) : undefined,
+                useSSL: url.protocol !== "http:",
+                accessKey: env.ITAMEDU_S3_ACCESS_KEY!,
+                secretKey: env.ITAMEDU_S3_SECRET_KEY!
             });
         }
         this.client = cache;
@@ -31,7 +30,7 @@ export class S3Client {
         request.headers.delete("Host");
 
         const url = await this.client.presignedGetObject(
-            env.ITAM_EDU_S3_PROXY_BUCKET!,
+            env.ITAMEDU_S3_BUCKET!,
             fileName
         );
         return await fetch(url, { headers: request.headers });

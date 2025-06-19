@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
 import { UnauthorizedError } from "../../api/errors";
-import { AppConfig } from "../../config";
 import { NotificationSender } from "../../notifications";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
@@ -14,7 +13,6 @@ import { LessonRescheduleNotification } from "./notifications";
 @injectable()
 export class LessonService {
     public constructor(
-        protected config: AppConfig,
         protected lessonRepo: LessonRepository,
         protected notificationSender: NotificationSender,
         protected changelog: CourseChangelog

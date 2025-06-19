@@ -2,7 +2,6 @@ import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 import { authenticationPlugin } from "../api/plugins/authenticate";
-import { AppConfig } from "../config";
 import { UserRepository } from "./repository";
 import { Session, SessionRepository } from "./session";
 import { LoginCodeRepository } from "./login";
@@ -13,7 +12,6 @@ import { LoginNotification } from "./notifications";
 @injectable()
 export class UserController {
     public constructor(
-        protected config: AppConfig,
         protected userRepo: UserRepository,
         protected sessionRepo: SessionRepository,
         protected loginCodeRepo: LoginCodeRepository,

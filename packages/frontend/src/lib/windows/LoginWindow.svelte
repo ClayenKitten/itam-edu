@@ -77,9 +77,9 @@
         <a
             class="text-primary underline"
             target="_blank"
-            href="https://t.me/{env.ITAM_EDU_FRONTEND_TG_USERNAME}?start=login"
+            href="https://t.me/{env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}?start=login"
         >
-            @{env.ITAM_EDU_FRONTEND_TG_USERNAME}
+            @{env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}
         </a>, чтобы получить код
     </footer>
 </dialog>

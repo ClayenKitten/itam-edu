@@ -1,13 +1,16 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Redis as IORedis } from "ioredis";
 import { Pool, createPool } from "generic-pool";
-import { AppConfig } from "../config";
+import type { AppConfig } from "itam-edu-common/config";
 import logger from "../logger";
 
 /** Redis database. */
 @injectable()
 export class Redis {
-    public constructor(config: AppConfig) {
+    public constructor(
+        @inject("AppConfig")
+        config: AppConfig
+    ) {
         this.connectionString = config.redis.connectionString;
 
         this.pool = createPool<IORedis>(

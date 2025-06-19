@@ -3,7 +3,6 @@ import type { User } from "itam-edu-common";
 import { BadRequestError, ForbiddenError } from "../../api/errors";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
-import { AppConfig } from "../../config";
 import { SubmissionRepository } from "./repository";
 import { NotificationSender } from "../../notifications";
 import {
@@ -15,7 +14,6 @@ import { CourseChangelog } from "../changes";
 @injectable()
 export class SubmissionService {
     public constructor(
-        protected config: AppConfig,
         protected submissionRepo: SubmissionRepository,
         protected notificationSender: NotificationSender,
         protected courseChangelog: CourseChangelog

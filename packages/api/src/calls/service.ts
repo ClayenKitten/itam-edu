@@ -1,13 +1,16 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import type { User } from "itam-edu-common";
+import type { AppConfig } from "itam-edu-common/config";
 import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 import { randomUUID } from "crypto";
 import { Call, type CallMetadata } from "./entity";
-import { AppConfig } from "../config";
 
 @injectable()
 export class CallService {
-    public constructor(protected config: AppConfig) {
+    public constructor(
+        @inject("AppConfig")
+        protected config: AppConfig
+    ) {
         this.client = new RoomServiceClient(
             config.livekit.url,
             config.livekit.apiKey,

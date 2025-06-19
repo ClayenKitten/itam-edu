@@ -1,17 +1,40 @@
 import { Application } from "./app";
-import { AppConfig } from "./config";
+import {
+    type AppConfig,
+    ConfigError,
+    createConfigFromEnv
+} from "itam-edu-common/config";
 import logger from "./logger";
 import { Container } from "inversify";
+import { exit } from "process";
 
+// DI container
 export const container = new Container({
     autobind: true,
     defaultScope: "Singleton"
 });
-container.bind(AppConfig).toConstantValue(AppConfig.createFromEnv());
 
+// Config
+let config: AppConfig;
+try {
+    config = createConfigFromEnv();
+} catch (e) {
+    if (e instanceof ConfigError) {
+        logger.fatal("Invalid configuration provided", { fields: e.fields });
+    } else {
+        logger.fatal("Unknown error during configuration gathering", {
+            error: e
+        });
+    }
+    exit(1);
+}
+container.bind<AppConfig>("AppConfig").toConstantValue(createConfigFromEnv());
+
+// Application
 const application = container.get(Application);
 await application.start();
 
+// Signals
 async function handleSignal(signal: NodeJS.Signals) {
     logger.warning(`Received ${signal}`);
     try {

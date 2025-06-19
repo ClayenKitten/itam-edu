@@ -1,16 +1,16 @@
-import { injectable } from "inversify";
-import { AppConfig } from "../config";
+import { inject, injectable } from "inversify";
 import { S3Client } from "bun";
+import type { AppConfig } from "itam-edu-common/config";
 
 /** S3 client. */
 @injectable()
 export class S3 {
-    public constructor(protected config: AppConfig) {
-        let endpoint =
-            (config.s3.useSSL ? "https" : "http") + "://" + config.s3.endpoint;
-        if (config.s3.port) endpoint += `:${config.s3.port}`;
+    public constructor(
+        @inject("AppConfig")
+        protected config: AppConfig
+    ) {
         this.client = new S3Client({
-            endpoint,
+            endpoint: config.s3.endpoint,
             accessKeyId: config.s3.accessKey,
             secretAccessKey: config.s3.secretKey,
             bucket: config.s3.bucket

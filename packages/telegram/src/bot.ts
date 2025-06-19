@@ -13,7 +13,7 @@ export default class TelegramBot {
     public constructor(token: string) {
         this.grammy = new Grammy(token);
 
-        const connection = { url: env.ITAM_EDU_API_REDIS_CONNECTION_STRING! };
+        const connection = { url: env.ITAMEDU_REDIS_CONNECTION_STRING! };
         this.queue = new Queue(queues.telegram.INBOUND_PRIVATE_MESSAGE_QUEUE, {
             connection
         });

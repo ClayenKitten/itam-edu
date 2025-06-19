@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { UserRepository } from "./users/repository";
 import { TelegramBot } from "./telegram";
-import { AppConfig } from "./config";
+import type { AppConfig } from "itam-edu-common/config";
 
 export abstract class Notification {
     /** Ids of users to whom the notification should be sent. */
@@ -28,6 +28,7 @@ export type NotificationLink = {
 @injectable()
 export class NotificationSender {
     public constructor(
+        @inject("AppConfig")
         protected config: AppConfig,
         protected userRepo: UserRepository,
         protected telegramBot: TelegramBot
@@ -51,7 +52,7 @@ export class NotificationSender {
 
     private toFullUrl(link: NotificationLink): NotificationLink {
         if (link.url.startsWith("/")) {
-            link.url = this.config.webUrl + link.url;
+            link.url = "https://" + this.config.server.hostname + link.url;
         }
         return link;
     }

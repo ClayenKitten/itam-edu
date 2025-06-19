@@ -5,10 +5,7 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
     console.log(`Fetch ${request.url}`);
     const cookies = event.request.headers.get("cookie");
     const token = cookies ? getCookie(cookies, "itam-edu-token") : undefined;
-    if (
-        request.url.startsWith(env.ITAM_EDU_FRONTEND_API_URL_SERVER!) &&
-        token
-    ) {
+    if (request.url.startsWith(env.ITAMEDU_PUBLIC_API_URL_SERVER!) && token) {
         request.headers.set("authorization", token);
     }
     return fetch(request);
@@ -27,10 +24,8 @@ export const handle: Handle = async ({ event, resolve }) =>
     });
 
 export const init: ServerInit = async () => {
-    if (process.env.ITAM_EDU_FRONTEND_PORT) {
-        process.env.PORT = process.env.ITAM_EDU_FRONTEND_PORT;
+    if (process.env.ITAMEDU_FRONTEND_PORT) {
+        process.env.PORT = process.env.ITAMEDU_FRONTEND_PORT;
     }
-    if (process.env.ITAM_EDU_FRONTEND_HOST) {
-        process.env.HOST = process.env.ITAM_EDU_FRONTEND_HOST;
-    }
+    process.env.HOST = "0.0.0.0";
 };

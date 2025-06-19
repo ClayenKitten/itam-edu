@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Queue, Worker } from "bullmq";
 import { queues, User } from "itam-edu-common";
-import { AppConfig } from "./config";
+import type { AppConfig } from "itam-edu-common/config";
 import { Redis } from "./infra/redis";
 import { UserRepository } from "./users/repository";
 import { LoginCodeRepository } from "./users/login";
@@ -10,6 +10,7 @@ import logger from "./logger";
 @injectable()
 export class TelegramBot {
     public constructor(
+        @inject("AppConfig")
         protected config: AppConfig,
         protected redis: Redis,
         protected userRepo: UserRepository,
@@ -79,7 +80,7 @@ export class TelegramBot {
                 `<b>Привет, ${user.telegram.username}!</b>`,
                 `✅ Код для входа: <code>${code}</code>`,
                 `Истекает через ${Math.ceil(this.loginCodeRepo.EXPIRATION_SECONDS) / 60} минут`,
-                `<a href="${this.config.webUrl}?login&code=${code}">🔗 Войти</a>`
+                `<a href="https://${this.config.server.hostname}?login&code=${code}">🔗 Войти</a>`
             ].join("\n\n")
         );
     }
@@ -90,13 +91,13 @@ export class TelegramBot {
             [
                 "<b>ITAM Education 🎒</b>",
                 "",
-                `Бот-компаньон для <a href="${this.config.webUrl}">образовательной платформы ITAM Education</a>.`,
+                `Бот-компаньон для <a href="https://${this.config.server.hostname}">образовательной платформы ITAM Education</a>.`,
                 "",
                 "<b>💬 Команды</b>",
                 "/login - получить код для входа на платформу",
                 "",
                 "<b>☎️ Поддержка</b>",
-                `@${this.config.tg.supportUsername}`
+                `@${this.config.telegram.supportUsername}`
             ].join("\n")
         );
     }
