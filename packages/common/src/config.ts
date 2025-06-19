@@ -8,8 +8,17 @@ export type AppConfig = typeof appConfigSchema.static;
 export const appConfigSchema = t.Object({
     /** Web server configuration. */
     server: t.Object({
-        /** Public hostname to which the system is deployed. */
-        hostname: t.String({ format: "hostname" }),
+        /**
+         * Public origin to which the system is deployed.
+         *
+         * Domain name and protocol are required. Port and path may be provided if needed.
+         *
+         * ### Examples
+         *
+         * - http://www.localhost
+         * - https://example.com:3000/itamedu
+         * */
+        origin: t.String({ format: "uri" }),
         /**
          * TCP ports to use.
          *
@@ -71,7 +80,7 @@ export const appConfigSchema = t.Object({
 export function createConfigFromEnv(): AppConfig {
     const gatheredConfig = {
         server: {
-            hostname: env.ITAMEDU_HOSTNAME!,
+            origin: env.ITAMEDU_ORIGIN?.replace(/\/+$/, "")!,
             ports: {
                 frontend: Number.parseInt(env.ITAMEDU_FRONTEND_PORT ?? "3000"),
                 backend: Number.parseInt(env.ITAMEDU_BACKEND_PORT ?? "3000")

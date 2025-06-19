@@ -80,7 +80,7 @@ export class TelegramBot {
                 `<b>Привет, ${user.telegram.username}!</b>`,
                 `✅ Код для входа: <code>${code}</code>`,
                 `Истекает через ${Math.ceil(this.loginCodeRepo.EXPIRATION_SECONDS) / 60} минут`,
-                `<a href="https://${this.config.server.hostname}?login&code=${code}">🔗 Войти</a>`
+                `<a href="${this.config.server.origin}?login&code=${code}">🔗 Войти</a>`
             ].join("\n\n")
         );
     }
@@ -91,7 +91,7 @@ export class TelegramBot {
             [
                 "<b>ITAM Education 🎒</b>",
                 "",
-                `Бот-компаньон для <a href="https://${this.config.server.hostname}">образовательной платформы ITAM Education</a>.`,
+                `Бот-компаньон для <a href="${this.config.server.origin}">образовательной платформы ITAM Education</a>.`,
                 "",
                 "<b>💬 Команды</b>",
                 "/login - получить код для входа на платформу",

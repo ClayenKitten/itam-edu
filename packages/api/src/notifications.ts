@@ -52,7 +52,7 @@ export class NotificationSender {
 
     private toFullUrl(link: NotificationLink): NotificationLink {
         if (link.url.startsWith("/")) {
-            link.url = "https://" + this.config.server.hostname + link.url;
+            link.url = this.config.server.origin + link.url;
         }
         return link;
     }
