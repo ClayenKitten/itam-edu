@@ -8,6 +8,7 @@ import { LoginCodeRepository } from "./login";
 import { CalendarQuery, type CalendarFilters } from "./calendar";
 import { NotificationSender } from "../notifications";
 import { LoginNotification } from "./notifications";
+import { Redis } from "../infra/redis";
 
 @injectable()
 export class UserController {
@@ -16,7 +17,8 @@ export class UserController {
         protected sessionRepo: SessionRepository,
         protected loginCodeRepo: LoginCodeRepository,
         protected calendarQuery: CalendarQuery,
-        protected notificationSender: NotificationSender
+        protected notificationSender: NotificationSender,
+        protected redis: Redis
     ) {}
 
     public toElysia() {
@@ -106,6 +108,24 @@ export class UserController {
                             before: t.String({ format: "date-time" })
                         })
                     )
+                }
+            )
+            .get(
+                "/me/notifications",
+                async ({ user }) => {
+                    const notificationStream = await this.redis.exec(r =>
+                        r.xrange(`notifications:${user.id}`, "-", "+")
+                    );
+                    return notificationStream;
+                },
+                {
+                    requireAuthentication: true,
+                    detail: {
+                        summary: "Get current user notifications",
+                        description:
+                            "Returns notifications entries of the current user.",
+                        security: REQUIRE_TOKEN
+                    }
                 }
             );
     }
