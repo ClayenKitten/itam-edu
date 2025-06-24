@@ -10,6 +10,12 @@ export abstract class Notification {
     /** HTML representation of the notification. */
     public abstract readonly html: string;
 
+    /** PhosporIcons icon name. */
+    public abstract readonly icon: string;
+
+    /** Very short notification name. */
+    public abstract title: string;
+
     /**
      * Returns optional links attached to the message.
      *

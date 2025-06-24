@@ -11,6 +11,14 @@ export class LoginNotification extends Notification {
 
     public readonly audience: string;
 
+    public get icon() {
+        return "entrace_icon";
+    }
+
+    public get title() {
+        return `Новый вход в платформу ITAM Education`;
+    }
+
     public get html() {
         const config: AppConfig = container.get("AppConfig");
         return [

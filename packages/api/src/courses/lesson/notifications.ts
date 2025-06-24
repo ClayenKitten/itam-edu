@@ -45,6 +45,14 @@ export class LessonRescheduleNotification extends Notification {
         return lines.join("\n");
     }
 
+    public get icon() {
+        return "reshceduled_icon";
+    }
+
+    public get title() {
+        return `Урок '${this.lesson.info.title}' перенесён.`;
+    }
+
     public override get link(): NotificationLink {
         return {
             text: "🔗 Страница урока",
