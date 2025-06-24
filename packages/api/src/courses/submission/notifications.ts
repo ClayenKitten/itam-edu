@@ -23,6 +23,18 @@ export class SubmissionNotification extends Notification {
         ].join("\n\n");
     }
 
+    public get icon() {
+        return "scroll";
+    }
+
+    public get title() {
+        return `Новый ответ на задание '${this.homework.title}'.`;
+    }
+
+    public get courseId() {
+        return `${this.homework.course}`;
+    }
+
     public override get link(): NotificationLink {
         return {
             text: "🔗 Проверить",
@@ -57,6 +69,22 @@ export class SubmissionReviewNotification extends Notification {
                 `В вашем ответе на задание '${this.homework.title}' есть недочёты.`
             ].join("\n\n");
         }
+    }
+
+    public get icon() {
+        return "exam";
+    }
+
+    public get title() {
+        if (this.accepted) {
+            return `Задание '${this.homework.title}' сдано.`;
+        } else {
+            return `Задание '${this.homework.title}' нужно переделать.`;
+        }
+    }
+
+    public get courseId() {
+        return `${this.homework.course}`;
     }
 
     public override get link(): NotificationLink {
