@@ -19,6 +19,10 @@ export class LoginNotification extends Notification {
         return `Новый вход в платформу ITAM Education`;
     }
 
+    public get courseId() {
+        return ``;
+    }
+
     public get html() {
         const config: AppConfig = container.get("AppConfig");
         return [

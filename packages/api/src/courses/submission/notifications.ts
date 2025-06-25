@@ -31,6 +31,10 @@ export class SubmissionNotification extends Notification {
         return `Новый ответ на задание '${this.homework.title}'.`;
     }
 
+    public get courseId() {
+        return `${this.homework.course}`;
+    }
+
     public override get link(): NotificationLink {
         return {
             text: "🔗 Проверить",
@@ -77,6 +81,10 @@ export class SubmissionReviewNotification extends Notification {
         } else {
             return `Задание '${this.homework.title}' нужно переделать.`;
         }
+    }
+
+    public get courseId() {
+        return `${this.homework.course}`;
     }
 
     public override get link(): NotificationLink {

@@ -16,6 +16,9 @@ export abstract class Notification {
     /** Very short notification name. */
     public abstract title: string;
 
+    /** Identifier of the course. */
+    public abstract courseId: string;
+
     /**
      * Returns optional links attached to the message.
      *
