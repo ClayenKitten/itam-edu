@@ -24,7 +24,7 @@ export class SubmissionNotification extends Notification {
     }
 
     public get icon() {
-        return "submission_icon";
+        return "ph-scroll";
     }
 
     public get title() {
@@ -72,7 +72,7 @@ export class SubmissionReviewNotification extends Notification {
     }
 
     public get icon() {
-        return "submission-review_icon";
+        return "ph-exam";
     }
 
     public get title() {

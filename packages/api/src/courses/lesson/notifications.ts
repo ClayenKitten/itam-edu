@@ -46,7 +46,7 @@ export class LessonRescheduleNotification extends Notification {
     }
 
     public get icon() {
-        return "reshceduled_icon";
+        return "ph-alarm";
     }
 
     public get title() {

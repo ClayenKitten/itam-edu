@@ -12,7 +12,7 @@ export class LoginNotification extends Notification {
     public readonly audience: string;
 
     public get icon() {
-        return "entrace_icon";
+        return "ph-key";
     }
 
     public get title() {
