@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { UserRepository } from "./users/repository";
 import { TelegramBot } from "./telegram";
 import type { AppConfig } from "itam-edu-common/config";
-import type { Redis } from "./infra/redis";
+import { Redis } from "./infra/redis";
 
 export abstract class Notification {
     /** Ids of users to whom the notification should be sent. */
@@ -45,7 +45,7 @@ export class NotificationSender {
         protected redis: Redis
     ) {}
 
-    /** Sends a telegram notification to specified users. */
+    /** Sends a notification to specified users. */
     public async send(notification: Notification): Promise<void> {
         const audience = Array.isArray(notification.audience)
             ? notification.audience
@@ -58,25 +58,19 @@ export class NotificationSender {
             const user = await this.userRepo.getById(userId);
             if (!user) continue;
             await this.telegramBot.send(user, notification.html, link);
-        }
-    }
-
-    /** Sends a notification to specified users. */
-    public async notify(notification: Notification): Promise<void> {
-        const audience = Array.isArray(notification.audience)
-            ? notification.audience
-            : [notification.audience];
-
-        for (const userId of audience) {
-            const user = await this.userRepo.getById(userId);
-            const notificationData = {
-                icon: notification.icon,
-                title: notification.title,
-                course: notification.courseId
-            };
-            if (!user) continue;
             await this.redis.exec(r =>
-                r.xadd(`notifications:${user.id}`, "*", notificationData)
+                r.xadd(
+                    `notifications:${user.id}`,
+                    "MAXLEN",
+                    100,
+                    "*",
+                    "icon",
+                    notification.icon,
+                    "title",
+                    notification.title,
+                    "courseId",
+                    notification.courseId
+                )
             );
         }
     }
