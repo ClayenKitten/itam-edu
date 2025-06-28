@@ -18,7 +18,7 @@ export abstract class Notification {
     public abstract title: string;
 
     /** Identifier of the course. */
-    public abstract courseId: string;
+    public abstract courseId: string | null;
 
     /**
      * Returns optional links attached to the message.
@@ -68,8 +68,9 @@ export class NotificationSender {
                     notification.icon,
                     "title",
                     notification.title,
-                    "courseId",
-                    notification.courseId
+                    ...(notification.courseId
+                        ? ["courseId", notification.courseId]
+                        : [])
                 )
             );
         }

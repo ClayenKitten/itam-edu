@@ -20,7 +20,7 @@ export class LoginNotification extends Notification {
     }
 
     public get courseId() {
-        return ``;
+        return null;
     }
 
     public get html() {
