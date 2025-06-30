@@ -16,6 +16,7 @@ export function docsPlugin() {
                         description: "REST API for ITAM Education platform.",
                         version: process.env.npm_package_version!
                     },
+                    servers: [{ url: "/api" }],
                     components: {
                         securitySchemes: {
                             main: {
