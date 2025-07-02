@@ -117,7 +117,7 @@ export class UserController {
                     detail: {
                         summary: "Get current user notifications",
                         description:
-                            "Returns redis stream notifications entries of the current user.",
+                            "Returns notifications entries of the current user.",
                         security: REQUIRE_TOKEN
                     }
                 }
