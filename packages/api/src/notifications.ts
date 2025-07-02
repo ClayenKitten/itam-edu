@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { UserRepository } from "./users/repository";
 import { TelegramBot } from "./telegram";
 import type { AppConfig } from "itam-edu-common/config";
+import { Redis } from "./infra/redis";
 
 export abstract class Notification {
     /** Ids of users to whom the notification should be sent. */
@@ -9,6 +10,15 @@ export abstract class Notification {
 
     /** HTML representation of the notification. */
     public abstract readonly html: string;
+
+    /** PhosporIcons icon name. */
+    public abstract readonly icon: string;
+
+    /** Very short notification name. */
+    public abstract title: string;
+
+    /** Identifier of the course. */
+    public abstract courseId: string | null;
 
     /**
      * Returns optional links attached to the message.
@@ -31,7 +41,8 @@ export class NotificationSender {
         @inject("AppConfig")
         protected config: AppConfig,
         protected userRepo: UserRepository,
-        protected telegramBot: TelegramBot
+        protected telegramBot: TelegramBot,
+        protected redis: Redis
     ) {}
 
     /** Sends a notification to specified users. */
@@ -47,6 +58,21 @@ export class NotificationSender {
             const user = await this.userRepo.getById(userId);
             if (!user) continue;
             await this.telegramBot.send(user, notification.html, link);
+            await this.redis.exec(r =>
+                r.xadd(
+                    `notifications:${user.id}`,
+                    "MAXLEN",
+                    100,
+                    "*",
+                    "icon",
+                    notification.icon,
+                    "title",
+                    notification.title,
+                    ...(notification.courseId
+                        ? ["courseId", notification.courseId]
+                        : [])
+                )
+            );
         }
     }
 
