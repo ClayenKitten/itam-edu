@@ -10,6 +10,9 @@ http://www.localhost {
     handle_path /api/* {
         reverse_proxy devcontainer:5151
     }
+    handle_path /files/* {
+        reverse_proxy devcontainer:5152
+    }
     handle {
         reverse_proxy devcontainer:5150
     }

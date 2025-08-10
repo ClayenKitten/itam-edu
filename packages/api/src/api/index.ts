@@ -18,7 +18,7 @@ import { StudentController } from "../courses/student/controller";
 import { SubmissionController } from "../courses/submission/controller";
 import { StaffController } from "../courses/staff/controller";
 import { CallController } from "../calls/controller";
-import { FileController } from "../courses/files/controller";
+import { FileController } from "../files/controller";
 
 @injectable()
 export class ApiServer {

@@ -33,8 +33,8 @@
         let video: string | null = null;
         if (uploadVideoFile !== null) {
             const response = await api({ fetch })
-                .courses({ course: data.course.id })
-                .files.post({ file: uploadVideoFile });
+                .files.courses({ course: data.course.id })
+                .post({ file: uploadVideoFile });
             if (response.error) {
                 alert(response.status);
                 return null;

@@ -28,4 +28,15 @@ export class S3 {
     public async upload(path: string, file: Blob): Promise<void> {
         await this.client.write(path, file);
     }
+
+    /** Signs a url to the path. */
+    public async signUrl(
+        path: string,
+        method: "GET" | "PUT" | "DELETE"
+    ): Promise<string> {
+        return this.client.presign(path, {
+            method,
+            expiresIn: 24 * 60 * 60
+        });
+    }
 }

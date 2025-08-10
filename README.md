@@ -25,6 +25,7 @@ ITAM Education platform consists of multiple packages that communicate over HTTP
 | [itam-edu-frontend](./packages/frontend) |   NodeJS   | SvelteKit server                         |     ✅      |
 | [itam-edu-api](./packages/api)           |    Bun     | REST API server                          |     ✅      |
 | [itam-edu-telegram](./packages/telegram) |    Bun     | Telegram bot                             |     ✅      |
+| [itam-edu-files](./packages/files)       |    Bun     | File server with proxy to S3 bucket      |     ✅      |
 | [itam-edu-db](./packages/db)             |   dbmate   | Database migrations                      |     ✅      |
 | [itam-edu-common](./packages/common)     | TS library | Library for common code between packages |     ⛔️     |
 | [itam-edu-devtools](./packages/devtools) |    Bun     | Webpage with some tools                  |     ⛔️     |
@@ -75,13 +76,14 @@ Development happens inside a [devcontainer](https://code.visualstudio.com/docs/d
 
 Run `task` in the Terminal to see the list of available commands.
 
-| Service               | URL                      |
-| --------------------- | ------------------------ |
-| **Packages**          |                          |
-| itam-edu-frontend     | http://www.localhost     |
-| itam-edu-api          | http://www.localhost/api |
-| **Development tools** |                          |
-| Navigation            | http://localhost         |
-| Database UI           | http://db.localhost      |
-| Minio UI              | http://s3.localhost      |
-| BullMQ UI             | http://bullmq.localhost  |
+| Service               | URL                        |
+| --------------------- | -------------------------- |
+| **Packages**          |                            |
+| itam-edu-frontend     | http://www.localhost       |
+| itam-edu-api          | http://www.localhost/api   |
+| itam-edu-files        | http://www.localhost/files |
+| **Development tools** |                            |
+| Navigation            | http://localhost           |
+| Database UI           | http://db.localhost        |
+| Minio UI              | http://s3.localhost        |
+| BullMQ UI             | http://bullmq.localhost    |

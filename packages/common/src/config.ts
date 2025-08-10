@@ -1,5 +1,5 @@
 import { env } from "process";
-import { Type as t } from "@sinclair/typebox";
+import { FormatRegistry, Type as t } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
 /** Application configuration. */
@@ -24,10 +24,13 @@ export const appConfigSchema = t.Object({
          *
          * Default values are recommended for containerized deployment.
          * */
-        ports: t.Object({
-            frontend: t.Integer({ default: 3000, minimum: 1 }),
-            backend: t.Integer({ default: 3000, minimum: 1 })
-        })
+        ports: t.Partial(
+            t.Object({
+                frontend: t.Integer({ default: 3000, minimum: 1 }),
+                backend: t.Integer({ default: 3000, minimum: 1 }),
+                files: t.Integer({ default: 3000, minimum: 1 })
+            })
+        )
     }),
     /** Telegram bot configuration. */
     telegram: t.Object({
@@ -71,6 +74,14 @@ export const appConfigSchema = t.Object({
         bucket: t.String()
     })
 });
+FormatRegistry.Set("uri", val => {
+    try {
+        let _url = new URL(val);
+        return true;
+    } catch (_) {
+        return false;
+    }
+});
 
 /**
  * Creates configuration object from environment variables.
@@ -82,8 +93,15 @@ export function createConfigFromEnv(): AppConfig {
         server: {
             origin: env.ITAMEDU_ORIGIN?.replace(/\/+$/, "")!,
             ports: {
-                frontend: Number.parseInt(env.ITAMEDU_FRONTEND_PORT ?? "3000"),
-                backend: Number.parseInt(env.ITAMEDU_BACKEND_PORT ?? "3000")
+                frontend: env.ITAMEDU_FRONTEND_PORT
+                    ? Number(env.ITAMEDU_FRONTEND_PORT)
+                    : undefined,
+                backend: env.ITAMEDU_BACKEND_PORT
+                    ? Number(env.ITAMEDU_BACKEND_PORT)
+                    : undefined,
+                files: env.ITAMEDU_FILES_PORT
+                    ? Number(env.ITAMEDU_FILES_PORT)
+                    : undefined
             }
         },
         telegram: {
@@ -110,7 +128,7 @@ export function createConfigFromEnv(): AppConfig {
     } satisfies AppConfig;
 
     try {
-        const config = Value.Decode(appConfigSchema, gatheredConfig);
+        const config = Value.Parse(appConfigSchema, gatheredConfig);
         return config;
     } catch (e) {
         const errors = Array.from(

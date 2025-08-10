@@ -25,6 +25,13 @@ services:
     env_file: ./.env
     restart: unless-stopped
 
+  files:
+    image: ghcr.io/clayenkitten/itam-edu-files:main
+    build: { <<: *build, dockerfile: ./packages/files/Dockerfile }
+    expose: [3000]
+    env_file: ./.env
+    restart: unless-stopped
+
   telegram:
     image: ghcr.io/clayenkitten/itam-edu-telegram:main
     build: { <<: *build, dockerfile: ./packages/telegram/Dockerfile }

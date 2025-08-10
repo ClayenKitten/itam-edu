@@ -3,6 +3,10 @@ example.com {
         reverse_proxy api:3000
     }
 
+    handle_path /files/* {
+        reverse_proxy files:3000
+    }
+
     handle {
         reverse_proxy frontend:3000
     }

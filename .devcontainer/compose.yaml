@@ -10,6 +10,7 @@ services:
       - 3000 # DevTools
       - 5150 # Frontend
       - 5151 # Backend
+      - 5152 # Files
     env_file: [../.env, .env.dev]
 
   gateway:

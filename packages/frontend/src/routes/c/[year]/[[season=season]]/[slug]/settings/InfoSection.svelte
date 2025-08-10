@@ -119,8 +119,8 @@
                 courseFilePath(course.id).public(filename)}
             onUpload={async file => {
                 const response = await api({ fetch })
-                    .courses({ course: course.id })
-                    .files.post({ file });
+                    .files.courses({ course: course.id })
+                    .post({ file });
                 if (response.error) {
                     alert(response.status);
                     return null;

@@ -25,6 +25,17 @@
             }
         },
         {
+            "name": "itam-edu-files",
+            "type": "bun",
+            "request": "launch",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/packages/files",
+            "program": "./src/index.ts",
+            "presentation": {
+                "order": 4
+            }
+        },
+        {
             "name": "itam-edu-telegram",
             "type": "bun",
             "request": "launch",
@@ -32,7 +43,7 @@
             "cwd": "${workspaceFolder}/packages/telegram",
             "program": "./src/index.ts",
             "presentation": {
-                "order": 4
+                "order": 5
             }
         },
         {
@@ -43,7 +54,7 @@
             "cwd": "${workspaceFolder}/packages/devtools",
             "program": "./src/index.ts",
             "presentation": {
-                "order": 5
+                "order": 6
             }
         }
     ],
@@ -53,6 +64,7 @@
             "configurations": [
                 "itam-edu-frontend",
                 "itam-edu-api",
+                "itam-edu-files",
                 "itam-edu-devtools"
             ],
             "stopAll": true,
@@ -65,6 +77,7 @@
             "configurations": [
                 "itam-edu-frontend",
                 "itam-edu-api",
+                "itam-edu-files",
                 "itam-edu-telegram"
             ],
             "stopAll": true,
