@@ -32,6 +32,15 @@ jobs:
       dockerfile: packages/frontend/Dockerfile
       ref: ${{ inputs.ref }}
 
+  build-files:
+    uses: "./.github/workflows/build.yaml"
+    with:
+      image: itam-edu-files
+      tag: "${{ inputs.tag }}"
+      context: .
+      dockerfile: packages/files/Dockerfile
+      ref: ${{ inputs.ref }}
+
   build-telegram:
     uses: "./.github/workflows/build.yaml"
     with:
