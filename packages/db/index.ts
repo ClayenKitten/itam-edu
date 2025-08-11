@@ -25,23 +25,6 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export interface CallAttendees {
-  callId: string;
-  firstJoinedAt: Generated<Timestamp>;
-  lastLeftAt: Timestamp | null;
-  userId: string;
-}
-
-export interface Calls {
-  courseId: string | null;
-  endedAt: Timestamp | null;
-  id: Generated<string>;
-  lessonId: string | null;
-  startedAt: Generated<Timestamp>;
-  startedBy: string;
-  title: string;
-}
-
 export interface CourseChanges {
   actorId: string;
   courseId: string;
@@ -187,8 +170,6 @@ export interface UserSessions {
 }
 
 export interface DB {
-  callAttendees: CallAttendees;
-  calls: Calls;
   courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;
