@@ -25,6 +25,11 @@ export class User {
         return result;
     }
 
+    /** Returns `true` if user is course student or staff member. */
+    public isCourseMember(courseId: string) {
+        return this.isCourseStudent(courseId) || this.isCourseStaff(courseId);
+    }
+
     /** Returns `true` if user is enrolled to the course. */
     public isCourseStudent(courseId: string) {
         return this.enrollments.some(

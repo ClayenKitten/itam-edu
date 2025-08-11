@@ -1,6 +1,6 @@
 import { t } from "elysia";
 
-/** Course information. */
+/** Course data. */
 export const course = t.Object({
     id: t.String({ format: "uuid" }),
     slug: t.String({
@@ -12,10 +12,11 @@ export const course = t.Object({
     semester: t.Nullable(t.Integer({ minimum: 1, maximum: 2 })),
 
     title: t.String({ minLength: 1, maxLength: 200 }),
-    description: t.Nullable(t.String({ maxLength: 1000 })),
+    description: t.Nullable(t.String({ maxLength: 500 })),
     status: t.Nullable(t.String({ maxLength: 300 })),
-    banner: t.Nullable(t.String({ maxLength: 100 })),
-    logo: t.Nullable(t.String({ maxLength: 100 })),
+    cover: t.Nullable(t.String({ maxLength: 300 })),
+    icon: t.Nullable(t.String({ maxLength: 300 })),
+    banner: t.Nullable(t.String({ maxLength: 300 })),
     about: t.String({ maxLength: 32768 }),
     theme: t.String({ pattern: "^[a-z]+$" }),
 
@@ -24,10 +25,29 @@ export const course = t.Object({
     isArchived: t.Boolean()
 });
 
-/** Information to create course. */
+/** Data to create course. */
 export const createCourse = t.Pick(course, [
     "slug",
     "year",
     "semester",
     "title"
 ]);
+export type CreateCourseDto = typeof createCourse.static;
+
+/** Data to modify a course. */
+export const updateCourse = t.Partial(
+    t.Pick(course, [
+        "title",
+        "description",
+        "status",
+        "cover",
+        "icon",
+        "banner",
+        "about",
+        "theme",
+        "isPublished",
+        "isEnrollmentOpen",
+        "isArchived"
+    ])
+);
+export type UpdateCourseDto = typeof updateCourse.static;

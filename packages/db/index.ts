@@ -25,6 +25,23 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface CallAttendees {
+  callId: string;
+  firstJoinedAt: Generated<Timestamp>;
+  lastLeftAt: Timestamp | null;
+  userId: string;
+}
+
+export interface Calls {
+  courseId: string | null;
+  endedAt: Timestamp | null;
+  id: Generated<string>;
+  lessonId: string | null;
+  startedAt: Generated<Timestamp>;
+  startedBy: string;
+  title: string;
+}
+
 export interface CourseChanges {
   actorId: string;
   courseId: string;
@@ -36,18 +53,16 @@ export interface CourseChanges {
 export interface Courses {
   about: Generated<string>;
   banner: string | null;
+  cover: string | null;
   /**
    * Multi-line description of the course
    */
   description: string | null;
+  icon: string | null;
   id: Generated<string>;
   isArchived: Generated<boolean>;
   isEnrollmentOpen: Generated<boolean>;
   isPublished: Generated<boolean>;
-  /**
-   * URL of the course logo
-   */
-  logo: string | null;
   /**
    * Optional semester in which the course takes place
    */
@@ -172,6 +187,8 @@ export interface UserSessions {
 }
 
 export interface DB {
+  callAttendees: CallAttendees;
+  calls: Calls;
   courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;

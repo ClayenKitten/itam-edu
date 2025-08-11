@@ -25,14 +25,14 @@
             "text-on-primary bg-primary"
         ]}
     >
-        {#if course.banner}
+        {#if course.cover}
             <img
-                class="h-full w-full object-cover object-center"
-                src={courseFilePath(course.id).public(course.banner)}
+                class="size-full object-cover object-center"
+                src={courseFilePath(course.id).public(course.cover)}
                 alt=""
             />
         {:else}
-            <div class="h-full w-full flex items-center justify-center text-h4">
+            <div class="size-full flex items-center justify-center text-h4">
                 {course.title}
             </div>
         {/if}

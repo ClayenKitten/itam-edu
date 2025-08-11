@@ -3,8 +3,8 @@ import type { Course } from "./entity";
 import type { User } from "itam-edu-common";
 import { ForbiddenError, HttpError } from "../api/errors";
 import { Postgres } from "../infra/postgres";
-import { t } from "elysia";
 import { CourseCache } from "./cache";
+import type { UpdateCourseDto } from "./schema";
 
 @injectable()
 export class UpdateCourse {
@@ -13,7 +13,7 @@ export class UpdateCourse {
         protected cache: CourseCache
     ) {}
 
-    /** Promotes staff member. */
+    /** Updates course. */
     public async invoke(
         actor: User,
         course: Course,
@@ -45,8 +45,9 @@ export class UpdateCourse {
         switch (updatedField) {
             case "title":
             case "description":
+            case "cover":
+            case "icon":
             case "banner":
-            case "logo":
             case "about":
             case "theme":
                 return actor.hasCoursePermission(course.id, "canEditInfo");
@@ -66,19 +67,3 @@ export class UpdateCourse {
         }
     }
 }
-
-export const updateCourseDto = t.Partial(
-    t.Object({
-        title: t.String({ minLength: 1, maxLength: 200 }),
-        description: t.Nullable(t.String({ maxLength: 1000 })),
-        status: t.Nullable(t.String({ maxLength: 300 })),
-        banner: t.Nullable(t.String({ maxLength: 100 })),
-        logo: t.Nullable(t.String({ maxLength: 100 })),
-        about: t.String({ maxLength: 32768 }),
-        theme: t.String({ pattern: "^[a-z]+$" }),
-        isPublished: t.Boolean(),
-        isEnrollmentOpen: t.Boolean(),
-        isArchived: t.Boolean()
-    })
-);
-export type UpdateCourseDto = typeof updateCourseDto.static;

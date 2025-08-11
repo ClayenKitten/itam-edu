@@ -4,7 +4,7 @@
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
     import type { Course, CoursePartial } from "$lib/types";
-    import type { User } from "itam-edu-common";
+    import { courseFilePath, type User } from "itam-edu-common";
 
     const { course, courses, user }: Props = $props();
     const prefix = $derived(coursePath(course));
@@ -35,26 +35,62 @@
         "bg-surface border-r border-surface-border"
     ]}
 >
-    <header
-        class="flex items-center w-full h-13 text-lg-regular bg-surface-tint rounded-xs px-4"
+    <details
+        class="group relative flex items-center w-full h-max text-lg-medium cursor-pointer"
     >
-        <select
-            class="w-full h-full"
-            bind:value={() => courses.find(c => c.id === course.id)!,
-            async newCourse => {
-                await goto(coursePath(newCourse));
-            }}
+        <summary
+            class={[
+                "flex justify-between items-center h-13 px-4 bg-surface-tint",
+                "rounded-xs group-open:rounded-b-none overflow-hidden"
+            ]}
         >
-            {#each courses as courseItem}
-                <option
-                    value={courseItem}
-                    selected={course.id === courseItem.id}
+            <div class="flex items-center gap-1.5">
+                {#if course.icon}
+                    <img
+                        src={courseFilePath(course.id).public(course.icon)}
+                        class="size-8"
+                        alt=""
+                    />
+                {/if}
+                {course.title}
+            </div>
+            <i class="hidden group-open:flex ph ph-caret-up"></i>
+            <i class="group-open:hidden flex ph ph-caret-down"></i>
+        </summary>
+        <ul
+            class="flex flex-col absolute top-13 w-full rounded-b-xs overflow-hidden"
+        >
+            {#each courses.filter(x => x.id !== course.id && (user === null || user.isCourseMember(x.id))) as courseOption}
+                <a
+                    class={[
+                        "flex items-center gap-1.5 h-13 px-4 bg-surface-tint overflow-hidden"
+                    ]}
+                    href={coursePath(courseOption)}
+                    data-sveltekit-preload-data="off"
                 >
-                    {courseItem.title}
-                </option>
+                    {#if courseOption.icon}
+                        <img
+                            src={courseFilePath(courseOption.id).public(
+                                courseOption.icon
+                            )}
+                            class="size-8"
+                            alt=""
+                        />
+                    {/if}
+                    {courseOption.title}
+                </a>
+            {:else}
+                <div
+                    class="text-md-regular bg-surface-tint p-4 pt-0 rounded-b-xs"
+                >
+                    Пусто! Записаться на новые курсы можно на
+                    <a class="text-primary hover:underline" href="/home">
+                        домашней странице
+                    </a>.
+                </div>
             {/each}
-        </select>
-    </header>
+        </ul>
+    </details>
     <ul class="flex flex-col gap-2">
         {@render btn("/", "Главная", "house")}
         {@render btn("/lessons", "Уроки", "folder")}

@@ -4,8 +4,11 @@
     import DangerSection from "./DangerSection.svelte";
     import { onNavigate } from "$app/navigation";
     import { getContext } from "svelte";
+    import StyleSection from "./StyleSection.svelte";
 
     let { data } = $props();
+
+    let courseClone = $state(structuredClone(data.course));
 
     const themeContainer = getContext<{ theme: string }>("theme");
 
@@ -25,7 +28,14 @@
     ]}
 >
     <InfoSection
-        course={data.course}
+        course={courseClone}
+        readonly={!data.user?.hasCoursePermission(
+            data.course.id,
+            "canEditInfo"
+        )}
+    />
+    <StyleSection
+        course={courseClone}
         readonly={!data.user?.hasCoursePermission(
             data.course.id,
             "canEditInfo"
@@ -35,5 +45,5 @@
         bind:staff={data.staff}
         readonly={!data.user?.hasCoursePermission(data.course.id, "isOwner")}
     />
-    <DangerSection course={data.course} user={data.user} />
+    <DangerSection course={courseClone} user={data.user} />
 </div>

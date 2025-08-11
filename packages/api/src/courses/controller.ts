@@ -9,7 +9,7 @@ import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
 import { CourseCache } from "./cache";
 import { CourseStatsRepository } from "./stats";
-import { UpdateCourse, updateCourseDto } from "./update";
+import { UpdateCourse } from "./update";
 import { HttpError } from "../api/errors";
 
 @injectable()
@@ -115,7 +115,7 @@ export class CourseController {
                 },
                 {
                     requireAuthentication: true,
-                    body: updateCourseDto,
+                    body: schema.updateCourse,
                     detail: {
                         summary: "Update course",
                         description: "Updates course.",

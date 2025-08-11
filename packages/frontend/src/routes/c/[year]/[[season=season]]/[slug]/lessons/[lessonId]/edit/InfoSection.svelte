@@ -30,8 +30,8 @@
         <h4>Название</h4>
         <input class="input" bind:value={lesson.title} />
     </label>
-    <div class="flex gap-6">
-        <label class="flex-1 flex flex-col gap-2">
+    <div class="flex flex-wrap gap-6">
+        <label class="flex-1 flex flex-col gap-2 min-w-[min(100%,400px)]">
             <h4>Описание</h4>
             <textarea
                 class="input h-[200px] resize-none"
@@ -45,6 +45,7 @@
                 <ImageUploader
                     bind:filename={lesson.banner}
                     aspectRatio="320/200"
+                    height="200px"
                     filenameToSrc={filename =>
                         courseFilePath(lesson.courseId).public(filename)}
                     onUpload={async file => {

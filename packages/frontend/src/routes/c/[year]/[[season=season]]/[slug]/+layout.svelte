@@ -22,6 +22,12 @@
         <meta name="description" content={data.course.description} />
         <meta property="og:description" content={data.course.description} />
     {/if}
+    {#if data.course.icon}
+        <link
+            rel="icon"
+            href={`/files/courses/${data.course.id}/${data.course.icon}`}
+        />
+    {/if}
 </svelte:head>
 
 <div

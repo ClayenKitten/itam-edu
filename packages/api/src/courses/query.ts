@@ -28,8 +28,9 @@ export class CourseQuery {
                     "title",
                     "description",
                     "status",
+                    "cover",
+                    "icon",
                     "banner",
-                    "logo",
                     "about",
                     "theme",
                     "isPublished",
@@ -64,13 +65,15 @@ export class CourseQuery {
                 "semester",
                 "title",
                 "description",
+                "cover",
+                "icon",
                 "banner",
-                "logo",
                 "theme",
                 "isPublished",
                 "isEnrollmentOpen",
                 "isArchived"
             ])
+            .orderBy("courses.title")
             .execute();
         return courses;
     }
@@ -89,8 +92,9 @@ export type CourseDtoData = {
     title: string;
     description: string | null;
     status: string | null;
+    cover: string | null;
+    icon: string | null;
     banner: string | null;
-    logo: string | null;
     about: string;
     theme: string;
     isPublished: boolean;
@@ -105,8 +109,9 @@ export type CoursePartialDTO = {
     semester: number | null;
     title: string;
     description: string | null;
+    cover: string | null;
+    icon: string | null;
     banner: string | null;
-    logo: string | null;
     theme: string;
     isPublished: boolean;
     isEnrollmentOpen: boolean;
