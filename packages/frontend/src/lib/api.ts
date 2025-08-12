@@ -21,12 +21,6 @@ export default function api(params: ApiParams) {
             };
         },
         onResponse: async response => {
-            const path = new URL(response.url).pathname;
-            /** Intercept login to set local cookie */
-            if (response.status === 201 && path === "/users/sessions") {
-                const { token, expires } = await response.clone().json();
-                setCookie("itam-edu-token", token, expires);
-            }
             if (params.toast) {
                 // TODO: display toast notification
                 const toast = params.toast(response);
@@ -42,11 +36,6 @@ type ApiParams = {
     /** Gets info to display in toast notification. */
     toast?: (response: Response) => { title: string };
 };
-
-function setCookie(name: string, token: string, expires: string): void {
-    const cookieValue = `${encodeURIComponent(name)}=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Secure; Expires=${expires}`;
-    document.cookie = cookieValue;
-}
 
 const getCookie = (name: string): string | undefined => {
     return document.cookie

@@ -47,7 +47,7 @@ export class UserController {
             )
             .post(
                 "/sessions",
-                async ({ body, status }) => {
+                async ({ body, status, cookie }) => {
                     const user = await this.loginCodeRepo.pop(body.code);
                     if (!user) return status(404, "Login code does not match");
 
@@ -57,6 +57,12 @@ export class UserController {
                     await this.notificationSender.send(
                         new LoginNotification(user)
                     );
+                    cookie["itam-edu-token"]?.set({
+                        value: session.token,
+                        expires: session.expires,
+                        sameSite: "lax",
+                        path: "/"
+                    });
                     return status(201, {
                         token: session.token,
                         expires: session.expires
