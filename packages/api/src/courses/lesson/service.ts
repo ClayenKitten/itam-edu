@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { UnauthorizedError } from "../../api/errors";
-import { NotificationSender } from "../../notifications";
+import { NotificationSender } from "../../notifications/sender";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import { Lesson } from "./entity";
@@ -8,7 +8,7 @@ import { LessonRepository } from "./repository";
 import * as schema from "./schema";
 import { randomUUID } from "crypto";
 import { CourseChangelog } from "../changes";
-import { LessonRescheduleNotification } from "./notifications";
+import { LessonRescheduleNotificationTemplate } from "./notifications";
 
 @injectable()
 export class LessonService {
@@ -71,7 +71,8 @@ export class LessonService {
         if (change.schedule !== undefined) {
             if (newLesson.schedule !== null) {
                 await this.notificationSender.send(
-                    new LessonRescheduleNotification(course, newLesson)
+                    new LessonRescheduleNotificationTemplate(course, newLesson),
+                    [...course.staffIds, ...course.studentIds]
                 );
                 await this.changelog.add(actor, course, {
                     kind: "lesson-schedule-changed",

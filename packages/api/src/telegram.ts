@@ -48,8 +48,12 @@ export class TelegramBot {
     public async send(
         user: User,
         text: string,
-        link?: { text: string; url: string }
+        link: { text: string; url: string } | null = null
     ) {
+        if (link && link.url.startsWith("/")) {
+            link.url = this.config.server.origin + link.url;
+        }
+
         await this.queue.add("message", {
             chatId: user.telegram.id,
             text,
