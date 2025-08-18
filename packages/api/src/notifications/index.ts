@@ -35,11 +35,17 @@ export type WebNotification = {
     /** Unique id of the notification. */
     readonly id: string;
 
+    /** Unix timestamp of the notification. */
+    readonly timestamp: number;
+
     /** Very short notification name. */
     readonly title: string;
 
     /** PhosphorIcons icon name. */
     readonly icon: string;
+
+    /** URL to follow on click. */
+    readonly url: string | null;
 
     /** Identifier of the course. */
     readonly courseId: string | null;
