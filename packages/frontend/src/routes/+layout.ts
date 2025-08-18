@@ -2,20 +2,22 @@ import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { User, type CalendarEvent } from "itam-edu-common";
-import type { Course, CoursePartial } from "$lib/types";
+import type { CoursePartial, Notification } from "$lib/types";
 
 export const load: LayoutLoad = async ({ fetch, depends }) => {
-    depends("app:user", "app:courses", "app:calendar");
+    depends("app:user", "app:courses", "app:notifications", "app:calendar");
 
-    const [user, courses, calendar] = await Promise.all([
+    const [user, courses, notifications, calendar] = await Promise.all([
         getUser(fetch),
         getCourses(fetch),
+        getNotifications(fetch),
         getCalendar(fetch)
     ]);
 
     return {
         user,
         courses,
+        notifications,
         calendar
     };
 };
@@ -42,6 +44,17 @@ async function getCourses(
     const response = await api({ fetch }).courses.get();
     if (response.error) error(response.status);
     return response.data;
+}
+
+async function getNotifications(
+    fetch: typeof window.fetch
+): Promise<Notification[]> {
+    const response = await api({ fetch }).users.me.notifications.get();
+    if (response.error) {
+        if (response.status === 401) return [];
+        error(response.status);
+    }
+    return response.data.notifications;
 }
 
 async function getCalendar(

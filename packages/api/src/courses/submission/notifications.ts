@@ -19,9 +19,11 @@ export class SubmissionNotificationTemplate extends NotificationTemplate {
     public override toWeb(id: string, _userId: string): WebNotification {
         return {
             id,
+            timestamp: Date.now(),
             courseId: this.course.id,
-            title: `Новый ответ на задание '${this.homework.title}'.`,
-            icon: "scroll"
+            title: `Студент @${this.student.telegram.username} отправил задание '${this.homework.title}'.`,
+            icon: "scroll",
+            url: `${this.course.path}/homeworks/${this.homework.id}?student=${this.student.id}`
         };
     }
 
@@ -56,9 +58,11 @@ export class SubmissionReviewNotificationTemplate extends NotificationTemplate {
     public override toWeb(id: string, _userId: string): WebNotification {
         return {
             id,
+            timestamp: Date.now(),
             courseId: this.course.id,
             title: this.title,
-            icon: "exam"
+            icon: "exam",
+            url: `${this.course.path}/homeworks/${this.homework.id}`
         };
     }
 

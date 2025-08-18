@@ -59,7 +59,11 @@
             {@render layout.additionalSidebar?.()}
         </aside>
     {/if}
-    <Header user={data.user} />
+    <Header
+        user={data.user}
+        notifications={data.notifications}
+        courses={data.courses}
+    />
     <main class="relative z-0 flex flex-col items-stretch @container/main">
         {@render children()}
     </main>

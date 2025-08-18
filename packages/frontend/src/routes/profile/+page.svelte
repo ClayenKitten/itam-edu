@@ -10,6 +10,11 @@
 </svelte:head>
 
 <div id="wrapper" class="flex flex-col bg-background">
-    <Header user={data.user} standalone />
+    <Header
+        user={data.user}
+        notifications={data.notifications}
+        courses={data.courses}
+        standalone
+    />
     <main class="flex flex-col py-15 px-7.5 gap-7.5">Профиль</main>
 </div>

@@ -17,9 +17,11 @@ export class LessonRescheduleNotificationTemplate extends NotificationTemplate {
     public toWeb(id: string, _userId: string): WebNotification {
         return {
             id,
+            timestamp: Date.now(),
             courseId: this.course.id,
             title: `Урок '${this.lesson.info.title}' перенесён.`,
-            icon: "alarm"
+            icon: "alarm",
+            url: `${this.course.path}/lessons/${this.lesson.id}`
         };
     }
 
