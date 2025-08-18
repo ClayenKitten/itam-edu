@@ -7,7 +7,6 @@ import { UserRepository } from "../users/repository";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
-import { CourseCache } from "./cache";
 import { CourseStatsRepository } from "./stats";
 import { UpdateCourse } from "./update";
 import { HttpError } from "../api/errors";
@@ -19,7 +18,6 @@ export class CourseController {
         protected courseRepo: CourseRepository,
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
-        protected courseCache: CourseCache,
         protected courseStats: CourseStatsRepository,
         protected updateCourse: UpdateCourse
     ) {}
