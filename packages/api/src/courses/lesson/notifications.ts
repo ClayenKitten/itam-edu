@@ -1,8 +1,12 @@
-import { Notification, type NotificationLink } from "../../notifications";
+import {
+    NotificationTemplate,
+    type TelegramNotification,
+    type WebNotification
+} from "../../notifications";
 import type { Course } from "../entity";
 import type { Lesson } from "./entity";
 
-export class LessonRescheduleNotification extends Notification {
+export class LessonRescheduleNotificationTemplate extends NotificationTemplate {
     public constructor(
         protected course: Course,
         protected lesson: Lesson
@@ -10,11 +14,27 @@ export class LessonRescheduleNotification extends Notification {
         super();
     }
 
-    public get audience() {
-        return [...this.course.staffIds, ...this.course.studentIds];
+    public toWeb(id: string, _userId: string): WebNotification {
+        return {
+            id,
+            courseId: this.course.id,
+            title: `Урок '${this.lesson.info.title}' перенесён.`,
+            icon: "alarm"
+        };
     }
 
-    public get html() {
+    public toTelegram(id: string, _userId: string): TelegramNotification {
+        return {
+            id,
+            html: this.html,
+            link: {
+                text: "🔗 Страница урока",
+                url: `${this.course.path}/lessons/${this.lesson.id}`
+            }
+        };
+    }
+
+    protected get html() {
         if (!this.lesson.schedule) throw new Error("schedule must be present");
         // Header
         let lines = [`<b>📅 Урок '${this.lesson.info.title}' перенесён</b>.\n`];
@@ -43,24 +63,5 @@ export class LessonRescheduleNotification extends Notification {
             lines.push("📍 Офлайн" + postfix);
 
         return lines.join("\n");
-    }
-
-    public get icon() {
-        return "alarm";
-    }
-
-    public get title() {
-        return `Урок '${this.lesson.info.title}' перенесён.`;
-    }
-
-    public get courseId() {
-        return `${this.lesson.courseId}`;
-    }
-
-    public override get link(): NotificationLink {
-        return {
-            text: "🔗 Страница урока",
-            url: `${this.course.path}/lessons/${this.lesson.id}`
-        };
     }
 }

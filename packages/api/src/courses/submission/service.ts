@@ -4,10 +4,10 @@ import { BadRequestError, ForbiddenError } from "../../api/errors";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { SubmissionRepository } from "./repository";
-import { NotificationSender } from "../../notifications";
+import { NotificationSender } from "../../notifications/sender";
 import {
-    SubmissionNotification,
-    SubmissionReviewNotification
+    SubmissionNotificationTemplate,
+    SubmissionReviewNotificationTemplate
 } from "./notifications";
 import { CourseChangelog } from "../changes";
 
@@ -43,7 +43,12 @@ export class SubmissionService {
                     studentId: student.id
                 }),
                 this.notificationSender.send(
-                    new SubmissionNotification(course, homework, student)
+                    new SubmissionNotificationTemplate(
+                        course,
+                        homework,
+                        student
+                    ),
+                    course.staffIds
                 )
             ]);
         } else {
@@ -65,12 +70,13 @@ export class SubmissionService {
                     accepted
                 }),
                 this.notificationSender.send(
-                    new SubmissionReviewNotification(
+                    new SubmissionReviewNotificationTemplate(
                         course,
                         homework,
                         student,
                         accepted
-                    )
+                    ),
+                    [student.id]
                 )
             ]);
         }

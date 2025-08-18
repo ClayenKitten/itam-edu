@@ -1,9 +1,13 @@
 import type { User } from "itam-edu-common";
-import { Notification, type NotificationLink } from "../../notifications";
+import {
+    NotificationTemplate,
+    type TelegramNotification,
+    type WebNotification
+} from "../../notifications";
 import type Homework from "../homework/entity";
 import type { Course } from "../entity";
 
-export class SubmissionNotification extends Notification {
+export class SubmissionNotificationTemplate extends NotificationTemplate {
     public constructor(
         protected course: Course,
         protected homework: Homework,
@@ -12,38 +16,34 @@ export class SubmissionNotification extends Notification {
         super();
     }
 
-    public get audience() {
-        return this.course.staffIds;
-    }
-
-    public get html() {
-        return [
-            "<b>📝 Новый ответ на задание</b>",
-            `Студент @${this.student.telegram.username} сдал(а) задание '${this.homework.title}'.`
-        ].join("\n\n");
-    }
-
-    public get icon() {
-        return "scroll";
-    }
-
-    public get title() {
-        return `Новый ответ на задание '${this.homework.title}'.`;
-    }
-
-    public get courseId() {
-        return `${this.homework.course}`;
-    }
-
-    public override get link(): NotificationLink {
+    public override toWeb(id: string, _userId: string): WebNotification {
         return {
-            text: "🔗 Проверить",
-            url: `${this.course.path}/homeworks/${this.homework.id}?student=${this.student.id}`
+            id,
+            courseId: this.course.id,
+            title: `Новый ответ на задание '${this.homework.title}'.`,
+            icon: "scroll"
+        };
+    }
+
+    public override toTelegram(
+        id: string,
+        _userId: string
+    ): TelegramNotification {
+        return {
+            id,
+            html: [
+                "<b>📝 Новый ответ на задание</b>",
+                `Студент @${this.student.telegram.username} сдал(а) задание '${this.homework.title}'.`
+            ].join("\n\n"),
+            link: {
+                text: "🔗 Проверить",
+                url: `${this.course.path}/homeworks/${this.homework.id}?student=${this.student.id}`
+            }
         };
     }
 }
 
-export class SubmissionReviewNotification extends Notification {
+export class SubmissionReviewNotificationTemplate extends NotificationTemplate {
     public constructor(
         protected course: Course,
         protected homework: Homework,
@@ -53,11 +53,38 @@ export class SubmissionReviewNotification extends Notification {
         super();
     }
 
-    public get audience() {
-        return [this.student.id];
+    public override toWeb(id: string, _userId: string): WebNotification {
+        return {
+            id,
+            courseId: this.course.id,
+            title: this.title,
+            icon: "exam"
+        };
     }
 
-    public get html() {
+    public override toTelegram(
+        id: string,
+        _userId: string
+    ): TelegramNotification {
+        return {
+            id,
+            html: this.html,
+            link: {
+                text: "🔗 Посмотреть",
+                url: `${this.course.path}/homeworks/${this.homework.id}`
+            }
+        };
+    }
+
+    protected get title() {
+        if (this.accepted) {
+            return `Задание '${this.homework.title}' сдано.`;
+        } else {
+            return `Задание '${this.homework.title}' нужно переделать.`;
+        }
+    }
+
+    protected get html() {
         if (this.accepted) {
             return [
                 "<b>🥇 Задание сдано</b>",
@@ -69,28 +96,5 @@ export class SubmissionReviewNotification extends Notification {
                 `В вашем ответе на задание '${this.homework.title}' есть недочёты.`
             ].join("\n\n");
         }
-    }
-
-    public get icon() {
-        return "exam";
-    }
-
-    public get title() {
-        if (this.accepted) {
-            return `Задание '${this.homework.title}' сдано.`;
-        } else {
-            return `Задание '${this.homework.title}' нужно переделать.`;
-        }
-    }
-
-    public get courseId() {
-        return `${this.homework.course}`;
-    }
-
-    public override get link(): NotificationLink {
-        return {
-            text: "🔗 Посмотреть",
-            url: `${this.course.path}/homeworks/${this.homework.id}`
-        };
     }
 }

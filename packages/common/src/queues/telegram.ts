@@ -14,9 +14,9 @@ export const INBOUND_PRIVATE_MESSAGE_QUEUE = "tg.inbound.private-message";
 export type OutboundPrivateMessage = {
     chatId: string;
     text: string;
-    link?: {
+    link: {
         text: string;
         url: string;
-    };
+    } | null;
 };
 export const OUTBOUND_PRIVATE_MESSAGE_QUEUE = "tg.outbound.message";

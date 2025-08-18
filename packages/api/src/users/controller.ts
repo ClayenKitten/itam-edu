@@ -6,8 +6,8 @@ import { UserRepository } from "./repository";
 import { Session, SessionRepository } from "./session";
 import { LoginCodeRepository } from "./login";
 import { CalendarQuery, type CalendarFilters } from "./calendar";
-import { NotificationSender } from "../notifications";
-import { LoginNotification } from "./notifications";
+import { NotificationSender } from "../notifications/sender";
+import { LoginNotificationTemplate } from "./notifications";
 import { Redis } from "../infra/redis";
 
 @injectable()
@@ -57,7 +57,8 @@ export class UserController {
                     await this.sessionRepo.add(session);
 
                     await this.notificationSender.send(
-                        new LoginNotification(user)
+                        new LoginNotificationTemplate(),
+                        [user.id]
                     );
                     cookie["itam-edu-token"]?.set({
                         value: session.token,

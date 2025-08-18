@@ -99,7 +99,7 @@ export default class TelegramBot {
     protected async onOutboundMessage(
         chatId: string,
         text: string,
-        link?: { text: string; url: string }
+        link: { text: string; url: string } | null = null
     ) {
         if (link && link.url.includes("localhost")) {
             text += `\n\n<a href="${link.url}">${link.text}</a>`;
