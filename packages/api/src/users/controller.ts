@@ -114,10 +114,15 @@ export class UserController {
             .get(
                 "/me/notifications",
                 async ({ user }) => {
-                    const notificationStream = await this.redis.exec(r =>
-                        r.xrange(`notifications:${user.id}`, "-", "+")
+                    const stream = await this.redis.pool.xRange(
+                        `notifications:${user.id}`,
+                        "-",
+                        "+"
                     );
-                    return notificationStream;
+                    const notifications = stream.map(({ message }) =>
+                        JSON.parse(message.payload!)
+                    );
+                    return { notifications };
                 },
                 {
                     requireAuthentication: true,
