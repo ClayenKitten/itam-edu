@@ -12,17 +12,14 @@ export class CourseStatsRepository {
     ): Promise<SeriesValue[]> {
         const key = `courses:${courseId}:stats:${kind}`;
         try {
-            return await this.redis.exec(async r => {
-                const result = (await r.call("TS.RANGE", key, "-", "+")) as [
-                    number,
-                    string
-                ][];
-                return result.map(([timestamp, value]) => ({
-                    timestamp,
-                    value: Number(value)
-                }));
+            if ((await this.redis.pool.exists(key)) === 0) {
+                return [];
+            }
+            return await this.redis.pool.ts.range(key, "-", "+");
+        } catch (error) {
+            logger.warning("failed to fetch statistics", {
+                error: error?.toString()
             });
-        } catch (e) {
             return [];
         }
     }
@@ -42,7 +39,7 @@ export class CourseStatsRepository {
     ): Promise<void> {
         try {
             const key = `courses:${courseId}:stats:${kind}`;
-            await this.redis.exec(r => r.call("TS.ADD", key, "*", value));
+            await this.redis.pool.ts.add(key, "*", value);
         } catch (e) {
             logger.error("Failed to add course statistics entry", {
                 kind,

@@ -19,17 +19,16 @@ export class LoginCodeRepository {
     /** Creates new login code for the user. */
     public async create(user: User): Promise<string> {
         const code = this.generateCode();
+
         const key = this.getKey(code);
-        await this.redis.exec(r =>
-            r.setex(key, this.EXPIRATION_SECONDS, user.id)
-        );
+        await this.redis.pool.setEx(key, this.EXPIRATION_SECONDS, user.id);
         return code;
     }
 
     /** Removes login code and returns associated user. */
     public async pop(code: string): Promise<User | null> {
         const key = this.getKey(code);
-        const userId = await this.redis.exec(r => r.getdel(key));
+        const userId = await this.redis.pool.getDel(key);
         if (!userId) return null;
         const user = await this.userRepo.getById(userId);
         if (!user) return null;

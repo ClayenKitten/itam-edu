@@ -17,7 +17,9 @@ export class TelegramBot {
         protected loginCodeRepo: LoginCodeRepository
     ) {
         this.queue = new Queue(queues.telegram.OUTBOUND_PRIVATE_MESSAGE_QUEUE, {
-            connection: redis.createConnection()
+            connection: {
+                url: config.redis.connectionString
+            }
         });
         this.worker = new Worker<queues.telegram.InboundPrivateMessage>(
             queues.telegram.INBOUND_PRIVATE_MESSAGE_QUEUE,
@@ -27,7 +29,12 @@ export class TelegramBot {
                     async () => await this.handleMessage(job.data)
                 );
             },
-            { connection: redis.createConnection(), autorun: false }
+            {
+                connection: {
+                    url: config.redis.connectionString
+                },
+                autorun: false
+            }
         );
     }
 

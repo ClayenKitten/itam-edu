@@ -49,20 +49,19 @@ export class NotificationSender {
         userId: string,
         webNotification: WebNotification
     ): Promise<void> {
-        await this.redis.exec(r =>
-            r.xadd(
-                `notifications:${userId}`,
-                "MAXLEN",
-                100,
-                "*",
-                "icon",
-                webNotification.icon,
-                "title",
-                webNotification.title,
-                ...(webNotification.courseId
-                    ? ["courseId", webNotification.courseId]
-                    : [])
-            )
+        await this.redis.pool.xAdd(
+            `notifications:${userId}`,
+            "*",
+            {
+                payload: JSON.stringify(webNotification)
+            },
+            {
+                TRIM: {
+                    strategy: "MAXLEN",
+                    strategyModifier: "~",
+                    threshold: 100
+                }
+            }
         );
     }
 
