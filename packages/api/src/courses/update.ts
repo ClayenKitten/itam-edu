@@ -3,15 +3,11 @@ import type { Course } from "./entity";
 import type { User } from "itam-edu-common";
 import { ForbiddenError, HttpError } from "../api/errors";
 import { Postgres } from "../infra/postgres";
-import { CourseCache } from "./cache";
 import type { UpdateCourseDto } from "./schema";
 
 @injectable()
 export class UpdateCourse {
-    public constructor(
-        protected postgres: Postgres,
-        protected cache: CourseCache
-    ) {}
+    public constructor(protected postgres: Postgres) {}
 
     /** Updates course. */
     public async invoke(
@@ -32,8 +28,6 @@ export class UpdateCourse {
             .where("id", "=", course.id)
             .set(updates)
             .executeTakeFirst();
-
-        await this.cache.delete(course.id);
     }
 
     /** Checks if user is authorized to modify provided field. */
