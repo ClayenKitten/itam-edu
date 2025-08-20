@@ -4,8 +4,11 @@
     import CourseCard from "./CourseCard.svelte";
     import TinyCalendar from "./TinyCalendar.svelte";
     import EventsList from "./EventsList.svelte";
+    import CreateCourseWindow from "$lib/windows/CreateCourseWindow.svelte";
 
     let { data } = $props();
+
+    let createCourseWindow: CreateCourseWindow;
 
     let highlightedDate: Date | null = $state(null);
     let selectedDate: Date | null = $state(null);
@@ -29,6 +32,8 @@
 <svelte:head>
     <title>Главная | ITAM Education</title>
 </svelte:head>
+
+<CreateCourseWindow bind:this={createCourseWindow} />
 
 <div id="wrapper" class="flex flex-col bg-background">
     <Header
@@ -64,6 +69,19 @@
             {#each courses as course}
                 <CourseCard {course} />
             {/each}
+            {#if data.user && data.user.hasPermission("canCreateCourses")}
+                <menu class="col-span-full">
+                    <button
+                        class="btn h-11"
+                        onclick={() => {
+                            createCourseWindow.show();
+                        }}
+                    >
+                        <i class="ph ph-plus text-on-primary text-[20px]"></i>
+                        Создать новый курс
+                    </button>
+                </menu>
+            {/if}
         </section>
     </main>
 </div>

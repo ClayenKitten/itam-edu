@@ -32,7 +32,7 @@ export class CourseRepository {
     public async getBySlug(
         slug: string,
         year?: number,
-        semester?: "spring" | "autumn"
+        semester?: "spring" | "autumn" | null
     ): Promise<Course | null> {
         let query = this.postgres.kysely
             .selectFrom("courses")
@@ -44,7 +44,7 @@ export class CourseRepository {
             query = query.where("year", "=", year);
         }
         if (semester !== undefined) {
-            query = query.where("semester", "=", semester);
+            query = query.where("semester", "is not distinct from", semester);
         }
         const courseInfo = await query.executeTakeFirst();
         if (!courseInfo) return null;
@@ -56,23 +56,6 @@ export class CourseRepository {
             .execute();
 
         return this.toEntity(courseInfo, members);
-    }
-
-    /** Creates new course. */
-    public async create(
-        course: typeof schema.createCourse.static
-    ): Promise<Course> {
-        const result = await this.postgres.kysely
-            .insertInto("courses")
-            .values({
-                slug: course.slug,
-                year: course.year,
-                semester: course.semester,
-                title: course.title
-            })
-            .returning(schemaFields(schema.course))
-            .executeTakeFirstOrThrow();
-        return this.toEntity(result, []);
     }
 
     protected toEntity(

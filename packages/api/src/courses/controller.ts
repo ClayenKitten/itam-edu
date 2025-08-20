@@ -8,7 +8,8 @@ import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
 import { CourseStatsRepository } from "./stats";
-import { UpdateCourse } from "./update";
+import { CreateCourseInteractor } from "./create.interactor";
+import { UpdateCourseInteractor } from "./update.interactor";
 import { HttpError } from "../api/errors";
 
 @injectable()
@@ -19,7 +20,8 @@ export class CourseController {
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
         protected courseStats: CourseStatsRepository,
-        protected updateCourse: UpdateCourse
+        protected createCourseInteractor: CreateCourseInteractor,
+        protected updateCourseInteractor: UpdateCourseInteractor
     ) {}
 
     public toElysia() {
@@ -40,10 +42,15 @@ export class CourseController {
             )
             .post(
                 "",
-                async ({ body, status }) => {
-                    const course = await this.courseRepo.create(body);
-                    if (!course) return status(400, "Couldn't create course");
-                    return course.toDTO();
+                async ({ user, body, status }) => {
+                    const result = await this.createCourseInteractor.invoke(
+                        user,
+                        body
+                    );
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result.toDTO();
                 },
                 {
                     hasPermission: ["canCreateCourses"],
@@ -106,13 +113,15 @@ export class CourseController {
                     const course = await this.courseRepo.getById(params.course);
                     if (!course) return status(404);
 
-                    const result = await this.updateCourse.invoke(
+                    const result = await this.updateCourseInteractor.invoke(
                         user,
                         course,
                         body
                     );
-                    if (result instanceof HttpError)
+                    if (result instanceof HttpError) {
                         return status(result.code, result.message);
+                    }
+                    return status(200, "Course updated successfully");
                 },
                 {
                     requireAuthentication: true,

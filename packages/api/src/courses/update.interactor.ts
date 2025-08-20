@@ -6,19 +6,19 @@ import { Postgres } from "../infra/postgres";
 import type { UpdateCourseDto } from "./schema";
 
 @injectable()
-export class UpdateCourse {
+export class UpdateCourseInteractor {
     public constructor(protected postgres: Postgres) {}
 
     /** Updates course. */
     public async invoke(
         actor: User,
         course: Course,
-        updates: UpdateCourseDto
+        dto: UpdateCourseDto
     ): Promise<void | HttpError> {
-        for (const key of Object.keys(updates) as (keyof UpdateCourseDto)[]) {
-            if (updates[key] === undefined) continue;
+        for (const key of Object.keys(dto) as (keyof UpdateCourseDto)[]) {
+            if (dto[key] === undefined) continue;
             if (!this.isAllowedToModifyField(actor, course, key)) {
-                console.log(updates, key);
+                console.log(dto, key);
                 return new ForbiddenError();
             }
         }
@@ -26,7 +26,7 @@ export class UpdateCourse {
         await this.postgres.kysely
             .updateTable("courses")
             .where("id", "=", course.id)
-            .set(updates)
+            .set(dto)
             .executeTakeFirst();
     }
 

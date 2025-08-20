@@ -6,12 +6,12 @@ export const course = t.Object({
     slug: t.String({
         minLength: 3,
         maxLength: 12,
-        pattern: "^[a-z\\d-]+$"
+        pattern: "^[a-z0-9-]+$"
     }),
     year: t.Integer({ minimum: 2000, maximum: 3000 }),
     semester: t.Nullable(t.Union([t.Literal("autumn"), t.Literal("spring")])),
 
-    title: t.String({ minLength: 1, maxLength: 200 }),
+    title: t.String({ minLength: 1, maxLength: 32 }),
     description: t.Nullable(t.String({ maxLength: 500 })),
     status: t.Nullable(t.String({ maxLength: 300 })),
     cover: t.Nullable(t.String({ maxLength: 300 })),
