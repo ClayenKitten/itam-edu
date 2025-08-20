@@ -89,11 +89,13 @@
 
     --text-md-medium: 15px;
     --text-md-medium--font-weight: 500;
+    --text-md-medium--line-height: normal;
     --text-md-regular: 15px;
+    --text-md-regular--line-height: normal;
     --text-md-regular--font-weight: 400;
 
     --text-sm-medium: 13px;
-    --text-sm-regular--line-height: 18px;
+    --text-sm-medium--line-height: 18px;
     --text-sm-medium--font-weight: 500;
     --text-sm-regular: 13px;
     --text-sm-regular--line-height: 18px;
@@ -197,8 +199,15 @@
     .input {
         display: flex;
         align-items: center;
-        padding: 20px;
+        padding: 12px 16px;
+
+        color: var(--color-on-surface);
         background-color: var(--color-surface);
+
+        font-size: var(--text-md-medium);
+        line-height: var(--text-md-medium--line-height);
+        font-weight: var(--text-md-medium--font-weight);
+
         border: 2px var(--color-primary-border) solid;
         border-radius: var(--radius-sm);
 
@@ -206,11 +215,9 @@
             outline: 0;
             border: 2px var(--color-primary) solid;
         }
-
         &:disabled {
             border-color: var(--color-on-surface-disabled);
         }
-
         &:user-invalid {
             border-color: var(--color-danger);
         }
