@@ -23,6 +23,8 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
+export type SemesterEnum = "autumn" | "spring";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface CourseChanges {
@@ -49,7 +51,7 @@ export interface Courses {
   /**
    * Optional semester in which the course takes place
    */
-  semester: number | null;
+  semester: SemesterEnum | null;
   /**
    * Machine-readable name of the course that is unique in combination with year and semester
    */

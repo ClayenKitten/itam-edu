@@ -9,7 +9,7 @@ export const course = t.Object({
         pattern: "^[a-z\\d-]+$"
     }),
     year: t.Integer({ minimum: 2000, maximum: 3000 }),
-    semester: t.Nullable(t.Integer({ minimum: 1, maximum: 2 })),
+    semester: t.Nullable(t.Union([t.Literal("autumn"), t.Literal("spring")])),
 
     title: t.String({ minLength: 1, maxLength: 200 }),
     description: t.Nullable(t.String({ maxLength: 500 })),

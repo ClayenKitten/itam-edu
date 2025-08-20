@@ -7,7 +7,7 @@ export function coursePath({
     slug
 }: {
     year: number;
-    semester: number | null;
+    semester: "autumn" | "spring" | null;
     slug: string;
 }) {
     return `/c/${year}${semester ? "/" + semester : ""}/${slug}`;
@@ -15,11 +15,11 @@ export function coursePath({
 
 export async function lookupCourseId(
     fetch: typeof window.fetch,
-    params: { year: string; slug: string; semester?: string }
+    params: { year: string; slug: string; semester?: "autumn" | "spring" }
 ): Promise<string> {
     const query = {
         year: Number(params.year),
-        semester: params.semester ? Number(params.semester) : undefined
+        semester: params.semester
     };
     if (query.semester === undefined) delete query.semester;
 

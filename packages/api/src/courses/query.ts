@@ -80,7 +80,7 @@ export type CourseDtoData = {
     id: string;
     slug: string;
     year: number;
-    semester: number | null;
+    semester: "autumn" | "spring" | null;
     title: string;
     description: string | null;
     status: string | null;
@@ -98,7 +98,7 @@ export type CoursePartialDTO = {
     id: string;
     slug: string;
     year: number;
-    semester: number | null;
+    semester: "autumn" | "spring" | null;
     title: string;
     description: string | null;
     cover: string | null;

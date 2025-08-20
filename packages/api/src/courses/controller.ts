@@ -69,8 +69,11 @@ export class CourseController {
                 {
                     query: t.Partial(
                         t.Object({
-                            year: t.Integer(),
-                            semester: t.Integer()
+                            year: schema.course.properties.year,
+                            semester: t.Exclude(
+                                schema.course.properties.semester,
+                                t.Null()
+                            )
                         })
                     ),
                     params: t.Object({

@@ -32,7 +32,7 @@ export class CourseRepository {
     public async getBySlug(
         slug: string,
         year?: number,
-        semester?: number
+        semester?: "spring" | "autumn"
     ): Promise<Course | null> {
         let query = this.postgres.kysely
             .selectFrom("courses")
