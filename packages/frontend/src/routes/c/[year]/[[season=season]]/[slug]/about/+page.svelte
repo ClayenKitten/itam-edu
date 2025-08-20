@@ -66,11 +66,14 @@
                                 <a
                                     class="text-primary text-md-regular hover:underline"
                                     href={`https://t.me/${staffMember.tgUsername}`}
+                                    target="_blank"
                                 >
                                     @{staffMember.tgUsername}
                                 </a>
                             </header>
-                            <p class="flex-[1]">{staffMember.bio}</p>
+                            <p class="flex-[1] line-clamp-3 text-ellipsis">
+                                {staffMember.bio}
+                            </p>
                         </div>
                     </li>
                 {/each}
