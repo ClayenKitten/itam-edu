@@ -1,22 +1,21 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { authenticationPlugin } from "../api/plugins/authenticate";
-import { UserRepository } from "../users/repository";
+import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { CourseRepository } from "../courses/repository";
 import { CallService } from "./service";
 
 @injectable()
 export class CallController {
     public constructor(
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected courseRepo: CourseRepository,
         protected callService: CallService
     ) {}
 
     public toElysia() {
         return new Elysia({ tags: ["Calls"] })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "/calls",
                 async () => {
@@ -72,9 +71,9 @@ export class CallController {
             )
             .post(
                 "/calls/:call/tokens",
-                async ({ params, user, error }) => {
+                async ({ params, user, status }) => {
                     const call = await this.callService.getById(params.call);
-                    if (!call) return error(404);
+                    if (!call) return status(404);
 
                     const token = await this.callService.createAccessToken(
                         user,

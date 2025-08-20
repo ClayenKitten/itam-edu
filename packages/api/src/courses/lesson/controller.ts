@@ -3,8 +3,7 @@ import { Elysia, status, t } from "elysia";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
-import { authenticationPlugin } from "../../api/plugins/authenticate";
-import { UserRepository } from "../../users/repository";
+import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { CourseRepository } from "../repository";
 import { LessonService } from "./service";
 import { LessonRepository } from "./repository";
@@ -13,7 +12,7 @@ import { LessonQuery } from "./query";
 @injectable()
 export class LessonController {
     public constructor(
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected courseRepo: CourseRepository,
         protected lessonService: LessonService,
         protected lessonRepo: LessonRepository,
@@ -26,7 +25,7 @@ export class LessonController {
             prefix: "/courses/:course/lessons",
             tags: ["Lessons"]
         })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .guard({
                 params: t.Object(
                     { course: t.String({ format: "uuid" }) },

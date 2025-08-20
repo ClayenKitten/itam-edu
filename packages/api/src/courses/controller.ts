@@ -2,8 +2,7 @@ import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { authenticationPlugin } from "../api/plugins/authenticate";
-import { UserRepository } from "../users/repository";
+import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
@@ -15,7 +14,7 @@ import { HttpError } from "../api/errors";
 @injectable()
 export class CourseController {
     public constructor(
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected courseRepo: CourseRepository,
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
@@ -26,7 +25,7 @@ export class CourseController {
 
     public toElysia() {
         return new Elysia({ prefix: "/courses", tags: ["Courses"] })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "",
                 async () => {

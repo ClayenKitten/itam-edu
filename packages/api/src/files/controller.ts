@@ -1,23 +1,22 @@
 import { injectable } from "inversify";
 import Elysia, { t } from "elysia";
-import { authenticationPlugin } from "../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { randomUUID } from "crypto";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { UserRepository } from "../users/repository";
 import { S3 } from "../infra/s3";
 import { FileAuthorizer } from "./file-authorizer";
 
 @injectable()
 export class FileController {
     public constructor(
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected s3: S3,
         protected authorizer: FileAuthorizer
     ) {}
 
     public toElysia() {
         return new Elysia({ tags: ["Files"], prefix: "/files" })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "/courses/:course/:file",
                 async ({ user, params, status, redirect }) => {

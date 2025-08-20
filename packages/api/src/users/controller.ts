@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
-import { authenticationPlugin } from "../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { UserRepository } from "./repository";
 import { Session, SessionRepository } from "./session";
 import { LoginCodeRepository } from "./login";
@@ -13,6 +13,7 @@ import { Redis } from "../infra/redis";
 @injectable()
 export class UserController {
     public constructor(
+        protected authPlugin: AuthenticationPlugin,
         protected userRepo: UserRepository,
         protected sessionRepo: SessionRepository,
         protected loginCodeRepo: LoginCodeRepository,
@@ -23,7 +24,7 @@ export class UserController {
 
     public toElysia() {
         return new Elysia({ prefix: "/users", tags: ["Users"] })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "/me",
                 async ({ user }) => {

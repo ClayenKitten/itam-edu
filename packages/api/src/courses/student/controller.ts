@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
-import { authenticationPlugin } from "../../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../repository";
 import { StudentQuery } from "./query";
@@ -12,6 +12,7 @@ import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 @injectable()
 export class StudentController {
     public constructor(
+        protected authPlugin: AuthenticationPlugin,
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected query: StudentQuery,
@@ -25,7 +26,7 @@ export class StudentController {
             prefix: "/courses/:course/students",
             tags: ["Students"]
         })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "",
                 async ({ user, params, status }) => {

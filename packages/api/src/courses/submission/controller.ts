@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
-import { authenticationPlugin } from "../../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../repository";
 import { SubmissionRepository } from "./repository";
@@ -13,6 +13,7 @@ import { SubmissionService } from "./service";
 @injectable()
 export class SubmissionController {
     public constructor(
+        protected authPlugin: AuthenticationPlugin,
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected homeworkRepo: HomeworkRepository,
@@ -26,7 +27,7 @@ export class SubmissionController {
             prefix: "/courses/:course/submissions",
             tags: ["Submissions"]
         })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "",
                 async ({ user, params, query, status }) => {

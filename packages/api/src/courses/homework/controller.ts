@@ -3,8 +3,7 @@ import { Elysia, t } from "elysia";
 import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
-import { authenticationPlugin } from "../../api/plugins/authenticate";
-import { UserRepository } from "../../users/repository";
+import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { CourseRepository } from "../repository";
 import { HomeworkRepository } from "./repository";
 import { HomeworkQuery } from "./query";
@@ -12,7 +11,7 @@ import { HomeworkQuery } from "./query";
 @injectable()
 export class HomeworkController {
     public constructor(
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected courseRepo: CourseRepository,
         protected homeworkRepo: HomeworkRepository,
         protected homeworkQuery: HomeworkQuery
@@ -24,7 +23,7 @@ export class HomeworkController {
             prefix: "/courses/:course/homeworks",
             tags: ["Homeworks"]
         })
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .get(
                 "",
                 async ({ params }) => {

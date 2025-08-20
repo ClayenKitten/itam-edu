@@ -3,11 +3,10 @@ import { Elysia, type AnyElysia } from "elysia";
 
 import logger from "../logger";
 import type { AppConfig } from "itam-edu-common/config";
-import { UserRepository } from "../users/repository";
 
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
 import { corsPlugin } from "./plugins/cors";
-import { authenticationPlugin } from "./plugins/authenticate";
+import { AuthenticationPlugin } from "./plugins/authenticate";
 import { httpLoggerPlugin } from "./plugins/logger";
 
 import { UserController } from "../users/controller";
@@ -27,7 +26,7 @@ export class ApiServer {
     public constructor(
         @inject("AppConfig")
         protected config: AppConfig,
-        protected userRepo: UserRepository,
+        protected authPlugin: AuthenticationPlugin,
         protected userController: UserController,
         protected courseController: CourseController,
         protected lessonController: LessonController,
@@ -69,7 +68,7 @@ export class ApiServer {
         })
             .use(corsPlugin())
             .use(docsPlugin())
-            .use(authenticationPlugin(this.userRepo))
+            .use(this.authPlugin.toElysia())
             .use(httpLoggerPlugin())
             .onError(async ctx => {
                 logger?.error("Unhandled Exception", {
