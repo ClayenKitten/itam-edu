@@ -92,14 +92,15 @@
                 <p
                     class="w-[400px] text-md-regular text-on-surface-muted text-balance"
                 >
-                    Обложка отображается в списке курсов. Рекомендуется
-                    изображение не менее 293x223.
+                    Обложка отображается в списке курсов, в предпросмотре ссылок
+                    в Telegram и так далее. Рекомендуется изображение размером
+                    от 315x315.
                 </p>
             </header>
             <ImageUploader
                 bind:filename={course.cover}
-                height="223px"
-                aspectRatio="293/223"
+                height="315px"
+                aspectRatio="315/315"
                 filenameToSrc={filename =>
                     courseFilePath(course.id).public(filename)}
                 onUpload={async file => {
