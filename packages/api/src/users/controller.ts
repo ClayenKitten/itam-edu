@@ -9,6 +9,7 @@ import { CalendarQuery, type CalendarFilters } from "./calendar";
 import { NotificationSender } from "../notifications/sender";
 import { LoginNotificationTemplate } from "./notifications";
 import { Redis } from "../infra/redis";
+import * as schema from "./schema";
 
 @injectable()
 export class UserController {
@@ -41,9 +42,25 @@ export class UserController {
                 {
                     requireAuthentication: true,
                     detail: {
-                        summary: "Get current user information",
+                        summary: "Get current user",
                         description:
                             "Returns information about the current user.",
+                        security: REQUIRE_TOKEN
+                    }
+                }
+            )
+            .patch(
+                "/me",
+                async ({ user, body }) => {
+                    await this.userRepo.update(user, body);
+                },
+                {
+                    requireAuthentication: true,
+                    body: schema.updateUser,
+                    detail: {
+                        summary: "Updates current user",
+                        description:
+                            "Updates information about the current user.",
                         security: REQUIRE_TOKEN
                     }
                 }
@@ -81,6 +98,22 @@ export class UserController {
                         description:
                             "Authenticates user and creates a new session.",
                         security: NO_AUTHENTICATION
+                    }
+                }
+            )
+            .delete(
+                "/sessions/current",
+                async ({ session, cookie }) => {
+                    cookie["itam-edu-token"]?.remove();
+                    await this.sessionRepo.remove(session.id);
+                },
+                {
+                    requireAuthentication: true,
+                    detail: {
+                        summary: "Delete current session",
+                        description:
+                            "Deletes current user session and removes token cookie.",
+                        security: REQUIRE_TOKEN
                     }
                 }
             )

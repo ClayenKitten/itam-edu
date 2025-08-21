@@ -57,4 +57,12 @@ export class SessionRepository {
             })
             .execute();
     }
+
+    /** Removes active session. */
+    public async remove(sessionId: string): Promise<void> {
+        await this.postgres.kysely
+            .deleteFrom("userSessions")
+            .where("id", "=", sessionId)
+            .execute();
+    }
 }

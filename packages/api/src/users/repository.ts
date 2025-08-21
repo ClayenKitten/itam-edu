@@ -3,6 +3,7 @@ import type { Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 import { injectable } from "inversify";
 import { Postgres } from "../infra/postgres";
+import * as schema from "./schema";
 
 @injectable()
 export class UserRepository {
@@ -30,27 +31,12 @@ export class UserRepository {
         return this.toEntity(user, enrollments, coursePermissions);
     }
 
-    /** Returns a user by its access token. */
-    public async getByToken(token: string): Promise<User | null> {
-        const user = await this.postgres.kysely
-            .selectFrom("users")
-            .selectAll("users")
-            .leftJoin("userSessions", "userSessions.userId", "users.id")
-            .where("userSessions.token", "=", token)
-            .executeTakeFirst();
-        if (!user) return null;
-
-        const userCourses = await this.postgres.kysely
-            .selectFrom("userCourses")
-            .selectAll()
-            .where("userId", "=", user.id)
+    public async update(user: User, dto: schema.UpdateUserDto): Promise<void> {
+        await this.postgres.kysely
+            .updateTable("users")
+            .set(dto)
+            .where("users.id", "=", user.id)
             .execute();
-        const enrollments = userCourses
-            .filter(u => u.isStaff === false)
-            .map(u => ({ courseId: u.courseId }));
-        const coursePermissions = userCourses.filter(u => u.isStaff === true);
-
-        return this.toEntity(user, enrollments, coursePermissions);
     }
 
     /**

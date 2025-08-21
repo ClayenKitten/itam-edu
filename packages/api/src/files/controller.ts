@@ -100,6 +100,35 @@ export class FileController {
                     );
                     return redirect(url, 307);
                 }
+            )
+            .post(
+                "/users/:user/avatar",
+                async ({ user, params, status, body }) => {
+                    if (!this.authorizer.canUploadUserAvatar(user, params.user))
+                        return status(403);
+
+                    const filename = this.cleanupFilename(body.file.name);
+                    await this.s3.upload(
+                        `/users/${params.user}/avatar/${filename}`,
+                        body.file
+                    );
+                    return { filename };
+                },
+                {
+                    requireAuthentication: true,
+                    body: t.Object({
+                        file: t.File({
+                            type: ["image/png", "image/jpeg"],
+                            maxSize: "10m",
+                            description: "File to upload"
+                        })
+                    }),
+                    detail: {
+                        summary: "Upload avatar",
+                        description: "Uploads user avatar to the S3 storage.",
+                        security: REQUIRE_TOKEN
+                    }
+                }
             );
     }
 

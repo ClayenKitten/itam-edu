@@ -6,7 +6,7 @@ export class User {
             avatar: string | null;
             bio: string | null;
             email: string | null;
-            firstName: string | null;
+            firstName: string;
             lastName: string | null;
             patronim: string | null;
         },
