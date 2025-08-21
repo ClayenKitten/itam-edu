@@ -267,6 +267,25 @@
             }
         }
     }
+
+    .context-menu {
+        @apply w-max flex flex-col
+            bg-surface text-on-surface text-md-medium
+            border border-surface-border
+            rounded-xs overflow-hidden shadow;
+
+        > .context-menu-item {
+            @apply flex items-center gap-2 p-3
+                bg-surface hover:bg-surface-tint
+                transition-colors duration-100
+                cursor-pointer;
+
+            > .ph,
+            .ph-fill {
+                @apply text-[16px];
+            }
+        }
+    }
 }
 
 /* Basic */

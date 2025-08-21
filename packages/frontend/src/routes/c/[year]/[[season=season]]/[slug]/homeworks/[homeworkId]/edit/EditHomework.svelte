@@ -53,14 +53,16 @@
             <input
                 class="input h-15 border border-on-primary focus:border-primary rounded-sm"
                 type="date"
-                bind:value={() =>
-                    homework.deadline
-                        ? formatDate(homework.deadline).date
-                        : null,
-                val => {
-                    if (val === "") homework.deadline = null;
-                    homework.deadline = new Date(val + "T23:59:59");
-                }}
+                bind:value={
+                    () =>
+                        homework.deadline
+                            ? formatDate(homework.deadline).date
+                            : null,
+                    val => {
+                        if (val === "") homework.deadline = null;
+                        homework.deadline = new Date(val + "T23:59:59");
+                    }
+                }
             />
         </label>
         <label class="flex flex-col gap-2">

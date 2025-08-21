@@ -53,13 +53,15 @@
                     class="input"
                     type="date"
                     required
-                    bind:value={() => formatDate(schedule!.date).date,
-                    val => {
-                        if (val === "") return;
-                        schedule!.date = new Date(
-                            val + "T" + formatDate(schedule!.date).time
-                        );
-                    }}
+                    bind:value={
+                        () => formatDate(schedule!.date).date,
+                        val => {
+                            if (val === "") return;
+                            schedule!.date = new Date(
+                                val + "T" + formatDate(schedule!.date).time
+                            );
+                        }
+                    }
                 />
             </label>
             <label class="shrink flex flex-col gap-2 min-w-[200px]">
@@ -68,13 +70,15 @@
                     class="input"
                     type="time"
                     required
-                    bind:value={() => formatDate(schedule!.date).time,
-                    val => {
-                        if (val === "") return;
-                        schedule!.date = new Date(
-                            formatDate(schedule!.date).date + "T" + val
-                        );
-                    }}
+                    bind:value={
+                        () => formatDate(schedule!.date).time,
+                        val => {
+                            if (val === "") return;
+                            schedule!.date = new Date(
+                                formatDate(schedule!.date).date + "T" + val
+                            );
+                        }
+                    }
                 />
             </label>
         </div>
@@ -83,16 +87,21 @@
             <label>
                 <input
                     type="checkbox"
-                    bind:checked={() => schedule!.online !== null,
-                    val => (schedule!.online = val ? {} : null)}
+                    bind:checked={
+                        () => schedule!.online !== null,
+                        val => (schedule!.online = val ? {} : null)
+                    }
                 />
                 Провести урок онлайн
             </label>
             <label>
                 <input
                     type="checkbox"
-                    bind:checked={() => schedule!.offline !== null,
-                    val => (schedule!.offline = val ? { location: "" } : null)}
+                    bind:checked={
+                        () => schedule!.offline !== null,
+                        val =>
+                            (schedule!.offline = val ? { location: "" } : null)
+                    }
                 />
                 Провести урок офлайн
             </label>

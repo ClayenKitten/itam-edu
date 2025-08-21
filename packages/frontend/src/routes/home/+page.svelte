@@ -88,7 +88,17 @@
 
 {#snippet fltr(text: string, key: typeof filterKind)}
     <button
-        class={["btn", filterKind === key ? "" : "secondary"]}
+        class={[
+            "h-12 px-5 py-3",
+            "text-lg-medium border rounded-xs shadow",
+            "transition-colors duration-100",
+            filterKind === key
+                ? "bg-primary text-on-primary border-primary cursor-default"
+                : [
+                      "bg-surface text-on-surface border-surface-border",
+                      "hover:bg-on-primary hover:text-primary hover:border-primary-border"
+                  ]
+        ]}
         onclick={() => (filterKind = key)}>{text}</button
     >
 {/snippet}

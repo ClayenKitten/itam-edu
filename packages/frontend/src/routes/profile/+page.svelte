@@ -1,6 +1,7 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import type { Course } from "$lib/types";
+    import UserInfoPanel from "./UserInfoPanel.svelte";
+    import CoursesPanel from "./CoursesPanel.svelte";
 
     let { data } = $props();
 </script>
@@ -16,5 +17,11 @@
         courses={data.courses}
         standalone
     />
-    <main class="flex flex-col py-15 px-7.5 gap-7.5">Профиль</main>
+    <main class="self-center flex flex-col gap-10 py-12.5 px-10">
+        <h2>Профиль</h2>
+        <div class="flex gap-6 flex-wrap justify-between items-start">
+            <UserInfoPanel user={data.user} />
+            <CoursesPanel user={data.user} courses={data.courses} />
+        </div>
+    </main>
 </div>
