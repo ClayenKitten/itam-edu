@@ -65,6 +65,16 @@
         courses={data.courses}
     />
     <main class="relative z-0 flex flex-col items-stretch @container/main">
+        {#if data.course.isArchived}
+            <div
+                class={[
+                    "flex justify-center items-center gap-2 w-full h-8",
+                    "bg-on-primary text-primary text-lg-regular border-b-2 border-primary-border"
+                ]}
+            >
+                Этот курс находится в архиве. Он доступен только для просмотра.
+            </div>
+        {/if}
         {@render children()}
     </main>
 </div>
