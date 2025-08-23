@@ -13,11 +13,14 @@
     let highlightedDate: Date | null = $state(null);
     let selectedDate: Date | null = $state(null);
 
-    let filterKind: "my" | "active" | "archive" = $state("my");
+    let filterKind: "my" | "active" | "archive" = $state(
+        data.user === null ? "active" : "my"
+    );
     let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
         switch (filterKind) {
             case "my":
                 return c =>
+                    !c.isArchived &&
                     (data.user?.isCourseStudent(c.id) ||
                         data.user?.isCourseStaff(c.id)) === true;
             case "active":
@@ -43,10 +46,12 @@
         standalone
     />
     <main
-        class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-15 px-7.5 gap-7.5"
+        class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-12.5 px-7.5 gap-7.5"
     >
         <menu class="flex gap-2">
-            {@render fltr("Мои", "my")}
+            {#if data.user !== null}
+                {@render fltr("Мои", "my")}
+            {/if}
             {@render fltr("Текущие", "active")}
             {@render fltr("Архивные", "archive")}
         </menu>
