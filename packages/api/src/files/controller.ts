@@ -37,8 +37,8 @@ export class FileController {
                 {
                     detail: {
                         summary: "Download course file",
-                        description: "Returns redirect to signed download URL",
-                        security: REQUIRE_TOKEN
+                        description:
+                            "Returns redirect to signed download URL of course file."
                     }
                 }
             )
@@ -99,6 +99,14 @@ export class FileController {
                         "GET"
                     );
                     return redirect(url, 307);
+                },
+                {
+                    detail: {
+                        summary: "Download user avatar",
+                        description:
+                            "Redirects to signed download URL of user avatar.",
+                        security: REQUIRE_TOKEN
+                    }
                 }
             )
             .post(

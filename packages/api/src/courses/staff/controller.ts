@@ -97,9 +97,9 @@ export class StaffController {
                                     role: schema.staffRole
                                 }),
                                 detail: {
-                                    summary: "Add or update staff member",
+                                    summary: "Change staff member's role",
                                     description:
-                                        "Adds staff member to the course or changes their role.",
+                                        "Changes role of the staff member.",
                                     security: REQUIRE_TOKEN
                                 }
                             }
