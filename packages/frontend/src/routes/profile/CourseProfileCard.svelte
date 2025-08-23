@@ -69,8 +69,10 @@
                             "rounded-xs"
                         ]}
                     >
-                        {#if user.hasCoursePermission(course.id, "isOwner")}
+                        {#if course.ownerId === user.id}
                             Владелец
+                        {:else if course.role === "admin"}
+                            Администратор
                         {:else}
                             Преподаватель
                         {/if}
@@ -128,7 +130,7 @@
                     <i class="ph ph-bell-slash"></i>
                     Отключить уведомления
                 </button>
-                {#if !user.hasCoursePermission(course.id, "isOwner")}
+                {#if course.ownerId !== user.id}
                     <button
                         class="context-menu-item"
                         onclick={async () => {

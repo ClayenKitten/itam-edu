@@ -1,7 +1,12 @@
 import { injectable } from "inversify";
 import type { Course } from "../entity";
 import type { User } from "itam-edu-common";
-import { ConflictError, ForbiddenError, HttpError } from "../../api/errors";
+import {
+    ConflictError,
+    ForbiddenError,
+    HttpError,
+    NotFoundError
+} from "../../api/errors";
 import { CourseStatsRepository } from "../stats";
 import { Postgres } from "../../infra/postgres";
 import { CourseChangelog } from "../changes";
@@ -20,8 +25,13 @@ export class ExpelStudent {
         course: Course,
         student: User
     ): Promise<void | HttpError> {
-        if (actor.id !== student.id && !actor.isCourseStaff(course.id)) {
-            return new ForbiddenError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (actor.id !== student.id && !permissions.students.remove) {
+            return new ForbiddenError(
+                "You are not allowed to remove students in that course."
+            );
         }
         const isRemoved = await this.remove(course, student);
         if (!isRemoved) {
@@ -33,11 +43,7 @@ export class ExpelStudent {
                 role: "student",
                 userId: student.id
             }),
-            this.statistics.add(
-                "students",
-                course.id,
-                course.studentIds.length - 1
-            )
+            this.statistics.add("students", course.id, course.studentCount - 1)
         ]);
     }
 
@@ -51,7 +57,7 @@ export class ExpelStudent {
             .deleteFrom("userCourses")
             .where("courseId", "=", course.id)
             .where("userId", "=", user.id)
-            .where("userCourses.isStaff", "=", false)
+            .where("userCourses.role", "=", "student")
             .executeTakeFirst();
         return result.numDeletedRows > 0n;
     }

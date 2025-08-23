@@ -4,8 +4,8 @@ import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../repository";
 import { StudentQuery } from "./query";
-import { EnrollStudent } from "./enroll";
-import { ExpelStudent } from "./expel";
+import { EnrollStudent } from "./enroll.interactor";
+import { ExpelStudent } from "./expel.interactor";
 import { HttpError } from "../../api/errors";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 
@@ -16,8 +16,8 @@ export class StudentController {
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected query: StudentQuery,
-        protected enroll: EnrollStudent,
-        protected expel: ExpelStudent
+        protected enrollInteractor: EnrollStudent,
+        protected expelInteractor: ExpelStudent
     ) {}
 
     public toElysia() {
@@ -27,12 +27,14 @@ export class StudentController {
             tags: ["Students"]
         })
             .use(this.authPlugin.toElysia())
+            .derive(async ({ params, status }) => {
+                const course = await this.courseRepo.getById(params.course);
+                if (!course) return status(404, "Course not found.");
+                return { course };
+            })
             .get(
                 "",
-                async ({ user, params, status }) => {
-                    const course = await this.courseRepo.getById(params.course);
-                    if (!course) return status(404);
-
+                async ({ user, course, status }) => {
                     const students = await this.query.getAll(user, course);
                     if (students instanceof HttpError) {
                         return status(students.code, students.message);
@@ -60,22 +62,22 @@ export class StudentController {
                 },
                 app =>
                     app
-                        .derive(async ({ params, status }) => {
-                            const [course, student] = await Promise.all([
-                                this.courseRepo.getById(params.course),
-                                this.userRepo.getById(params.student)
-                            ]);
-                            if (!course || !student) return status(404);
+                        .derive(async ({ course, params, status }) => {
+                            const student = await this.userRepo.getById(
+                                params.student
+                            );
+                            if (!student) return status(404, "User not found.");
                             return { course, student };
                         })
                         .put(
                             "",
                             async ({ user, course, student, status }) => {
-                                const result = await this.enroll.invoke(
-                                    user,
-                                    course,
-                                    student
-                                );
+                                const result =
+                                    await this.enrollInteractor.invoke(
+                                        user,
+                                        course,
+                                        student
+                                    );
                                 if (result instanceof HttpError) {
                                     return status(result.code, result.message);
                                 }
@@ -93,11 +95,12 @@ export class StudentController {
                         .delete(
                             "",
                             async ({ user, course, student, status }) => {
-                                const result = await this.expel.invoke(
-                                    user,
-                                    course,
-                                    student
-                                );
+                                const result =
+                                    await this.expelInteractor.invoke(
+                                        user,
+                                        course,
+                                        student
+                                    );
                                 if (result instanceof HttpError) {
                                     return status(result.code, result.message);
                                 }

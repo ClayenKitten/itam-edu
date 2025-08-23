@@ -8,7 +8,7 @@ import { CourseRepository } from "./repository";
 import { ConflictError, ForbiddenError, HttpError } from "../api/errors";
 
 @injectable()
-export class CreateCourseInteractor {
+export class CreateCourse {
     public constructor(
         protected postgres: Postgres,
         protected repository: CourseRepository
@@ -23,7 +23,7 @@ export class CreateCourseInteractor {
         actor: User,
         dto: CreateCourseDto
     ): Promise<Course | HttpError> {
-        if (!actor.hasPermission("canCreateCourses")) {
+        if (actor.permissions.createCourses === false) {
             return new ForbiddenError("You are not allowed to create courses");
         }
 
@@ -40,31 +40,30 @@ export class CreateCourseInteractor {
         }
 
         const id = randomUUID();
-        await this.postgres.kysely
-            .insertInto("courses")
-            .values({
-                id,
-                slug: dto.slug,
-                year: dto.year,
-                semester: dto.semester,
-                title: dto.title,
-                isArchived: false,
-                isEnrollmentOpen: true,
-                isPublished: false
-            })
-            .execute();
-        await this.postgres.kysely
-            .insertInto("userCourses")
-            .values({
-                userId: actor.id,
-                courseId: id,
-                isOwner: true,
-                isStaff: true,
-                canEditContent: true,
-                canEditInfo: true,
-                canManageSubmissions: true
-            })
-            .execute();
+        await this.postgres.kysely.transaction().execute(async trx => {
+            await trx
+                .insertInto("courses")
+                .values({
+                    id,
+                    slug: dto.slug,
+                    year: dto.year,
+                    semester: dto.semester,
+                    title: dto.title,
+                    ownerId: actor.id,
+                    isArchived: false,
+                    isEnrollmentOpen: true,
+                    isPublished: false
+                })
+                .execute();
+            await trx
+                .insertInto("userCourses")
+                .values({
+                    userId: actor.id,
+                    courseId: id,
+                    role: "admin"
+                })
+                .execute();
+        });
         const course = await this.repository.getById(id);
         if (course === null) {
             throw Error("course must be non-null after creation");

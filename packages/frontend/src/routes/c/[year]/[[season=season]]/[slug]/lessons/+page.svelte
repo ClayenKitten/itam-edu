@@ -23,7 +23,7 @@
 <div class="flex flex-col gap-10 p-10">
     <header class="flex gap-4">
         <h2>Уроки</h2>
-        {#if data.user?.hasCoursePermission(data.course.id, "canEditContent")}
+        {#if data.course.permissions.lessons.edit === true}
             <IconButton
                 icon="ph-pencil-simple"
                 title="Редактировать"

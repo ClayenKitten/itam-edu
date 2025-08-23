@@ -4,7 +4,7 @@
     import type { Course } from "$lib/types";
     import type { User } from "itam-edu-common";
 
-    let { user, course = $bindable() }: Props = $props();
+    let { course = $bindable() }: Props = $props();
 
     type Props = {
         user: User;
@@ -40,9 +40,7 @@
                     ? "Курс будет доступен только сотрудникам"
                     : "Курс станет публично доступен",
             onclick: () => save({ isPublished: !course.isPublished }),
-            disabled:
-                !user.hasPermission("canPublishCourses") ||
-                !user.hasCoursePermission(course.id, "isOwner")
+            disabled: course.permissions.course.publish !== true
         })}
         {@render veryScaryToggle({
             enabled: course.isArchived,
@@ -52,7 +50,7 @@
                     ? "Курс снова станет редактируемым, а студенты смогут сдавать работы"
                     : "Курс будет доступен только для чтения, а приём работ закрыт",
             onclick: () => save({ isArchived: !course.isArchived }),
-            disabled: !user.hasCoursePermission(course.id, "isOwner")
+            disabled: course.permissions.course.archive !== true
         })}
         {@render veryScaryToggle({
             enabled: course.isEnrollmentOpen,
@@ -63,7 +61,7 @@
                     ? "Новые студенты не смогут поступить на курс"
                     : "Новые студенты смогут поступать на курс",
             onclick: () => save({ isEnrollmentOpen: !course.isEnrollmentOpen }),
-            disabled: !user.hasCoursePermission(course.id, "isOwner")
+            disabled: course.permissions.course.toggleEnrollment !== true
         })}
     </div>
 </section>

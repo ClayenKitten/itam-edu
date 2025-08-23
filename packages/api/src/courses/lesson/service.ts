@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { UnauthorizedError } from "../../api/errors";
+import { NotFoundError, UnauthorizedError } from "../../api/errors";
 import { NotificationSender } from "../../notifications/sender";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
@@ -24,8 +24,13 @@ export class LessonService {
         course: Course,
         data: typeof schema.createLesson.static
     ): Promise<Lesson | UnauthorizedError> {
-        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
-            return new UnauthorizedError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (permissions.lessons.edit !== true) {
+            return new UnauthorizedError(
+                "You are not allowed to create lessons."
+            );
         }
 
         const newLesson = new Lesson(
@@ -51,8 +56,13 @@ export class LessonService {
         lesson: Lesson,
         change: typeof schema.updateLesson.static
     ): Promise<Lesson | UnauthorizedError> {
-        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
-            return new UnauthorizedError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (permissions.lessons.edit !== true) {
+            return new UnauthorizedError(
+                "You are not allowed to edit lessons."
+            );
         }
 
         const newLesson = new Lesson(
@@ -72,7 +82,7 @@ export class LessonService {
             if (newLesson.schedule !== null) {
                 await this.notificationSender.send(
                     new LessonRescheduleNotificationTemplate(course, newLesson),
-                    [...course.staffIds, ...course.studentIds]
+                    [...course.members.map(m => m.id)]
                 );
                 await this.changelog.add(actor, course, {
                     kind: "lesson-schedule-changed",
@@ -90,9 +100,15 @@ export class LessonService {
         course: Course,
         update: typeof schema.updateLessonsList.static
     ): Promise<void | UnauthorizedError> {
-        if (!actor.hasCoursePermission(course.id, "canEditContent")) {
-            return new UnauthorizedError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (permissions.lessons.edit !== true) {
+            return new UnauthorizedError(
+                "You are not allowed to edit lessons."
+            );
         }
+
         await this.lessonRepo.updateAll(course, update);
     }
 }

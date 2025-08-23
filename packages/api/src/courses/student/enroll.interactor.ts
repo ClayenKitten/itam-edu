@@ -5,7 +5,8 @@ import {
     BadRequestError,
     ConflictError,
     ForbiddenError,
-    HttpError
+    HttpError,
+    NotFoundError
 } from "../../api/errors";
 import { Postgres } from "../../infra/postgres";
 import { CourseChangelog } from "../changes";
@@ -25,13 +26,18 @@ export class EnrollStudent {
         course: Course,
         student: User
     ): Promise<void | HttpError> {
-        if (actor.id !== student.id && !actor.isCourseStaff(course.id)) {
-            return new ForbiddenError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (actor.id !== student.id) {
+            return new ForbiddenError(
+                "You are not allowed to enroll other students."
+            );
         }
         if (!course.canEnrollStudents) {
-            return new BadRequestError("Course doesn't accept enrollments");
+            return new BadRequestError("Course doesn't accept enrollments.");
         }
-        const isAdded = await this.set(course, student);
+        const isAdded = await this.add(course, student);
         if (!isAdded) {
             return new ConflictError("User is already enrolled to the course.");
         }
@@ -41,11 +47,7 @@ export class EnrollStudent {
                 role: "student",
                 userId: student.id
             }),
-            this.statistics.add(
-                "students",
-                course.id,
-                course.studentIds.length + 1
-            )
+            this.statistics.add("students", course.id, course.studentCount + 1)
         ]);
     }
 
@@ -54,10 +56,10 @@ export class EnrollStudent {
      *
      * @returns `true` if student is added, and `false` if it was already in the list.
      * */
-    protected async set(course: Course, user: User): Promise<boolean> {
+    protected async add(course: Course, user: User): Promise<boolean> {
         const result = await this.postgres.kysely
             .insertInto("userCourses")
-            .values({ courseId: course.id, userId: user.id, isStaff: false })
+            .values({ courseId: course.id, userId: user.id, role: "student" })
             .onConflict(cb => cb.doNothing())
             .executeTakeFirst();
         return (result.numInsertedOrUpdatedRows ?? 0) > 0n;

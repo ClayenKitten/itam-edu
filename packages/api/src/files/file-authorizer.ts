@@ -22,13 +22,7 @@ export class FileAuthorizer {
         courseId: string,
         _fileId: string
     ): Promise<boolean> {
-        if (
-            actor.hasCoursePermission(courseId, "canEditContent") ||
-            actor.hasCoursePermission(courseId, "canEditInfo")
-        ) {
-            return true;
-        }
-        return false;
+        return actor.isCourseStaff(courseId);
     }
 
     public async canDownloadUserAvatar(

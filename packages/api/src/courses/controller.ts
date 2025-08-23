@@ -7,8 +7,8 @@ import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
 import { CourseStatsRepository } from "./stats";
-import { CreateCourseInteractor } from "./create.interactor";
-import { UpdateCourseInteractor } from "./update.interactor";
+import { CreateCourse } from "./create.interactor";
+import { UpdateCourse } from "./update.interactor";
 import { HttpError } from "../api/errors";
 
 @injectable()
@@ -19,8 +19,8 @@ export class CourseController {
         protected courseQuery: CourseQuery,
         protected courseChangelog: CourseChangelog,
         protected courseStats: CourseStatsRepository,
-        protected createCourseInteractor: CreateCourseInteractor,
-        protected updateCourseInteractor: UpdateCourseInteractor
+        protected createCourseInteractor: CreateCourse,
+        protected updateCourseInteractor: UpdateCourse
     ) {}
 
     public toElysia() {
@@ -28,8 +28,8 @@ export class CourseController {
             .use(this.authPlugin.toElysia())
             .get(
                 "",
-                async () => {
-                    const courses = await this.courseQuery.getAll();
+                async ({ user }) => {
+                    const courses = await this.courseQuery.getAll(user);
                     return courses;
                 },
                 {
@@ -52,7 +52,7 @@ export class CourseController {
                     return result.toDTO();
                 },
                 {
-                    hasPermission: ["canCreateCourses"],
+                    requireAuthentication: true,
                     body: schema.createCourse,
                     detail: {
                         summary: "Create new course",
@@ -94,10 +94,15 @@ export class CourseController {
             )
             .get(
                 "/:course",
-                async ({ params, status }) => {
-                    const course = await this.courseQuery.get(params.course);
-                    if (!course) return status(404);
-                    return course;
+                async ({ user, params, status }) => {
+                    const result = await this.courseQuery.get(
+                        user,
+                        params.course
+                    );
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
                 },
                 {
                     detail: {

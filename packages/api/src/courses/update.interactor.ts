@@ -1,12 +1,12 @@
 import { injectable } from "inversify";
 import type { Course } from "./entity";
-import type { User } from "itam-edu-common";
-import { ForbiddenError, HttpError } from "../api/errors";
+import type { CoursePermissions, User } from "itam-edu-common";
+import { ForbiddenError, HttpError, NotFoundError } from "../api/errors";
 import { Postgres } from "../infra/postgres";
 import type { UpdateCourseDto } from "./schema";
 
 @injectable()
-export class UpdateCourseInteractor {
+export class UpdateCourse {
     public constructor(protected postgres: Postgres) {}
 
     /** Updates course. */
@@ -15,10 +15,12 @@ export class UpdateCourseInteractor {
         course: Course,
         dto: UpdateCourseDto
     ): Promise<void | HttpError> {
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
         for (const key of Object.keys(dto) as (keyof UpdateCourseDto)[]) {
             if (dto[key] === undefined) continue;
-            if (!this.isAllowedToModifyField(actor, course, key)) {
-                console.log(dto, key);
+            if (!this.isAllowedToModifyField(permissions, key)) {
                 return new ForbiddenError();
             }
         }
@@ -32,8 +34,7 @@ export class UpdateCourseInteractor {
 
     /** Checks if user is authorized to modify provided field. */
     protected isAllowedToModifyField(
-        actor: User,
-        course: Course,
+        permissions: CoursePermissions,
         updatedField: keyof UpdateCourseDto
     ): boolean {
         switch (updatedField) {
@@ -44,17 +45,14 @@ export class UpdateCourseInteractor {
             case "banner":
             case "about":
             case "theme":
-                return actor.hasCoursePermission(course.id, "canEditInfo");
             case "status":
-                return actor.hasCoursePermission(course.id, "canEditContent");
+                return permissions.course.update === true;
             case "isPublished":
-                return (
-                    actor.hasPermission("canPublishCourses") &&
-                    actor.hasCoursePermission(course.id, "isOwner")
-                );
+                return permissions.course.publish === true;
             case "isEnrollmentOpen":
+                return permissions.course.toggleEnrollment === true;
             case "isArchived":
-                return actor.hasCoursePermission(course.id, "isOwner");
+                return permissions.course.archive === true;
             default:
                 let guard: never = updatedField;
                 return false;

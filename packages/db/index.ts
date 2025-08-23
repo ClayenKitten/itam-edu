@@ -5,9 +5,13 @@
 
 import type { ColumnType } from "kysely";
 
+export type CourseRole = "admin" | "student" | "teacher";
+
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
+
+export type GlobalRole = "admin" | "default" | "supervisor";
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
@@ -48,6 +52,7 @@ export interface Courses {
   isArchived: Generated<boolean>;
   isEnrollmentOpen: Generated<boolean>;
   isPublished: Generated<boolean>;
+  ownerId: string;
   /**
    * Optional semester in which the course takes place
    */
@@ -135,13 +140,8 @@ export interface SchemaMigrations {
 }
 
 export interface UserCourses {
-  canEditContent: Generated<boolean>;
-  canEditInfo: Generated<boolean>;
-  canManageSubmissions: Generated<boolean>;
   courseId: string;
-  isOwner: Generated<boolean>;
-  isStaff: Generated<boolean>;
-  title: string | null;
+  role: CourseRole;
   userId: string;
 }
 
@@ -151,14 +151,12 @@ export interface Users {
    */
   avatar: string | null;
   bio: string | null;
-  canCreateCourses: Generated<boolean>;
-  canPublishCourses: Generated<boolean>;
   email: string | null;
   firstName: string;
   id: Generated<string>;
-  isSupervisor: Generated<boolean>;
   lastName: string | null;
   patronim: string | null;
+  role: Generated<GlobalRole>;
   tgChatId: Int8;
   tgUserId: Int8;
   tgUsername: string;

@@ -1,50 +1,44 @@
 import { injectable } from "inversify";
 import type { Course } from "../entity";
 import { Postgres } from "../../infra/postgres";
+import type { StaffMemberDto, StaffRole } from "./schema";
+import type { User } from "itam-edu-common";
+import { HttpError, NotFoundError } from "../../api/errors";
 
 @injectable()
 export class StaffQuery {
     public constructor(protected postgres: Postgres) {}
 
     /** Returns all staff members. */
-    public async getAll(course: Course): Promise<StaffDto[]> {
+    public async getAll(
+        actor: User | null,
+        course: Course
+    ): Promise<StaffMemberDto[] | HttpError> {
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
         return await this.postgres.kysely
             .selectFrom("userCourses")
             .innerJoin("users", "userCourses.userId", "users.id")
             .select([
                 "users.id",
-                "firstName",
-                "lastName",
-                "patronim",
-                "bio",
-                "avatar",
-                "tgUsername",
+                "users.firstName",
+                "users.lastName",
+                "users.bio",
+                "users.avatar",
+                "users.tgUsername",
                 "userCourses.courseId",
-                "userCourses.title",
-                "userCourses.isOwner",
-                "userCourses.canEditInfo",
-                "userCourses.canEditContent",
-                "userCourses.canManageSubmissions"
+                "userCourses.role"
             ])
-            .where("userCourses.isStaff", "=", true)
             .where("userCourses.courseId", "=", course.id)
+            .where(eb =>
+                eb.or([
+                    eb("userCourses.role", "=", "admin"),
+                    eb("userCourses.role", "=", "teacher")
+                ])
+            )
+            .$narrowType<{ role: StaffRole }>()
             .orderBy("tgUsername asc")
             .execute();
     }
 }
-
-export type StaffDto = {
-    id: string;
-    firstName: string;
-    lastName: string | null;
-    patronim: string | null;
-    bio: string | null;
-    avatar: string | null;
-    tgUsername: string;
-    courseId: string;
-    title: string | null;
-    isOwner: boolean;
-    canEditInfo: boolean;
-    canEditContent: boolean;
-    canManageSubmissions: boolean;
-};

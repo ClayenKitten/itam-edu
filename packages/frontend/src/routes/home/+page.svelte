@@ -69,7 +69,7 @@
             {#each courses as course}
                 <CourseCard {course} />
             {/each}
-            {#if data.user && data.user.hasPermission("canCreateCourses")}
+            {#if data.user && data.user.permissions.createCourses === true}
                 <menu class="col-span-full">
                     <button
                         class="btn h-11"

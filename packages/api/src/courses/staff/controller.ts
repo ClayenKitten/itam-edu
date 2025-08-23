@@ -6,8 +6,9 @@ import { HttpError } from "../../api/errors";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../../courses/repository";
 import { StaffQuery } from "./query";
-import { PromoteStaff } from "./promote";
-import { DemoteStaff } from "./demote";
+import { EditStaffMemberRole } from "./editRole.interactor";
+import { RemoveStaffMember } from "./remove.interactor";
+import * as schema from "./schema";
 
 @injectable()
 export class StaffController {
@@ -16,8 +17,8 @@ export class StaffController {
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected query: StaffQuery,
-        protected promote: PromoteStaff,
-        protected demote: DemoteStaff
+        protected editRoleInteractor: EditStaffMemberRole,
+        protected removeInteractor: RemoveStaffMember
     ) {}
 
     public toElysia() {
@@ -27,13 +28,15 @@ export class StaffController {
             tags: ["Staff"]
         })
             .use(this.authPlugin.toElysia())
+            .derive(async ({ params, status }) => {
+                const course = await this.courseRepo.getById(params.course);
+                if (!course) return status(404, "Course not found.");
+                return { course };
+            })
             .get(
                 "",
-                async ({ params, status }) => {
-                    const course = await this.courseRepo.getById(params.course);
-                    if (!course) return status(404);
-
-                    const staff = await this.query.getAll(course);
+                async ({ user, course, status }) => {
+                    const staff = await this.query.getAll(user, course);
                     if (staff instanceof HttpError) {
                         return status(staff.code, staff.message);
                     }
@@ -61,12 +64,12 @@ export class StaffController {
                 app =>
                     app
                         .derive(async ({ params, status }) => {
-                            const [course, staffMember] = await Promise.all([
-                                this.courseRepo.getById(params.course),
-                                this.userRepo.getById(params.staffMember)
-                            ]);
-                            if (!course || !staffMember) return status(404);
-                            return { course, staffMember };
+                            const staffMember = await this.userRepo.getById(
+                                params.staffMember
+                            );
+                            if (!staffMember)
+                                return status(404, "User not found.");
+                            return { staffMember };
                         })
                         .put(
                             "",
@@ -77,13 +80,13 @@ export class StaffController {
                                 staffMember,
                                 status
                             }) => {
-                                const result = await this.promote.invoke(
-                                    user,
-                                    course,
-                                    staffMember,
-                                    body.title,
-                                    body.permissions
-                                );
+                                const result =
+                                    await this.editRoleInteractor.invoke(
+                                        user,
+                                        course,
+                                        staffMember,
+                                        body.role
+                                    );
                                 if (result instanceof HttpError) {
                                     return status(result.code, result.message);
                                 }
@@ -91,18 +94,12 @@ export class StaffController {
                             {
                                 requireAuthentication: true,
                                 body: t.Object({
-                                    title: t.String(),
-                                    permissions: t.Object({
-                                        isOwner: t.Boolean(),
-                                        canEditInfo: t.Boolean(),
-                                        canEditContent: t.Boolean(),
-                                        canManageSubmissions: t.Boolean()
-                                    })
+                                    role: schema.staffRole
                                 }),
                                 detail: {
-                                    summary: "Promote staff member",
+                                    summary: "Add or update staff member",
                                     description:
-                                        "Promotes staff member to the course.",
+                                        "Adds staff member to the course or changes their role.",
                                     security: REQUIRE_TOKEN
                                 }
                             }
@@ -110,11 +107,12 @@ export class StaffController {
                         .delete(
                             "",
                             async ({ user, course, staffMember, status }) => {
-                                const result = await this.demote.invoke(
-                                    user,
-                                    course,
-                                    staffMember
-                                );
+                                const result =
+                                    await this.removeInteractor.invoke(
+                                        user,
+                                        course,
+                                        staffMember
+                                    );
                                 if (result instanceof HttpError) {
                                     return status(result.code, result.message);
                                 }
@@ -122,9 +120,9 @@ export class StaffController {
                             {
                                 requireAuthentication: true,
                                 detail: {
-                                    summary: "Demote staff member",
+                                    summary: "Remove staff member",
                                     description:
-                                        "Demotes staff member from the course.",
+                                        "Removes staff member from the course.",
                                     security: REQUIRE_TOKEN
                                 }
                             }

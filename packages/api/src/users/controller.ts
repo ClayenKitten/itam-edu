@@ -34,8 +34,7 @@ export class UserController {
                             id: user.id,
                             info: user.info,
                             telegram: user.telegram,
-                            enrollments: user.enrollments,
-                            permissions: user.permissions
+                            courses: user.courses
                         }
                     };
                 },
