@@ -10,6 +10,7 @@ export const course = t.Object({
     }),
     year: t.Integer({ minimum: 2000, maximum: 3000 }),
     semester: t.Nullable(t.Union([t.Literal("autumn"), t.Literal("spring")])),
+    ownerId: t.String({ format: "uuid" }),
 
     title: t.String({ minLength: 1, maxLength: 32 }),
     description: t.Nullable(t.String({ maxLength: 500 })),
@@ -24,6 +25,7 @@ export const course = t.Object({
     isEnrollmentOpen: t.Boolean(),
     isArchived: t.Boolean()
 });
+export type CourseDto = typeof course.static;
 
 /** Data to create course. */
 export const createCourse = t.Pick(course, [

@@ -5,6 +5,7 @@ import { schemaFields } from "../util";
 import { Course } from "./entity";
 import { Postgres } from "../infra/postgres";
 import type { DB } from "itam-edu-db";
+import type { CourseRole } from "itam-edu-common";
 
 @injectable()
 export class CourseRepository {
@@ -22,7 +23,7 @@ export class CourseRepository {
         const members = await this.postgres.kysely
             .selectFrom("userCourses")
             .where("courseId", "=", courseInfo.id)
-            .select(["userId", "isStaff"])
+            .select(["userId", "role"])
             .execute();
 
         return this.toEntity(courseInfo, members);
@@ -52,20 +53,52 @@ export class CourseRepository {
         const members = await this.postgres.kysely
             .selectFrom("userCourses")
             .where("courseId", "=", courseInfo.id)
-            .select(["userId", "isStaff"])
+            .select(["userId", "role"])
             .execute();
 
         return this.toEntity(courseInfo, members);
     }
 
+    /** Returns all courses. */
+    public async getAll(): Promise<Course[]> {
+        const courseInfos = await this.postgres.kysely
+            .selectFrom("courses")
+            .select(schemaFields(schema.course))
+            .execute();
+        if (courseInfos.length === 0) return [];
+
+        const members = await this.postgres.kysely
+            .selectFrom("userCourses")
+            .where(
+                "courseId",
+                "in",
+                courseInfos.map(c => c.id)
+            )
+            .select(["courseId", "userId", "role"])
+            .execute();
+
+        const membersByCourse = new Map<
+            string,
+            Selectable<DB["userCourses"]>[]
+        >();
+        for (const member of members) {
+            if (!membersByCourse.has(member.courseId)) {
+                membersByCourse.set(member.courseId, []);
+            }
+            membersByCourse.get(member.courseId)!.push(member);
+        }
+        return courseInfos.map(c =>
+            this.toEntity(c, membersByCourse.get(c.id) ?? [])
+        );
+    }
+
     protected toEntity(
         course: Selectable<DB["courses"]>,
-        members: Pick<Selectable<DB["userCourses"]>, "userId" | "isStaff">[]
+        members: Pick<Selectable<DB["userCourses"]>, "userId" | "role">[]
     ): Course {
         return new Course(
             course,
-            members.filter(m => m.isStaff).map(m => m.userId),
-            members.filter(m => !m.isStaff).map(m => m.userId)
+            members.map(m => ({ id: m.userId, role: m.role }))
         );
     }
 }

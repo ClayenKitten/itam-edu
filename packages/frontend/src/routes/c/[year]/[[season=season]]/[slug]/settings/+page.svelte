@@ -28,22 +28,17 @@
     ]}
 >
     <InfoSection
-        course={courseClone}
-        readonly={!data.user?.hasCoursePermission(
-            data.course.id,
-            "canEditInfo"
-        )}
+        bind:course={courseClone}
+        readonly={data.course.permissions.course.update !== true}
     />
     <StyleSection
-        course={courseClone}
-        readonly={!data.user?.hasCoursePermission(
-            data.course.id,
-            "canEditInfo"
-        )}
+        bind:course={courseClone}
+        readonly={data.course.permissions.course.update !== true}
     />
     <StaffSection
-        bind:staff={data.staff}
-        readonly={!data.user?.hasCoursePermission(data.course.id, "isOwner")}
+        course={data.course}
+        staff={data.staff}
+        readonly={data.course.permissions.staff.manage !== true}
     />
-    <DangerSection course={courseClone} user={data.user} />
+    <DangerSection course={data.course} user={data.user} />
 </div>

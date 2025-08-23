@@ -2,8 +2,13 @@ import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import { Postgres } from "../../infra/postgres";
-import { ForbiddenError, type HttpError } from "../../api/errors";
+import {
+    ForbiddenError,
+    NotFoundError,
+    type HttpError
+} from "../../api/errors";
 import { sql } from "kysely";
+import type { StudentDto, StudentRole } from "./schema";
 
 @injectable()
 export class StudentQuery {
@@ -14,9 +19,14 @@ export class StudentQuery {
         actor: User,
         course: Course
     ): Promise<StudentDto[] | HttpError> {
-        if (!actor.isCourseStaff(course.id)) {
-            return new ForbiddenError();
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) {
+            return new NotFoundError("Course not found.");
         }
+        if (!permissions.students.view) {
+            return new ForbiddenError("Your are not allowed to view students.");
+        }
+
         const data = await this.postgres.kysely
             .selectFrom("userCourses")
             .innerJoin("users", "userCourses.userId", "users.id")
@@ -27,12 +37,13 @@ export class StudentQuery {
             )
             .select([
                 "users.id",
-                "courseId",
-                "firstName",
-                "lastName",
-                "patronim",
-                "avatar",
-                "tgUsername",
+                "users.firstName",
+                "users.lastName",
+                "users.bio",
+                "users.avatar",
+                "users.tgUsername",
+                "userCourses.courseId",
+                "userCourses.role",
                 sql<number>`count(homework_submissions.*) FILTER (WHERE course_id = ${course.id} AND accepted = true)::INTEGER`.as(
                     "acceptedSubmissions"
                 ),
@@ -43,36 +54,21 @@ export class StudentQuery {
                     "totalSubmissions"
                 )
             ])
-            .where("isStaff", "=", sql.lit(false))
-            .where("courseId", "=", course.id)
+            .where("userCourses.courseId", "=", course.id)
+            .where("userCourses.role", "=", "student")
+            .$narrowType<{ role: StudentRole }>()
             .groupBy([
                 "users.id",
-                "courseId",
-                "firstName",
-                "lastName",
-                "patronim",
-                "avatar",
-                "tgUsername"
+                "users.firstName",
+                "users.lastName",
+                "users.bio",
+                "users.avatar",
+                "users.tgUsername",
+                "userCourses.courseId",
+                "userCourses.role"
             ])
             .orderBy("users.tgUsername", "asc")
             .execute();
-        return data as NonNullableProperties<(typeof data)[number]>[];
+        return data;
     }
 }
-
-// View properties are mistakenly marked as nullable.
-// https://github.com/RobinBlomberg/kysely-codegen/issues/261
-type NonNullableProperties<T> = { [P in keyof T]: NonNullable<T[P]> };
-
-export type StudentDto = {
-    id: string;
-    firstName: string;
-    lastName: string | null;
-    patronim: string | null;
-    avatar: string | null;
-    tgUsername: string;
-    courseId: string;
-    acceptedSubmissions: number;
-    totalSubmissions: number;
-    rejectedSubmissions: number;
-};

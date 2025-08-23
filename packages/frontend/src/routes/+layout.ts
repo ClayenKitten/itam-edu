@@ -29,13 +29,7 @@ async function getUser(fetch: typeof window.fetch): Promise<User | null> {
         error(response.status);
     }
     const { user } = response.data;
-    return new User(
-        user.id,
-        user.info,
-        user.telegram,
-        user.enrollments,
-        user.permissions
-    );
+    return new User(user.id, user.info, user.telegram, user.courses);
 }
 
 async function getCourses(

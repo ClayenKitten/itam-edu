@@ -1,9 +1,9 @@
-import { User, type CoursePermissions } from "itam-edu-common";
+import { User } from "itam-edu-common";
 import type { Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 import { injectable } from "inversify";
 import { Postgres } from "../infra/postgres";
-import * as schema from "./schema";
+import type { UpdateUserDto } from "./schema";
 
 @injectable()
 export class UserRepository {
@@ -11,27 +11,24 @@ export class UserRepository {
 
     /** Returns a user by its id. */
     public async getById(id: string): Promise<User | null> {
-        const user = await this.postgres.kysely
-            .selectFrom("users")
-            .selectAll("users")
-            .where("id", "=", id)
-            .executeTakeFirst();
+        const [user, userCourses] = await Promise.all([
+            this.postgres.kysely
+                .selectFrom("users")
+                .selectAll("users")
+                .where("id", "=", id)
+                .executeTakeFirst(),
+            this.postgres.kysely
+                .selectFrom("userCourses")
+                .selectAll()
+                .where("userId", "=", id)
+                .execute()
+        ]);
         if (!user) return null;
-
-        const userCourses = await this.postgres.kysely
-            .selectFrom("userCourses")
-            .selectAll()
-            .where("userId", "=", user.id)
-            .execute();
-        const enrollments = userCourses
-            .filter(u => u.isStaff === false)
-            .map(u => ({ courseId: u.courseId }));
-        const coursePermissions = userCourses.filter(u => u.isStaff === true);
-
-        return this.toEntity(user, enrollments, coursePermissions);
+        return this.toEntity(user, userCourses);
     }
 
-    public async update(user: User, dto: schema.UpdateUserDto): Promise<void> {
+    /** Updates user information. */
+    public async update(user: User, dto: UpdateUserDto): Promise<void> {
         await this.postgres.kysely
             .updateTable("users")
             .set(dto)
@@ -66,24 +63,17 @@ export class UserRepository {
             )
             .returningAll()
             .executeTakeFirstOrThrow();
-
         const userCourses = await this.postgres.kysely
             .selectFrom("userCourses")
             .selectAll()
             .where("userId", "=", user.id)
             .execute();
-        const enrollments = userCourses
-            .filter(u => u.isStaff === false)
-            .map(u => ({ courseId: u.courseId }));
-        const coursePermissions = userCourses.filter(u => u.isStaff === true);
-
-        return this.toEntity(user, enrollments, coursePermissions);
+        return this.toEntity(user, userCourses);
     }
 
     private toEntity(
         user: Selectable<DB["users"]>,
-        enrollments: { courseId: string }[],
-        coursePermissions: Selectable<DB["userCourses"]>[]
+        userCourses: Selectable<DB["userCourses"]>[]
     ) {
         return new User(
             user.id,
@@ -93,29 +83,11 @@ export class UserRepository {
                 patronim: user.patronim,
                 email: user.email,
                 avatar: user.avatar,
-                bio: user.bio
+                bio: user.bio,
+                role: user.role
             },
             { id: user.tgUserId, username: user.tgUsername },
-            enrollments.map(({ courseId }) => ({ courseId })),
-            {
-                global: {
-                    isSupervisor: user.isSupervisor,
-                    canCreateCourses: user.canCreateCourses,
-                    canPublishCourses: user.canPublishCourses
-                },
-                course: coursePermissions.reduce(
-                    (accumulator, { courseId, ...perms }) => {
-                        accumulator[courseId] = {
-                            isOwner: perms.isOwner,
-                            canEditContent: perms.canEditContent,
-                            canEditInfo: perms.canEditInfo,
-                            canManageSubmissions: perms.canManageSubmissions
-                        };
-                        return accumulator;
-                    },
-                    {} as Record<string, CoursePermissions>
-                )
-            }
+            userCourses.map(uc => ({ id: uc.courseId, role: uc.role }))
         );
     }
 }

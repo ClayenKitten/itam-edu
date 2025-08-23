@@ -11,15 +11,9 @@
 
     let { data } = $props();
 
-    const canEdit = $derived(
-        data.user?.hasCoursePermission(data.course.id, "canEditContent") ===
-            true
-    );
+    const canEdit = $derived(data.course.permissions.homeworks.edit === true);
     const canReview = $derived(
-        data.user?.hasCoursePermission(
-            data.course.id,
-            "canManageSubmissions"
-        ) === true
+        data.course.permissions.submissions.review === true
     );
     const isStudent = $derived(data.user?.isCourseStudent(data.course.id));
 

@@ -51,7 +51,7 @@
         </a>
         <header class="flex gap-8">
             <h2>Урок {data.lesson.position + 1}. {data.lesson.title}</h2>
-            {#if data.user?.hasCoursePermission(data.course.id, "canEditContent")}
+            {#if data.course.permissions.lessons.edit === true}
                 <IconButton
                     icon="ph-pencil-simple"
                     title="Редактировать"

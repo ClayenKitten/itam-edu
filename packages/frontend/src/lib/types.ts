@@ -1,8 +1,7 @@
 import type {
-    CourseDTO,
-    CoursePartialDTO
+    CourseQueryDto,
+    CourseQueryPartialDto
 } from "itam-edu-api/src/courses/query";
-
 import type {
     CreateLessonDTO,
     LessonDTO,
@@ -19,10 +18,13 @@ import type {
 } from "itam-edu-api/src/courses/submission/query";
 import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/courses/changes";
 import type { WebNotification } from "itam-edu-api/src/notifications";
+import type { StaffMemberDto } from "itam-edu-api/src/courses/staff/schema";
 
-export type Course = CourseDTO;
-export type CoursePartial = CoursePartialDTO;
+export type Course = CourseQueryDto;
+export type CoursePartial = CourseQueryPartialDto;
 export type CourseChange = CourseChangeDto;
+
+export type StaffMember = StaffMemberDto;
 
 export type Lesson = LessonDTO;
 export type LessonPartial = LessonPartialDTO;

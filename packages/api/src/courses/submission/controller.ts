@@ -5,10 +5,10 @@ import { HttpError } from "../../api/errors";
 import { AuthenticationPlugin } from "../../api/plugins/authenticate";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../repository";
-import { SubmissionRepository } from "./repository";
 import { SubmissionQuery } from "./query";
 import { HomeworkRepository } from "../homework/repository";
-import { SubmissionService } from "./service";
+import { ReviewHomework } from "./review.interactor";
+import { SubmitHomework } from "./submit.interactor";
 
 @injectable()
 export class SubmissionController {
@@ -17,9 +17,9 @@ export class SubmissionController {
         protected userRepo: UserRepository,
         protected courseRepo: CourseRepository,
         protected homeworkRepo: HomeworkRepository,
-        protected submissionRepo: SubmissionRepository,
         protected submissionQuery: SubmissionQuery,
-        protected submissionService: SubmissionService
+        protected submitInteractor: SubmitHomework,
+        protected reviewInteractor: ReviewHomework
     ) {}
 
     public toElysia() {
@@ -117,14 +117,28 @@ export class SubmissionController {
                         this.userRepo.getById(params.student)
                     ]);
                     if (!course || !homework || !student) return status(404);
-                    const result = await this.submissionService.sendMessage(
-                        user,
-                        course,
-                        homework,
-                        student,
-                        body.content,
-                        body.accepted
-                    );
+
+                    let result: void | HttpError;
+                    // TODO: divide into two endpoints
+                    if (user.id === student.id) {
+                        result = await this.submitInteractor.invoke(
+                            user,
+                            course,
+                            homework,
+                            body.content
+                        );
+                    } else {
+                        result = await this.reviewInteractor.invoke(
+                            user,
+                            course,
+                            homework,
+                            student,
+                            {
+                                accepted: body.accepted ?? false,
+                                content: body.content
+                            }
+                        );
+                    }
                     if (result instanceof HttpError) {
                         return status(result.code, result.message);
                     }
