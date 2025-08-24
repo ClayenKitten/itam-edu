@@ -61,12 +61,15 @@
                     class="self-center mx-auto flex flex-col items-center gap-2"
                 >
                     <h4 class="text-on-surface-contrast">Уроков ещё нет 🫠</h4>
-                    <!-- TODO: make changelog actually expire and specify how long it is stored. -->
-                    <span
-                        class="text-lg-regular text-on-surface-muted text-center"
-                    >
-                        Но скоро будут! А пока можете сходить на пары, вас там
-                        заждались.
+                    <span class="text-lg-regular text-on-surface-muted">
+                        Но скоро будут!
+                        <a
+                            class="text-primary underline"
+                            href="https://info.itatmisis.ru/coworking"
+                            target="_blank"
+                        >
+                            А пока можете посетить наш коворкинг
+                        </a>.
                     </span>
                 </div>
             {/each}

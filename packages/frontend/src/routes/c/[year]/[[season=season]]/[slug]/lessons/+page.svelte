@@ -47,8 +47,14 @@
             <div class="flex flex-col mt-[25dvh] items-center gap-2">
                 <h4 class="text-on-surface-contrast">Уроков ещё нет 🫠</h4>
                 <span class="text-lg-regular text-on-surface-muted">
-                    Но скоро будут! А пока можете сходить на пары, вас там
-                    заждались.
+                    Но скоро будут!
+                    <a
+                        class="text-primary underline"
+                        href="https://info.itatmisis.ru/coworking"
+                        target="_blank"
+                    >
+                        А пока можете посетить наш коворкинг
+                    </a>.
                 </span>
             </div>
         {/each}

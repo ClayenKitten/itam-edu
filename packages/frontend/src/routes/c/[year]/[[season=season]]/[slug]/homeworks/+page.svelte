@@ -55,7 +55,7 @@
                 class="flex justify-between p-5 bg-surface rounded-xs shadow"
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
             >
-                <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
                     <header class="flex items-center gap-3">
                         <h5>{homework.title}</h5>
                         <Tag kind={getTagKind(homework.id)} />
@@ -64,7 +64,10 @@
                         {#if homework.deadline}
                             <span>До</span>
                             <span>
-                                {formatDate(homework.deadline, "dd.MM HH:mm")}
+                                {formatDate(
+                                    homework.deadline,
+                                    "dd.MM.yyyy HH:mm"
+                                )}
                             </span>
                         {:else}
                             Без дедлайна
@@ -75,13 +78,16 @@
             </a>
         {:else}
             <div class="flex flex-col mt-[25dvh] items-center gap-2">
-                <h4 class="text-on-surface-contrast">Заданий ещё нет 🫡</h4>
+                <h4 class="text-on-surface-contrast">Заданий ещё нет 😥</h4>
                 <span class="text-lg-regular text-on-surface-muted">
-                    Но скоро будут! А пока можете потрогать траву
+                    Но скоро будут!
                     <a
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                        target="_blank">🌱🌿🍃</a
+                        class="text-primary underline"
+                        href="https://info.itatmisis.ru/calendar"
+                        target="_blank"
                     >
+                        А пока можете сходить на хакатон
+                    </a>.
                 </span>
             </div>
         {/each}
