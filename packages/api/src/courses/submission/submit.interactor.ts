@@ -36,7 +36,7 @@ export class SubmitHomework {
                 "You are not allowed to create homework submissions."
             );
         }
-        if (homework.isSubmissionOpen) {
+        if (!homework.isSubmissionOpen) {
             return new ConflictError("Homework does not accept submissions.");
         }
 

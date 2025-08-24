@@ -33,7 +33,7 @@ export default class Homework {
         if (this.deadline === null) {
             return true;
         }
-        return new Date() <= this.deadline;
+        return Date.now() <= this.deadline.getTime();
     }
 
     public toDTO(): typeof schema.homework.static {
