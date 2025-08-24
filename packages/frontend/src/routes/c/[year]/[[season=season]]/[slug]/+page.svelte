@@ -98,7 +98,7 @@
     </section>
 </div>
 
-<style lang="scss">
+<style>
     .banner {
         background: linear-gradient(
             -20deg,
