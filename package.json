@@ -1,5 +1,11 @@
 {
     "name": "itam-edu",
+    "version": "0.1.0-alpha",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
+    "license": "MIT",
+    "author": "ClayenKitten",
     "scripts": {
         "format": "prettier --write .",
         "check:format": "prettier . --check"

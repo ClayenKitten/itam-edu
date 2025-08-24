@@ -1,6 +1,12 @@
 {
     "name": "itam-edu-telegram",
-    "version": "0.0.1",
+    "version": "0.1.0-alpha",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
+    "license": "MIT",
+    "author": "ClayenKitten",
+    "type": "module",
     "main": "./src/index.ts",
     "scripts": {
         "start": "bun .",
@@ -10,9 +16,6 @@
         "check": "tsc --noEmit",
         "check:format": "prettier . --check"
     },
-    "type": "module",
-    "author": "ClayenKitten",
-    "license": "MIT",
     "dependencies": {
         "itam-edu-common": "file:../common",
         "bullmq": "^5.41.8",

@@ -1,16 +1,19 @@
 {
     "name": "itam-edu-common",
+    "version": "0.1.0-alpha",
     "description": "Types and classes that share logic between frontend and backend",
-    "version": "0.0.1",
-    "author": "ClayenKitten",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
     "license": "MIT",
-    "main": "./src/index.ts",
+    "author": "ClayenKitten",
     "scripts": {
         "build": "tsc",
         "format": "prettier --write .",
         "check": "tsc --noEmit",
         "check:format": "prettier . --check"
     },
+    "main": "./src/index.ts",
     "exports": {
         ".": "./src/index.ts",
         "./config": "./src/config.ts"

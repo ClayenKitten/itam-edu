@@ -1,6 +1,11 @@
 {
     "name": "itam-edu-api",
-    "version": "0.0.1",
+    "version": "0.1.0-alpha",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
+    "license": "MIT",
+    "author": "ClayenKitten",
     "main": "./src/index.ts",
     "scripts": {
         "start": "bun --env-file=.env .",
@@ -11,8 +16,6 @@
         "check:format": "prettier . --check"
     },
     "type": "module",
-    "author": "ClayenKitten",
-    "license": "MIT",
     "dependencies": {
         "@elysiajs/cors": "^1.3.0",
         "@elysiajs/swagger": "^1.3.0",

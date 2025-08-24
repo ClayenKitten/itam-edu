@@ -1,6 +1,13 @@
 {
     "name": "itam-edu-devtools",
+    "version": "0.1.0-alpha",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
+    "license": "MIT",
+    "author": "ClayenKitten",
     "main": "./src/index.ts",
+    "type": "module",
     "scripts": {
         "start": "bun .",
         "dev": "bun --watch --clear-screen=false .",
@@ -9,14 +16,11 @@
         "check": "tsc --noEmit",
         "check:format": "prettier . --check"
     },
-    "type": "module",
-    "author": "ClayenKitten",
-    "license": "MIT",
     "dependencies": {
         "@faker-js/faker": "^9.7.0",
         "bullmq": "^5.52.2",
         "handlebars": "^4.7.8",
-        "itam-edu-common": "file:../../packages/common"
+        "itam-edu-common": "file:../common"
     },
     "devDependencies": {
         "@types/bun": "^1.2.3",
