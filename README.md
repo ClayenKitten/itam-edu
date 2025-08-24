@@ -76,14 +76,14 @@ Development happens inside a [devcontainer](https://code.visualstudio.com/docs/d
 
 Run `task` in the Terminal to see the list of available commands.
 
-| Service               | URL                        |
-| --------------------- | -------------------------- |
-| **Packages**          |                            |
-| itam-edu-frontend     | http://www.localhost       |
-| itam-edu-api          | http://www.localhost/api   |
-| itam-edu-files        | http://www.localhost/files |
-| **Development tools** |                            |
-| Navigation            | http://localhost           |
-| Database UI           | http://db.localhost        |
-| Minio UI              | http://s3.localhost        |
-| BullMQ UI             | http://bullmq.localhost    |
+| Service               | URL                           |
+| --------------------- | ----------------------------- |
+| **Packages**          |                               |
+| itam-edu-frontend     | http://www.localhost          |
+| itam-edu-api          | http://www.localhost/api      |
+| itam-edu-files        | http://www.localhost/files    |
+| itam-edu-devtools     | http://www.localhost/devtools |
+| **Development tools** |                               |
+| Database UI           | http://db.localhost           |
+| Minio UI              | http://s3.localhost           |
+| BullMQ UI             | http://bullmq.localhost       |

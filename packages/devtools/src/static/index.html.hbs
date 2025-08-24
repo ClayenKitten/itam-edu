@@ -24,7 +24,7 @@
 
     <title>ITAM Education | Dev Tools</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <link rel="stylesheet" type="text/css" href="/devtools/style.css" />
 </head>
 
 <body hx-ext="morph">
@@ -32,11 +32,11 @@
         <header>ITAM Education</header>
         <h2>Services</h2>
         <ul>
-            <a target="_blank" href="http://www.localhost">
+            <a target="_blank" href="http://www.localhost/devtools">
                 <i class="ph ph-google-chrome-logo"></i>
                 Frontend
             </a>
-            <a target="_blank" href="http://www.localhost/api/docs">
+            <a target="_blank" href="http://www.localhost/devtools/api/docs">
                 <i class="ph ph-book-open-text"></i>
                 API (Swagger)
             </a>
@@ -68,7 +68,7 @@
         <header>Users</header>
         <ul>
             {{#each users}}
-                <a href="/{{this.id}}">
+                <a href="/devtools/{{this.id}}">
                     <div>
                         <span>{{this.firstName}} {{this.lastName}}</span>
                         <span>@{{this.tgUsername}}</span>
@@ -77,7 +77,7 @@
             {{/each}}
         </ul>
         <button
-            hx-post="/users"
+            hx-post="/devtools/users"
             hx-select="#users"
             hx-target="#users"
             hx-swap="outerHTML"
@@ -120,7 +120,7 @@
             <menu>
                 <input name="text" placeholder="New message..." />
                 <button
-                    hx-post="/users/{{user.id}}/messages"
+                    hx-post="/devtools/users/{{user.id}}/messages"
                     hx-select="main > ul"
                     hx-target="main > ul"
                     hx-trigger="click"
