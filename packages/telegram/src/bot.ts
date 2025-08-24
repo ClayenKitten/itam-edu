@@ -1,6 +1,6 @@
 import { Bot as Grammy } from "grammy";
 import { queues } from "itam-edu-common";
-import logger from "./logger";
+import type { Logger } from "itam-edu-core/logger";
 import { Queue, Worker } from "bullmq";
 import { env } from "process";
 import type { User as TgUser } from "grammy/types";
@@ -10,7 +10,10 @@ export default class TelegramBot {
     protected queue: Queue<queues.telegram.InboundPrivateMessage>;
     protected worker: Worker<queues.telegram.OutboundPrivateMessage>;
 
-    public constructor(token: string) {
+    public constructor(
+        token: string,
+        protected logger: Logger
+    ) {
         this.grammy = new Grammy(token);
 
         const connection = { url: env.ITAMEDU_REDIS_CONNECTION_STRING! };
@@ -78,18 +81,18 @@ export default class TelegramBot {
         const grammy = this.grammy
             .start({
                 onStart: () => {
-                    logger.info("Started Telegram bot");
+                    this.logger.info("Started Telegram bot");
                 }
             })
             .finally(() => {
-                logger.info("Stopped Telegram bot");
+                this.logger.info("Stopped Telegram bot");
             });
 
         this.worker.waitUntilReady().then(() => {
-            logger.info("Started BullMQ worker");
+            this.logger.info("Started BullMQ worker");
         });
         const worker = this.worker.run().then(() => {
-            logger.info("Stopped BullMQ worker");
+            this.logger.info("Stopped BullMQ worker");
         });
 
         await Promise.all([grammy, worker]);
@@ -114,7 +117,7 @@ export default class TelegramBot {
                   }
                 : undefined
         });
-        logger.debug("Outbound message sent to user", { chatId, text });
+        this.logger.debug("Outbound message sent to user", { chatId, text });
     }
 
     /** Schedules inbound message into the queue. */
@@ -129,7 +132,7 @@ export default class TelegramBot {
             text
         };
         await this.queue.add("message", payload);
-        logger.debug("Inbound message sent to the queue", {
+        this.logger.debug("Inbound message sent to the queue", {
             sender: payload.sender,
             text
         });

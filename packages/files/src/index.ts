@@ -1,7 +1,8 @@
-import { createConfigFromEnv } from "itam-edu-common/config";
-import logger from "./logger";
+import { Logger } from "itam-edu-core/logger";
+import { createConfigFromEnv } from "itam-edu-core/config";
 import { CookieMap, env } from "bun";
 
+const logger = new Logger();
 const config = createConfigFromEnv();
 
 Bun.serve({

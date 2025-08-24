@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { UserRepository } from "../users/repository";
 import { TelegramBot } from "../telegram";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 import { Redis } from "../infra/redis";
 import type {
     NotificationTemplate,

@@ -3,7 +3,7 @@ import {
     type TelegramNotification
 } from "../notifications";
 import { container } from "..";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 
 export class LoginNotificationTemplate extends NotificationTemplate {
     public constructor() {

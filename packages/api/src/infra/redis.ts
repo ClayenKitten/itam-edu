@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 import { createClientPool, type RedisClientPoolType } from "redis";
 import ts from "@redis/time-series";
 

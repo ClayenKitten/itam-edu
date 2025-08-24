@@ -3,7 +3,7 @@ import {
     type AppConfig,
     ConfigError,
     createConfigFromEnv
-} from "itam-edu-common/config";
+} from "itam-edu-core/config";
 import logger from "./logger";
 import { Container } from "inversify";
 import { exit } from "process";

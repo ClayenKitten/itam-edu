@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Queue, Worker } from "bullmq";
 import { queues, User } from "itam-edu-common";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 import { Redis } from "./infra/redis";
 import { UserRepository } from "./users/repository";
 import { LoginCodeRepository } from "./users/login";

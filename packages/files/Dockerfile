@@ -16,7 +16,7 @@ COPY package-lock.json .
 
 # Copy package manifest and file dependencies, and install other dependencies
 COPY ./packages/${ITAM_PACKAGE_SHORT_NAME}/package.json ./packages/${ITAM_PACKAGE_SHORT_NAME}/package.json
-COPY ./packages/common ./packages/common
+COPY ./packages/core ./packages/core
 RUN npm --workspace=${ITAM_PACKAGE_NAME} ci
 
 # Copy package source and build
@@ -33,7 +33,7 @@ ARG ITAM_PACKAGE_NAME
 ARG ITAM_PACKAGE_SHORT_NAME
 
 COPY package.json .
-COPY --from=build /app/packages/common ./packages/common
+COPY --from=build /app/packages/core ./packages/core
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/${ITAM_PACKAGE_SHORT_NAME}/build ./build
 CMD ["bun", "./build"]

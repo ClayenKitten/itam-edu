@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import type { User } from "itam-edu-common";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 import { randomUUID } from "crypto";
 import { Call, type CallMetadata } from "./entity";

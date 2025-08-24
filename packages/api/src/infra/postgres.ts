@@ -3,7 +3,7 @@ import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
 import type { DB } from "itam-edu-db";
 import { Pool } from "pg";
 import logger from "../logger";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 
 /** PostgreSQL database. */
 @injectable()

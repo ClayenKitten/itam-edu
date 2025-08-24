@@ -1,6 +1,11 @@
 {
     "name": "itam-edu-frontend",
-    "version": "0.0.1",
+    "version": "0.1.0-alpha",
+    "homepage": "https://github.com/ClayenKitten/itam-edu",
+    "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
+    "repository": "github:ClayenKitten/itam-edu",
+    "license": "MIT",
+    "author": "ClayenKitten",
     "type": "module",
     "scripts": {
         "dev": "vite dev --host 0.0.0.0 --port $ITAMEDU_FRONTEND_PORT",

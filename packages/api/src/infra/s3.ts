@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { S3Client } from "bun";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 
 /** S3 client. */
 @injectable()

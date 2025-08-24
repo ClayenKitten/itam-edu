@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { Elysia, type AnyElysia } from "elysia";
 
 import logger from "../logger";
-import type { AppConfig } from "itam-edu-common/config";
+import type { AppConfig } from "itam-edu-core/config";
 
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
 import { corsPlugin } from "./plugins/cors";

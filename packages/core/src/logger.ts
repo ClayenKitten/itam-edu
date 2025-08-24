@@ -5,9 +5,9 @@ export class Logger {
         this.internal = winston.createLogger({
             levels: this.LEVELS,
             format: winston.format.json(),
-            defaultMeta: { service: "itam-edu-telegram" },
+            defaultMeta: { package: process.env.npm_package_name },
             transports: [
-                getConsoleTransport(process.env.NODE_ENV === "production")
+                getConsoleTransport(process.env.NODE_ENV !== "development")
             ]
         });
     }
@@ -45,8 +45,6 @@ export class Logger {
         trace: 5
     };
 }
-const logger = new Logger();
-export { logger as default };
 
 export type Meta = Record<keyof {}, unknown>;
 
