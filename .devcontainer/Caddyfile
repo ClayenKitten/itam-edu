@@ -1,17 +1,12 @@
-http://localhost {
-    handle {
-        reverse_proxy devcontainer:3000
-    }
-    handle_errors {
-        respond "{err.status_code} {err.status_text}"
-    }
-}
 http://www.localhost {
     handle_path /api/* {
         reverse_proxy devcontainer:5151
     }
     handle_path /files/* {
         reverse_proxy devcontainer:5152
+    }
+    handle_path /devtools* {
+        reverse_proxy devcontainer:3000
     }
     handle {
         reverse_proxy devcontainer:5150
