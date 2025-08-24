@@ -8,7 +8,7 @@ import {
     HttpError,
     NotFoundError
 } from "../../api/errors";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { CourseChangelog } from "../changes";
 import { CourseStatsRepository } from "../stats";
 

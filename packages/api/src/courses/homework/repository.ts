@@ -1,9 +1,8 @@
 import { injectable } from "inversify";
-import { Postgres } from "../../infra/postgres";
 import Homework from "./entity";
 import * as schema from "./schema";
 import { sql, type ExpressionBuilder, type Selectable } from "kysely";
-import type { DB } from "itam-edu-db";
+import { Postgres, type DB } from "itam-edu-core/infra/postgres";
 
 @injectable()
 export class HomeworkRepository {

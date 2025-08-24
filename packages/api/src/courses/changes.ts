@@ -1,7 +1,7 @@
 import type { User } from "itam-edu-common";
 import type { Course } from "./entity";
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import logger from "../logger";
 
 /**

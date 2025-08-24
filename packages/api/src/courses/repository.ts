@@ -3,9 +3,7 @@ import { sql, type Selectable } from "kysely";
 import * as schema from "./schema";
 import { schemaFields } from "../util";
 import { Course } from "./entity";
-import { Postgres } from "../infra/postgres";
-import type { DB } from "itam-edu-db";
-import type { CourseRole } from "itam-edu-common";
+import { Postgres, type DB } from "itam-edu-core/infra/postgres";
 
 @injectable()
 export class CourseRepository {

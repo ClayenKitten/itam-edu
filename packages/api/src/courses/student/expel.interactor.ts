@@ -8,7 +8,7 @@ import {
     NotFoundError
 } from "../../api/errors";
 import { CourseStatsRepository } from "../stats";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { CourseChangelog } from "../changes";
 
 @injectable()

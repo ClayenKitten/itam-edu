@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { NotFoundError, UnauthorizedError } from "../../api/errors";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";

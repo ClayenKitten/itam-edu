@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { NotFoundError } from "../../api/errors";
 
 @injectable()

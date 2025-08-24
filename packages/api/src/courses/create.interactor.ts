@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import type { Course } from "./entity";
 import type { User } from "itam-edu-common";
-import { Postgres } from "../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import type { CreateCourseDto } from "./schema";
 import { randomUUID } from "node:crypto";
 import { CourseRepository } from "./repository";

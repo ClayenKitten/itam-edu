@@ -6,7 +6,7 @@ import type Homework from "../homework/entity";
 import { NotificationSender } from "../../notifications/sender";
 import { SubmissionReviewNotificationTemplate } from "./notifications";
 import { CourseChangelog } from "../changes";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 
 @injectable()
 export class ReviewHomework {

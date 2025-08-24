@@ -37,5 +37,5 @@ tasks:
 
   db:codegen:
     desc: Generate types from database
-    dir: ./packages/db
-    cmd: npx kysely-codegen --url "$ITAMEDU_POSTGRES_CONNECTION_STRING" --out-file ./index.ts --camel-case --dialect postgres
+    dir: ./packages/core
+    cmd: npx kysely-codegen --url "$ITAMEDU_POSTGRES_CONNECTION_STRING" --out-file ./src/infra/postgres/schema.ts --camel-case --dialect postgres

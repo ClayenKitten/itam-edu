@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { LessonQuery, type LessonPartialDTO } from "./lesson/query";
 import { HomeworkQuery, type HomeworkPartialDTO } from "./homework/query";
 import { CourseStatsRepository } from "./stats";

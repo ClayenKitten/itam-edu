@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import type { Course } from "./entity";
 import type { CoursePermissions, User } from "itam-edu-common";
 import { ForbiddenError, HttpError, NotFoundError } from "../api/errors";
-import { Postgres } from "../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import type { UpdateCourseDto } from "./schema";
 
 @injectable()

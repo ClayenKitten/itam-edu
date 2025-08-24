@@ -1,16 +1,19 @@
 import { inject, injectable } from "inversify";
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
-import type { DB } from "itam-edu-db";
 import { Pool } from "pg";
-import logger from "../logger";
-import type { AppConfig } from "itam-edu-core/config";
+import { Logger } from "../../logger";
+import type { AppConfig } from "../../config";
+import type { DB } from "./schema";
+
+export * from "./schema";
 
 /** PostgreSQL database. */
 @injectable()
 export class Postgres {
     public constructor(
         @inject("AppConfig")
-        config: AppConfig
+        config: AppConfig,
+        logger: Logger
     ) {
         this.connectionString = config.postgres.connectionString;
         this.pool = new Pool({

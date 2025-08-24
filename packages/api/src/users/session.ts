@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
+import { Postgres } from "itam-edu-core/infra/postgres";
 import { randomBytes, randomUUID } from "crypto";
 import type { User } from "itam-edu-common";
 

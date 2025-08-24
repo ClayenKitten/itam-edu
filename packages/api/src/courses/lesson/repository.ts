@@ -1,6 +1,9 @@
 import { injectable } from "inversify";
-import { Postgres } from "../../infra/postgres";
-import type { DB, LessonHomeworks } from "itam-edu-db";
+import {
+    Postgres,
+    type DB,
+    type LessonHomeworks
+} from "itam-edu-core/infra/postgres";
 import { sql } from "kysely";
 import type { ExpressionBuilder, Selectable } from "kysely";
 import { Lesson, type LessonSchedule } from "./entity";

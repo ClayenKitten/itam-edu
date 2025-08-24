@@ -1,8 +1,7 @@
 import { User } from "itam-edu-common";
 import type { Selectable } from "kysely";
-import type { DB } from "itam-edu-db";
+import { Postgres, type DB } from "itam-edu-core/infra/postgres";
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
 import type { UpdateUserDto } from "./schema";
 
 @injectable()
