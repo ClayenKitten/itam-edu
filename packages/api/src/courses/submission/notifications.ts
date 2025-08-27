@@ -39,7 +39,7 @@ export class SubmissionNotificationTemplate extends NotificationTemplate {
             ].join("\n\n"),
             link: {
                 text: "🔗 Проверить",
-                url: `${this.course.path}/homeworks/${this.homework.id}?student=${this.student.id}`
+                url: `${this.course.path}/homeworks/${this.homework.id}/review/${this.student.id}`
             }
         };
     }

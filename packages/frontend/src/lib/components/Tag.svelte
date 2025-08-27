@@ -4,7 +4,7 @@
         | "rejected"
         | "submitted"
         | "accepted"
-        | "skipped";
+        | "closed";
 </script>
 
 <script lang="ts">
@@ -35,11 +35,11 @@
     >
         Принято
     </span>
-{:else if kind === "skipped"}
+{:else if kind === "closed"}
     <span
         class="py-2 px-3 rounded-2xs bg-[#f0f0f0] text-[#696969] text-md-regular"
     >
-        Пропущено
+        Закрыто
     </span>
 {:else}
     <!-- Transparent -->

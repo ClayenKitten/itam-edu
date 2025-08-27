@@ -96,7 +96,7 @@
                         icon,
                         title: "Новый ответ на задание",
                         message: `На задание '${hwTitle}' поступил ответ от студента.`,
-                        href: `/homeworks/${change.payload.homeworkId}?student=${change.payload.studentId}`
+                        href: `/homeworks/${change.payload.homeworkId}/review/${change.payload.studentId}`
                     };
                 }
             }
@@ -125,7 +125,7 @@
                         icon,
                         title: "Задание проверено",
                         message: `Ответ на задание '${hwTitle}' ${change.payload.accepted ? "принят" : "отклонён"}.`,
-                        href: href + `?student=${change.payload.studentId}`
+                        href: href + `/review/${change.payload.studentId}`
                     };
                 }
             }

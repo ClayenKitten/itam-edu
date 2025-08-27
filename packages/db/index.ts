@@ -84,23 +84,6 @@ export interface Homeworks {
   title: string;
 }
 
-export interface HomeworkSubmissionMessages {
-  accepted: boolean | null;
-  content: string;
-  homeworkId: string;
-  id: Generated<string>;
-  sentAt: Generated<Timestamp>;
-  studentId: string;
-  userId: string | null;
-}
-
-export interface HomeworkSubmissions {
-  accepted: boolean | null;
-  homeworkId: string | null;
-  lastMessageAt: Timestamp | null;
-  studentId: string | null;
-}
-
 export interface LessonHomeworks {
   homeworkId: string;
   lessonId: string;
@@ -139,6 +122,24 @@ export interface SchemaMigrations {
   version: string;
 }
 
+export interface SubmissionAttempts {
+  content: string | null;
+  files: string[];
+  homeworkId: string;
+  id: Generated<string>;
+  sentAt: Generated<Timestamp>;
+  studentId: string;
+}
+
+export interface SubmissionReviews {
+  accepted: boolean;
+  attemptId: string;
+  content: string | null;
+  files: string[];
+  reviewerId: string | null;
+  sentAt: Generated<Timestamp>;
+}
+
 export interface UserCourses {
   courseId: string;
   role: CourseRole;
@@ -173,11 +174,11 @@ export interface DB {
   courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;
-  homeworkSubmissionMessages: HomeworkSubmissionMessages;
-  homeworkSubmissions: HomeworkSubmissions;
   lessonHomeworks: LessonHomeworks;
   lessons: Lessons;
   schemaMigrations: SchemaMigrations;
+  submissionAttempts: SubmissionAttempts;
+  submissionReviews: SubmissionReviews;
   userCourses: UserCourses;
   users: Users;
   userSessions: UserSessions;

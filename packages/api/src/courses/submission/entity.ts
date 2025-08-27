@@ -1,34 +1,42 @@
 /** Homework submission. */
 export class Submission {
     public constructor(
-        public homeworkId: string,
-        public studentId: string,
-        /**
-         * Chat messages of the submission.
-         *
-         * Must be sorted by date in ascending order.
-         * */
-        public messages: [SubmissionMessage, ...SubmissionMessage[]]
+        public readonly homeworkId: string,
+        public readonly studentId: string,
+        public readonly attempts: SubmissionAttempt[]
     ) {}
 
     public get accepted(): boolean | null {
-        return this.messages.at(-1)!.accepted;
+        return this.attempts[0]!.review?.accepted ?? null;
     }
 
-    public get lastMessage(): SubmissionMessage {
-        return this.messages.at(-1)!;
+    public get lastAttempt(): SubmissionAttempt {
+        return this.attempts[0]!;
     }
 }
 
-export type SubmissionMessage = {
+export type SubmissionAttempt = {
+    /** Identifier of the submission attempt. */
     id: string;
-    /**
-     * User that sent the message.
-     *
-     * If null, message is produced by the system.
-     * */
-    userId: string;
-    content: string;
+    /** HTML content */
+    content: string | null;
+    /** List of attached files. */
+    files: string[];
+    /** Review of submission, if  */
+    review: SubmissionAttemptReview | null;
+    /** Date when submission was sent. */
     sentAt: Date;
-    accepted: boolean | null;
+};
+
+export type SubmissionAttemptReview = {
+    /** Whether submission was accepted or not. */
+    accepted: boolean;
+    /** HTML content. */
+    content: string | null;
+    /** List of attached files. */
+    files: string[];
+    /** Person who reviewed the submission. May be null for automated reviews. */
+    reviewerId: string | null;
+    /** Date when submission review was sent. */
+    sentAt: Date;
 };

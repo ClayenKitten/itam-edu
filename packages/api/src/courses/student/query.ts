@@ -31,9 +31,14 @@ export class StudentQuery {
             .selectFrom("userCourses")
             .innerJoin("users", "userCourses.userId", "users.id")
             .leftJoin(
-                "homeworkSubmissions",
+                "submissionAttempts",
                 "users.id",
-                "homeworkSubmissions.studentId"
+                "submissionAttempts.studentId"
+            )
+            .leftJoin(
+                "submissionReviews",
+                "submissionAttempts.id",
+                "submissionReviews.attemptId"
             )
             .select([
                 "users.id",
@@ -44,13 +49,14 @@ export class StudentQuery {
                 "users.tgUsername",
                 "userCourses.courseId",
                 "userCourses.role",
-                sql<number>`count(homework_submissions.*) FILTER (WHERE course_id = ${course.id} AND accepted = true)::INTEGER`.as(
+                // TODO: incorrectly counts reviews and attempts
+                sql<number>`count(submission_reviews.*) FILTER (WHERE course_id = ${course.id} AND accepted = true)::INTEGER`.as(
                     "acceptedSubmissions"
                 ),
-                sql<number>`count(homework_submissions.*) FILTER (WHERE course_id = ${course.id} AND accepted = false)::INTEGER`.as(
+                sql<number>`count(submission_reviews.*) FILTER (WHERE course_id = ${course.id} AND accepted = false)::INTEGER`.as(
                     "rejectedSubmissions"
                 ),
-                sql<number>`count(homework_submissions.*) FILTER (WHERE course_id = ${course.id})::INTEGER`.as(
+                sql<number>`count(submission_attempts.*) FILTER (WHERE course_id = ${course.id})::INTEGER`.as(
                     "totalSubmissions"
                 )
             ])

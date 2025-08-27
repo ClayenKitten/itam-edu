@@ -1,15 +1,10 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import { setContext, type Snippet } from "svelte";
+    import { setContext } from "svelte";
     import CourseSidebar from "./CourseSidebar.svelte";
     import { getColors, type Theme } from "$lib/theme";
 
     let { data, children } = $props();
-
-    const layout: { additionalSidebar: Snippet | null } = $state({
-        additionalSidebar: null
-    });
-    setContext("layout", layout);
 
     const themeContainer = $state({ theme: data.course.theme as Theme });
     setContext("theme", themeContainer);
@@ -32,12 +27,7 @@
 
 <div
     id="wrapper"
-    class={[
-        "grid grid-rows-[56px_1fr] min-h-dvh bg-background",
-        layout.additionalSidebar === null
-            ? "grid-cols-[278px_1fr]"
-            : "grid-cols-[278px_278px_1fr]"
-    ]}
+    class="grid grid-cols-[278px_1fr] grid-rows-[56px_1fr] min-h-dvh bg-background"
     style:--color-primary={colors.primary}
     style:--color-on-primary={colors.onPrimary}
     style:--color-primary-border={colors.primaryBorder}
@@ -47,18 +37,6 @@
         courses={data.courses}
         user={data.user}
     />
-    {#if layout.additionalSidebar}
-        <aside
-            class={[
-                "sticky top-0 h-dvh overflow-y-auto col-start-2 row-start-1 row-span-2",
-                "bg-surface border-r border-surface-border"
-            ]}
-            style:scrollbar-width="thin"
-            style:scrollbar-gutter="stable"
-        >
-            {@render layout.additionalSidebar?.()}
-        </aside>
-    {/if}
     <Header
         user={data.user}
         notifications={data.notifications}
@@ -68,8 +46,8 @@
         {#if data.course.isArchived}
             <div
                 class={[
-                    "flex justify-center items-center gap-2 w-full h-8",
-                    "bg-on-primary text-primary text-lg-regular border-b-2 border-primary-border"
+                    "flex justify-center items-center gap-2 w-full h-10",
+                    "bg-on-primary text-primary text-lg-regular border-b border-primary-border"
                 ]}
             >
                 Этот курс находится в архиве. Он доступен только для просмотра.

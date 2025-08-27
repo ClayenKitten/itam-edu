@@ -11,12 +11,14 @@ import type Homework from "../homework/entity";
 import { NotificationSender } from "../../notifications/sender";
 import { SubmissionNotificationTemplate } from "./notifications";
 import { CourseChangelog } from "../changes";
-import { Postgres } from "../../infra/postgres";
+import { SubmissionRepository } from "./repository";
+import { randomUUID } from "crypto";
+import { Submission } from "./entity";
 
 @injectable()
 export class SubmitHomework {
     public constructor(
-        protected postgres: Postgres,
+        protected repository: SubmissionRepository,
         protected notificationSender: NotificationSender,
         protected courseChangelog: CourseChangelog
     ) {}
@@ -40,16 +42,24 @@ export class SubmitHomework {
             return new ConflictError("Homework does not accept submissions.");
         }
 
-        await this.postgres.kysely
-            .insertInto("homeworkSubmissionMessages")
-            .values({
-                homeworkId: homework.id,
-                studentId: actor.id,
-                content,
-                userId: actor.id,
-                accepted: null
-            })
-            .execute();
+        let submission = await this.repository.load(homework.id, actor.id);
+        if (submission && submission.lastAttempt.review === null) {
+            return new ConflictError("Submission is not reviewed yet.");
+        }
+
+        const attempt = {
+            id: randomUUID(),
+            content,
+            files: [],
+            review: null,
+            sentAt: new Date()
+        };
+        if (!submission) {
+            submission = new Submission(homework.id, actor.id, [attempt]);
+        } else {
+            submission.attempts.push(attempt);
+        }
+        await this.repository.save(submission);
 
         await Promise.allSettled([
             this.courseChangelog.add(actor, course, {

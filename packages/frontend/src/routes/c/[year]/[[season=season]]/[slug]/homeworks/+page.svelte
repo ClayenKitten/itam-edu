@@ -5,21 +5,37 @@
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
     import HomeworkListEditModal from "./HomeworkListEditModal.svelte";
+    import type { HomeworkPartial } from "$lib/types";
 
     let { data } = $props();
 
     let modal: HomeworkListEditModal;
 
-    const getTagKind = (homeworkId: string): TagKind | null => {
-        if (!data.user) return null;
-        if (!data.user.isCourseStudent(data.course.id)) return null;
-        if (!data.submissions) return null;
+    const getTagKind = (homework: HomeworkPartial): TagKind | null => {
+        const isClosed = !doesAcceptSubmissions(homework);
+
+        if (!data.user || !data.user.isCourseStudent(data.course.id)) {
+            return isClosed ? "closed" : null;
+        }
+
         const submission = data.submissions.find(
-            submission => submission.homework.id === homeworkId
+            submission => submission.homework.id === homework.id
         );
-        if (!submission) return "new";
+        if (!submission) {
+            if (isClosed) {
+                return "closed";
+            }
+            return "new";
+        }
         if (submission.accepted === null) return "submitted";
         return submission.accepted ? "accepted" : "rejected";
+    };
+    const doesAcceptSubmissions = (homework: HomeworkPartial) => {
+        return homework.deadlineOverride === null
+            ? homework.deadline
+                ? Date.now() < new Date(homework.deadline).getTime()
+                : true
+            : homework.deadlineOverride;
     };
 </script>
 
@@ -50,15 +66,20 @@
         {/if}
     </header>
     <div class="flex flex-col gap-2.5">
-        {#each data.homeworks as homework}
+        {#each data.homeworks as homework (homework.id)}
             <a
-                class="flex justify-between p-5 bg-surface rounded-xs shadow"
+                class={[
+                    "flex justify-between p-5 rounded-xs shadow",
+                    doesAcceptSubmissions(homework)
+                        ? "bg-surface"
+                        : "bg-surface-tint border border-surface-border"
+                ]}
                 href={`${coursePath(data.course)}/homeworks/${homework.id}`}
             >
                 <div class="flex flex-col gap-1">
                     <header class="flex items-center gap-3">
                         <h5>{homework.title}</h5>
-                        <Tag kind={getTagKind(homework.id)} />
+                        <Tag kind={getTagKind(homework)} />
                     </header>
                     <p class="text-on-surface-contrast opacity-50">
                         {#if homework.deadline}

@@ -1,9 +1,14 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
-import { NotFoundError, UnauthorizedError } from "../../api/errors";
+import {
+    ForbiddenError,
+    HttpError,
+    NotFoundError,
+    UnauthorizedError
+} from "../../api/errors";
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
-import type Homework from "../homework/entity";
+import type { SubmissionAttempt } from "./entity";
 
 @injectable()
 export class SubmissionQuery {
@@ -12,53 +17,99 @@ export class SubmissionQuery {
     public async get(
         actor: User,
         course: Course,
-        homework: Homework,
-        student: User
-    ): Promise<SubmissionDTO | NotFoundError> {
-        if (
-            !actor.isCourseStaff(course.id) &&
-            !actor.isCourseStudent(course.id)
-        )
-            return new NotFoundError();
-        const messages = await this.postgres.kysely
-            .selectFrom("homeworkSubmissionMessages as msg")
-            .select([
-                "msg.id",
-                "msg.userId",
-                "msg.content",
-                "msg.accepted",
-                "msg.sentAt"
-            ])
-            .innerJoin("homeworks", "homeworkId", "homeworks.id")
+        homeworkId: string,
+        studentId: string
+    ): Promise<SubmissionDto | HttpError> {
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        if (!permissions.submissions.view && actor.id !== studentId) {
+            return new ForbiddenError(
+                "You are not allowed to view submissions."
+            );
+        }
+
+        const attempts = await this.postgres.kysely
+            .selectFrom("submissionAttempts as attempts")
+            .leftJoin(
+                "submissionReviews as reviews",
+                "reviews.attemptId",
+                "attempts.id"
+            )
+            .leftJoin("homeworks", "attempts.homeworkId", "homeworks.id")
             .where("homeworks.courseId", "=", course.id)
-            .where("msg.homeworkId", "=", homework.id)
-            .where("msg.studentId", "=", student.id)
-            .orderBy("msg.sentAt asc")
+            .select([
+                "attempts.id",
+                "attempts.content",
+                "attempts.files",
+                "attempts.sentAt",
+                "reviews.reviewerId",
+                "reviews.accepted",
+                "reviews.content as reviewContent",
+                "reviews.files as reviewFiles",
+                "reviews.sentAt as reviewSentAt"
+            ])
+            .where("attempts.studentId", "=", studentId)
+            .where("attempts.homeworkId", "=", homeworkId)
+            .orderBy("attempts.sentAt desc")
             .execute();
-        const userIds = new Set(
-            messages.map(m => m.userId).filter(u => u !== null)
-        );
-        const users =
-            userIds.size === 0
-                ? []
-                : await this.postgres.kysely
-                      .selectFrom("users")
-                      .select([
-                          "id",
-                          "avatar",
-                          "firstName",
-                          "lastName",
-                          "tgUsername"
-                      ])
-                      .where("id", "in", Array.from(userIds))
-                      .execute();
+        if (attempts.length === 0) {
+            return new NotFoundError("Student has not submitted the homework.");
+        }
+
+        const details = await this.postgres.kysely
+            .selectFrom("submissionAttempts")
+            .innerJoin(
+                "homeworks",
+                "homeworks.id",
+                "submissionAttempts.homeworkId"
+            )
+            .innerJoin("users", "users.id", "submissionAttempts.studentId")
+            .select([
+                "homeworks.id as homeworkId",
+                "homeworks.title",
+                "users.id as studentId",
+                "users.firstName",
+                "users.lastName",
+                "users.avatar",
+                "users.tgUsername"
+            ])
+            .where("submissionAttempts.studentId", "=", studentId)
+            .where("submissionAttempts.homeworkId", "=", homeworkId)
+            .limit(1)
+            .executeTakeFirst();
+        if (details === undefined) {
+            return new NotFoundError("Student has not submitted the homework.");
+        }
 
         return {
-            studentId: student.id,
-            homeworkId: homework.id,
-            accepted: null,
-            users,
-            messages
+            homework: {
+                id: details.homeworkId,
+                title: details.title
+            },
+            student: {
+                id: details.studentId,
+                firstName: details.firstName,
+                lastName: details.lastName,
+                avatar: details.avatar,
+                tgUsername: details.tgUsername
+            },
+            attempts: attempts.map(a => ({
+                id: a.id,
+                content: a.content,
+                files: a.files,
+                sentAt: a.sentAt,
+                review:
+                    a.accepted !== null
+                        ? {
+                              reviewerId: a.reviewerId,
+                              accepted: a.accepted!,
+                              content: a.reviewContent,
+                              files: a.reviewFiles!,
+                              sentAt: a.reviewSentAt!
+                          }
+                        : null
+            }))
         };
     }
 
@@ -70,89 +121,118 @@ export class SubmissionQuery {
             student?: string;
             accepted?: boolean | null;
         }
-    ): Promise<SubmissionPartialDTO[] | UnauthorizedError> {
-        if (
-            !actor.isCourseStaff(course.id) &&
-            !actor.isCourseStudent(course.id)
-        )
-            return new UnauthorizedError();
-        const submissions = await this.postgres.kysely
-            .selectFrom("homeworkSubmissions")
-            .innerJoin("homeworks", "homeworkId", "homeworks.id")
-            .innerJoin("users", "studentId", "users.id")
-            .select([
-                "users.id as studentId",
-                "users.avatar",
-                "users.firstName",
-                "users.lastName",
-                "users.tgUsername",
-                "homeworks.id as homeworkId",
-                "homeworks.title as homeworkTitle",
-                "homeworkSubmissions.accepted"
-            ])
-            .orderBy("lastMessageAt desc")
-            .where("courseId", "=", course.id)
+    ): Promise<SubmissionPartialDto[] | UnauthorizedError> {
+        const permissions = course.getPermissionsFor(actor);
+        if (permissions === null) return new NotFoundError("Course not found.");
+
+        const isCheckingSelf = filters?.student && actor.id === filters.student;
+        if (!permissions.submissions.view && !isCheckingSelf) {
+            return new ForbiddenError(
+                "You are not allowed to view submissions."
+            );
+        }
+
+        const subq = this.postgres.kysely
+            .selectFrom("submissionAttempts as attempts")
+            .distinctOn(["attempts.studentId", "attempts.homeworkId"])
+            .orderBy("attempts.studentId")
+            .orderBy("attempts.homeworkId")
+            .orderBy("attempts.sentAt desc")
+            .leftJoin(
+                "submissionReviews as reviews",
+                "attempts.id",
+                "reviews.attemptId"
+            )
+            .leftJoin("homeworks", "attempts.homeworkId", "homeworks.id")
+            .where("homeworks.courseId", "=", course.id)
             .$if(filters?.homework !== undefined, qb =>
-                qb.where("homeworks.id", "=", filters?.homework!)
+                qb.where("attempts.homeworkId", "=", filters!.homework!)
             )
             .$if(filters?.student !== undefined, qb =>
-                qb.where("users.id", "=", filters?.student!)
+                qb.where("attempts.studentId", "=", filters!.student!)
             )
+            .select(eb => [
+                "attempts.studentId",
+                "attempts.homeworkId",
+                "reviews.accepted",
+                eb.fn
+                    .coalesce("reviews.sentAt", "attempts.sentAt")
+                    .as("lastUpdatedAt")
+            ])
+            .as("latest");
+
+        const result = await this.postgres.kysely
+            .selectFrom(subq)
+            .innerJoin("users", "studentId", "users.id")
+            .innerJoin("homeworks", "homeworkId", "homeworks.id")
             .$if(filters?.accepted !== undefined, qb =>
                 qb.where(
-                    "homeworkSubmissions.accepted",
+                    "latest.accepted",
                     "is not distinct from",
-                    filters?.accepted!
+                    filters!.accepted!
                 )
             )
-            .orderBy("lastMessageAt asc")
+            .select([
+                "homeworkId",
+                "homeworks.title as homeworkTitle",
+                "studentId",
+                "users.firstName",
+                "users.lastName",
+                "users.avatar",
+                "users.tgUsername",
+                "latest.accepted",
+                "latest.lastUpdatedAt"
+            ])
+            .orderBy("lastUpdatedAt desc")
             .execute();
-        return submissions.map(s => ({
-            homework: { id: s.homeworkId, title: s.homeworkTitle },
-            student: {
-                id: s.studentId,
-                avatar: s.avatar,
-                firstName: s.firstName,
-                lastName: s.lastName,
-                tgUsername: s.tgUsername
-            },
-            accepted: s.accepted
-        }));
+
+        return result.map(row => {
+            return {
+                homework: {
+                    id: row.homeworkId,
+                    title: row.homeworkTitle
+                },
+                student: {
+                    id: row.studentId,
+                    firstName: row.firstName,
+                    lastName: row.lastName,
+                    avatar: row.avatar,
+                    tgUsername: row.tgUsername
+                },
+                accepted: row.accepted,
+                lastUpdatedAt: row.lastUpdatedAt
+            };
+        });
     }
 }
 
-export type SubmissionDTO = {
-    homeworkId: string;
-    studentId: string;
-    accepted: boolean | null;
-    messages: {
-        id: string;
-        userId: string | null;
-        content: string;
-        accepted: boolean | null;
-        sentAt: Date;
-    }[];
-    /** Users that took part in the discussion. */
-    users: {
-        id: string;
-        avatar: string | null;
-        firstName: string | null;
-        lastName: string | null;
-        tgUsername: string;
-    }[];
-};
-
-export type SubmissionPartialDTO = {
+export type SubmissionDto = {
     homework: {
         id: string;
         title: string;
     };
     student: {
         id: string;
-        avatar: string | null;
-        firstName: string | null;
+        firstName: string;
         lastName: string | null;
         tgUsername: string;
+        avatar: string | null;
+    };
+    attempts: SubmissionAttempt[];
+};
+
+export type SubmissionPartialDto = {
+    homework: {
+        id: string;
+        title: string;
+    };
+    student: {
+        id: string;
+        firstName: string;
+        lastName: string | null;
+        tgUsername: string;
+        avatar: string | null;
     };
     accepted: boolean | null;
+    lastUpdatedAt: Date;
 };

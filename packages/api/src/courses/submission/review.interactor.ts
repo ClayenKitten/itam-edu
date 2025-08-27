@@ -1,17 +1,23 @@
 import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
-import { ForbiddenError, HttpError, NotFoundError } from "../../api/errors";
+import {
+    ConflictError,
+    ForbiddenError,
+    HttpError,
+    NotFoundError
+} from "../../api/errors";
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { NotificationSender } from "../../notifications/sender";
 import { SubmissionReviewNotificationTemplate } from "./notifications";
 import { CourseChangelog } from "../changes";
-import { Postgres } from "../../infra/postgres";
+import type { SubmissionAttemptReview } from "./entity";
+import { SubmissionRepository } from "./repository";
 
 @injectable()
 export class ReviewHomework {
     public constructor(
-        protected postgres: Postgres,
+        protected repository: SubmissionRepository,
         protected notificationSender: NotificationSender,
         protected courseChangelog: CourseChangelog
     ) {}
@@ -23,29 +29,32 @@ export class ReviewHomework {
         homework: Homework,
         student: User,
         review: {
-            content: string;
             accepted: boolean;
+            content: string;
+            files: string[];
         }
     ): Promise<void | HttpError> {
         const permissions = course.getPermissionsFor(actor);
         if (permissions === null) return new NotFoundError("Course not found.");
-
         if (permissions.submissions.review !== true) {
             return new ForbiddenError(
                 "You are not allowed to review homework submissions."
             );
         }
 
-        await this.postgres.kysely
-            .insertInto("homeworkSubmissionMessages")
-            .values({
-                homeworkId: homework.id,
-                studentId: student.id,
-                userId: actor.id,
-                content: review.content,
-                accepted: review.accepted
-            })
-            .execute();
+        const submission = await this.repository.load(homework.id, student.id);
+        if (!submission) {
+            return new NotFoundError("Submission not found.");
+        }
+        if (submission.lastAttempt.review !== null) {
+            return new ConflictError("Submission is already reviewed.");
+        }
+        submission.lastAttempt.review = {
+            ...review,
+            reviewerId: actor.id,
+            sentAt: new Date()
+        };
+        await this.repository.save(submission);
 
         await Promise.allSettled([
             this.courseChangelog.add(actor, course, {

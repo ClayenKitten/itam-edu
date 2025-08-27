@@ -13,8 +13,8 @@ import type {
     HomeworkPartialDTO
 } from "itam-edu-api/src/courses/homework/query";
 import type {
-    SubmissionDTO,
-    SubmissionPartialDTO
+    SubmissionDto,
+    SubmissionPartialDto
 } from "itam-edu-api/src/courses/submission/query";
 import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/courses/changes";
 import type { WebNotification } from "itam-edu-api/src/notifications";
@@ -34,7 +34,7 @@ export type Homework = HomeworkDTO;
 export type HomeworkPartial = HomeworkPartialDTO;
 export type CreateHomework = CreateHomeworkDTO;
 
-export type Submission = SubmissionDTO;
-export type SubmissionPartial = SubmissionPartialDTO;
+export type Submission = SubmissionDto;
+export type SubmissionPartial = SubmissionPartialDto;
 
 export type Notification = WebNotification;
