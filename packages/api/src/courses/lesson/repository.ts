@@ -10,11 +10,15 @@ import type { Course } from "../entity";
 export class LessonRepository {
     public constructor(protected postgres: Postgres) {}
 
-    public async getById(lessonId: string): Promise<Lesson | null> {
+    public async load(
+        courseId: string,
+        lessonId: string
+    ): Promise<Lesson | null> {
         const lesson = await this.postgres.kysely
             .selectFrom("lessons")
             .selectAll()
             .orderBy("position asc")
+            .where("courseId", "=", courseId)
             .where("id", "=", lessonId)
             .executeTakeFirst();
         if (!lesson) return null;

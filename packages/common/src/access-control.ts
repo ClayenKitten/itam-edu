@@ -41,6 +41,12 @@ export type CoursePermissions = {
         /** Remove students from the course. */
         remove: boolean;
     };
+    attendance: {
+        /** View attendance. */
+        view: boolean;
+        /** Add or remove students from the attendance record. */
+        edit: boolean;
+    };
     analytics: {
         /** View course analytics. */
         view: boolean;

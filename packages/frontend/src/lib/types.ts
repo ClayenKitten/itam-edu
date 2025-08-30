@@ -19,16 +19,20 @@ import type {
 import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/courses/changes";
 import type { WebNotification } from "itam-edu-api/src/notifications";
 import type { StaffMemberDto } from "itam-edu-api/src/courses/staff/schema";
+import type { StudentDto } from "itam-edu-api/src/courses/student/schema";
+import type { AttendeeDto } from "itam-edu-api/src/courses/lesson/attendance/query";
 
 export type Course = CourseQueryDto;
 export type CoursePartial = CourseQueryPartialDto;
 export type CourseChange = CourseChangeDto;
 
 export type StaffMember = StaffMemberDto;
+export type Student = StudentDto;
 
 export type Lesson = LessonDTO;
 export type LessonPartial = LessonPartialDTO;
 export type CreateLesson = CreateLessonDTO;
+export type Attendee = AttendeeDto;
 
 export type Homework = HomeworkDTO;
 export type HomeworkPartial = HomeworkPartialDTO;

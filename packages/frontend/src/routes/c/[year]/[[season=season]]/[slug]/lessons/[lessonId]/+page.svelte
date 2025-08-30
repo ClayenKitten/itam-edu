@@ -43,24 +43,44 @@
 >
     <section class="flex flex-col gap-2">
         <a
-            class="flex items-center h-min mb-5.5 gap-2 text-h4 text-primary"
+            class="group self-start mb-3 flex items-center h-min gap-2 text-primary"
             href="{coursePath(data.course)}/lessons"
         >
-            <i class="ph ph-caret-left text-[16px]"></i>
-            Назад
+            <i class="ph ph-caret-left text-[20px]"></i>
+            <h5 class="group-hover:underline">К списку уроков</h5>
         </a>
-        <header class="flex gap-8">
+        <header class="flex justify-between gap-8">
             <h2>Урок {data.lesson.position + 1}. {data.lesson.title}</h2>
-            {#if data.course.permissions.lessons.edit === true}
-                <IconButton
-                    icon="ph-pencil-simple"
-                    title="Редактировать"
-                    onclick={() =>
-                        goto(
-                            `${coursePath(data.course)}/lessons/${data.lesson.id}/edit`
-                        )}
-                />
-            {/if}
+            <menu class="flex gap-2">
+                {#if data.course.permissions.submissions.view === true}
+                    <a
+                        class={[
+                            "flex justify-center items-center w-11.5 h-11.5 bg-on-primary rounded-xs basis-11.5 shrink-0",
+                            "border border-on-primary hover:border-primary transition-colors duration-100"
+                        ]}
+                        href={`${coursePath(data.course)}/lessons/${data.lesson.id}/attendance`}
+                        aria-label="Посещаемость"
+                        title="Посещаемость"
+                    >
+                        <i class="ph ph-users-three text-primary text-[20px]"
+                        ></i>
+                    </a>
+                {/if}
+                {#if data.course.permissions.homeworks.edit === true}
+                    <a
+                        class={[
+                            "flex justify-center items-center w-11.5 h-11.5 bg-on-primary rounded-xs basis-11.5 shrink-0",
+                            "border border-on-primary hover:border-primary transition-colors duration-100"
+                        ]}
+                        href={`${coursePath(data.course)}/lessons/${data.lesson.id}/edit`}
+                        aria-label="Редактировать"
+                        title="Редактировать"
+                    >
+                        <i class="ph ph-pencil-simple text-primary text-[20px]"
+                        ></i>
+                    </a>
+                {/if}
+            </menu>
         </header>
         {#if data.lesson.schedule}
             <p class="text-md-regular text-on-background-muted">

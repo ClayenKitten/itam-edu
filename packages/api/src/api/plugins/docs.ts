@@ -34,6 +34,7 @@ export function docsPlugin() {
                         { name: "Users" },
                         { name: "Courses" },
                         { name: "Lessons" },
+                        { name: "Attendance" },
                         { name: "Homeworks" },
                         { name: "Submissions" },
                         { name: "Students" },

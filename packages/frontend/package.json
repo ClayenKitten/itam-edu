@@ -55,5 +55,9 @@
         "typescript": "^5.0.0",
         "typescript-eslint": "^8.0.0",
         "vite": "^6.0.0"
+    },
+    "dependencies": {
+        "@svelte-put/qr": "^2.1.0",
+        "jsonwebtoken": "^9.0.2"
     }
 }

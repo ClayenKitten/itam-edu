@@ -8,6 +8,7 @@ import { CourseRepository } from "../repository";
 import { LessonService } from "./service";
 import { LessonRepository } from "./repository";
 import { LessonQuery } from "./query";
+import { AttendanceQuery } from "./attendance/query";
 
 @injectable()
 export class LessonController {
@@ -16,7 +17,8 @@ export class LessonController {
         protected courseRepo: CourseRepository,
         protected lessonService: LessonService,
         protected lessonRepo: LessonRepository,
-        protected lessonQuery: LessonQuery
+        protected lessonQuery: LessonQuery,
+        protected attendanceQuery: AttendanceQuery
     ) {}
 
     public toElysia() {
@@ -126,7 +128,7 @@ export class LessonController {
                 async ({ params, body, user, status }) => {
                     const [course, lesson] = await Promise.all([
                         this.courseRepo.getById(params.course),
-                        this.lessonRepo.getById(params.lesson)
+                        this.lessonRepo.load(params.course, params.lesson)
                     ]);
                     if (!course || !lesson) return status(404);
 

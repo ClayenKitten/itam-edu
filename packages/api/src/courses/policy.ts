@@ -24,6 +24,10 @@ export function coursePermissions(
         lessons: {
             edit: editLevel >= EditLevel.Teacher
         },
+        attendance: {
+            view: viewLevel === ViewLevel.Full,
+            edit: editLevel >= EditLevel.Teacher
+        },
         homeworks: {
             edit: editLevel >= EditLevel.Teacher
         },

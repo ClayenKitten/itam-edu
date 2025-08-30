@@ -32,6 +32,9 @@ export const appConfigSchema = t.Object({
             })
         )
     }),
+    jwt: t.Object({
+        secret: t.String({ minLength: 32 })
+    }),
     /** Telegram bot configuration. */
     telegram: t.Object({
         /** Telegram API token. */
@@ -103,6 +106,9 @@ export function createConfigFromEnv(): AppConfig {
                     ? Number(env.ITAMEDU_FILES_PORT)
                     : undefined
             }
+        },
+        jwt: {
+            secret: env.ITAMEDU_JWT_SECRET!
         },
         telegram: {
             token: env.ITAMEDU_TELEGRAM_TOKEN!,

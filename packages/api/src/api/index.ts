@@ -12,6 +12,7 @@ import { httpLoggerPlugin } from "./plugins/logger";
 import { UserController } from "../users/controller";
 import { CourseController } from "../courses/controller";
 import { LessonController } from "../courses/lesson/controller";
+import { AttendanceController } from "../courses/lesson/attendance/controller";
 import { HomeworkController } from "../courses/homework/controller";
 import { StudentController } from "../courses/student/controller";
 import { SubmissionController } from "../courses/submission/controller";
@@ -30,6 +31,7 @@ export class ApiServer {
         protected userController: UserController,
         protected courseController: CourseController,
         protected lessonController: LessonController,
+        protected attendanceController: AttendanceController,
         protected homeworkController: HomeworkController,
         protected studentController: StudentController,
         protected submissionController: SubmissionController,
@@ -81,6 +83,7 @@ export class ApiServer {
             .use(this.lessonController.toElysia())
             .use(this.homeworkController.toElysia())
             .use(this.studentController.toElysia())
+            .use(this.attendanceController.toElysia())
             .use(this.submissionController.toElysia())
             .use(this.staffController.toElysia())
             .use(this.callController.toElysia())

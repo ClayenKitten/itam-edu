@@ -5,6 +5,8 @@
 
 import type { ColumnType } from "kysely";
 
+export type AttendanceFormat = "offline" | "online";
+
 export type CourseRole = "admin" | "student" | "teacher";
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
@@ -82,6 +84,14 @@ export interface Homeworks {
   id: Generated<string>;
   position: number;
   title: string;
+}
+
+export interface LessonAttendees {
+  format: AttendanceFormat;
+  lessonId: string;
+  manuallyAddedBy: string | null;
+  recordedAt: Generated<Timestamp>;
+  userId: string;
 }
 
 export interface LessonHomeworks {
@@ -174,6 +184,7 @@ export interface DB {
   courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;
+  lessonAttendees: LessonAttendees;
   lessonHomeworks: LessonHomeworks;
   lessons: Lessons;
   schemaMigrations: SchemaMigrations;
