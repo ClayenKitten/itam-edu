@@ -10,7 +10,7 @@
         input.focus();
     }
     $effect(() => {
-        let setCode = page.url.searchParams.get("code");
+        let setCode = page.url.searchParams.get("login");
         if (setCode) {
             code = setCode;
         }
@@ -50,6 +50,11 @@
         "backdrop:bg-[black] backdrop:opacity-30"
     ]}
     bind:this={dialog}
+    onclose={() => {
+        let url = page.url;
+        url.searchParams.delete("login");
+        history.replaceState(null, "", url);
+    }}
 >
     <header class="flex flex-col">
         <button
