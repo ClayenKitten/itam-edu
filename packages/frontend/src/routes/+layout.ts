@@ -3,6 +3,7 @@ import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { User, type CalendarEvent } from "itam-edu-common";
 import type { CoursePartial, Notification } from "$lib/types";
+import type { Metadata } from "$lib/metadata";
 
 export const load: LayoutLoad = async ({ fetch, depends }) => {
     depends("app:user", "app:courses", "app:notifications", "app:calendar");
@@ -18,7 +19,16 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
         user,
         courses,
         notifications,
-        calendar
+        calendar,
+        // Page metadata
+        ...({
+            title: "ITAM Education",
+            description:
+                "Образовательная платформа студенческого объединения IT at MISIS (ITAM).",
+            favicon: "/favicon.png",
+            theme: "default",
+            pageImage: null
+        } satisfies Metadata)
     };
 };
 

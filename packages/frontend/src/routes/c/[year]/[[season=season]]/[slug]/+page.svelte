@@ -7,10 +7,6 @@
     let { data } = $props();
 </script>
 
-<svelte:head>
-    <title>Главная | {data.course.title}</title>
-</svelte:head>
-
 <div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
     <header class="flex flex-col">
         <div class="banner w-full aspect-[5] mb-7.5 rounded-lg overflow-hidden">

@@ -2,27 +2,31 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
-    import { getColors, themes } from "$lib/theme";
+    import { getColors, themes, type Theme } from "$lib/metadata";
     import type { Course } from "$lib/types";
     import { courseFilePath } from "itam-edu-common";
     import { getContext } from "svelte";
 
-    let { readonly, course = $bindable() }: Props = $props();
-    let themeContainer = getContext<{ theme: string }>("theme");
-
+    let { readonly, course }: Props = $props();
     type Props = {
         readonly: boolean;
         course: Course;
     };
 
+    const courseClone = $state(structuredClone($state.snapshot(course)));
+    const themeOverride = getContext<{ theme: Theme | null }>("themeOverride");
+    $effect(() => {
+        themeOverride.theme = courseClone.theme as Theme;
+    });
+
     async function save() {
         const result = await api({ fetch })
-            .courses({ course: course.id })
+            .courses({ course: courseClone.id })
             .patch({
-                theme: course.theme,
-                cover: course.cover,
-                icon: course.icon,
-                banner: course.banner
+                theme: courseClone.theme,
+                cover: courseClone.cover,
+                icon: courseClone.icon,
+                banner: courseClone.banner
             });
 
         if (result.status === 200) {
@@ -36,10 +40,6 @@
         }
 
         await invalidate("app:course");
-    }
-
-    function applyTheme() {
-        themeContainer.theme = course.theme;
     }
 </script>
 
@@ -57,31 +57,26 @@
         >
             {#each themes as theme (theme)}
                 {@const colors = getColors(theme)}
-                <label
+                <button
                     class={[
                         "self-center justify-self-center",
                         "flex justify-center items-center",
                         "transition-all duration-200",
-                        "size-12 has-checked:size-15 border rounded-full",
+                        "size-12 border rounded-full",
                         "bg-conic from-primary to-on-primary from-50% to-50%",
                         "border-primary-border opacity-60",
-                        !readonly ? "hover:opacity-100 cursor-pointer" : "",
-                        "has-checked:border-primary has-checked:opacity-100"
+                        !readonly && "hover:opacity-100 cursor-pointer",
+                        theme === courseClone.theme &&
+                            "border-primary opacity-100 size-15"
                     ]}
                     style:--color-primary={colors.primary}
                     style:--color-primary-border={colors.primaryBorder}
                     style:--color-on-primary={colors.onPrimary}
+                    onclick={() => (courseClone.theme = theme)}
+                    disabled={readonly}
+                    aria-label={`Тема "${theme}"`}
                 >
-                    <input
-                        class="hidden"
-                        type="radio"
-                        name="theme"
-                        value={theme}
-                        bind:group={course.theme}
-                        disabled={readonly}
-                        onchange={applyTheme}
-                    />
-                </label>
+                </button>
             {/each}
         </ul>
     </div>
@@ -98,14 +93,14 @@
                 </p>
             </header>
             <ImageUploader
-                bind:filename={course.cover}
+                bind:filename={courseClone.cover}
                 height="315px"
                 aspectRatio="315/315"
                 filenameToSrc={filename =>
-                    courseFilePath(course.id).public(filename)}
+                    courseFilePath(courseClone.id).public(filename)}
                 onUpload={async file => {
                     const response = await api({ fetch })
-                        .files.courses({ course: course.id })
+                        .files.courses({ course: courseClone.id })
                         .post({ file });
                     if (response.error) {
                         alert(response.status);
@@ -128,14 +123,14 @@
                 </p>
             </header>
             <ImageUploader
-                bind:filename={course.icon}
+                bind:filename={courseClone.icon}
                 height="128px"
                 aspectRatio="1/1"
                 filenameToSrc={filename =>
-                    courseFilePath(course.id).public(filename)}
+                    courseFilePath(courseClone.id).public(filename)}
                 onUpload={async file => {
                     const response = await api({ fetch })
-                        .files.courses({ course: course.id })
+                        .files.courses({ course: courseClone.id })
                         .post({ file });
                     if (response.error) {
                         alert(response.status);
@@ -158,13 +153,13 @@
             </p>
         </header>
         <ImageUploader
-            bind:filename={course.banner}
+            bind:filename={courseClone.banner}
             aspectRatio="5/1"
             filenameToSrc={filename =>
-                courseFilePath(course.id).public(filename)}
+                courseFilePath(courseClone.id).public(filename)}
             onUpload={async file => {
                 const response = await api({ fetch })
-                    .files.courses({ course: course.id })
+                    .files.courses({ course: courseClone.id })
                     .post({ file });
                 if (response.error) {
                     alert(response.status);

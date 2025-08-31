@@ -2,24 +2,10 @@
     import InfoSection from "./InfoSection.svelte";
     import StaffSection from "./StaffSection.svelte";
     import DangerSection from "./DangerSection.svelte";
-    import { onNavigate } from "$app/navigation";
-    import { getContext } from "svelte";
     import StyleSection from "./StyleSection.svelte";
 
     let { data } = $props();
-
-    let courseClone = $state(structuredClone(data.course));
-
-    const themeContainer = getContext<{ theme: string }>("theme");
-
-    onNavigate(() => {
-        themeContainer.theme = data.course.theme;
-    });
 </script>
-
-<svelte:head>
-    <title>Настройки | {data.course.title}</title>
-</svelte:head>
 
 <div
     class={[
@@ -28,11 +14,11 @@
     ]}
 >
     <InfoSection
-        bind:course={courseClone}
+        course={data.course}
         readonly={data.course.permissions.course.update !== true}
     />
     <StyleSection
-        bind:course={courseClone}
+        course={data.course}
         readonly={data.course.permissions.course.update !== true}
     />
     <StaffSection

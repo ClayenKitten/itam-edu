@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
 
     const students = await getStudents(fetch, course.id);
     const stats = getStats(fetch, course.id);
-    return { students, stats };
+    return { students, stats, title: `Аналитика | ${course.title}` };
 };
 
 async function getStudents(fetch: typeof window.fetch, courseId: string) {

@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
 
     const staff = await getStaff(fetch, course.id);
 
-    return { user, staff };
+    return { user, staff, title: `Настройки | ${course.title}` };
 };
 
 async function getStaff(fetch: typeof window.fetch, courseId: string) {

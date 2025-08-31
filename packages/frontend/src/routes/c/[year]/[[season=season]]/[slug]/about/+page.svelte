@@ -5,10 +5,6 @@
     let { data } = $props();
 </script>
 
-<svelte:head>
-    <title>О курсе | {data.course.title}</title>
-</svelte:head>
-
 <div
     class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 pt-0 gap-3.5"
 >
@@ -82,7 +78,7 @@
         {#if data.course.about}
             <section class="flex flex-col gap-4.5">
                 <h3>О курсе</h3>
-                <TipTap bind:content={data.course.about} readonly />
+                <TipTap content={data.course.about} readonly />
             </section>
         {/if}
     </div>

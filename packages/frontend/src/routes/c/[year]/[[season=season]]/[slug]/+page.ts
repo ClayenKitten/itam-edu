@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
 
     const changes = await getChanges(fetch, course.id);
 
-    return { changes };
+    return { changes, title: `Главная | ${course.title}` };
 };
 
 async function getChanges(fetch: typeof window.fetch, courseId: string) {

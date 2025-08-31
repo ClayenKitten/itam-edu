@@ -9,10 +9,6 @@
     let { data } = $props();
 </script>
 
-<svelte:head>
-    <title>Проверка работ | {data.course.title}</title>
-</svelte:head>
-
 <div class="flex">
     <div class="flex-1 max-h-[calc(100dvh-56px)] overflow-y-auto">
         <div class="flex flex-col mt-[25dvh] items-center gap-2">

@@ -39,10 +39,6 @@
     };
 </script>
 
-<svelte:head>
-    <title>Задания | {data.course.title}</title>
-</svelte:head>
-
 <HomeworkListEditModal
     bind:this={modal}
     course={data.course}

@@ -1,3 +1,15 @@
+export type Metadata = {
+    title: string;
+    description: string;
+    favicon: string;
+    pageImage: {
+        url: string;
+        height: number;
+        width: number;
+    } | null;
+    theme: Theme;
+};
+
 export const themes = ["default", "red", "blue", "green", "pink"] as const;
 export type Theme = (typeof themes)[number];
 

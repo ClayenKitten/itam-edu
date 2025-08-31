@@ -6,7 +6,7 @@ import type { Attendee, Student } from "$lib/types";
 export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
     depends("app:attendees", "app:students", "app:staff");
 
-    const { course } = await parent();
+    const { course, lesson } = await parent();
 
     if (course.permissions.attendance.view !== true) {
         error(404);
@@ -18,7 +18,12 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
         getStaff(fetch, course.id)
     ]);
 
-    return { attendees, students, staff };
+    return {
+        attendees,
+        students,
+        staff,
+        title: `Посещаемость | ${lesson.title} | ${course.title}`
+    };
 };
 
 async function getAttendees(

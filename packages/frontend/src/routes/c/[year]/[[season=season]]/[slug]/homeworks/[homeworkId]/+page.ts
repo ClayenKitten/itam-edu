@@ -6,7 +6,7 @@ import type { Submission } from "$lib/types";
 export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
     depends("app:submission");
 
-    const { user, course } = await parent();
+    const { homework, user, course } = await parent();
 
     let submission: Submission | null = null;
     if (user && user.isCourseStudent(course.id)) {
@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
         );
     }
 
-    return { submission };
+    return { submission, title: `${homework.title} | ${course.title}` };
 };
 
 async function getSubmission(

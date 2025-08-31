@@ -1,7 +1,4 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { page } from "$app/state";
-    import IconButton from "$lib/components/IconButton.svelte";
     import TipTap from "$lib/components/TipTap.svelte";
     import { formatLessonSchedule } from "$lib/format.js";
     import { coursePath } from "$lib/path.js";
@@ -10,30 +7,6 @@
 
     let { data } = $props();
 </script>
-
-<svelte:head>
-    <title>{data.lesson.title} | {data.course.title}</title>
-    <meta
-        property="og:title"
-        content="{data.lesson.title} | {data.course.title}"
-    />
-    <meta property="og:type" content="video.movie" />
-    {#if data.lesson.description}
-        <meta name="description" content={data.lesson.description} />
-        <meta property="og:description" content={data.lesson.description} />
-    {/if}
-    <meta property="og:url" content={page.url.toString()} />
-    {#if data.lesson.banner}
-        {@const imgUrl = courseFilePath(data.course.id).public(
-            data.lesson.banner
-        )}
-        <meta property="og:image" content={imgUrl} />
-        <meta property="og:image:width" content="996" />
-        <meta property="og:image:height" content="600" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={imgUrl} />
-    {/if}
-</svelte:head>
 
 <div
     class={[

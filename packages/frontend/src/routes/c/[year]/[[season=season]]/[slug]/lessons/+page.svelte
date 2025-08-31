@@ -10,10 +10,6 @@
     let modal: LessonEditModal;
 </script>
 
-<svelte:head>
-    <title>Уроки | {data.course.title}</title>
-</svelte:head>
-
 <LessonEditModal
     bind:this={modal}
     course={data.course}

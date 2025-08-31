@@ -4,20 +4,21 @@
     import TipTap from "$lib/components/TipTap.svelte";
     import type { Course } from "$lib/types";
 
-    let { readonly, course = $bindable() }: Props = $props();
-
+    let { readonly, course }: Props = $props();
     type Props = {
         readonly: boolean;
         course: Course;
     };
 
+    const courseClone = $state(structuredClone($state.snapshot(course)));
+
     async function save() {
         const result = await api({ fetch })
-            .courses({ course: course.id })
+            .courses({ course: courseClone.id })
             .patch({
-                title: course.title,
-                description: course.description,
-                about: course.about
+                title: courseClone.title,
+                description: courseClone.description,
+                about: courseClone.about
             });
 
         if (result.status === 200) {
@@ -40,7 +41,11 @@
     </header>
     <label class="flex flex-col gap-2">
         <h4>Название</h4>
-        <input class="input" disabled={readonly} bind:value={course.title} />
+        <input
+            class="input"
+            disabled={readonly}
+            bind:value={courseClone.title}
+        />
     </label>
     <div class="flex gap-6">
         <label class="flex-1 flex flex-col gap-2">
@@ -54,7 +59,7 @@
                 class="input h-[163px] resize-none"
                 maxlength="500"
                 disabled={readonly}
-                bind:value={course.description}
+                bind:value={courseClone.description}
             ></textarea>
         </label>
     </div>
@@ -74,10 +79,12 @@
         <div
             class={[
                 "h-full min-h-[300px] p-5 border-2 rounded-sm focus-within:border-primary",
-                !readonly ? "border-on-primary" : "border-on-surface-disabled"
+                !readonly
+                    ? "border-primary-border"
+                    : "border-on-surface-disabled"
             ]}
         >
-            <TipTap bind:content={course.about} {readonly} />
+            <TipTap bind:content={courseClone.about} {readonly} />
         </div>
     </div>
     {#if !readonly}

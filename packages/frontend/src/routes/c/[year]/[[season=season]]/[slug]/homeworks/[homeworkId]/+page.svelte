@@ -5,10 +5,6 @@
     let { data } = $props();
 </script>
 
-<svelte:head>
-    <title>{data.homework.title} | {data.course.title}</title>
-</svelte:head>
-
 <div class="flex flex-col h-full m-10 gap-7 max-w-[1000px]">
     <HomeworkInfoSection
         user={data.user}

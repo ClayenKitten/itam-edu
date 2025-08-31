@@ -10,7 +10,7 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 
     let submissions = user ? await getSubmissions(fetch, course, user) : [];
 
-    return { submissions };
+    return { submissions, title: `Задания | ${course.title}` };
 };
 
 async function getSubmissions(

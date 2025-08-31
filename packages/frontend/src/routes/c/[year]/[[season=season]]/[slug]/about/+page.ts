@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
 
     const staff = await getStaff(fetch, course.id);
 
-    return { staff };
+    return { staff, title: `О курсе | ${course.title}` };
 };
 
 async function getStaff(fetch: typeof window.fetch, courseId: string) {

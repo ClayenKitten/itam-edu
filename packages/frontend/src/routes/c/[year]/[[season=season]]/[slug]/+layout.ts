@@ -2,6 +2,8 @@ import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { lookupCourseId } from "$lib/path";
+import type { Metadata, Theme } from "$lib/metadata";
+import { courseFilePath } from "itam-edu-common";
 
 export const load: LayoutLoad = async ({ fetch, params, depends }) => {
     depends("app:course", "app:lessons", "app:homeworks");
@@ -9,7 +11,30 @@ export const load: LayoutLoad = async ({ fetch, params, depends }) => {
     const courseId = await lookupCourseId(fetch, params);
     const course = await getCourse(fetch, courseId);
 
-    return { course, lessons: course.lessons, homeworks: course.homeworks };
+    let metadata: Partial<Metadata> & Pick<Metadata, "title" | "theme"> = {
+        title: course.title + " | ITAM Education",
+        theme: course.theme as Theme
+    };
+    if (course.icon) {
+        metadata.favicon = `/files/courses/${course.id}/${course.icon}`;
+    }
+    if (course.description) {
+        metadata.description = course.description;
+    }
+    if (course.cover) {
+        metadata.pageImage = {
+            url: courseFilePath(course.id).public(course.cover),
+            width: 315,
+            height: 315
+        };
+    }
+
+    return {
+        ...metadata,
+        course,
+        lessons: course.lessons,
+        homeworks: course.homeworks
+    };
 };
 
 async function getCourse(fetch: typeof window.fetch, courseId: string) {

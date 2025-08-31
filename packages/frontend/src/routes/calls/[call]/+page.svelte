@@ -34,14 +34,6 @@
     };
 </script>
 
-<svelte:head>
-    <title>{data.call.title} | ITAM Education</title>
-    <meta
-        name="description"
-        content={`Подключитесь к звонку "${data.call.title}"`}
-    />
-</svelte:head>
-
 {#if room.state === "connected"}
     <div
         id="wrapper"

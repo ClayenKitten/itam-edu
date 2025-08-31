@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ fetch, params, depends }) => {
 
     const call = await getCall(fetch, params.call);
 
-    return { call };
+    return { call, title: `${call.title} | ITAM Education` };
 };
 
 async function getCall(fetch: typeof window.fetch, call: string) {

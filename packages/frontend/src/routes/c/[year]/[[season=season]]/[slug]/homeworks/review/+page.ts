@@ -18,4 +18,6 @@ export const load: PageLoad = async ({ parent, url }) => {
                 url.search
         );
     }
+
+    return { title: `Проверка работ | ${course.title}` };
 };

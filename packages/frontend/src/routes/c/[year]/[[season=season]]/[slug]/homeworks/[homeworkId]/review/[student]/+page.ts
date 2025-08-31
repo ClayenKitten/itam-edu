@@ -20,7 +20,7 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
         params.student
     );
 
-    return { submission };
+    return { submission, title: `Проверка работ | ${course.title}` };
 };
 
 async function getSubmission(

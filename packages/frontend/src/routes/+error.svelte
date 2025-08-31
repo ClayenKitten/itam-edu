@@ -15,18 +15,18 @@
     };
 </script>
 
-<div class="flex flex-col justify-center items-center w-full h-full">
+<div class="flex flex-col justify-center items-center w-dvw h-dvh">
     <h1>{page.status}</h1>
     {#if getDescription(page.status)}
         <p class="text-xl-medium text-on-background whitespace-pre">
             {getDescription(page.status)}
         </p>
     {/if}
-    <button
+    <a
         class="group self-center flex items-center h-min mt-8 gap-2 text-primary"
-        onclick={() => history.back()}
+        href="/home"
     >
         <i class="ph ph-caret-left text-[20px]"></i>
-        <h5 class="group-hover:underline">Назад</h5>
-    </button>
+        <h5 class="group-hover:underline">На главную</h5>
+    </a>
 </div>

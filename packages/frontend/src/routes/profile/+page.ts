@@ -9,5 +9,5 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
         redirect(307, "/home?login");
     }
 
-    return { user };
+    return { user, title: "Профиль | ITAM Education" };
 };

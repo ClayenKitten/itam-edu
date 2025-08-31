@@ -1,29 +1,25 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import { setContext } from "svelte";
     import CourseSidebar from "./CourseSidebar.svelte";
-    import { getColors, type Theme } from "$lib/theme";
+    import { getColors, type Theme } from "$lib/metadata";
+    import { setContext } from "svelte";
+    import { onNavigate } from "$app/navigation";
 
     let { data, children } = $props();
 
-    const themeContainer = $state({ theme: data.course.theme as Theme });
-    setContext("theme", themeContainer);
-
-    const colors = $derived(getColors(themeContainer.theme));
+    // Theme override to preview changes on course settings page.
+    const themeOverride = $state<{ theme: Theme | null }>({ theme: null });
+    onNavigate(() => {
+        themeOverride.theme = null;
+    });
+    setContext("themeOverride", themeOverride);
+    const colors = $derived.by(() => {
+        if (themeOverride.theme) {
+            return getColors(themeOverride.theme);
+        }
+        return getColors(data.theme);
+    });
 </script>
-
-<svelte:head>
-    {#if data.course.description}
-        <meta name="description" content={data.course.description} />
-        <meta property="og:description" content={data.course.description} />
-    {/if}
-    {#if data.course.icon}
-        <link
-            rel="icon"
-            href={`/files/courses/${data.course.id}/${data.course.icon}`}
-        />
-    {/if}
-</svelte:head>
 
 <div
     id="wrapper"

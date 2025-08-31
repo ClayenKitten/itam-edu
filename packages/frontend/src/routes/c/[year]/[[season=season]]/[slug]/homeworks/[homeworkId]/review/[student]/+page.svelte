@@ -14,10 +14,6 @@
     );
 </script>
 
-<svelte:head>
-    <title>Проверка работ | {data.course.title}</title>
-</svelte:head>
-
 <div class="flex">
     <div class="flex-1 max-h-[calc(100dvh-56px)] overflow-y-auto">
         <div class="flex flex-col gap-6 m-10 max-w-[1000px]">
