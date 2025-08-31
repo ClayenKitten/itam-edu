@@ -2,21 +2,25 @@
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/state";
     import api from "$lib/api";
+    import { dismissable } from "$lib/attachments/dismissable.svelte";
     import { coursePath } from "$lib/path";
     import type { Course, CoursePartial } from "$lib/types";
     import { courseFilePath, type User } from "itam-edu-common";
 
     const { course, courses, user }: Props = $props();
-    const prefix = $derived(coursePath(course));
-
     type Props = {
         course: Course;
         courses: CoursePartial[];
         user: User | null;
     };
 
+    let isCourseSelectorOpen = $state(false);
+
     const enroll = async () => {
-        if (!user) return;
+        if (!user) {
+            goto("?login");
+            return;
+        }
         const result = await api({ fetch })
             .courses({ course: course.id })
             .students({ student: user.id })
@@ -25,7 +29,62 @@
             alert(result.status);
             return;
         }
-        await invalidate("app:user");
+        await Promise.all([invalidate("app:course"), invalidate("app:user")]);
+    };
+
+    const enrollmentButton = $derived.by((): EnrollmentButton => {
+        const isStaff = user && user.isCourseStaff(course.id);
+        const isStudent = user && user.isCourseStudent(course.id);
+
+        if (!course.isPublished) {
+            return {
+                text: "Курс не опубликован",
+                icon: "eye-slash",
+                mode: "label"
+            };
+        }
+        if (course.isArchived) {
+            return {
+                text: "Курс в архиве",
+                icon: "archive",
+                mode: isStaff ? "label" : "disabled"
+            };
+        }
+
+        if (isStudent) {
+            return {
+                text: "Вы студент курса",
+                icon: "student",
+                mode: "label"
+            };
+        } else if (isStaff) {
+            return {
+                text: course.isEnrollmentOpen
+                    ? "Запись открыта"
+                    : "Запись закрыта",
+                icon: course.isEnrollmentOpen ? "door-open" : "door",
+                mode: "label"
+            };
+        } else {
+            if (course.isEnrollmentOpen) {
+                return {
+                    text: "Записаться на курс",
+                    icon: "student",
+                    mode: "button"
+                };
+            } else {
+                return {
+                    text: "Запись закрыта",
+                    icon: "student",
+                    mode: "disabled"
+                };
+            }
+        }
+    });
+    type EnrollmentButton = {
+        text: string;
+        icon: string;
+        mode: "button" | "label" | "disabled";
     };
 </script>
 
@@ -35,8 +94,45 @@
         "bg-surface border-r border-surface-border"
     ]}
 >
+    {@render courseSelector()}
+    <ul class="flex flex-col gap-2">
+        {@render link("/", "Главная", "house")}
+        {@render link("/lessons", "Уроки", "folder")}
+        {@render link("/homeworks", "Задания", "book-open-text")}
+        {@render link("/about", "О курсе", "info")}
+    </ul>
+    {#if user?.isCourseStaff(course.id)}
+        <hr class="text-surface-border -mx-5" />
+        <ul class="flex flex-col gap-2">
+            {@render link("/analytics", "Аналитика", "chart-line")}
+            {@render link("/settings", "Настройки", "gear-six")}
+        </ul>
+    {/if}
+    <button
+        class={[
+            "mt-auto flex justify-center items-center gap-2.5 h-11",
+            "text-md-medium rounded-xs text-nowrap",
+            enrollmentButton.mode === "button" && "text-on-primary bg-primary",
+            enrollmentButton.mode === "label" &&
+                "text-primary bg-on-primary cursor-default",
+            enrollmentButton.mode === "disabled" &&
+                "text-on-surface-muted bg-on-surface-disabled cursor-default"
+        ]}
+        disabled={enrollmentButton.mode !== "button"}
+        onclick={enroll}
+    >
+        {#key enrollmentButton.icon}
+            <i class="ph ph-{enrollmentButton.icon} text-[24px]"></i>
+        {/key}
+        <span>{enrollmentButton.text}</span>
+    </button>
+</nav>
+
+{#snippet courseSelector()}
     <details
         class="group relative flex items-center w-full h-max text-lg-medium cursor-pointer"
+        bind:open={isCourseSelectorOpen}
+        {@attach dismissable(() => (isCourseSelectorOpen = false))}
     >
         <summary
             class={[
@@ -66,6 +162,7 @@
                         "flex items-center gap-1.5 h-13 px-4 bg-surface-tint overflow-hidden"
                     ]}
                     href={coursePath(courseOption)}
+                    onclick={() => (isCourseSelectorOpen = false)}
                     data-sveltekit-preload-data="off"
                 >
                     {#if courseOption.icon}
@@ -91,33 +188,10 @@
             {/each}
         </ul>
     </details>
-    <ul class="flex flex-col gap-2">
-        {@render btn("/", "Главная", "house")}
-        {@render btn("/lessons", "Уроки", "folder")}
-        {@render btn("/homeworks", "Задания", "book-open-text")}
-        {@render btn("/about", "О курсе", "info")}
-    </ul>
-    {#if user?.isCourseStaff(course.id)}
-        <hr class="text-surface-border -mx-5" />
-        <ul class="flex flex-col gap-2">
-            {@render btn("/analytics", "Аналитика", "chart-line")}
-            {@render btn("/settings", "Настройки", "gear-six")}
-        </ul>
-    {/if}
-    {#if user && !user.isCourseStaff(course.id) && !user.isCourseStudent(course.id)}
-        {@const open = course.isEnrollmentOpen}
-        <button class="btn mt-auto" disabled={!open} onclick={enroll}>
-            <i class="ph ph-student text-[24px]"></i>
-            {#if open}
-                Поступить на курс
-            {:else}
-                Поступление закрыто
-            {/if}
-        </button>
-    {/if}
-</nav>
+{/snippet}
 
-{#snippet btn(path: string, text: string, icon: string)}
+{#snippet link(path: string, text: string, icon: string)}
+    {@const prefix = coursePath(course)}
     {@const startsWith = page.url.pathname.startsWith(prefix + path)}
     {@const enabled =
         (path === "/" && page.url.pathname === prefix) ||
