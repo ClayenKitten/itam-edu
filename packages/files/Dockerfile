@@ -26,7 +26,7 @@ RUN npm --workspace=${ITAM_PACKAGE_NAME} prune --omit=dev
 
 
 ## Serve production build
-FROM oven/bun:1.1-alpine AS serve
+FROM oven/bun:1.2-alpine AS serve
 WORKDIR /app
 ENV NODE_ENV=production
 ARG ITAM_PACKAGE_NAME
