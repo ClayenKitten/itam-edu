@@ -72,9 +72,11 @@ export class LessonService {
                 ...lesson.info,
                 ...change.info
             },
-            change.content ?? lesson.content,
-            change.homeworks ?? lesson.homeworks,
-            change.schedule ?? lesson.schedule
+            change.content === undefined ? lesson.content : change.content,
+            change.homeworks === undefined
+                ? lesson.homeworks
+                : change.homeworks,
+            change.schedule === undefined ? lesson.schedule : change.schedule
         );
         await this.lessonRepo.set(newLesson);
 

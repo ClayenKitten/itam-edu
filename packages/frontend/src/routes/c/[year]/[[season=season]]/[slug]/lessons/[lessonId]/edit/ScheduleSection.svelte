@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Lesson } from "$lib/types";
+    import { set } from "date-fns";
 
     let { schedule = $bindable() }: Props = $props();
 
@@ -35,12 +36,18 @@
     {#if schedule === null}
         <button
             class="btn w-min text-nowrap"
-            onclick={() =>
-                (schedule = saved ?? {
+            onclick={() => {
+                schedule = saved ?? {
                     online: null,
                     offline: null,
-                    date: new Date()
-                })}
+                    date: set(new Date(), {
+                        hours: 18,
+                        minutes: 30,
+                        seconds: 0,
+                        milliseconds: 0
+                    })
+                };
+            }}
         >
             <i class="ph ph-calendar-check text-[20px]"></i>
             Запланировать урок
