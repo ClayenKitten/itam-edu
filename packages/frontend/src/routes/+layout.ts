@@ -5,37 +5,45 @@ import { User, type CalendarEvent } from "itam-edu-common";
 import type { CoursePartial, Notification } from "$lib/types";
 import type { Metadata } from "$lib/metadata";
 
-export const load: LayoutLoad = async ({ fetch, depends }) => {
+export const load: LayoutLoad = async ({ fetch, depends, data }) => {
+    const metadata = {
+        title: "ITAM Education",
+        description:
+            "Образовательная платформа студенческого объединения IT at MISIS (ITAM).",
+        favicon: "/favicon.png",
+        theme: "default",
+        pageImage: null
+    } satisfies Metadata;
+
     depends("app:user", "app:courses", "app:notifications", "app:calendar");
 
-    const [user, courses, notifications, calendar] = await Promise.all([
-        getUser(fetch),
-        getCourses(fetch),
-        getNotifications(fetch),
-        getCalendar(fetch)
-    ]);
-
-    return {
-        user,
-        courses,
-        notifications,
-        calendar,
-        // Page metadata
-        ...({
-            title: "ITAM Education",
-            description:
-                "Образовательная платформа студенческого объединения IT at MISIS (ITAM).",
-            favicon: "/favicon.png",
-            theme: "default",
-            pageImage: null
-        } satisfies Metadata)
-    };
+    const coursePromise = getCourses(fetch);
+    if (data.sessionToken) {
+        const [user, courses, notifications] = await Promise.all([
+            getUser(fetch),
+            coursePromise,
+            getNotifications(fetch)
+        ]);
+        return {
+            user,
+            courses,
+            notifications,
+            ...metadata
+        };
+    } else {
+        const courses = await coursePromise;
+        return {
+            user: null,
+            courses,
+            notifications: [],
+            ...metadata
+        };
+    }
 };
 
-async function getUser(fetch: typeof window.fetch): Promise<User | null> {
+async function getUser(fetch: typeof window.fetch): Promise<User> {
     const response = await api({ fetch }).users.me.get();
     if (response.error) {
-        if (response.error.status === 401) return null;
         error(response.status);
     }
     const { user } = response.data;
@@ -55,21 +63,7 @@ async function getNotifications(
 ): Promise<Notification[]> {
     const response = await api({ fetch }).users.me.notifications.get();
     if (response.error) {
-        if (response.status === 401) return [];
         error(response.status);
     }
     return response.data.notifications;
-}
-
-async function getCalendar(
-    fetch: typeof window.fetch
-): Promise<CalendarEvent[]> {
-    const response = await api({ fetch }).users.me.calendar.get({
-        query: { after: new Date().toISOString() }
-    });
-    if (response.error) {
-        if (response.status === 401) return [];
-        error(response.status);
-    }
-    return response.data.map(e => ({ ...e, datetime: new Date(e.datetime) }));
 }
