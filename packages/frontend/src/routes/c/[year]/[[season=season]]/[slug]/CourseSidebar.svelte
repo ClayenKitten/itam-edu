@@ -18,7 +18,7 @@
 
     const enroll = async () => {
         if (!user) {
-            goto("?login");
+            await goto("?login");
             return;
         }
         const result = await api({ fetch })

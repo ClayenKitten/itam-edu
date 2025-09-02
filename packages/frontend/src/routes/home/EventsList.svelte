@@ -1,7 +1,6 @@
 <script lang="ts">
     import api from "$lib/api";
-    import type { CalendarEvent } from "itam-edu-common";
-    import type { PageData } from "./$types";
+    import type { CalendarEvent, User } from "itam-edu-common";
     import type { CoursePartial } from "$lib/types";
     import { coursePath } from "$lib/path";
     import {
@@ -10,31 +9,41 @@
         isSameDay,
         startOfDay
     } from "date-fns";
+    import { getToaster } from "$lib/Toaster.svelte";
+    import { browser } from "$app/environment";
 
     let {
-        data,
+        user,
+        courses,
         selected = $bindable(null),
         highlighted = $bindable(null)
     }: Props = $props();
     type Props = {
-        data: PageData;
+        user: User | null;
+        courses: CoursePartial[];
         selected?: Date | null;
         highlighted?: Date | null;
     };
+    const toaster = getToaster();
 
-    const getEvents = async (date: Date) => {
-        if (!selected) return data.calendar;
-        const result = await api({ fetch }).users.me.calendar.get({
-            query: {
-                after: startOfDay(selected).toISOString(),
-                before: endOfDay(selected).toISOString()
-            }
-        });
+    const getEvents = async (selected: Date | null) => {
+        if (!browser || user === null) {
+            return [];
+        }
+        const query = selected
+            ? {
+                  after: startOfDay(selected).toISOString(),
+                  before: endOfDay(selected).toISOString()
+              }
+            : { after: new Date().toISOString() };
+        const result = await api({ fetch }).users.me.calendar.get({ query });
         if (result.error) {
+            toaster.add("Не удалось список событий", "error");
             return [];
         }
         return result.data;
     };
+    const eventsPromise = $derived(getEvents(selected));
 
     const eventToHref = (course: CoursePartial, event: CalendarEvent) => {
         switch (event.kind) {
@@ -50,43 +59,45 @@
     };
 </script>
 
-{#if !selected}
-    <h5>Ближайшие события</h5>
-    <ul class="flex flex-col gap-3">
-        {#each data.calendar as event}
-            {@render eventCard(event)}
-        {:else}
-            <div class="m-auto pt-6 pb-8 text-lg-regular text-on-surface">
-                Ничего! Можно
-                <a
-                    class={[
-                        "after:content-['отдыхать']",
-                        "hover:after:content-['хакатонить']",
-                        "hover:underline hover:italic not-after"
-                    ]}
-                    aria-label="отдыхать"
-                    target="_blank"
-                    href="https://info.itatmisis.ru/calendar"
-                ></a>
-                🌅
-            </div>
-        {/each}
-    </ul>
-{:else}
-    {#await getEvents(selected) then events}
-        {#if events.length > 0}
-            <h5>Cобытия {formatDate(selected, "dd.MM.yyyy")}</h5>
-            <ul class="flex flex-col gap-3">
-                {#each events as event}
-                    {@render eventCard(event)}
-                {/each}
-            </ul>
-        {/if}
-    {/await}
-{/if}
+{#await eventsPromise then events}
+    {#if !selected}
+        <h5>Ближайшие события</h5>
+        <ul class="flex flex-col gap-3">
+            {#each events as event}
+                {@render eventCard(event)}
+            {:else}
+                <div class="m-auto pt-6 pb-8 text-lg-regular text-on-surface">
+                    Ничего! Можно
+                    <a
+                        class={[
+                            "after:content-['отдыхать']",
+                            "hover:after:content-['хакатонить']",
+                            "hover:underline hover:italic not-after"
+                        ]}
+                        aria-label="отдыхать"
+                        target="_blank"
+                        href="https://info.itatmisis.ru/calendar"
+                    ></a>
+                    🌅
+                </div>
+            {/each}
+        </ul>
+    {:else}
+        <h5>Cобытия {formatDate(selected, "dd.MM.yyyy")}</h5>
+        <ul class="flex flex-col gap-3">
+            {#each events as event}
+                {@render eventCard(event)}
+            {:else}
+                <div class="m-auto pt-6 pb-8 text-lg-regular text-on-surface">
+                    Ничего не запланировано 😪
+                </div>
+            {/each}
+        </ul>
+    {/if}
+{/await}
 
 {#snippet eventCard(event: CalendarEvent)}
-    {@const course = data.courses.find(c => c.id === event.courseId)!}
+    {@const course = courses.find(c => c.id === event.courseId)!}
     {@const href = eventToHref(course, event)}
     {@const isHighlighted =
         highlighted && isSameDay(highlighted, event.datetime)}

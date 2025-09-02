@@ -3,6 +3,7 @@
     import { page } from "$app/state";
     import { env } from "$env/dynamic/public";
     import api from "$lib/api";
+    import { getToaster } from "$lib/Toaster.svelte";
 
     export function show() {
         code = "";
@@ -24,20 +25,18 @@
     let code: string = $state("");
     let input: HTMLInputElement;
 
+    const toaster = getToaster();
     const login = async () => {
         if (!code) return;
-        const resp = await api({
-            fetch,
-            toast: resp => ({
-                title: resp.ok
-                    ? "Авторизация успешна"
-                    : "Авторизация не удалась"
-            })
-        }).users.sessions.post({ code: code.toUpperCase() });
+        const resp = await api({ fetch }).users.sessions.post({
+            code: code.toUpperCase()
+        });
 
         if (resp.error) {
+            toaster.add("Авторизация не удалась", "error");
             return;
         }
+        toaster.add("Авторизация успешна");
         await invalidate("app:user");
         dialog.close();
     };

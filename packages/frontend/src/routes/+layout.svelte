@@ -1,10 +1,13 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import Toaster from "$lib/Toaster.svelte";
+    import { createToaster } from "$lib/Toaster.svelte";
     import "../app.css";
 
     let { children } = $props();
 
     let metadata = $derived(page.data);
+    const toaster = createToaster();
 </script>
 
 <svelte:head>
@@ -36,5 +39,7 @@
         <meta name="twitter:card" content="summary_large_image" />
     {/if}
 </svelte:head>
+
+<Toaster {toaster} />
 
 {@render children()}

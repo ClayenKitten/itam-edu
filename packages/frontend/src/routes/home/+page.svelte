@@ -55,11 +55,13 @@
             class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
         >
             <TinyCalendar
+                user={data.user}
                 bind:selected={selectedDate}
                 bind:highlighted={highlightedDate}
             />
             <EventsList
-                {data}
+                user={data.user}
+                courses={data.courses}
                 bind:selected={selectedDate}
                 bind:highlighted={highlightedDate}
             />

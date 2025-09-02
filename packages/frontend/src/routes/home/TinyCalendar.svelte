@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { browser } from "$app/environment";
     import api from "$lib/api";
+    import { getToaster } from "$lib/Toaster.svelte";
     import {
         addMonths,
         eachDayOfInterval,
@@ -11,17 +13,22 @@
         lastDayOfMonth,
         set,
         startOfDay,
-        startOfWeek,
-        subMonths
+        startOfWeek
     } from "date-fns";
     import { ru } from "date-fns/locale";
+    import type { User } from "itam-edu-common";
 
-    let { selected = $bindable(null), highlighted = $bindable(null) }: Props =
-        $props();
+    let {
+        user,
+        selected = $bindable(null),
+        highlighted = $bindable(null)
+    }: Props = $props();
     type Props = {
+        user: User | null;
         selected?: Date | null;
         highlighted?: Date | null;
     };
+    const toaster = getToaster();
 
     let firstMonthDay = $state(
         set(new Date(), { date: 1, hours: 12, minutes: 0, seconds: 0 })
@@ -35,18 +42,24 @@
         })
     );
 
-    let eventsPromise = $derived.by(async () => {
+    const getEvents = async (firstDay: Date, lastDay: Date) => {
+        if (!browser || user === null) {
+            return [];
+        }
         const result = await api({ fetch }).users.me.calendar.get({
             query: {
-                after: startOfDay(firstMonthDay).toISOString(),
-                before: endOfDay(lastMonthDay).toISOString()
+                after: startOfDay(firstDay).toISOString(),
+                before: endOfDay(lastDay).toISOString()
             }
         });
         if (result.error) {
+            toaster.add("Не удалось загрузить календарь");
             return [];
         }
         return result.data;
-    });
+    };
+    const eventsPromise = $derived(getEvents(firstMonthDay, lastMonthDay));
+
     const select = (newSelected: Date) => {
         if (selected && isSameDay(selected, newSelected)) {
             selected = null;
@@ -136,7 +149,6 @@
         onmouseleave={() => !isDisabled && (highlighted = null)}
     >
         <span>{currentDate.getDate()}</span>
-
         {#await eventsPromise then events}
             {@const todayEvents = events.filter(e =>
                 isSameDay(e.datetime, currentDate)

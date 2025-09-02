@@ -11,7 +11,7 @@ export default function api(params: ApiParams) {
     const client = treaty<ApiTreaty>(baseUrl, {
         fetcher: params.fetch,
         onRequest: () => {
-            if (!browser) return; // On server `hooks.server.ts` is used
+            if (!browser) return; // See `hooks.server.ts`
             const token = getCookie("itam-edu-token");
             if (!token) return;
             return {
@@ -19,13 +19,6 @@ export default function api(params: ApiParams) {
                     authorization: `Bearer ${token}`
                 }
             };
-        },
-        onResponse: async response => {
-            if (params.toast) {
-                // TODO: display toast notification
-                const toast = params.toast(response);
-                alert(toast.title);
-            }
         }
     });
     return client;
@@ -33,8 +26,6 @@ export default function api(params: ApiParams) {
 
 type ApiParams = {
     fetch: typeof fetch;
-    /** Gets info to display in toast notification. */
-    toast?: (response: Response) => { title: string };
 };
 
 const getCookie = (name: string): string | undefined => {

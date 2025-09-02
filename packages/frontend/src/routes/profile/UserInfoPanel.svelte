@@ -3,11 +3,13 @@
     import api from "$lib/api";
     import type { User } from "itam-edu-common";
     import Avatar from "./Avatar.svelte";
+    import { getToaster } from "$lib/Toaster.svelte";
 
     let { user }: Props = $props();
     type Props = {
         user: User;
     };
+    const toaster = getToaster();
 
     let userInfo = $state(structuredClone(user.info));
 
@@ -24,9 +26,10 @@
             bio: userInfo.bio
         });
         if (response.error) {
-            alert(response.status);
+            toaster.add("Не удалось сохранить изменения", "error");
             return;
         }
+        toaster.add("Изменения сохранены");
         await invalidate("app:user");
     };
     let timer: number | null = $state(null);
@@ -35,7 +38,6 @@
         if (timer) clearTimeout(timer);
         timer = window.setTimeout(() => {
             save();
-            alert("Изменения сохранены.");
         }, DEBOUNCE_MS);
     };
     const delayDebounce = () => {
@@ -43,7 +45,6 @@
             clearTimeout(timer);
             timer = window.setTimeout(() => {
                 save();
-                alert("Изменения сохранены.");
             }, DEBOUNCE_MS);
         }
     };
@@ -54,7 +55,7 @@
             alert(response.status);
             return;
         }
-        await goto("/");
+        await goto("/home");
         await invalidate("app:user");
     };
 </script>
