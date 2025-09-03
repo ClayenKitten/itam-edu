@@ -5,7 +5,7 @@ import { Pool } from "pg";
 import logger from "../logger";
 import type { AppConfig } from "itam-edu-common/config";
 
-/** PostgreSQL database. */
+/** PostgreSQL database client. */
 @injectable()
 export class Postgres {
     public constructor(

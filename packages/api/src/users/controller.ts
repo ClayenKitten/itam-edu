@@ -147,7 +147,7 @@ export class UserController {
             .get(
                 "/me/notifications",
                 async ({ user }) => {
-                    const stream = await this.redis.pool.xRange(
+                    const stream = await this.redis.xRange(
                         `notifications:${user.id}`,
                         "-",
                         "+"

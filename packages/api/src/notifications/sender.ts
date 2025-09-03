@@ -49,7 +49,7 @@ export class NotificationSender {
         userId: string,
         webNotification: WebNotification
     ): Promise<void> {
-        await this.redis.pool.xAdd(
+        await this.redis.xAdd(
             `notifications:${userId}`,
             "*",
             {

@@ -12,10 +12,10 @@ export class CourseStatsRepository {
     ): Promise<SeriesValue[]> {
         const key = `courses:${courseId}:stats:${kind}`;
         try {
-            if ((await this.redis.pool.exists(key)) === 0) {
+            if ((await this.redis.exists(key)) === 0) {
                 return [];
             }
-            return await this.redis.pool.ts.range(key, "-", "+");
+            return await this.redis.ts.range(key, "-", "+");
         } catch (error) {
             logger.warning("failed to fetch statistics", {
                 error: error?.toString()
@@ -39,7 +39,7 @@ export class CourseStatsRepository {
     ): Promise<void> {
         try {
             const key = `courses:${courseId}:stats:${kind}`;
-            await this.redis.pool.ts.add(key, "*", value);
+            await this.redis.ts.add(key, "*", value);
         } catch (e) {
             logger.error("Failed to add course statistics entry", {
                 kind,

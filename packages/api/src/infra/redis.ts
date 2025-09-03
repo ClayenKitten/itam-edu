@@ -1,39 +1,35 @@
-import { inject, injectable } from "inversify";
-import type { AppConfig } from "itam-edu-common/config";
-import { createClientPool, type RedisClientPoolType } from "redis";
-import ts from "@redis/time-series";
-
+import { injectable } from "inversify";
+import { createClient, type createClientPool } from "redis";
 import logger from "../logger";
 
-/** Redis database. */
+/**
+ * Redis database client.
+ *
+ * # Connection pooling
+ *
+ * This client uses a single persistent connection under the hood. According to the
+ * {@link https://github.com/redis/node-redis/blob/master/docs/client-configuration.md#connection-pooling documentation},
+ * connection pooling does not improve performance for Redis. While `node-redis` implements
+ * a native {@link createClientPool connection pool}, it has limited API and does not provide any
+ * benefits to our use-case.
+ */
 @injectable()
-export class Redis {
-    public constructor(
-        @inject("AppConfig")
-        config: AppConfig
-    ) {
-        this.connectionString = config.redis.connectionString;
-
-        this.pool = createClientPool({
-            url: this.connectionString,
-            modules: { ts }
+export abstract class Redis {
+    public static async connect(url: string): Promise<Redis> {
+        const client = createClient({ url });
+        client.on("error", error => {
+            throw error;
         });
-
-        this.pool.on("error", error => {
-            logger.warning("Redis error", { error });
-        });
-        this.pool.on("ready", () => {
+        client.on("ready", () => {
             logger.trace("Redis is ready");
         });
-        this.pool.on("end", () => {
+        client.on("end", () => {
             logger.trace("Redis is disconnecting");
         });
-
-        let _ = this.pool.connect();
+        await client.connect();
+        return client;
     }
-
-    protected connectionString: string;
-
-    /** Redis connection pool. */
-    public readonly pool: RedisClientPoolType<{ ts: typeof ts }>;
 }
+
+// Some black magic fuckery with interface merging to get a desired API
+export interface Redis extends ReturnType<typeof createClient> {}

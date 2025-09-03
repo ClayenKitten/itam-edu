@@ -21,14 +21,14 @@ export class LoginCodeRepository {
         const code = this.generateCode();
 
         const key = this.getKey(code);
-        await this.redis.pool.setEx(key, this.EXPIRATION_SECONDS, user.id);
+        await this.redis.setEx(key, this.EXPIRATION_SECONDS, user.id);
         return code;
     }
 
     /** Removes login code and returns associated user. */
     public async pop(code: string): Promise<User | null> {
         const key = this.getKey(code);
-        const userId = await this.redis.pool.getDel(key);
+        const userId = await this.redis.getDel(key);
         if (!userId) return null;
         const user = await this.userRepo.getById(userId);
         if (!user) return null;

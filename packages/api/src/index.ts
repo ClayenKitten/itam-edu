@@ -7,6 +7,7 @@ import {
 import logger from "./logger";
 import { Container } from "inversify";
 import { exit } from "process";
+import { Redis } from "./infra/redis";
 
 // DI container
 export const container = new Container({
@@ -28,7 +29,12 @@ try {
     }
     exit(1);
 }
+
+// Bindings
 container.bind<AppConfig>("AppConfig").toConstantValue(createConfigFromEnv());
+container
+    .bind(Redis)
+    .toConstantValue(await Redis.connect(config.redis.connectionString));
 
 // Application
 const application = container.get(Application);
