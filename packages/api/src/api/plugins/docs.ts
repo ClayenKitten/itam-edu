@@ -39,6 +39,7 @@ export function docsPlugin() {
                         { name: "Submissions" },
                         { name: "Students" },
                         { name: "Staff" },
+                        { name: "Invites" },
                         { name: "Calls" },
                         { name: "Files" },
                         { name: "Infra" }

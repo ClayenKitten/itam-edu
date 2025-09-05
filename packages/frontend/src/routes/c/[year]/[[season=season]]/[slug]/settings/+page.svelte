@@ -24,7 +24,7 @@
     <StaffSection
         course={data.course}
         staff={data.staff}
-        readonly={data.course.permissions.staff.manage !== true}
+        invites={data.invites}
     />
     <DangerSection course={data.course} user={data.user} />
 </div>

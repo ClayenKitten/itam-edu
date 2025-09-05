@@ -70,7 +70,7 @@
 
 <div
     class={[
-        "absolute bottom-0 right-0 z-10",
+        "fixed bottom-0 right-0 z-10",
         "flex flex-col justify-end items-end p-4 gap-4"
     ]}
 >

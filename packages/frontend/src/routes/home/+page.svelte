@@ -5,6 +5,7 @@
     import TinyCalendar from "./TinyCalendar.svelte";
     import EventsList from "./EventsList.svelte";
     import CreateCourseWindow from "$lib/windows/CreateCourseWindow.svelte";
+    import AcceptInviteModal from "./AcceptInviteModal.svelte";
 
     let { data } = $props();
 
@@ -32,6 +33,7 @@
     let courses = $derived(data.courses.filter(filter));
 </script>
 
+<AcceptInviteModal user={data.user} />
 <CreateCourseWindow bind:this={createCourseWindow} />
 
 <div id="wrapper" class="flex flex-col bg-background">

@@ -22,7 +22,7 @@ export class AttendanceController {
 
     public toElysia() {
         return new Elysia({
-            name: "lessons",
+            name: "attendance",
             prefix: "/courses/:course/lessons",
             tags: ["Attendance"]
         })

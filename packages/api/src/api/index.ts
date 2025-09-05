@@ -17,6 +17,7 @@ import { HomeworkController } from "../courses/homework/controller";
 import { StudentController } from "../courses/student/controller";
 import { SubmissionController } from "../courses/submission/controller";
 import { StaffController } from "../courses/staff/controller";
+import { InviteController } from "../courses/staff/invites/controller";
 import { CallController } from "../calls/controller";
 import { FileController } from "../files/controller";
 
@@ -36,6 +37,7 @@ export class ApiServer {
         protected studentController: StudentController,
         protected submissionController: SubmissionController,
         protected staffController: StaffController,
+        protected inviteController: InviteController,
         protected callController: CallController,
         protected fileController: FileController
     ) {
@@ -86,14 +88,14 @@ export class ApiServer {
             .use(this.attendanceController.toElysia())
             .use(this.submissionController.toElysia())
             .use(this.staffController.toElysia())
+            .use(this.inviteController.toElysia())
             .use(this.callController.toElysia())
             .use(this.fileController.toElysia())
             .get("/healthz", () => "Ok", {
                 tags: ["Infra"],
                 detail: {
                     summary: "Healthcheck",
-                    description:
-                        "Healthcheck endpoint that always returns 200.",
+                    description: "Always returns `200 Ok`.",
                     security: NO_AUTHENTICATION
                 }
             });
