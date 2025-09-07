@@ -57,8 +57,7 @@ export class User {
 
     public get permissions(): GlobalPermissions {
         return {
-            createCourses:
-                this.info.role === "admin" || this.info.role === "supervisor"
+            createCourses: true // FIXME: temporary change for alpha test, DO NOT MERGE
         };
     }
 }
