@@ -1,25 +1,25 @@
 <script lang="ts">
     import { page } from "$app/state";
 
-    const getDescription = (status: number) => {
-        if (status === 404) {
+    const description = $derived.by(() => {
+        if (page.status === 404) {
             return "Страница не найдена 😿";
         }
-        if (status >= 500) {
+        if (page.status === 422 || page.status >= 500) {
             return "Проблемы с нашей стороны 😿";
         }
-        if (status === 403) {
+        if (page.status === 403) {
             return "Доступ запрещён 🔒";
         }
         return null;
-    };
+    });
 </script>
 
 <div class="flex flex-col justify-center items-center w-full h-full">
     <h1>{page.status}</h1>
-    {#if getDescription(page.status)}
-        <p class="text-xl-medium text-on-background whitespace-pre">
-            {getDescription(page.status)}
+    {#if description}
+        <p class="text-xl-medium text-on-background">
+            {description}
         </p>
     {/if}
     <button
