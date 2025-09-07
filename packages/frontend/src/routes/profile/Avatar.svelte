@@ -28,7 +28,10 @@
 
 <div class="relative size-40">
     <button
-        class="size-40 bg-primary rounded-2xl overflow-hidden"
+        class="cover size-40 bg-primary rounded-2xl overflow-hidden text-on-primary text-xl-medium"
+        style:background-image={avatar
+            ? `url(${userFilePath(user.id).avatar(avatar)})`
+            : null}
         onclick={e => {
             e.stopPropagation();
             const rect = e.currentTarget.getBoundingClientRect();
@@ -39,13 +42,7 @@
         }}
         aria-label="Аватар"
     >
-        {#if avatar}
-            <img src={userFilePath(user.id).avatar(avatar)} alt="" />
-        {:else}
-            <span class="text-on-primary text-xl-medium">
-                {user.displayName[0]}
-            </span>
-        {/if}
+        {user.telegram.username[0]}
     </button>
     {#if menuCoords}
         <menu

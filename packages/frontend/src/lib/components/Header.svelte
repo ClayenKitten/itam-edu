@@ -111,20 +111,17 @@
         </button>
         <a
             href="/profile"
-            class="flex justify-center items-center h-full aspect-square ml-2.5 bg-primary rounded-xs overflow-hidden"
+            class={[
+                "cover h-full aspect-square ml-2.5",
+                "text-on-primary text-md-medium bg-primary rounded-xs overflow-hidden"
+            ]}
+            style:background-image={user.info.avatar
+                ? `url(${userFilePath(user.id).avatar(user.info.avatar)})`
+                : null}
             aria-label="Профиль"
             title="Профиль"
         >
-            {#if user.info.avatar}
-                <img
-                    src={userFilePath(user.id).avatar(user.info.avatar)}
-                    alt=""
-                />
-            {:else}
-                <span class="text-on-primary text-md-medium">
-                    {user.displayName[0]}
-                </span>
-            {/if}
+            {user.telegram.username[0]}
         </a>
     {:else}
         <button class="btn h-full ml-2.5" onclick={() => loginWindow.show()}>
