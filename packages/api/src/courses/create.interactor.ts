@@ -6,12 +6,14 @@ import type { CreateCourseDto } from "./schema";
 import { randomUUID } from "node:crypto";
 import { CourseRepository } from "./repository";
 import { ConflictError, ForbiddenError, HttpError } from "../api/errors";
+import { CourseChangelog } from "./changes";
 
 @injectable()
 export class CreateCourse {
     public constructor(
-        protected postgres: Postgres,
-        protected repository: CourseRepository
+        private postgres: Postgres,
+        private repository: CourseRepository,
+        private changelog: CourseChangelog
     ) {}
 
     /**
@@ -68,6 +70,7 @@ export class CreateCourse {
         if (course === null) {
             throw Error("course must be non-null after creation");
         }
+        await this.changelog.add(actor, course, { kind: "course-created" });
         return course;
     }
 }

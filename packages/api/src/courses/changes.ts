@@ -19,6 +19,7 @@ export type CourseChange = {
 };
 
 export type CourseChangePayload =
+    | { kind: "course-created" }
     | { kind: "user-joined"; userId: string; role: "student" | "staff" }
     | { kind: "user-left"; userId: string; role: "student" | "staff" }
     | { kind: "lesson-created"; lessonId: string }
@@ -36,7 +37,7 @@ export type CourseChangePayload =
 /** Course changelog for audit purposes. */
 @injectable()
 export class CourseChangelog {
-    public constructor(protected postgres: Postgres) {}
+    public constructor(private postgres: Postgres) {}
 
     /**
      * Returns course changes.
@@ -57,16 +58,20 @@ export class CourseChangelog {
         return events.filter(change => this.canUserView(change, user));
     }
 
-    protected canUserView(change: CourseChange, user: User | null): boolean {
-        if (user && user.isCourseStaff(change.courseId)) return true;
-        // For students and anonymous users
+    private canUserView(change: CourseChange, user: User | null): boolean {
         switch (change.payload.kind) {
             case "user-joined":
             case "user-left":
-                return (
-                    user?.id === change.actorId ||
-                    user?.id === change.payload.userId
-                );
+                if (user === null) return false;
+                if (user.id === change.payload.userId) return true;
+                if (
+                    user.isCourseStaff(change.courseId) &&
+                    change.payload.role === "staff"
+                ) {
+                    return true;
+                }
+                return false;
+            case "course-created":
             case "lesson-created":
             case "lesson-schedule-changed":
             case "homework-created":
@@ -74,7 +79,10 @@ export class CourseChangelog {
                 return true;
             case "submission-created":
             case "submission-reviewed":
-                return user?.id === change.payload.studentId;
+                if (user === null) return false;
+                if (user.id === change.payload.studentId) return true;
+                if (user.isCourseStaff(change.courseId)) return true;
+                return false;
             default:
                 let guard: never = change.payload;
                 return false;

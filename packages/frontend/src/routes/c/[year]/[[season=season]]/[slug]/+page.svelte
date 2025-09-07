@@ -2,7 +2,8 @@
     import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath } from "$lib/path";
     import { courseFilePath } from "itam-edu-common";
-    import CourseUpdateCard from "./CourseUpdateCard.svelte";
+    import { getCourseChangeDisplay } from "./courseUpdate";
+    import { format as formatDate } from "date-fns";
 
     let { data } = $props();
 </script>
@@ -78,7 +79,46 @@
         <hr class="text-primary-border mt-5" />
         <ol class="flex flex-col max-h-120 overflow-auto mt-5 -mb-6 -mx-6">
             {#each data.changes as change}
-                <CourseUpdateCard {data} {change} />
+                {@const display = getCourseChangeDisplay(
+                    change,
+                    data.user,
+                    data.lessons,
+                    data.homeworks
+                )}
+                {#if display}
+                    <a
+                        class="flex items-center gap-4 group px-6 py-4"
+                        href={display.href
+                            ? coursePath(data.course) + display.href
+                            : null}
+                        data-sveltekit-preload-data="off"
+                    >
+                        <i
+                            class={[
+                                `ph ph-${display.icon}`,
+                                "flex justify-center items-center w-14.5 h-14.5",
+                                "text-[24px] text-primary bg-on-primary rounded-sm",
+                                "border border-primary-border group-hover:border-primary",
+                                "transition-colors duration-100"
+                            ]}
+                        ></i>
+                        <header class="flex flex-col">
+                            <p class="text-lg-medium text-on-background">
+                                {display.title}
+                            </p>
+                            <p class="text-md-regular text-on-background-muted">
+                                {display.message}
+                            </p>
+                        </header>
+                        <p class="ml-auto text-on-surface-muted">
+                            {formatDate(change.createdAt, "dd.MM.yy / HH:mm")}
+                        </p>
+                    </a>
+                {:else}
+                    {console.error(
+                        `Failed to display course changelog entry.\n\n${JSON.stringify(change.payload)}`
+                    )}
+                {/if}
             {:else}
                 <div class="self-center flex flex-col items-center gap-2 py-16">
                     <h4 class="text-on-surface-contrast">А где? 🫨</h4>
