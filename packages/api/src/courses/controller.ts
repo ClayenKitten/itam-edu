@@ -6,21 +6,21 @@ import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
-import { CourseStatsRepository } from "./stats";
 import { CreateCourse } from "./create.interactor";
 import { UpdateCourse } from "./update.interactor";
 import { HttpError } from "../api/errors";
+import { CourseStatisticsQuery } from "./analytics/query";
 
 @injectable()
 export class CourseController {
     public constructor(
-        protected authPlugin: AuthenticationPlugin,
-        protected courseRepo: CourseRepository,
-        protected courseQuery: CourseQuery,
-        protected courseChangelog: CourseChangelog,
-        protected courseStats: CourseStatsRepository,
-        protected createCourseInteractor: CreateCourse,
-        protected updateCourseInteractor: UpdateCourse
+        private authPlugin: AuthenticationPlugin,
+        private courseRepo: CourseRepository,
+        private courseQuery: CourseQuery,
+        private courseChangelog: CourseChangelog,
+        private createCourseInteractor: CreateCourse,
+        private updateCourseInteractor: UpdateCourse,
+        private statisticsQuery: CourseStatisticsQuery
     ) {}
 
     public toElysia() {
@@ -154,8 +154,14 @@ export class CourseController {
             .get(
                 "/:course/statistics",
                 async ({ user, params, status }) => {
-                    if (!user.isCourseStaff(params.course)) return status(403);
-                    return await this.courseStats.getAll(params.course);
+                    const result = await this.statisticsQuery.get(
+                        user,
+                        params.course
+                    );
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
                 },
                 {
                     requireAuthentication: true,

@@ -15,13 +15,13 @@ export class AttendanceQuery {
         private courseRepo: CourseRepository
     ) {}
 
-    public async getAll(
+    public async get(
         actor: User,
         courseId: string,
-        lessonId: string
+        lessonId: string | null
     ): Promise<AttendeeDto[] | HttpError> {
         const course = await this.courseRepo.getById(courseId);
-        const permissions = await course?.getPermissionsFor(actor);
+        const permissions = course?.getPermissionsFor(actor);
         if (!course || !permissions) {
             return new NotFoundError("Course does not exist.");
         }
@@ -31,7 +31,7 @@ export class AttendanceQuery {
             );
         }
 
-        return await this.postgres.kysely
+        let query = this.postgres.kysely
             .selectFrom("lessonAttendees")
             .select([
                 "lessonId",
@@ -39,9 +39,12 @@ export class AttendanceQuery {
                 "format",
                 "recordedAt",
                 "manuallyAddedBy"
-            ])
-            .where("lessonId", "=", lessonId)
-            .execute();
+            ]);
+        if (lessonId) {
+            query = query.where("lessonId", "=", lessonId);
+        }
+
+        return await query.execute();
     }
 }
 

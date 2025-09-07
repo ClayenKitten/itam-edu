@@ -10,14 +10,14 @@ import {
 } from "../../api/errors";
 import { Postgres } from "../../infra/postgres";
 import { CourseChangelog } from "../changes";
-import { CourseStatsRepository } from "../stats";
+import { StudentCounter } from "../analytics/student-counter";
 
 @injectable()
 export class EnrollStudent {
     public constructor(
-        protected postgres: Postgres,
-        protected changelog: CourseChangelog,
-        protected statistics: CourseStatsRepository
+        private postgres: Postgres,
+        private changelog: CourseChangelog,
+        private studentCounter: StudentCounter
     ) {}
 
     /** Enrolls student. */
@@ -47,7 +47,7 @@ export class EnrollStudent {
                 role: "student",
                 userId: student.id
             }),
-            this.statistics.add("students", course.id, course.studentCount + 1)
+            this.studentCounter.record(course.id)
         ]);
     }
 

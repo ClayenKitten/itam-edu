@@ -4,7 +4,10 @@
     import { onMount } from "svelte";
     import { ru } from "date-fns/locale";
 
-    let { label, data }: Props = $props();
+    let { data }: Props = $props();
+    type Props = {
+        data: { timestamp: number; value: number }[];
+    };
 
     let canvas: HTMLCanvasElement;
     onMount(() => {
@@ -13,7 +16,7 @@
             data: {
                 datasets: [
                     {
-                        label,
+                        label: "Количество студентов",
                         data,
                         borderWidth: 1,
                         stepped: true
@@ -56,11 +59,8 @@
             }
         });
     });
-
-    type Props = {
-        label: string;
-        data: { timestamp: number; value: number }[];
-    };
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<article class="h-80">
+    <canvas bind:this={canvas}></canvas>
+</article>

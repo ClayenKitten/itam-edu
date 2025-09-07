@@ -1,8 +1,6 @@
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
 import { LessonQuery, type LessonPartialDTO } from "./lesson/query";
 import { HomeworkQuery, type HomeworkPartialDTO } from "./homework/query";
-import { CourseStatsRepository } from "./stats";
 import { CourseRepository } from "./repository";
 import type { CoursePermissions, CourseRole, User } from "itam-edu-common";
 import type { CourseDto } from "./schema";
@@ -11,11 +9,9 @@ import { type HttpError, NotFoundError } from "../api/errors";
 @injectable()
 export class CourseQuery {
     public constructor(
-        protected postgres: Postgres,
-        protected courseRepo: CourseRepository,
-        protected lessonQuery: LessonQuery,
-        protected homeworkQuery: HomeworkQuery,
-        protected statsRepo: CourseStatsRepository
+        private courseRepo: CourseRepository,
+        private lessonQuery: LessonQuery,
+        private homeworkQuery: HomeworkQuery
     ) {}
 
     public async get(

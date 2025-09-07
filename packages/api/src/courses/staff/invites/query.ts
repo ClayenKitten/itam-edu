@@ -44,7 +44,9 @@ export class InviteQuery {
             return new NotFoundError("Course does not exist.");
         }
         if (permissions.staff.manage !== true) {
-            return new ForbiddenError("You are not allowed to view staff invites.");
+            return new ForbiddenError(
+                "You are not allowed to view staff invites."
+            );
         }
 
         const invites = await this.repo.loadAll(courseId);

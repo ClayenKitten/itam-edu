@@ -34,8 +34,11 @@ export class StudentController {
             })
             .get(
                 "",
-                async ({ user, course, status }) => {
-                    const students = await this.query.getAll(user, course);
+                async ({ user, params, status }) => {
+                    const students = await this.query.getAll(
+                        user,
+                        params.course
+                    );
                     if (students instanceof HttpError) {
                         return status(students.code, students.message);
                     }

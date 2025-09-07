@@ -28,9 +28,34 @@ export class AttendanceController {
         })
             .use(this.authPlugin.toElysia())
             .get(
+                "/attendees",
+                async ({ user, params, status }) => {
+                    const result = await this.attendanceQuery.get(
+                        user,
+                        params.course,
+                        null
+                    );
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
+                },
+                {
+                    requireAuthentication: true,
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
+                    detail: {
+                        summary: "Get attendees",
+                        description: "Returns attendees for all lessons.",
+                        security: REQUIRE_TOKEN
+                    }
+                }
+            )
+            .get(
                 "/:lesson/attendees",
                 async ({ user, params, status }) => {
-                    const result = await this.attendanceQuery.getAll(
+                    const result = await this.attendanceQuery.get(
                         user,
                         params.course,
                         params.lesson
@@ -47,8 +72,8 @@ export class AttendanceController {
                         lesson: t.String({ format: "uuid" })
                     }),
                     detail: {
-                        summary: "Get attendance",
-                        description: "Returns lesson attendance.",
+                        summary: "Get lesson attendees",
+                        description: "Returns attendees of the lesson.",
                         security: REQUIRE_TOKEN
                     }
                 }

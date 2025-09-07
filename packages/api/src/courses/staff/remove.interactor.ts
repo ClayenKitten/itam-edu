@@ -10,14 +10,12 @@ import {
 } from "../../api/errors";
 import { Postgres } from "../../infra/postgres";
 import { CourseChangelog } from "../changes";
-import { CourseStatsRepository } from "../stats";
 
 @injectable()
 export class RemoveStaffMember {
     public constructor(
-        protected postgres: Postgres,
-        protected changelog: CourseChangelog,
-        protected statistics: CourseStatsRepository
+        private postgres: Postgres,
+        private changelog: CourseChangelog
     ) {}
 
     /** Removes staff member. */
@@ -47,13 +45,10 @@ export class RemoveStaffMember {
             .where("userId", "=", target.id)
             .executeTakeFirst();
 
-        await Promise.allSettled([
-            this.changelog.add(actor, course, {
-                kind: "user-left",
-                role: "staff",
-                userId: target.id
-            }),
-            this.statistics.add("staff", course.id, course.staffCount - 1)
-        ]);
+        await this.changelog.add(actor, course, {
+            kind: "user-left",
+            role: "staff",
+            userId: target.id
+        });
     }
 }

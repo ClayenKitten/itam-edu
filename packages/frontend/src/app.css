@@ -206,6 +206,27 @@
         }
     }
 
+    .tabBtn {
+        @apply flex justify-center items-center text-lg-medium
+            border rounded-xs shadow
+            transition-colors duration-100;
+
+        &.selected {
+            @apply bg-primary text-on-primary border-primary;
+        }
+        &:not(.selected) {
+            @apply bg-surface text-on-surface-muted border-surface-border;
+            @apply hover:bg-on-primary hover:text-primary hover:border-primary;
+        }
+
+        &:not(.square) {
+            @apply px-5;
+        }
+        &.square {
+            @apply size-12 p-0;
+        }
+    }
+
     .input {
         display: flex;
         align-items: center;

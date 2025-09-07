@@ -39,7 +39,8 @@ export class InviteController {
                     params: t.Object({ code: t.String() }),
                     detail: {
                         summary: "Get invite",
-                        description: "Returns information about the invite and the course it was created for.",
+                        description:
+                            "Returns information about the invite and the course it was created for.",
                         security: REQUIRE_TOKEN
                     }
                 }

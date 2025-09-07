@@ -7,16 +7,16 @@ import {
     HttpError,
     NotFoundError
 } from "../../api/errors";
-import { CourseStatsRepository } from "../stats";
 import { Postgres } from "../../infra/postgres";
 import { CourseChangelog } from "../changes";
+import { StudentCounter } from "../analytics/student-counter";
 
 @injectable()
 export class ExpelStudent {
     public constructor(
-        protected postgres: Postgres,
-        protected changelog: CourseChangelog,
-        protected statistics: CourseStatsRepository
+        private postgres: Postgres,
+        private changelog: CourseChangelog,
+        private studentCounter: StudentCounter
     ) {}
 
     /** Expels student. */
@@ -43,7 +43,7 @@ export class ExpelStudent {
                 role: "student",
                 userId: student.id
             }),
-            this.statistics.add("students", course.id, course.studentCount - 1)
+            this.studentCounter.record(course.id)
         ]);
     }
 

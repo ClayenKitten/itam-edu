@@ -8,10 +8,7 @@ export const student = t.Object({
     bio: t.Nullable(t.String()),
     avatar: t.Nullable(t.String()),
     tgUsername: t.String(),
-    role: t.Literal("student"),
-    acceptedSubmissions: t.Number({ multipleOf: 1 }),
-    totalSubmissions: t.Number({ multipleOf: 1 }),
-    rejectedSubmissions: t.Number({ multipleOf: 1 })
+    role: t.Literal("student")
 });
 export type StudentDto = typeof student.static;
 
