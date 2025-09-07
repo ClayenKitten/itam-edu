@@ -4,7 +4,7 @@ import { HomeworkQuery, type HomeworkPartialDTO } from "./homework/query";
 import { CourseRepository } from "./repository";
 import type { CoursePermissions, CourseRole, User } from "itam-edu-common";
 import type { CourseDto } from "./schema";
-import { type HttpError, NotFoundError } from "../api/errors";
+import { HttpError, NotFoundError } from "../api/errors";
 
 @injectable()
 export class CourseQuery {
@@ -19,21 +19,24 @@ export class CourseQuery {
         id: string
     ): Promise<CourseQueryDto | HttpError> {
         const course = await this.courseRepo.getById(id);
-        if (course === null) {
-            return new NotFoundError("Course not found.");
-        }
-
-        const permissions = course.getPermissionsFor(actor);
-        if (permissions === null) {
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
             return new NotFoundError("Course not found.");
         }
 
         const role = actor ? course.getRoleFor(actor) : null;
-
         const [lessons, homeworks] = await Promise.all([
-            this.lessonQuery.getAll(id),
-            this.homeworkQuery.getAll(id)
+            this.lessonQuery.getAll(actor, id),
+            this.homeworkQuery.getAll(actor, id)
         ]);
+
+        if (lessons instanceof HttpError) {
+            return lessons;
+        }
+        if (homeworks instanceof HttpError) {
+            return homeworks;
+        }
+
         return {
             ...course.toDTO(),
             role,

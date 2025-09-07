@@ -1,15 +1,27 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
-import { NotFoundError } from "../../api/errors";
+import { HttpError, NotFoundError } from "../../api/errors";
+import { CourseRepository } from "../repository";
+import type { User } from "itam-edu-common";
 
 @injectable()
 export class LessonQuery {
-    public constructor(protected postgres: Postgres) {}
+    public constructor(
+        private postgres: Postgres,
+        private courseRepo: CourseRepository
+    ) {}
 
     public async get(
+        actor: User | null,
         courseId: string,
         lessonId: string
-    ): Promise<LessonDTO | NotFoundError> {
+    ): Promise<LessonDTO | HttpError> {
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course does not exist.");
+        }
+
         const lesson = await this.postgres.kysely
             .selectFrom("lessons")
             .select([
@@ -67,7 +79,16 @@ export class LessonQuery {
         };
     }
 
-    public async getAll(courseId: string): Promise<LessonPartialDTO[]> {
+    public async getAll(
+        actor: User | null,
+        courseId: string
+    ): Promise<LessonPartialDTO[] | HttpError> {
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course does not exist.");
+        }
+
         const lessons = await this.postgres.kysely
             .selectFrom("lessons")
             .select([

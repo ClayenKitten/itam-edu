@@ -4,17 +4,19 @@ import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
 import { AuthenticationPlugin } from "../../api/plugins/authenticate";
-import { CourseRepository } from "../repository";
-import { HomeworkRepository } from "./repository";
 import { HomeworkQuery } from "./query";
+import { CreateHomework } from "./create.interactor";
+import { UpdateHomework } from "./update.interactor";
+import { ReorderHomeworks } from "./reorder.interactor";
 
 @injectable()
 export class HomeworkController {
     public constructor(
-        protected authPlugin: AuthenticationPlugin,
-        protected courseRepo: CourseRepository,
-        protected homeworkRepo: HomeworkRepository,
-        protected homeworkQuery: HomeworkQuery
+        private authPlugin: AuthenticationPlugin,
+        private query: HomeworkQuery,
+        private createInteractor: CreateHomework,
+        private updateInteractor: UpdateHomework,
+        private reorderInteractor: ReorderHomeworks
     ) {}
 
     public toElysia() {
@@ -26,11 +28,12 @@ export class HomeworkController {
             .use(this.authPlugin.toElysia())
             .get(
                 "",
-                async ({ params }) => {
-                    const homeworks = await this.homeworkQuery.getAll(
-                        params.course
-                    );
-                    return homeworks;
+                async ({ user, params, status }) => {
+                    const result = await this.query.getAll(user, params.course);
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
                 },
                 {
                     params: t.Object({ course: t.String({ format: "uuid" }) }),
@@ -42,15 +45,19 @@ export class HomeworkController {
             )
             .post(
                 "",
-                async ({ params, body }) => {
-                    const homework = await this.homeworkRepo.create(
+                async ({ user, params, body, status }) => {
+                    const result = await this.createInteractor.invoke(
+                        user,
                         params.course,
                         body
                     );
-                    return homework.toDTO();
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result.toDTO();
                 },
                 {
-                    hasCoursePermission: ["canEditContent"],
+                    requireAuthentication: true,
                     body: schema.createHomework,
                     params: t.Object({ course: t.String({ format: "uuid" }) }),
                     detail: {
@@ -62,17 +69,20 @@ export class HomeworkController {
             )
             .put(
                 "",
-                async ({ params, body }) => {
-                    await this.homeworkRepo.updateAll(
+                async ({ user, params, body, status }) => {
+                    const result = await this.reorderInteractor.invoke(
+                        user,
                         params.course,
                         body.homeworks
                     );
-                    return "Ok";
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
                 },
                 {
+                    requireAuthentication: true,
                     body: t.Object({ homeworks: schema.updateHomeworksList }),
                     params: t.Object({ course: t.String({ format: "uuid" }) }),
-                    hasCoursePermission: "canEditContent",
                     detail: {
                         summary: "Update homeworks",
                         description:
@@ -83,15 +93,16 @@ export class HomeworkController {
             )
             .get(
                 "/:homework",
-                async ({ params, status }) => {
-                    const homework = await this.homeworkQuery.get(
+                async ({ user, params, status }) => {
+                    const result = await this.query.get(
+                        user,
                         params.course,
                         params.homework
                     );
-                    if (homework instanceof HttpError) {
-                        return status(homework.code, homework.message);
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
                     }
-                    return homework;
+                    return result;
                 },
                 {
                     params: t.Object({
@@ -106,21 +117,25 @@ export class HomeworkController {
             )
             .put(
                 "/:homework",
-                async ({ params, body, status }) => {
-                    const homework = await this.homeworkRepo.update(
+                async ({ user, params, body, status }) => {
+                    const result = await this.updateInteractor.invoke(
+                        user,
+                        params.course,
                         params.homework,
                         body
                     );
-                    if (!homework) return status(404);
-                    return homework.toDTO();
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result.toDTO();
                 },
                 {
+                    requireAuthentication: true,
                     params: t.Object({
                         course: t.String({ format: "uuid" }),
                         homework: t.String({ format: "uuid" })
                     }),
                     body: schema.updateHomework,
-                    hasCoursePermission: [["canEditContent"], 404],
                     detail: {
                         summary: "Update homework",
                         description: "Updates homework.",

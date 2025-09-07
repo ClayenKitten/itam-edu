@@ -58,9 +58,12 @@ export class HomeworkRepository {
         const hw = await this.postgres.kysely
             .insertInto("homeworks")
             .values(eb => ({
-                title: homeworkInfo.title,
                 courseId: courseId,
-                position: selectPosition(eb)
+                position: selectPosition(eb),
+                title: homeworkInfo.title,
+                content: homeworkInfo.content,
+                deadline: homeworkInfo.deadline,
+                acceptingSubmissionsOverride: homeworkInfo.deadlineOverride
             }))
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -70,11 +73,13 @@ export class HomeworkRepository {
 
     /** Updates a homework. */
     public async update(
+        courseId: string,
         homeworkId: string,
         homeworkInfo: typeof schema.updateHomework.static
     ) {
         const hw = await this.postgres.kysely
             .updateTable("homeworks")
+            .where("courseId", "=", courseId)
             .where("id", "=", homeworkId)
             .set({
                 title: homeworkInfo.title,

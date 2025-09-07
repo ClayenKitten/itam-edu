@@ -1,20 +1,19 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
     import TipTap from "$lib/components/TipTap.svelte";
-    import { coursePath } from "$lib/path";
-    import type { Course, CreateHomework, Homework } from "$lib/types";
+    import { getToaster } from "$lib/Toaster.svelte";
+    import type { CreateHomework, Homework } from "$lib/types";
 
     let { homework = $bindable(), onsave, oncancel }: Props = $props();
-
     type Props = {
         homework: Homework | CreateHomework;
         onsave: () => void;
         oncancel: () => void;
     };
+    const toaster = getToaster();
 
     const validate = (): boolean => {
-        if (homework.title.length === 0) {
-            alert("Слишком короткое название домашней работы");
+        if (homework.title.length <= 3) {
+            toaster.add("Слишком короткое название", "error");
             return false;
         }
         return true;
@@ -86,7 +85,7 @@
         </div>
     </div>
     <footer class="flex gap-5 justify-end">
-        <button class="btn secondary" onclick={oncancel}> Отменить </button>
+        <button class="btn secondary" onclick={oncancel}>Отменить</button>
         <button class="btn" onclick={() => validate() && onsave()}>
             {#if "id" in homework}Сохранить{:else}Создать{/if}
         </button>

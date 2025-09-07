@@ -41,11 +41,15 @@ export class LessonController {
             })
             .get(
                 "",
-                async ({ params }) => {
-                    const lessons = await this.lessonQuery.getAll(
+                async ({ user, params, status }) => {
+                    const result = await this.lessonQuery.getAll(
+                        user,
                         params.course
                     );
-                    return lessons;
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
                 },
                 {
                     detail: {
@@ -102,8 +106,9 @@ export class LessonController {
             )
             .get(
                 "/:lesson",
-                async ({ params, status }) => {
+                async ({ user, params, status }) => {
                     const lesson = await this.lessonQuery.get(
+                        user,
                         params.course,
                         params.lesson
                     );
