@@ -1,6 +1,4 @@
 <script lang="ts">
-    import CalendarWindow from "$lib/windows/CalendarWindow.svelte";
-    import CreateCallWindow from "$lib/windows/CreateCallWindow.svelte";
     import LoginWindow from "$lib/windows/LoginWindow.svelte";
     import { userFilePath, type User } from "itam-edu-common";
     import Notifications from "./Notifications.svelte";
@@ -8,8 +6,6 @@
 
     let { user, notifications, courses, standalone = false }: Props = $props();
 
-    let createCallWindow: CreateCallWindow;
-    let calendarWindow: CalendarWindow;
     let loginWindow: LoginWindow;
 
     let showNotifications = $state(false);
@@ -22,8 +18,6 @@
     };
 </script>
 
-<CreateCallWindow bind:this={createCallWindow} />
-<CalendarWindow bind:this={calendarWindow} />
 <LoginWindow bind:this={loginWindow} />
 
 <svelte:window
@@ -49,29 +43,29 @@
             />
         </a>
     {/if}
+    <a
+        class={[
+            "flex justify-center items-center h-full aspect-square",
+            "hover:bg-on-primary rounded-xs transition-colors duration-100"
+        ]}
+        aria-label="Домашняя страница"
+        title="Домашняя страница"
+        href="/home"
+    >
+        <i class="ph ph-house text-primary text-[20px]"></i>
+    </a>
+    <a
+        class={[
+            "flex justify-center items-center h-full aspect-square",
+            "hover:bg-on-primary rounded-xs transition-colors duration-100"
+        ]}
+        aria-label="Календарь"
+        title="Календарь"
+        href="/calendar"
+    >
+        <i class="ph ph-calendar-dots text-primary text-[20px]"></i>
+    </a>
     {#if user}
-        <a
-            class={[
-                "flex justify-center items-center h-full aspect-square hover:bg-on-primary rounded-xs",
-                "transition-colors duration-100"
-            ]}
-            aria-label="Домашняя страница"
-            title="Домашняя страница"
-            href="/home"
-        >
-            <i class="ph ph-house text-primary text-[20px]"></i>
-        </a>
-        <button
-            class={[
-                "flex justify-center items-center h-full aspect-square rounded-xs",
-                "hover:bg-on-primary transition-colors duration-100"
-            ]}
-            aria-label="Начать звонок"
-            title="Начать звонок"
-            onclick={() => createCallWindow.show()}
-        >
-            <i class="ph ph-phone-plus text-primary text-[20px]"></i>
-        </button>
         <div class="relative h-full aspect-square">
             <label
                 class={[
@@ -98,17 +92,6 @@
                 </div>
             {/if}
         </div>
-        <button
-            class={[
-                "flex justify-center items-center h-full aspect-square rounded-xs",
-                "hover:bg-on-primary transition-colors duration-100"
-            ]}
-            aria-label="Календарь"
-            title="Календарь"
-            onclick={() => calendarWindow.show()}
-        >
-            <i class="ph ph-calendar-dots text-primary text-[20px]"></i>
-        </button>
         <a
             href="/profile"
             class={[

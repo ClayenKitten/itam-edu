@@ -1,30 +1,17 @@
 <script lang="ts">
+    import Header from "$lib/components/Header.svelte";
     import { coursePath } from "$lib/path";
-    import LoginWindow from "$lib/windows/LoginWindow.svelte";
 
     let { data } = $props();
-
-    let loginWindow: LoginWindow;
 </script>
 
-<LoginWindow bind:this={loginWindow} />
-
 <div id="wrapper" class="flex flex-col min-h-dvh bg-background">
-    <header class="flex items-center self-stretch px-8 py-2 shadow bg-surface">
-        <h1 class="text-h3">
-            <a class="itam" href="https://itatmisis.ru">ITAM</a> Education
-        </h1>
-        {#if !data.user}
-            <button class="btn ml-auto" onclick={() => loginWindow.show()}>
-                Войти
-            </button>
-        {:else}
-            <a class="btn ml-auto" href="/home">
-                На платформу
-                <i class="ph ph-arrow-right text-[20px]"></i>
-            </a>
-        {/if}
-    </header>
+    <Header
+        user={data.user}
+        notifications={data.notifications}
+        courses={data.courses}
+        standalone
+    />
     <main class="flex flex-col gap-2 mx-auto max-w-[1000px] px-16 py-8">
         <h2 class="mt-8 mb-2">Пространство IT-образования</h2>
         <p class="indent-4">
@@ -94,20 +81,3 @@
         © ITAM 2025
     </footer>
 </div>
-
-<style>
-    .itam {
-        background: linear-gradient(
-            to right,
-            rgb(137, 95, 255),
-            rgb(78, 20, 78),
-            rgb(170, 31, 170)
-        );
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        transition: opacity 200ms ease-in-out;
-    }
-    .itam:hover {
-        opacity: 80%;
-    }
-</style>
