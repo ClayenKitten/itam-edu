@@ -6,7 +6,10 @@
 </script>
 
 <div
-    class="flex flex-col w-full max-w-[1200px] mx-auto h-full p-10 pt-0 gap-3.5"
+    class={[
+        "flex flex-col h-full mb-10 gap-3.5",
+        "max-w-[1200px] mx-10 @min-[1300px]/main:mx-40"
+    ]}
 >
     <div
         class="banner w-full aspect-[5] shrink-0 mb-5 rounded-lg overflow-hidden"
@@ -37,21 +40,14 @@
                 {#each data.staff as staffMember}
                     <li class="flex gap-4 p-4 rounded-2xl shadow">
                         <div
-                            class="flex justify-center items-center shrink-0 h-full aspect-square overflow-hidden rounded-lg bg-primary"
-                            aria-hidden="true"
+                            class="cover h-full aspect-square text-md-medium rounded-lg"
+                            style:background-image={staffMember.avatar
+                                ? `url(${userFilePath(staffMember.id).avatar(
+                                      staffMember.avatar
+                                  )})`
+                                : null}
                         >
-                            {#if staffMember.avatar}
-                                <img
-                                    src={userFilePath(staffMember.id).avatar(
-                                        staffMember.avatar
-                                    )}
-                                    alt=""
-                                />
-                            {:else}
-                                <span class="text-on-primary text-md-medium">
-                                    {staffMember.tgUsername[0]}
-                                </span>
-                            {/if}
+                            <span>{staffMember.tgUsername[0] ?? "?"}</span>
                         </div>
                         <div class="flex flex-col gap-5 overflow-hidden">
                             <header class="flex flex-col">
@@ -77,7 +73,6 @@
         </section>
         {#if data.course.about}
             <section class="flex flex-col gap-4.5">
-                <h3>О курсе</h3>
                 <TipTap content={data.course.about} readonly />
             </section>
         {/if}

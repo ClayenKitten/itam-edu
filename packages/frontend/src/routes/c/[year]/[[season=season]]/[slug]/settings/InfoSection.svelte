@@ -2,6 +2,7 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import TipTap from "$lib/components/TipTap.svelte";
+    import { getToaster } from "$lib/Toaster.svelte";
     import type { Course } from "$lib/types";
 
     let { readonly, course }: Props = $props();
@@ -9,6 +10,7 @@
         readonly: boolean;
         course: Course;
     };
+    const toaster = getToaster();
 
     const courseClone = $state(structuredClone($state.snapshot(course)));
 
@@ -20,25 +22,19 @@
                 description: courseClone.description,
                 about: courseClone.about
             });
-
-        if (result.status === 200) {
-            await Promise.all([
-                invalidate("app:course"),
-                invalidate("app:courses")
-            ]);
-            alert("Изменения успешно сохранены.");
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось сохранить изменения", "error");
+            return;
         }
-
-        await invalidate("app:course");
+        await Promise.all([
+            invalidate("app:course"),
+            invalidate("app:courses")
+        ]);
+        toaster.add("Изменения сохранены");
     }
 </script>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
-    <header>
-        <h2>Настройки курса</h2>
-    </header>
     <label class="flex flex-col gap-2">
         <h4>Название</h4>
         <input

@@ -9,10 +9,13 @@
 
 <div
     class={[
-        "flex flex-col h-full py-10 gap-7",
+        "flex flex-col h-full py-10 gap-10",
         "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
+    <header>
+        <h2>Настройки</h2>
+    </header>
     <InfoSection
         course={data.course}
         readonly={data.course.permissions.course.update !== true}

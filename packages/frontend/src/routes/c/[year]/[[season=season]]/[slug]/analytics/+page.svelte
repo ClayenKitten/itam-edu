@@ -24,7 +24,12 @@
     };
 </script>
 
-<div class="flex flex-col p-10 max-w-[1200px]">
+<div
+    class={[
+        "flex flex-col h-full m-10",
+        "max-w-[1100px] @min-[1200px]/main:mx-40"
+    ]}
+>
     <header class="mb-10">
         <h2>Аналитика</h2>
     </header>

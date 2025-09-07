@@ -5,7 +5,12 @@
     let { data } = $props();
 </script>
 
-<div class="flex flex-col h-full m-10 gap-7 max-w-[1000px]">
+<div
+    class={[
+        "flex flex-col h-full m-10 gap-7",
+        "max-w-[1000px] @min-[1200px]/main:mx-40"
+    ]}
+>
     <HomeworkInfoSection
         user={data.user}
         course={data.course}

@@ -3,6 +3,7 @@
     import api from "$lib/api";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { getColors, themes, type Theme } from "$lib/metadata";
+    import { getToaster } from "$lib/Toaster.svelte";
     import type { Course } from "$lib/types";
     import { courseFilePath } from "itam-edu-common";
     import { getContext } from "svelte";
@@ -12,6 +13,7 @@
         readonly: boolean;
         course: Course;
     };
+    const toaster = getToaster();
 
     const courseClone = $state(structuredClone($state.snapshot(course)));
     const themeOverride = getContext<{ theme: Theme | null }>("themeOverride");
@@ -28,18 +30,15 @@
                 icon: courseClone.icon,
                 banner: courseClone.banner
             });
-
-        if (result.status === 200) {
-            await Promise.all([
-                invalidate("app:course"),
-                invalidate("app:courses")
-            ]);
-            alert("Изменения успешно сохранены.");
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось сохранить изменения", "error");
+            return;
         }
-
-        await invalidate("app:course");
+        await Promise.all([
+            invalidate("app:course"),
+            invalidate("app:courses")
+        ]);
+        toaster.add("Изменения сохранены");
     }
 </script>
 
