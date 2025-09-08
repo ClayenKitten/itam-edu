@@ -81,6 +81,9 @@ export function coursePermissions(
             return EditLevel.None;
         }
 
+        if (user && user.id === course.info.ownerId) {
+            return EditLevel.Owner;
+        }
         switch (courseRole) {
             case "admin":
                 return EditLevel.Admin;
