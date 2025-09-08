@@ -10,18 +10,20 @@ export function coursePath({
     semester: "autumn" | "spring" | null;
     slug: string;
 }) {
-    return `/c/${year}${semester ? "/" + semester : ""}/${slug}`;
+    if (!semester) {
+        return `/c/${year}/${slug}`;
+    }
+    return `/c/${year}/${semester}/${slug}`;
 }
 
 export async function lookupCourseId(
     fetch: typeof window.fetch,
-    params: { year: string; slug: string; semester?: "autumn" | "spring" }
+    params: { year: string; slug: string; semester: "autumn" | "spring" }
 ): Promise<string> {
     const query = {
         year: Number(params.year),
         semester: params.semester
     };
-    if (query.semester === undefined) delete query.semester;
 
     const response = await api({ fetch })
         .courses.lookup({ slug: params.slug })
