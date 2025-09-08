@@ -55,8 +55,8 @@
             alert(response.status);
             return;
         }
-        await goto("/home");
         await invalidate("app:user");
+        await goto("/home");
     };
 </script>
 
@@ -73,7 +73,7 @@
         "border border-surface-border bg-surface shadow rounded-lg"
     ]}
 >
-    <div class="self-center flex flex-col gap-3">
+    <div class="self-center flex flex-col items-center gap-3">
         <Avatar
             {user}
             avatar={userInfo.avatar}

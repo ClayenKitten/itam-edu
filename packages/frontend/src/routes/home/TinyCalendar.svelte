@@ -53,7 +53,7 @@
             }
         });
         if (result.error) {
-            toaster.add("Не удалось загрузить календарь");
+            toaster.add("Не удалось загрузить календарь", "error");
             return [];
         }
         return result.data;
