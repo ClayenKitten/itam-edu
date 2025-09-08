@@ -136,8 +136,9 @@
     >
         <summary
             class={[
-                "flex justify-between items-center h-13 px-4 bg-surface-tint",
-                "rounded-xs group-open:rounded-b-none overflow-hidden"
+                "w-full flex justify-between items-center h-13 px-4 bg-surface-tint",
+                "border border-surface-border",
+                "rounded-xs overflow-hidden shadow"
             ]}
         >
             <div class="flex items-center gap-1.5">
@@ -154,12 +155,17 @@
             <i class="group-open:hidden flex ph ph-caret-down"></i>
         </summary>
         <ul
-            class="flex flex-col absolute top-13 w-full rounded-b-xs overflow-hidden"
+            class={[
+                "flex flex-col absolute top-0 pt-13 inset-x-0 rounded-xs overflow-hidden",
+                "border border-t-0 border-surface-border"
+            ]}
         >
             {#each courses.filter(x => x.id !== course.id && (user === null || user.isCourseMember(x.id))) as courseOption}
                 <a
                     class={[
-                        "flex items-center gap-1.5 h-13 px-4 bg-surface-tint overflow-hidden"
+                        "flex items-center gap-1.5 h-13 px-4 overflow-hidden",
+                        "bg-surface hover:bg-surface-tint",
+                        "transition-colors duration-100"
                     ]}
                     href={coursePath(courseOption)}
                     onclick={() => (isCourseSelectorOpen = false)}
@@ -177,9 +183,7 @@
                     {courseOption.title}
                 </a>
             {:else}
-                <div
-                    class="text-md-regular bg-surface-tint p-4 pt-0 rounded-b-xs"
-                >
+                <div class="text-md-regular bg-surface-tint p-4 rounded-b-xs">
                     Пусто! Записаться на новые курсы можно на
                     <a class="text-primary hover:underline" href="/home">
                         домашней странице
