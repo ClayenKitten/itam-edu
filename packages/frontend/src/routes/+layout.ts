@@ -1,7 +1,7 @@
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
-import { User, type CalendarEvent } from "itam-edu-common";
+import { User } from "itam-edu-common";
 import type { CoursePartial, Notification } from "$lib/types";
 import type { Metadata } from "$lib/metadata";
 
@@ -15,40 +15,32 @@ export const load: LayoutLoad = async ({ fetch, depends, data }) => {
         pageImage: null
     } satisfies Metadata;
 
-    depends("app:user", "app:courses", "app:notifications", "app:calendar");
+    depends("app:courses", "app:notifications");
 
-    const coursePromise = getCourses(fetch);
-    if (data.sessionToken) {
-        const [user, courses, notifications] = await Promise.all([
-            getUser(fetch),
-            coursePromise,
-            getNotifications(fetch)
-        ]);
-        return {
-            user,
-            courses,
-            notifications,
-            ...metadata
-        };
-    } else {
-        const courses = await coursePromise;
-        return {
-            user: null,
-            courses,
-            notifications: [],
-            ...metadata
-        };
-    }
+    const user = data.user
+        ? new User(
+              data.user.id,
+              data.user.info,
+              data.user.telegram,
+              data.user.courses
+          )
+        : null;
+    const coursesPromise = getCourses(fetch);
+    const notificationsPromise = data.user
+        ? getNotifications(fetch)
+        : Promise.resolve([]);
+    const [courses, notifications] = await Promise.all([
+        coursesPromise,
+        notificationsPromise
+    ]);
+
+    return {
+        user,
+        courses,
+        notifications,
+        ...metadata
+    };
 };
-
-async function getUser(fetch: typeof window.fetch): Promise<User> {
-    const response = await api({ fetch }).users.me.get();
-    if (response.error) {
-        error(response.status);
-    }
-    const { user } = response.data;
-    return new User(user.id, user.info, user.telegram, user.courses);
-}
 
 async function getCourses(
     fetch: typeof window.fetch
