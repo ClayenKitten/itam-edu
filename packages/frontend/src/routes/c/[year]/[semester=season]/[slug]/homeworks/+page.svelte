@@ -49,11 +49,13 @@
     <header class="flex gap-4">
         <h2>Задания</h2>
         {#if data.course.permissions.homeworks.edit === true}
-            <IconButton
-                icon="ph-pencil-simple"
-                title="Редактировать"
-                onclick={() => modal.show()}
-            />
+            {#if data.homeworks.length > 0}
+                <IconButton
+                    icon="ph-pencil-simple"
+                    title="Редактировать"
+                    onclick={() => modal.show()}
+                />
+            {/if}
             <IconButton
                 icon="ph-plus"
                 title="Создать"

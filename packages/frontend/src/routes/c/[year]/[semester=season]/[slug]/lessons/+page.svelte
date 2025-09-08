@@ -20,11 +20,13 @@
     <header class="flex gap-4">
         <h2>Уроки</h2>
         {#if data.course.permissions.lessons.edit === true}
-            <IconButton
-                icon="ph-pencil-simple"
-                title="Редактировать"
-                onclick={() => modal.show()}
-            />
+            {#if data.lessons.length > 0}
+                <IconButton
+                    icon="ph-pencil-simple"
+                    title="Редактировать"
+                    onclick={() => modal.show()}
+                />
+            {/if}
             <IconButton
                 icon="ph-plus"
                 title="Создать"
