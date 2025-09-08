@@ -8,8 +8,11 @@
     import api from "$lib/api";
     import ScheduleSection from "../[lessonId]/edit/ScheduleSection.svelte";
     import VideoSection from "../[lessonId]/edit/VideoSection.svelte";
+    import { doOnce } from "$lib/utils/doOnce";
+    import { getToaster } from "$lib/Toaster.svelte";
 
     let { data } = $props();
+    const toaster = getToaster();
 
     let lesson: CreateLesson = $state({
         courseId: data.course.id,
@@ -26,7 +29,7 @@
 
     async function create() {
         if (lesson.title.length < 3) {
-            alert("Слишком короткое название урока");
+            toaster.add("Слишком короткое название урока", "error");
             return;
         }
 
@@ -36,7 +39,7 @@
                 .files.courses({ course: data.course.id })
                 .post({ file: uploadVideoFile });
             if (response.error) {
-                alert(response.status);
+                toaster.add("Не удалось сохранить видео", "error");
                 return null;
             }
             video = response.data.filename;
@@ -57,16 +60,16 @@
         const result = await api({ fetch })
             .courses({ course: data.course.id })
             .lessons.post({ lesson: val });
-
-        if (!result.error) {
-            await Promise.allSettled([
-                invalidate("app:lessons"),
-                invalidate("app:calendar")
-            ]);
-            await goto(`${coursePath(data.course)}/lessons/${result.data.id}`);
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось опубликовать урок", "error");
+            return;
         }
+
+        await Promise.allSettled([
+            invalidate("app:lessons"),
+            invalidate("app:calendar")
+        ]);
+        await goto(`${coursePath(data.course)}/lessons/${result.data.id}`);
     }
 </script>
 
@@ -94,9 +97,11 @@
         bind:modifiedHomeworks
     />
     <footer class="flex gap-4">
-        <a class="btn secondary w-max" href="{coursePath(data.course)}/lessons"
-            >Отмена</a
-        >
-        <button class="btn w-max" onclick={create}>Опубликовать</button>
+        <a class="btn secondary w-max" href="{coursePath(data.course)}/lessons">
+            Отмена
+        </a>
+        <button class="btn w-max" onclick={doOnce("create-lesson", create)}>
+            Опубликовать
+        </button>
     </footer>
 </div>

@@ -2,10 +2,12 @@
     import { goto, invalidate } from "$app/navigation";
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
+    import { getToaster } from "$lib/Toaster.svelte";
     import type { Homework } from "$lib/types";
     import EditHomework from "./EditHomework.svelte";
 
     let { data } = $props();
+    const toaster = getToaster();
 
     let homework: Homework = $state(structuredClone(data.homework));
 
@@ -21,18 +23,17 @@
             .courses({ course: data.course.id })
             .homeworks({ homework: data.homework.id })
             .put(update);
-
-        if (result.status === 200) {
-            await Promise.allSettled([
-                invalidate("app:homework"),
-                invalidate("app:calendar")
-            ]);
-            await goto(
-                `${coursePath(data.course)}/homeworks/${data.homework.id}`
-            );
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось сохранить задание", "error");
+            return;
         }
+
+        await Promise.allSettled([
+            invalidate("app:homeworks"),
+            invalidate("app:homework"),
+            invalidate("app:calendar")
+        ]);
+        await goto(`${coursePath(data.course)}/homeworks/${homework.id}`);
     }
 
     async function cancel() {

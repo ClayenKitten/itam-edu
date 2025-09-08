@@ -2,6 +2,7 @@
     import { goto, invalidate } from "$app/navigation";
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
+    import { doOnce } from "$lib/utils/doOnce";
 
     export function show() {
         dialog.showModal();
@@ -143,7 +144,11 @@
                 </select>
             </label>
         </section>
-        <button class="btn big" disabled={!valid} onclick={createCourse}>
+        <button
+            class="btn big"
+            disabled={!valid}
+            onclick={doOnce("createCourse", createCourse)}
+        >
             Создать курс
         </button>
     </div>

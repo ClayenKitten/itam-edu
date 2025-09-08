@@ -2,12 +2,13 @@
     import TipTap from "$lib/components/TipTap.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { CreateHomework, Homework } from "$lib/types";
+    import { doOnce } from "$lib/utils/doOnce";
 
     let { homework = $bindable(), onsave, oncancel }: Props = $props();
     type Props = {
         homework: Homework | CreateHomework;
-        onsave: () => void;
-        oncancel: () => void;
+        onsave: () => Promise<void>;
+        oncancel: () => Promise<void>;
     };
     const toaster = getToaster();
 
@@ -86,8 +87,18 @@
     </div>
     <footer class="flex gap-5 justify-end">
         <button class="btn secondary" onclick={oncancel}>Отменить</button>
-        <button class="btn" onclick={() => validate() && onsave()}>
-            {#if "id" in homework}Сохранить{:else}Создать{/if}
+        <button
+            class="btn"
+            onclick={doOnce("save-homework", async () => {
+                if (!validate()) return;
+                await onsave();
+            })}
+        >
+            {#if "id" in homework}
+                Сохранить
+            {:else}
+                Создать
+            {/if}
         </button>
     </footer>
 </section>

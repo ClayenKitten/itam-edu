@@ -2,12 +2,14 @@
     import { goto, invalidate } from "$app/navigation";
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
+    import { getToaster } from "$lib/Toaster.svelte";
     import type { CreateHomework } from "$lib/types";
     import EditHomework from "../[homeworkId]/edit/EditHomework.svelte";
 
     let { data } = $props();
+    const toaster = getToaster();
 
-    let homework: CreateHomework = $state({
+    let newHomework: CreateHomework = $state({
         title: "",
         lessons: [],
         deadline: null,
@@ -17,27 +19,26 @@
 
     async function save() {
         const create = {
-            title: homework.title,
-            content: homework.content,
-            deadline: homework.deadline,
-            deadlineOverride: homework.deadlineOverride
+            title: newHomework.title,
+            content: newHomework.content,
+            deadline: newHomework.deadline,
+            deadlineOverride: newHomework.deadlineOverride
         };
 
         const result = await api({ fetch })
             .courses({ course: data.course.id })
             .homeworks.post(create);
-
-        if (result.status === 200) {
-            await Promise.allSettled([
-                invalidate("app:homeworks"),
-                invalidate("app:calendar")
-            ]);
-            await goto(
-                `${coursePath(data.course)}/homeworks/${result.data?.id}`
-            );
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось создать задание", "error");
+            return;
         }
+        const homework = result.data;
+
+        await Promise.allSettled([
+            invalidate("app:homeworks"),
+            invalidate("app:calendar")
+        ]);
+        await goto(`${coursePath(data.course)}/homeworks/${homework.id}`);
     }
     async function cancel() {
         await goto(`${coursePath(data.course)}/homeworks`);
@@ -50,5 +51,5 @@
         "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
-    <EditHomework bind:homework onsave={save} oncancel={cancel} />
+    <EditHomework bind:homework={newHomework} onsave={save} oncancel={cancel} />
 </div>

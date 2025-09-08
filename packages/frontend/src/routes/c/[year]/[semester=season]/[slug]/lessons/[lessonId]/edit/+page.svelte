@@ -9,8 +9,10 @@
     import ScheduleSection from "./ScheduleSection.svelte";
     import equal from "fast-deep-equal";
     import VideoSection from "./VideoSection.svelte";
+    import { getToaster } from "$lib/Toaster.svelte";
 
     let { data } = $props();
+    const toaster = getToaster();
 
     let lesson: LessonDTO = $state(structuredClone(data.lesson));
     let modifiedHomeworks: string[] = $state(
@@ -35,7 +37,7 @@
                 .files.courses({ course: data.course.id })
                 .post({ file: uploadVideoFile });
             if (response.error) {
-                alert(response.status);
+                toaster.add("Не удалось сохранить видео", "error");
                 return null;
             }
             video = response.data.filename;
@@ -57,16 +59,16 @@
             .courses({ course: data.course.id })
             .lessons({ lesson: data.lesson.id })
             .patch(update);
-
-        if (result.status === 200) {
-            await Promise.allSettled([
-                invalidate("app:lesson"),
-                invalidate("app:calendar")
-            ]);
-            await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
-        } else {
-            alert(result.status);
+        if (result.error) {
+            toaster.add("Не удалось сохранить урок", "error");
+            return;
         }
+
+        await Promise.allSettled([
+            invalidate("app:lesson"),
+            invalidate("app:calendar")
+        ]);
+        await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
     }
 </script>
 
