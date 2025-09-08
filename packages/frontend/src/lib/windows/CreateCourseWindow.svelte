@@ -11,7 +11,11 @@
     let title: string = $state("");
     let slug: string = $state("");
     let year: number = $state(new Date().getFullYear());
-    let semester: "autumn" | "spring" | null = $state(null);
+    let semester: "autumn" | "spring" = $state(
+        new Date().getMonth() <= 4 || new Date().getMonth() === 11
+            ? "spring"
+            : "autumn"
+    );
 
     let autoSlug = $derived.by(() => {
         // prettier-ignore
@@ -134,7 +138,6 @@
             <label class="flex flex-col gap-1">
                 <span>Семестр</span>
                 <select class="input" bind:value={semester}>
-                    <option value={null}>N/A</option>
                     <option value={"autumn"}>Осень</option>
                     <option value={"spring"}>Весна</option>
                 </select>
