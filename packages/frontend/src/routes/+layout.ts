@@ -2,7 +2,7 @@ import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { User } from "itam-edu-common";
-import type { CoursePartial, Notification } from "$lib/types";
+import type { CoursePartial } from "$lib/types";
 import type { Metadata } from "$lib/metadata";
 
 export const load: LayoutLoad = async ({ fetch, depends, data }) => {
@@ -15,7 +15,7 @@ export const load: LayoutLoad = async ({ fetch, depends, data }) => {
         pageImage: null
     } satisfies Metadata;
 
-    depends("app:courses", "app:notifications");
+    depends("app:courses");
 
     const user = data.user
         ? new User(
@@ -25,19 +25,11 @@ export const load: LayoutLoad = async ({ fetch, depends, data }) => {
               data.user.courses
           )
         : null;
-    const coursesPromise = getCourses(fetch);
-    const notificationsPromise = data.user
-        ? getNotifications(fetch)
-        : Promise.resolve([]);
-    const [courses, notifications] = await Promise.all([
-        coursesPromise,
-        notificationsPromise
-    ]);
+    const courses = await getCourses(fetch);
 
     return {
         user,
         courses,
-        notifications,
         ...metadata
     };
 };
@@ -46,16 +38,8 @@ async function getCourses(
     fetch: typeof window.fetch
 ): Promise<CoursePartial[]> {
     const response = await api({ fetch }).courses.get();
-    if (response.error) error(response.status);
-    return response.data;
-}
-
-async function getNotifications(
-    fetch: typeof window.fetch
-): Promise<Notification[]> {
-    const response = await api({ fetch }).users.me.notifications.get();
     if (response.error) {
-        error(response.status);
+        error(response.status, "Не удалось загрузить список курсов");
     }
-    return response.data.notifications;
+    return response.data;
 }

@@ -19,7 +19,6 @@
 <div id="wrapper" class="flex flex-col bg-background w-dvw h-dvh">
     <Header
         user={page.data.user ?? null}
-        notifications={page.data.notifications ?? []}
         courses={page.data.courses ?? []}
         standalone
     />

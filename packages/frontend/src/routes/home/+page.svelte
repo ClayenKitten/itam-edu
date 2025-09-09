@@ -37,12 +37,7 @@
 <CreateCourseWindow bind:this={createCourseWindow} />
 
 <div id="wrapper" class="flex flex-col bg-background">
-    <Header
-        user={data.user}
-        notifications={data.notifications}
-        courses={data.courses}
-        standalone
-    />
+    <Header user={data.user} courses={data.courses} standalone />
     <main
         class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-12.5 px-7.5 gap-7.5"
     >

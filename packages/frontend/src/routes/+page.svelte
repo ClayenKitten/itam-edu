@@ -6,12 +6,7 @@
 </script>
 
 <div id="wrapper" class="flex flex-col min-h-dvh bg-background">
-    <Header
-        user={data.user}
-        notifications={data.notifications}
-        courses={data.courses}
-        standalone
-    />
+    <Header user={data.user} courses={data.courses} standalone />
     <main class="flex flex-col gap-2 mx-auto max-w-[1000px] px-16 py-8">
         <h2 class="mt-8 mb-2">Пространство IT-образования</h2>
         <p class="indent-4">

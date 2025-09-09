@@ -33,11 +33,7 @@
         courses={data.courses}
         user={data.user}
     />
-    <Header
-        user={data.user}
-        notifications={data.notifications}
-        courses={data.courses}
-    />
+    <Header user={data.user} courses={data.courses} />
     <main class="relative z-0 flex flex-col items-stretch @container/main">
         {#if data.course.isArchived}
             <div

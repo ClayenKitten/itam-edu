@@ -1,10 +1,11 @@
 <script lang="ts">
     import LoginWindow from "$lib/windows/LoginWindow.svelte";
     import { userFilePath, type User } from "itam-edu-common";
+    import type { CoursePartial } from "$lib/types";
+    import { dismissable } from "$lib/attachments/dismissable.svelte";
     import Notifications from "./Notifications.svelte";
-    import type { CoursePartial, Notification } from "$lib/types";
 
-    let { user, notifications, courses, standalone = false }: Props = $props();
+    let { user, courses, standalone = false }: Props = $props();
 
     let loginWindow: LoginWindow;
 
@@ -12,21 +13,12 @@
 
     type Props = {
         user: User | null;
-        notifications: Notification[];
         courses: CoursePartial[];
         standalone?: boolean;
     };
 </script>
 
 <LoginWindow bind:this={loginWindow} />
-
-<svelte:window
-    onkeydown={e => {
-        if (e.key === "Escape") {
-            showNotifications = false;
-        }
-    }}
-/>
 
 <header
     class={[
@@ -67,7 +59,7 @@
     </a>
     {#if user}
         <div class="relative h-full aspect-square">
-            <label
+            <button
                 class={[
                     "peer size-full flex justify-center items-center",
                     showNotifications
@@ -78,17 +70,16 @@
                 ]}
                 aria-label="Уведомления"
                 title="Уведомления"
+                onclick={() => (showNotifications = true)}
             >
-                <input
-                    class="hidden"
-                    type="checkbox"
-                    bind:checked={showNotifications}
-                />
                 <i class="ph ph-bell text-primary text-[20px]"></i>
-            </label>
+            </button>
             {#if showNotifications}
-                <div class="absolute top-full right-0">
-                    <Notifications {notifications} {courses} />
+                <div
+                    class="absolute top-full right-0"
+                    {@attach dismissable(() => (showNotifications = false))}
+                >
+                    <Notifications {courses} />
                 </div>
             {/if}
         </div>
