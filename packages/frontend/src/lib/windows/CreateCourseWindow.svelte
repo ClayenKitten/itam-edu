@@ -18,6 +18,10 @@
             : "autumn"
     );
 
+    const minSlugLength = 3;
+    const maxSlugLength = 24;
+    const maxTitleLength = 32;
+
     let autoSlug = $derived.by(() => {
         // prettier-ignore
         const translitMap: Record<string, string> = {
@@ -37,19 +41,21 @@
             .replace(/^-+|-+$/g, "") // Trim leading/trailing dashes
             .replace(/--+/g, "-"); // Collapse multiple dashes
 
-        if (slug.length !== 0 && slug.length < 3) {
+        if (slug.length !== 0 && slug.length < minSlugLength) {
             slug = slug + "-course";
-        } else if (slug.length > 12) {
-            slug = slug.slice(0, 12).replace(/^-+|-+$/g, "");
+        } else if (slug.length > maxSlugLength) {
+            slug = slug.slice(0, maxSlugLength).replace(/^-+|-+$/g, "");
         }
 
         return slug;
     });
 
     const valid = $derived(
-        title.length >= 1 &&
-            title.length <= 32 &&
-            (slug.length === 0 || (slug.length >= 3 && slug.length <= 12)) &&
+        title.length > 0 &&
+            title.length <= maxTitleLength &&
+            (slug.length === 0 ||
+                (slug.length >= minSlugLength &&
+                    slug.length <= maxSlugLength)) &&
             year >= 2000
     );
 
@@ -100,7 +106,7 @@
                 class="input"
                 bind:value={title}
                 minlength={1}
-                maxlength={32}
+                maxlength={maxTitleLength}
                 required
                 placeholder={'Например, "Бекенд на Python"'}
             />
@@ -119,8 +125,8 @@
                     oninput={() => {
                         slug = slug.replaceAll(" ", "-").toLowerCase();
                     }}
-                    minlength={3}
-                    maxlength={12}
+                    minlength={minSlugLength}
+                    maxlength={maxSlugLength}
                     placeholder={autoSlug || "python"}
                 />
             </label>

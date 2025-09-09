@@ -5,7 +5,7 @@ export const course = t.Object({
     id: t.String({ format: "uuid" }),
     slug: t.String({
         minLength: 3,
-        maxLength: 12,
+        maxLength: 24,
         pattern: "^[a-z0-9-]+$"
     }),
     year: t.Integer({ minimum: 2000, maximum: 3000 }),
