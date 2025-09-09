@@ -81,7 +81,6 @@ export class CourseChangelog {
             case "submission-reviewed":
                 if (user === null) return false;
                 if (user.id === change.payload.studentId) return true;
-                if (user.isCourseStaff(change.courseId)) return true;
                 return false;
             default:
                 let guard: never = change.payload;

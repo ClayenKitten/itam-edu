@@ -110,14 +110,8 @@ export function getCourseChangeDisplay(
                     message: `Вы отправили ответ на задание '${hwTitle}'.`,
                     href: `/homeworks/${change.payload.homeworkId}`
                 };
-            } else {
-                return {
-                    icon,
-                    title: "Новый ответ на задание",
-                    message: `На задание '${hwTitle}' поступил ответ от студента.`,
-                    href: `/homeworks/${change.payload.homeworkId}/review/${change.payload.studentId}`
-                };
             }
+            return null;
         }
         case "submission-reviewed": {
             const icon = "exam";
@@ -139,14 +133,8 @@ export function getCourseChangeDisplay(
                         href
                     };
                 }
-            } else {
-                return {
-                    icon,
-                    title: "Задание проверено",
-                    message: `Ответ на задание '${hwTitle}' ${change.payload.accepted ? "принят" : "отклонён"}.`,
-                    href: href + `/review/${change.payload.studentId}`
-                };
             }
+            return null;
         }
         default:
             let guard: never = change.payload;
