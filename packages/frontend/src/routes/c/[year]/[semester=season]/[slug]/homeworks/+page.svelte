@@ -45,7 +45,7 @@
     homeworks={data.homeworks}
 />
 
-<div class="flex flex-col gap-10 p-10">
+<div class="flex flex-col gap-10 m-10 max-w-[1200px] @min-[1200px]/main:mx-40">
     <header class="flex gap-4">
         <h2>Задания</h2>
         {#if data.course.permissions.homeworks.edit === true}

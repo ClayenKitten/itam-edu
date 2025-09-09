@@ -16,9 +16,9 @@
 <a
     href={`${coursePath(course)}/lessons/${lesson.id}`}
     class={[
-        "flex flex-col w-[356px] h-[291px] p-3 rounded-lg border",
-        "bg-surface border-primary-border",
-        "hover:bg-on-primary hover:border-primary",
+        "flex flex-col w-[356px] h-[295px] p-3 pb-4 rounded-lg border",
+        "bg-surface hover:bg-on-primary",
+        "border-surface-border hover:border-primary",
         "transition-colors duration-100"
     ]}
 >
@@ -40,7 +40,7 @@
             </div>
         {/if}
     </div>
-    <header class="flex justify-between items-center mb-2">
+    <header class="flex justify-between items-center mb-2 px-1">
         <h4>Урок {position}</h4>
         {#if lesson.schedule}
             <span class="text-md-regular text-on-surface-muted">
@@ -48,5 +48,5 @@
             </span>
         {/if}
     </header>
-    <p class="text-md-regular text-on-surface-muted">{lesson.title}</p>
+    <p class="text-md-regular text-on-surface-muted px-1">{lesson.title}</p>
 </a>

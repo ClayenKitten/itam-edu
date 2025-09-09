@@ -31,7 +31,7 @@
     </header>
     <section class="flex flex-col gap-5 p-6 pb-8 bg-surface shadow rounded-xl">
         <header class="flex justify-between items-center">
-            <h3>Уроки</h3>
+            <h3>Последние уроки</h3>
             <a class="btn" href={`${coursePath(data.course)}/lessons`}>
                 Все
                 <i class="ph ph-arrow-right text-[26px]"></i>
@@ -40,7 +40,7 @@
         <ol
             class={[
                 "flex flex-wrap gap-4",
-                "h-[291px] overflow-y-hidden",
+                "h-[295px] overflow-y-hidden",
                 "@max-[800px]/main:w-[356px]",
                 "@min-[800px]/main:w-[calc(356px_*_2_+_16px)]",
                 "@min-[1200px]/main:w-[calc(356px_*_3_+_16px_*_2)]",
@@ -96,7 +96,7 @@
                         <i
                             class={[
                                 `ph ph-${display.icon}`,
-                                "flex justify-center items-center w-14.5 h-14.5",
+                                "shrink-0 flex justify-center items-center w-14.5 h-14.5",
                                 "text-[24px] text-primary bg-on-primary rounded-sm",
                                 "border border-primary-border group-hover:border-primary",
                                 "transition-colors duration-100"

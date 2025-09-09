@@ -77,7 +77,7 @@
     };
 </script>
 
-<div class="max-w-[1000px] flex flex-col m-10 @min-[1200px]/main:mx-40 gap-10">
+<div class="max-w-[1100px] flex flex-col m-10 @min-[1200px]/main:mx-40 gap-10">
     <header class="flex flex-col gap-2.5">
         <a
             class="group self-start mb-2.5 flex items-center h-min gap-2 text-primary"
@@ -93,10 +93,14 @@
     </header>
     <div class="flex flex-col gap-7.5">
         <section class="flex gap-5">
-            {@render summaryCard(
-                data.attendees.length.toFixed(0),
-                "Участников"
-            )}
+            <article
+                class="w-90 flex flex-col gap-2 p-6 bg-surface rounded-sm shadow"
+            >
+                <span class="text-h2 text-on-surface">
+                    {data.attendees.length}
+                </span>
+                <span class="text-xl-medium text-on-surface">Участников</span>
+            </article>
         </section>
         <article class="flex flex-col gap-5 p-6 rounded-lg shadow">
             <h3>Участники</h3>
@@ -251,10 +255,3 @@
         bind:this={qrCodeDialog}
     />
 </div>
-
-{#snippet summaryCard(primary: string, secondary: string)}
-    <article class="w-90 flex flex-col gap-2 p-6 bg-surface rounded-sm shadow">
-        <span class="text-h2 text-on-surface">{primary}</span>
-        <span class="text-xl-medium text-on-surface">{secondary}</span>
-    </article>
-{/snippet}
