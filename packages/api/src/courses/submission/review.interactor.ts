@@ -9,37 +9,56 @@ import {
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { NotificationSender } from "../../notifications/sender";
-import { SubmissionReviewNotificationTemplate } from "./notifications";
 import { CourseChangelog } from "../changes";
-import type { SubmissionAttemptReview } from "./entity";
 import { SubmissionRepository } from "./repository";
+import { CourseRepository } from "../repository";
+import { UserRepository } from "../../users/repository";
+import { HomeworkRepository } from "../homework/repository";
+import { NotificationTemplate } from "../../notifications";
 
 @injectable()
 export class ReviewHomework {
     public constructor(
-        protected repository: SubmissionRepository,
-        protected notificationSender: NotificationSender,
-        protected courseChangelog: CourseChangelog
+        private courseRepo: CourseRepository,
+        private userRepo: UserRepository,
+        private homeworkRepo: HomeworkRepository,
+        private repository: SubmissionRepository,
+        private notificationSender: NotificationSender,
+        private courseChangelog: CourseChangelog
     ) {}
 
     /** Reviews a homework submission. */
     public async invoke(
         actor: User,
-        course: Course,
-        homework: Homework,
-        student: User,
+        courseId: string,
+        homeworkId: string,
+        studentId: string,
         review: {
             accepted: boolean;
             content: string;
             files: string[];
         }
     ): Promise<void | HttpError> {
-        const permissions = course.getPermissionsFor(actor);
-        if (permissions === null) return new NotFoundError("Course not found.");
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course not found.");
+        }
         if (permissions.submissions.review !== true) {
             return new ForbiddenError(
                 "You are not allowed to review homework submissions."
             );
+        }
+
+        const [homework, student] = await Promise.all([
+            this.homeworkRepo.load(course.id, homeworkId),
+            this.userRepo.getById(studentId)
+        ]);
+        if (!homework) {
+            return new NotFoundError("Homework not found.");
+        }
+        if (!student) {
+            return new NotFoundError("Student not found.");
         }
 
         const submission = await this.repository.load(homework.id, student.id);
@@ -64,14 +83,60 @@ export class ReviewHomework {
                 accepted: review.accepted
             }),
             this.notificationSender.send(
-                new SubmissionReviewNotificationTemplate(
-                    course,
-                    homework,
-                    student,
-                    review.accepted
-                ),
+                new Notification(course, homework, student, review.accepted),
                 [student.id]
             )
         ]);
+    }
+}
+
+class Notification extends NotificationTemplate {
+    public constructor(
+        private course: Course,
+        private homework: Homework,
+        private _student: User,
+        private accepted: boolean
+    ) {
+        super();
+    }
+
+    public override toWeb(id: string, _userId: string) {
+        const title = this.accepted
+            ? `Задание '${this.homework.title}' сдано.`
+            : `Задание '${this.homework.title}' нужно доработать.`;
+
+        return {
+            id,
+            timestamp: Date.now(),
+            courseId: this.course.id,
+            title,
+            icon: "exam",
+            url: `${this.course.path}/homeworks/${this.homework.id}`
+        };
+    }
+
+    public override toTelegram(id: string, _userId: string) {
+        return {
+            id,
+            html: this.html,
+            link: {
+                text: "🔗 Посмотреть",
+                url: `${this.course.path}/homeworks/${this.homework.id}`
+            }
+        };
+    }
+
+    protected get html() {
+        if (this.accepted) {
+            return [
+                "<b>🥇 Задание сдано</b>",
+                `Ваш ответ на задание '${this.homework.title}' принят.`
+            ].join("\n\n");
+        } else {
+            return [
+                "<b>📖 Задание нужно доработать</b>",
+                `В вашем ответе на задание '${this.homework.title}' есть недочёты.`
+            ].join("\n\n");
+        }
     }
 }

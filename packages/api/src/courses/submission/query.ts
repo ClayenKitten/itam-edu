@@ -9,20 +9,26 @@ import {
 import type { User } from "itam-edu-common";
 import type { Course } from "../entity";
 import type { SubmissionAttempt } from "./entity";
+import { CourseRepository } from "../repository";
 
 @injectable()
 export class SubmissionQuery {
-    public constructor(protected postgres: Postgres) {}
+    public constructor(
+        private courseRepo: CourseRepository,
+        private postgres: Postgres
+    ) {}
 
     public async get(
         actor: User,
-        course: Course,
+        courseId: string,
         homeworkId: string,
         studentId: string
     ): Promise<SubmissionDto | HttpError> {
-        const permissions = course.getPermissionsFor(actor);
-        if (permissions === null) return new NotFoundError("Course not found.");
-
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course not found.");
+        }
         if (!permissions.submissions.view && actor.id !== studentId) {
             return new ForbiddenError(
                 "You are not allowed to view submissions."
@@ -115,15 +121,18 @@ export class SubmissionQuery {
 
     public async getAll(
         actor: User,
-        course: Course,
+        courseId: string,
         filters?: {
             homework?: string;
             student?: string;
             accepted?: boolean | null;
         }
     ): Promise<SubmissionPartialDto[] | UnauthorizedError> {
-        const permissions = course.getPermissionsFor(actor);
-        if (permissions === null) return new NotFoundError("Course not found.");
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course not found.");
+        }
 
         const isCheckingSelf = filters?.student && actor.id === filters.student;
         if (!permissions.submissions.view && !isCheckingSelf) {

@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
 import Homework from "./entity";
-import * as schema from "./schema";
 import { sql, type ExpressionBuilder, type Selectable } from "kysely";
 import type { DB } from "itam-edu-db";
 
@@ -9,19 +8,23 @@ import type { DB } from "itam-edu-db";
 export class HomeworkRepository {
     public constructor(protected postgres: Postgres) {}
 
-    /** Returns homework by id. */
-    public async getById(homeworkId: string): Promise<Homework | null> {
+    /** Loads homework from the database. */
+    public async load(
+        courseId: string,
+        homeworkId: string
+    ): Promise<Homework | null> {
         const hw = await this.postgres.kysely
             .selectFrom("homeworks")
             .selectAll()
+            .where("courseId", "=", courseId)
             .where("id", "=", homeworkId)
             .executeTakeFirst();
         if (!hw) return null;
         return this.toEntity(hw);
     }
 
-    /** Returns all homeworks of the course. */
-    public async getAll(courseId: string): Promise<Homework[]> {
+    /** Loads all course homeworks from the database. */
+    public async loadAll(courseId: string): Promise<Homework[]> {
         const homeworksData = await this.postgres.kysely
             .selectFrom("homeworks")
             .orderBy("position asc")
@@ -32,21 +35,22 @@ export class HomeworkRepository {
         return homeworks;
     }
 
-    /** Creates new homework. */
-    public async create(
-        courseId: string,
-        homeworkInfo: typeof schema.createHomework.static
-    ): Promise<Homework> {
-        const selectPosition = (eb: ExpressionBuilder<DB, "homeworks">) => {
+    /** Saves homework to the database. */
+    public async save(homework: Homework): Promise<void> {
+        const nextPositionQuery = (eb: ExpressionBuilder<DB, "homeworks">) => {
             return eb
                 .selectFrom("homeworks")
-                .where("courseId", "=", courseId)
+                .where("courseId", "=", homework.courseId)
                 .select(eb =>
                     eb(
                         eb.fn.coalesce(
                             eb.fn
                                 .max<number>("position")
-                                .filterWhere("courseId", "=", courseId),
+                                .filterWhere(
+                                    "courseId",
+                                    "=",
+                                    homework.courseId
+                                ),
                             eb.lit(0)
                         ),
                         "+",
@@ -55,46 +59,30 @@ export class HomeworkRepository {
                 );
         };
 
-        const hw = await this.postgres.kysely
+        await this.postgres.kysely
             .insertInto("homeworks")
             .values(eb => ({
-                courseId: courseId,
-                position: selectPosition(eb),
-                title: homeworkInfo.title,
-                content: homeworkInfo.content,
-                deadline: homeworkInfo.deadline,
-                acceptingSubmissionsOverride: homeworkInfo.deadlineOverride
+                id: homework.id,
+                courseId: homework.courseId,
+                position: nextPositionQuery(eb),
+                title: homework.title,
+                content: homework.content,
+                deadline: homework.deadline,
+                acceptingSubmissionsOverride: homework.deadlineOverride
             }))
-            .returningAll()
+            .onConflict(oc =>
+                oc.column("id").doUpdateSet({
+                    title: homework.title,
+                    content: homework.content,
+                    deadline: homework.deadline,
+                    acceptingSubmissionsOverride: homework.deadlineOverride
+                })
+            )
             .executeTakeFirstOrThrow();
-
-        return this.toEntity(hw);
-    }
-
-    /** Updates a homework. */
-    public async update(
-        courseId: string,
-        homeworkId: string,
-        homeworkInfo: typeof schema.updateHomework.static
-    ) {
-        const hw = await this.postgres.kysely
-            .updateTable("homeworks")
-            .where("courseId", "=", courseId)
-            .where("id", "=", homeworkId)
-            .set({
-                title: homeworkInfo.title,
-                content: homeworkInfo.content,
-                deadline: homeworkInfo.deadline,
-                acceptingSubmissionsOverride: homeworkInfo.deadlineOverride
-            })
-            .returningAll()
-            .executeTakeFirst();
-        if (!hw) return null;
-        return this.toEntity(hw);
     }
 
     /** Updates a homework list via reordering and deletion. */
-    public async updateAll(courseId: string, homeworkIds: string[]) {
+    public async reorder(courseId: string, homeworkIds: string[]) {
         await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .deleteFrom("lessonHomeworks")

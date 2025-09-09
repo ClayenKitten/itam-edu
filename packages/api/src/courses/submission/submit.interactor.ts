@@ -9,41 +9,52 @@ import {
 import type { Course } from "../entity";
 import type Homework from "../homework/entity";
 import { NotificationSender } from "../../notifications/sender";
-import { SubmissionNotificationTemplate } from "./notifications";
 import { CourseChangelog } from "../changes";
 import { SubmissionRepository } from "./repository";
 import { randomUUID } from "crypto";
 import { Submission } from "./entity";
+import { CourseRepository } from "../repository";
+import { HomeworkRepository } from "../homework/repository";
+import { NotificationTemplate } from "../../notifications";
 
 @injectable()
 export class SubmitHomework {
     public constructor(
-        protected repository: SubmissionRepository,
-        protected notificationSender: NotificationSender,
-        protected courseChangelog: CourseChangelog
+        private courseRepo: CourseRepository,
+        private homeworkRepo: HomeworkRepository,
+        private repository: SubmissionRepository,
+        private notificationSender: NotificationSender,
+        private courseChangelog: CourseChangelog
     ) {}
 
     /** Creates new homework submission. */
     public async invoke(
         actor: User,
-        course: Course,
-        homework: Homework,
+        courseId: string,
+        homeworkId: string,
         content: string
     ): Promise<void | HttpError> {
-        const permissions = course.getPermissionsFor(actor);
-        if (permissions === null) return new NotFoundError("Course not found.");
-
+        const course = await this.courseRepo.getById(courseId);
+        const permissions = course?.getPermissionsFor(actor);
+        if (!course || !permissions) {
+            return new NotFoundError("Course not found.");
+        }
         if (permissions.submissions.create !== true) {
             return new ForbiddenError(
                 "You are not allowed to create homework submissions."
             );
         }
-        if (!homework.isSubmissionOpen) {
+
+        const homework = await this.homeworkRepo.load(course.id, homeworkId);
+        if (!homework) {
+            return new NotFoundError("Homework not found.");
+        }
+        if (homework.isSubmissionOpen !== true) {
             return new ConflictError("Homework does not accept submissions.");
         }
 
         let submission = await this.repository.load(homework.id, actor.id);
-        if (submission && submission.lastAttempt.review === null) {
+        if (submission !== null && submission.lastAttempt.review === null) {
             return new ConflictError("Submission is not reviewed yet.");
         }
 
@@ -68,9 +79,44 @@ export class SubmitHomework {
                 studentId: actor.id
             }),
             this.notificationSender.send(
-                new SubmissionNotificationTemplate(course, homework, actor),
+                new Notification(course, homework, actor),
                 course.members.filter(m => m.role !== "student").map(m => m.id)
             )
         ]);
+    }
+}
+
+class Notification extends NotificationTemplate {
+    public constructor(
+        private course: Course,
+        private homework: Homework,
+        private student: User
+    ) {
+        super();
+    }
+
+    public override toWeb(id: string, _userId: string) {
+        return {
+            id,
+            timestamp: Date.now(),
+            courseId: this.course.id,
+            title: `Студент @${this.student.telegram.username} отправил задание '${this.homework.title}'.`,
+            icon: "scroll",
+            url: `${this.course.path}/homeworks/${this.homework.id}?student=${this.student.id}`
+        };
+    }
+
+    public override toTelegram(id: string, _userId: string) {
+        return {
+            id,
+            html: [
+                "<b>📝 Новый ответ на задание</b>",
+                `Студент @${this.student.telegram.username} сдал(а) задание '${this.homework.title}'.`
+            ].join("\n\n"),
+            link: {
+                text: "🔗 Проверить",
+                url: `${this.course.path}/homeworks/${this.homework.id}/review/${this.student.id}`
+            }
+        };
     }
 }

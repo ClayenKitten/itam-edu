@@ -6,7 +6,7 @@ export default class Homework {
         /** Identifier of the homework. */
         public id: string,
         /** Identifier of the course. */
-        public course: string,
+        public courseId: string,
         /** Title of the homework. */
         public title: string,
         /** Content of the homework. */
@@ -39,7 +39,7 @@ export default class Homework {
     public toDTO(): typeof schema.homework.static {
         return {
             id: this.id,
-            courseId: this.course,
+            courseId: this.courseId,
             title: this.title,
             content: this.content,
             deadline: this.deadline,

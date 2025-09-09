@@ -28,6 +28,6 @@ export class ReorderHomeworks {
             );
         }
 
-        await this.repo.updateAll(courseId, homeworksList);
+        await this.repo.reorder(courseId, homeworksList);
     }
 }
