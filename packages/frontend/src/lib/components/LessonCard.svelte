@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { formatLessonSchedule } from "$lib/format";
     import { coursePath } from "$lib/path";
     import type { Course, LessonPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
+    import { ru } from "date-fns/locale";
     import { courseFilePath } from "itam-edu-common";
 
     const { course, position, lesson }: Props = $props();
@@ -43,8 +45,13 @@
     <header class="flex justify-between items-center mb-2 px-1">
         <h4>Урок {position}</h4>
         {#if lesson.schedule}
-            <span class="text-md-regular text-on-surface-muted">
-                {formatDate(lesson.schedule.date, "dd.MM.yy")}
+            <span
+                class="text-md-regular text-on-surface-muted"
+                title={formatLessonSchedule(lesson.schedule)}
+            >
+                {formatDate(lesson.schedule.date, "d MMMM в HH:mm", {
+                    locale: ru
+                })}
             </span>
         {/if}
     </header>
