@@ -28,26 +28,26 @@
                 alt=""
             />
         {:else}
-            <div class="size-full flex items-center justify-center text-h4">
+            <div
+                class="size-full flex items-center justify-center text-h4 text-center"
+            >
                 {course.title}
             </div>
         {/if}
     </div>
-    <div class="w-[315px] flex flex-col pt-2.5 pb-4 px-3">
-        <header class="mt-2.5 flex flex-col gap-1 justify-between">
+    <div class="w-[315px] flex flex-col gap-1.5 pt-2.5 pb-4 px-3">
+        <header class="mt-2.5 flex flex-col justify-between">
             <h4 class="text-on-surface">{course.title}</h4>
-            <span class="text-sm-regular text-on-surface-muted">
+            <p class="text-sm-regular text-on-surface-muted">
                 {#if course.semester === "autumn"}
                     Осень
                 {:else if course.semester === "spring"}
                     Весна
                 {/if}
                 {course.year}
-            </span>
+            </p>
         </header>
-        <p
-            class="text-md-regular text-on-surface-muted line-clamp-3 text-ellipsis"
-        >
+        <p class="text-md-regular text-on-surface line-clamp-3 text-ellipsis">
             {course.description}
         </p>
     </div>

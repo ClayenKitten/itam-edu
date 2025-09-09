@@ -64,6 +64,10 @@ export class CourseRepository {
         const courseInfos = await this.postgres.kysely
             .selectFrom("courses")
             .select(schemaFields(schema.course))
+            .orderBy("year desc")
+            .orderBy("semester asc")
+            .orderBy("title asc")
+            .orderBy("slug asc")
             .execute();
         if (courseInfos.length === 0) return [];
 

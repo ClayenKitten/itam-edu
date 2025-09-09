@@ -6,6 +6,7 @@
     import EventsList from "./EventsList.svelte";
     import CreateCourseWindow from "$lib/windows/CreateCourseWindow.svelte";
     import AcceptInviteModal from "./AcceptInviteModal.svelte";
+    import { page } from "$app/state";
 
     let { data } = $props();
 
@@ -14,23 +15,31 @@
     let highlightedDate: Date | null = $state(null);
     let selectedDate: Date | null = $state(null);
 
-    let filterKind: "my" | "active" | "archive" = $state(
-        data.user === null ? "active" : "my"
-    );
+    const tabs = data.user
+        ? (["my", "active", "archive"] as const)
+        : (["active", "archive"] as const);
+    type Tab = (typeof tabs)[number];
+    const tab = $derived.by<Tab>(() => {
+        const param = page.url.searchParams.get("tab");
+        if (tabs.some(t => t === param)) return param as Tab;
+        return tabs[0];
+    });
+
     let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
-        switch (filterKind) {
+        switch (tab) {
             case "my":
-                return c =>
-                    !c.isArchived &&
-                    (data.user?.isCourseStudent(c.id) ||
-                        data.user?.isCourseStaff(c.id)) === true;
+                return c => {
+                    if (data.user === null) return false;
+                    if (c.isArchived) return false;
+                    if (!data.user.isCourseMember(c.id)) return false;
+                    return true;
+                };
             case "active":
                 return c => !c.isArchived;
             case "archive":
                 return c => c.isArchived;
         }
     });
-    let courses = $derived(data.courses.filter(filter));
 </script>
 
 <AcceptInviteModal user={data.user} />
@@ -41,12 +50,34 @@
     <main
         class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-12.5 px-7.5 gap-7.5"
     >
-        <menu class="flex gap-2">
+        <menu class="flex h-12 gap-2">
             {#if data.user !== null}
-                {@render fltr("Мои", "my")}
+                <a
+                    class={["tabBtn", tab === "my" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}`}
+                >
+                    Мои
+                </a>
+                <a
+                    class={["tabBtn", tab === "active" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}?tab=active`}
+                >
+                    Текущие
+                </a>
+            {:else}
+                <a
+                    class={["tabBtn", tab === "active" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}`}
+                >
+                    Текущие
+                </a>
             {/if}
-            {@render fltr("Текущие", "active")}
-            {@render fltr("Архивные", "archive")}
+            <a
+                class={["tabBtn", tab === "archive" && "selected"]}
+                href={`${page.url.origin}${page.url.pathname}?tab=archive`}
+            >
+                Архивные
+            </a>
         </menu>
         <aside
             class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
@@ -66,7 +97,7 @@
         <section
             class="grid grid-cols-[repeat(auto-fill,317px)] h-min items-start gap-x-4 gap-y-6.5"
         >
-            {#each courses as course}
+            {#each data.courses.filter(filter) as course (course.id)}
                 <CourseCard {course} />
             {/each}
             {#if data.user && data.user.permissions.createCourses === true}
@@ -85,20 +116,3 @@
         </section>
     </main>
 </div>
-
-{#snippet fltr(text: string, key: typeof filterKind)}
-    <button
-        class={[
-            "h-12 px-5 py-3",
-            "text-lg-medium border rounded-xs shadow",
-            "transition-colors duration-100",
-            filterKind === key
-                ? "bg-primary text-on-primary border-primary cursor-default"
-                : [
-                      "bg-surface text-on-surface border-surface-border",
-                      "hover:bg-on-primary hover:text-primary hover:border-primary-border"
-                  ]
-        ]}
-        onclick={() => (filterKind = key)}>{text}</button
-    >
-{/snippet}
