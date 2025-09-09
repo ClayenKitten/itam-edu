@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import { coursePath } from "$lib/path";
 
     const description = $derived.by(() => {
         if (page.status === 404) {
@@ -22,11 +23,11 @@
             {description}
         </p>
     {/if}
-    <button
+    <a
         class="group self-center flex items-center h-min mt-8 gap-2 text-primary"
-        onclick={() => history.back()}
+        href={`${coursePath(page.data.course)}/home`}
     >
         <i class="ph ph-caret-left text-[20px]"></i>
-        <h5 class="group-hover:underline">Назад</h5>
-    </button>
+        <h5 class="group-hover:underline">На главную</h5>
+    </a>
 </div>

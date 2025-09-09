@@ -7,8 +7,13 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
     depends("app:staff", "app:invites");
     const { course, user } = await parent();
 
-    if (!user || !user.isCourseStaff(course.id)) {
-        error(404);
+    if (
+        !user ||
+        (!user.isCourseStaff(course.id) &&
+            user.info.role !== "admin" &&
+            user.info.role !== "supervisor")
+    ) {
+        error(403);
     }
 
     const staff = await getStaff(fetch, course.id);

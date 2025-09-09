@@ -101,7 +101,7 @@
         {@render link("/homeworks", "Задания", "book-open-text")}
         {@render link("/about", "О курсе", "info")}
     </ul>
-    {#if user?.isCourseStaff(course.id)}
+    {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
         <hr class="text-surface-border -mx-5" />
         <ul class="flex flex-col gap-2">
             {@render link("/analytics", "Аналитика", "chart-line")}

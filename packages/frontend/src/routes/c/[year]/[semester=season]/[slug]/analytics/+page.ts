@@ -10,10 +10,10 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
         "app:attendees",
         "app:statistics"
     );
-    const { course, user } = await parent();
+    const { course } = await parent();
 
-    if (!user || !user.isCourseStaff(course.id)) {
-        error(404);
+    if (course.permissions.analytics.view !== true) {
+        error(403);
     }
 
     const [students, staff, submissions, attendees, statistics] =
