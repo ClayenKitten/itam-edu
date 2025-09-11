@@ -210,7 +210,11 @@
         ]}
         data-sveltekit-preload-data="off"
     >
-        <i class="ph ph-{icon} text-[24px]"></i>
+        {#if enabled}
+            <i class="ph-fill ph-{icon} text-[24px]"></i>
+        {:else}
+            <i class="ph ph-{icon} text-[24px]"></i>
+        {/if}
         <span>{text}</span>
     </a>
 {/snippet}
