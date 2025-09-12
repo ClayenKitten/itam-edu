@@ -1,11 +1,10 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
-    import { env } from "$env/dynamic/public";
     import api from "$lib/api";
     import Loader from "$lib/components/Loader.svelte";
     import type { Course, Lesson } from "$lib/types";
     import { qr } from "@svelte-put/qr/svg";
-    import { courseFilePath } from "itam-edu-common";
+    import { page } from "$app/state";
 
     const { course, lesson }: Props = $props();
     type Props = {
@@ -14,7 +13,7 @@
     };
 
     let token: string | null = $state(null);
-    let page: "attendance" | "tg-bot" = $state("attendance");
+    let tab: "attendance" | "tg-bot" = $state("attendance");
 
     const createToken = async () => {
         const result = await api({ fetch })
@@ -55,7 +54,7 @@
             window.clearInterval(timer);
         }
         token = null;
-        page = "attendance";
+        tab = "attendance";
         await invalidate("app:attendees");
     }}
 >
@@ -68,7 +67,7 @@
     <div
         class="flex-1 self-center aspect-square p-4 border border-surface-border shadow rounded-md"
     >
-        {#if page === "attendance"}
+        {#if tab === "attendance"}
             {#if token}
                 <svg
                     use:qr={{
@@ -81,10 +80,10 @@
             {:else}
                 <Loader />
             {/if}
-        {:else if page === "tg-bot"}
+        {:else if tab === "tg-bot"}
             <svg
                 use:qr={{
-                    data: `https://t.me/${env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}`,
+                    data: `https://t.me/${page.data.config.telegram.username}`,
                     logo: "/telegram.png",
                     shape: "square"
                 }}
@@ -93,21 +92,21 @@
         {/if}
     </div>
     <p class="self-center flex text-xl-medium text-on-surface-contrast">
-        {#if page === "attendance"}
+        {#if tab === "attendance"}
             <span>Отсканируйте QR-код в Telegram-боте</span>
             <button
                 class="flex items-center ml-1 text-primary"
-                onclick={() => (page = "tg-bot")}
+                onclick={() => (tab = "tg-bot")}
             >
                 <i class="ph ph-qr-code text-[21px]"></i>
                 <span class="hover:underline">
-                    {env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}
+                    {page.data.config.telegram.username}
                 </span>
             </button>
-        {:else if page === "tg-bot"}
+        {:else if tab === "tg-bot"}
             <button
                 class="flex items-center ml-1 text-primary"
-                onclick={() => (page = "attendance")}
+                onclick={() => (tab = "attendance")}
             >
                 <i class="ph ph-caret-left text-[21px]"></i>
                 <span class="hover:underline">Назад</span>

@@ -5,8 +5,7 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 const config = {
     preprocess: vitePreprocess(),
     kit: {
-        adapter: adapter(),
-        env: { publicPrefix: "ITAMEDU_PUBLIC_" }
+        adapter: adapter()
     }
 };
 

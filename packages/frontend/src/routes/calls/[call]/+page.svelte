@@ -2,18 +2,17 @@
     import api from "$lib/api";
     import { onMount } from "svelte";
     import { ParticipantState, RoomState } from "./state.svelte";
-    import { env } from "$env/dynamic/public";
     import ParticipantAudio from "./ParticipantAudio.svelte";
     import ParticipantVideo from "./ParticipantVideo.svelte";
     import { ConnectionState } from "livekit-client";
     import { goto } from "$app/navigation";
+    import { page } from "$app/state";
 
     let { data } = $props();
 
     let room = new RoomState();
     let focus: ParticipantState | null = $state(null);
     let token: string | undefined = $state();
-    const url = env.ITAMEDU_PUBLIC_LIVEKIT_URL!;
 
     onMount(() => {
         return () => room.disconnect();
@@ -26,7 +25,7 @@
 
         if (resp.error) return;
         token = resp.data.token;
-        await room.connect(url, token!);
+        await room.connect(page.data.config.livekit.url, token!);
     };
     const disconnect = async () => {
         await room.disconnect();

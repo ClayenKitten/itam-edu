@@ -6,40 +6,52 @@ import { Value } from "@sinclair/typebox/value";
 export type AppConfig = typeof appConfigSchema.static;
 
 export const appConfigSchema = t.Object({
-    /** Web server configuration. */
-    server: t.Object({
-        /**
-         * Public origin to which the system is deployed.
-         *
-         * Domain name and protocol are required. Port and path may be provided if needed.
-         *
-         * ### Examples
-         *
-         * - http://www.localhost
-         * - https://example.com:3000/itamedu
-         * */
-        origin: t.String({ format: "uri" }),
-        /**
-         * TCP ports to use.
-         *
-         * Default values are recommended for containerized deployment.
-         * */
-        ports: t.Partial(
-            t.Object({
-                frontend: t.Integer({ default: 3000, minimum: 1 }),
-                backend: t.Integer({ default: 3000, minimum: 1 }),
-                files: t.Integer({ default: 3000, minimum: 1 })
-            })
-        )
-    }),
+    /**
+     * Public origin to which the system is deployed.
+     *
+     * Domain name and protocol are required. Port and path may be provided if needed.
+     *
+     * ### Examples
+     *
+     * - http://www.localhost
+     * - https://example.com:3000/itamedu
+     * */
+    origin: t.String({ format: "uri" }),
+    /** JsonWebToken configuration. */
     jwt: t.Object({
         secret: t.String({ minLength: 32 })
+    }),
+    /** Web servers configuration. */
+    servers: t.Object({
+        frontend: t.Object({
+            /** Internal server to which  */
+            host: t.String({ default: "frontend" }),
+            port: t.Integer({ default: 3000, minimum: 1 })
+        }),
+        backend: t.Object({
+            host: t.String({ default: "backend" }),
+            port: t.Integer({ default: 3000, minimum: 1 })
+        }),
+        files: t.Object({
+            host: t.String({ default: "files" }),
+            port: t.Integer({ default: 3000, minimum: 1 })
+        })
     }),
     /** Telegram bot configuration. */
     telegram: t.Object({
         /** Telegram API token. */
         token: t.String(),
-        /** Support account username without a leading `@`, e.g. `durov`. */
+        /**
+         * Telegram bot username.
+         *
+         * @example ```itatmisis_bot```
+         * */
+        username: t.String(),
+        /**
+         * Support account username.
+         *
+         * @example ```durov```
+         */
         supportUsername: t.String()
     }),
     /** LiveKit connection configuration. */
@@ -53,9 +65,9 @@ export const appConfigSchema = t.Object({
         /**
          * Connection string for Postgres database.
          *
-         *  ### Example
+         * @example
          *
-         * `postgres://username:password@hostname:port/databaseName`
+         * ```postgres://username:password@hostname:port/databaseName```
          */
         connectionString: t.String({ format: "uri" })
     }),
@@ -93,25 +105,27 @@ FormatRegistry.Set("uri", val => {
  * */
 export function createConfigFromEnv(): AppConfig {
     const gatheredConfig = {
-        server: {
-            origin: env.ITAMEDU_ORIGIN?.replace(/\/+$/, "")!,
-            ports: {
-                frontend: env.ITAMEDU_FRONTEND_PORT
-                    ? Number(env.ITAMEDU_FRONTEND_PORT)
-                    : undefined,
-                backend: env.ITAMEDU_BACKEND_PORT
-                    ? Number(env.ITAMEDU_BACKEND_PORT)
-                    : undefined,
-                files: env.ITAMEDU_FILES_PORT
-                    ? Number(env.ITAMEDU_FILES_PORT)
-                    : undefined
-            }
-        },
+        origin: env.ITAMEDU_ORIGIN?.replace(/\/+$/, "")!,
         jwt: {
             secret: env.ITAMEDU_JWT_SECRET!
         },
+        servers: {
+            frontend: {
+                host: env.ITAMEDU_FRONTEND_HOST!,
+                port: toNumberOrUndef(env.ITAMEDU_FRONTEND_PORT)!
+            },
+            backend: {
+                host: env.ITAMEDU_BACKEND_HOST!,
+                port: toNumberOrUndef(env.ITAMEDU_BACKEND_PORT)!
+            },
+            files: {
+                host: env.ITAMEDU_FILES_HOST!,
+                port: toNumberOrUndef(env.ITAMEDU_FILES_PORT)!
+            }
+        },
         telegram: {
             token: env.ITAMEDU_TELEGRAM_TOKEN!,
+            username: env.ITAMEDU_TELEGRAM_USERNAME!,
             supportUsername: env.ITAMEDU_TELEGRAM_SUPPORT_USERNAME!
         },
         postgres: {
@@ -145,6 +159,9 @@ export function createConfigFromEnv(): AppConfig {
         );
     }
 }
+const toNumberOrUndef = (val: string | undefined): number | undefined => {
+    return val !== undefined ? Number(val) : undefined;
+};
 
 export class ConfigError extends Error {
     constructor(public fields: { message: string; path: string }[]) {

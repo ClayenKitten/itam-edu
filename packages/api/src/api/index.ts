@@ -52,11 +52,11 @@ export class ApiServer {
         elysia
             .onStart(() =>
                 logger.info("Started API server", {
-                    port: this.config.server.ports.backend
+                    port: this.config.servers.backend.port
                 })
             )
             .onStop(() => logger.info("Stopped API server"))
-            .listen({ port: this.config.server.ports.backend });
+            .listen({ port: this.config.servers.backend.port });
     }
 
     /** Stops serving. */

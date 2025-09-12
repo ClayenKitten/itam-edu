@@ -1,13 +1,9 @@
 import { browser } from "$app/environment";
-import { env } from "$env/dynamic/public";
+import { page } from "$app/state";
 import { treaty } from "@elysiajs/eden";
 import type { ApiTreaty } from "itam-edu-api/src/api";
 
 export default function api(params: ApiParams) {
-    const baseUrl = browser
-        ? env.ITAMEDU_PUBLIC_API_URL_BROWSER!
-        : env.ITAMEDU_PUBLIC_API_URL_SERVER!;
-
     const client = treaty<ApiTreaty>(baseUrl, {
         fetcher: params.fetch,
         onRequest: () => {
@@ -27,6 +23,29 @@ export default function api(params: ApiParams) {
 type ApiParams = {
     fetch: typeof fetch;
 };
+
+/**
+ * Returns API base URL appropriate for the environment.
+ *
+ *  In browser it uses `page.data` from `$app/state` to access config, `getRequestEvent` on the server.
+ */
+const getBaseUrl = async (): Promise<string> => {
+    if (browser) {
+        return `${page.data.config.origin}/api`;
+    } else {
+        try {
+            const { getRequestEvent } = await import("$app/server");
+            const { locals } = getRequestEvent();
+            const { host, port } = locals.config.servers.backend;
+            return `${host}:${port}`;
+        } catch (e) {
+            const { host, port } = page.data.config.servers.backend;
+            return `${host}:${port}`;
+        }
+        // return "localhost:5151";
+    }
+};
+const baseUrl = await getBaseUrl();
 
 const getCookie = (name: string): string | undefined => {
     return document.cookie

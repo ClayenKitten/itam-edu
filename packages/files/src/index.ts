@@ -6,7 +6,7 @@ const config = createConfigFromEnv();
 
 Bun.serve({
     hostname: "0.0.0.0",
-    port: config.server.ports.files,
+    port: config.servers.files.port,
 
     async fetch(req) {
         logger.debug("HTTP Request", { method: req.method, url: req.url });
@@ -15,7 +15,7 @@ Bun.serve({
             return new Response(null, { status: 405 });
         }
 
-        let url = baseUrl + "/files" + new URL(req.url).pathname;
+        let url = config.origin + "/api/files" + new URL(req.url).pathname;
 
         // Presigned URL may expect internal `Host` header (e.g. minio:9000), which may not match
         // if request was sent to public hostname, therefore triggering CORS protection.
@@ -40,7 +40,7 @@ Bun.serve({
         return response;
     }
 });
-logger.info("Started file server", { port: config.server.ports.files });
+logger.info("Started file server", { port: config.servers.files.port });
 
 export function getTokenFromRequest(request: Request): string | null {
     let token = request.headers.get("authorization");
@@ -51,5 +51,3 @@ export function getTokenFromRequest(request: Request): string | null {
     }
     return token;
 }
-
-export const baseUrl = env.ITAMEDU_PUBLIC_API_URL_SERVER;

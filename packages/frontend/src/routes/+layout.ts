@@ -1,7 +1,6 @@
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
-import { User } from "itam-edu-common";
 import type { CoursePartial, Notification } from "$lib/types";
 import type { Metadata } from "$lib/metadata";
 
@@ -17,25 +16,14 @@ export const load: LayoutLoad = async ({ fetch, depends, data }) => {
 
     depends("app:courses", "app:notifications");
 
-    const user = data.user
-        ? new User(
-              data.user.id,
-              data.user.info,
-              data.user.telegram,
-              data.user.courses
-          )
-        : null;
-    const coursesPromise = getCourses(fetch);
-    const notificationsPromise = data.user
-        ? getNotifications(fetch)
-        : Promise.resolve([]);
     const [courses, notifications] = await Promise.all([
-        coursesPromise,
-        notificationsPromise
+        getCourses(fetch),
+        data.user ? getNotifications(fetch) : Promise.resolve([])
     ]);
 
     return {
-        user,
+        config: data.config,
+        user: data.user,
         courses,
         notifications,
         ...metadata

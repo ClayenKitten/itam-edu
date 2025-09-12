@@ -17,7 +17,7 @@ services:
     env_file: ./.env
     restart: unless-stopped
 
-  api:
+  backend:
     image: ghcr.io/clayenkitten/itam-edu-api:main
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
     depends_on: { db-migration: { condition: service_completed_successfully } }

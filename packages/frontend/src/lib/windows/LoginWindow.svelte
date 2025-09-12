@@ -1,7 +1,6 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import { page } from "$app/state";
-    import { env } from "$env/dynamic/public";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
 
@@ -81,9 +80,9 @@
         <a
             class="text-primary underline"
             target="_blank"
-            href="https://t.me/{env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}?start=login"
+            href="https://t.me/{page.data.config.telegram.username}?start=login"
         >
-            @{env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}
+            @{page.data.config.telegram.username}
         </a>, чтобы получить код
     </footer>
 </dialog>
