@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { Course, Homework, Submission } from "$lib/types";
     import type { User } from "itam-edu-common";
-    import IconButton from "$lib/components/IconButton.svelte";
-    import TipTap from "$lib/components/TipTap.svelte";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
-    import { goto, invalidate } from "$app/navigation";
+    import { invalidate } from "$app/navigation";
     import api from "$lib/api";
+    import RichContent from "$lib/components/editor/RichContent.svelte";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
 
     const { user, course, homework, submission }: Props = $props();
     type Props = {
@@ -56,7 +56,7 @@
 
 <section class="relative flex flex-col gap-10 p-6 rounded-xl bg-surface shadow">
     <section class="flex flex-col">
-        <header class="flex flex-col gap-2 mb-4">
+        <header class="flex flex-col gap-2">
             <header class="flex items-center gap-3">
                 <h2>{homework.title}</h2>
                 {#if !doesAcceptSubmissions}
@@ -110,11 +110,13 @@
                 {/if}
             </menu>
         </header>
-        <article class="mb-5">
-            <TipTap content={homework.content} readonly />
-        </article>
+        {#if homework.content}
+            <article class="mt-4">
+                <RichContent content={homework.content} />
+            </article>
+        {/if}
         {#if homework.lessons.length > 0}
-            <footer class="flex gap-3">
+            <footer class="flex gap-3 mt-6">
                 {#each homework.lessons as lesson}
                     <a
                         class={[
@@ -134,15 +136,18 @@
     </section>
     {#if canSubmit}
         <section class="flex flex-col gap-4">
-            <label
-                class={[
-                    "h-[160px] p-5 overflow-scroll",
-                    " border-2 border-on-primary focus-within:border-primary",
-                    "rounded-sm cursor-text"
-                ]}
-            >
-                <TipTap bind:content />
-            </label>
+            <div class="flex min-h-[240px] max-h-[600px]">
+                <RichEditor
+                    bind:content
+                    characterLimit={10000}
+                    features={{
+                        formating: true,
+                        codeBlocks: true,
+                        links: true,
+                        tables: false
+                    }}
+                />
+            </div>
             <menu class="flex justify-end gap-2.5">
                 <button
                     class="btn secondary"

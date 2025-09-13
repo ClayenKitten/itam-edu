@@ -1,9 +1,10 @@
 <script lang="ts">
     import type { Course, Homework, Submission } from "$lib/types";
     import { userFilePath, type User } from "itam-edu-common";
-    import TipTap from "$lib/components/TipTap.svelte";
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
+    import RichContent from "$lib/components/editor/RichContent.svelte";
 
     const { course, homework, submission }: Props = $props();
     type Props = {
@@ -67,18 +68,13 @@
     </header>
     {#if isUnreviewed}
         <article>
-            <TipTap content={submission.attempts[0].content} readonly />
+            <RichContent content={submission.attempts[0].content} />
         </article>
         <hr class="border-surface-border" />
         <section class="flex flex-col gap-4">
             <h5>Комментарий от проверяющего</h5>
-            <div
-                class={[
-                    "h-full min-h-[180px] p-5 border-2 rounded-sm",
-                    "border-primary-border focus-within:border-primary"
-                ]}
-            >
-                <TipTap bind:content />
+            <div class={["flex min-h-[200px] max-h-[600px]"]}>
+                <RichEditor bind:content characterLimit={10000} />
             </div>
         </section>
         <menu class="flex justify-end gap-2.5">

@@ -1,8 +1,9 @@
 <script lang="ts">
     import type { Submission } from "$lib/types";
-    import TipTap from "$lib/components/TipTap.svelte";
     import { format as formatDate } from "date-fns";
     import Tag from "$lib/components/Tag.svelte";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
+    import RichContent from "$lib/components/editor/RichContent.svelte";
 
     const { attempt, open = false }: Props = $props();
     type Props = {
@@ -39,13 +40,13 @@
     </summary>
     <div class="flex flex-col gap-6 p-6 pt-0">
         <section>
-            <TipTap content={attempt.content} readonly />
+            <RichContent content={attempt.content} />
         </section>
         {#if attempt.review && attempt.review.content}
             <hr class="border-surface-border" />
             <section class="flex flex-col gap-4">
                 <h4>Комментарий от проверяющего</h4>
-                <TipTap content={attempt.review.content} readonly />
+                <RichContent content={attempt.review.content} />
             </section>
         {/if}
     </div>

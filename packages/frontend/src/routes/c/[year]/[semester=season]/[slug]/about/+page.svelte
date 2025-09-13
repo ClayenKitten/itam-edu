@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TipTap from "$lib/components/TipTap.svelte";
+    import RichContent from "$lib/components/editor/RichContent.svelte";
     import { courseFilePath, userFilePath } from "itam-edu-common";
 
     let { data } = $props();
@@ -72,8 +72,8 @@
             </ul>
         </section>
         {#if data.course.about}
-            <section class="flex flex-col gap-4.5">
-                <TipTap content={data.course.about} readonly />
+            <section class="flex flex-col gap-4.5 overflow-x-hidden">
+                <RichContent content={data.course.about} />
             </section>
         {/if}
     </div>

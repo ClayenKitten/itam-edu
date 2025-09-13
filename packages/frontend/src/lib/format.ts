@@ -23,3 +23,34 @@ export function formatLessonSchedule(
 
     return str;
 }
+
+/**
+ * Returns a noun after number in the correct form.
+ *
+ * @example
+ * ```ts
+ * formatNumberAndNoun(1, ["кот", "кота", "котов"]) // "кот"
+ * formatNumberAndNoun(4, ["кот", "кота", "котов"]) // "кота"
+ * formatNumberAndNoun(7, ["кот", "кота", "котов"]) // "котов"
+ * formatNumberAndNoun(12, ["кот", "кота", "котов"]) // "котов"
+ * formatNumberAndNoun(22, ["кот", "кота", "котов"]) // "кота"
+ * ```
+ * */
+export function formatNounAfterNum(
+    num: number,
+    conjugation: [кот: string, кота: string, котов: string]
+): string {
+    const integer = Math.abs(Math.floor(num));
+    const [кот, кота, котов] = conjugation;
+
+    if (integer % 100 >= 11 && integer % 100 <= 19) {
+        return котов;
+    }
+    if (integer % 10 === 1) {
+        return кот;
+    }
+    if (integer % 10 >= 2 && integer % 10 <= 4) {
+        return кота;
+    }
+    return котов;
+}

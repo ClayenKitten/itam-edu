@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TipTap from "$lib/components/TipTap.svelte";
+    import RichContent from "$lib/components/editor/RichContent.svelte";
     import { formatLessonSchedule } from "$lib/format.js";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
@@ -80,7 +80,7 @@
         <section class="flex flex-col gap-5">
             <h3>Теория и материалы</h3>
             <article class="shadow px-8 py-6 rounded-lg">
-                <TipTap content={data.lesson.content} readonly />
+                <RichContent content={data.lesson.content} />
             </article>
         </section>
     {/if}

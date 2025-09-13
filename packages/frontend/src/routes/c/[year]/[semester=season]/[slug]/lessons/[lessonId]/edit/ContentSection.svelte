@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TipTap from "$lib/components/TipTap.svelte";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
 
     let { content = $bindable() }: Props = $props();
 
@@ -17,9 +17,7 @@
             синтаксис Markdown и всплывающее меню.
         </p>
     </header>
-    <div
-        class="min-h-[300px] p-5 border-2 border-on-primary rounded-sm focus-within:border-primary"
-    >
-        <TipTap bind:content />
+    <div class="flex min-h-[400px] max-h-[800px]">
+        <RichEditor bind:content characterLimit={50000} />
     </div>
 </section>

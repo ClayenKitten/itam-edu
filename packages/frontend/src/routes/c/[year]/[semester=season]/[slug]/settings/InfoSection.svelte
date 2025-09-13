@@ -1,7 +1,8 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
-    import TipTap from "$lib/components/TipTap.svelte";
+    import PlainEditor from "$lib/components/editor/PlainEditor.svelte";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { Course } from "$lib/types";
 
@@ -43,28 +44,25 @@
             bind:value={courseClone.title}
         />
     </label>
-    <div class="flex gap-6">
-        <label class="flex-1 flex flex-col gap-2">
-            <header>
-                <h4>Описание</h4>
-                <p class="text-md-regular text-on-surface-muted text-balance">
-                    Кратко расскажите, о чём ваш курс (до 500 символов).
-                </p>
-            </header>
-            <textarea
-                class="input h-[163px] resize-none"
-                maxlength="500"
-                disabled={readonly}
-                bind:value={courseClone.description}
-            ></textarea>
-        </label>
+    <div class="flex flex-col gap-4">
+        <header class="flex flex-col gap-1">
+            <h4>Описание</h4>
+            <p class="text-md-regular text-on-surface-muted text-balance">
+                Кратко расскажите, о чём ваш курс.
+            </p>
+        </header>
+        <div class="flex-1 min-h-[160px] max-h-[240px]">
+            <PlainEditor
+                bind:content={courseClone.description}
+                {readonly}
+                characterLimit={500}
+            />
+        </div>
     </div>
-    <div class="flex flex-col gap-2">
-        <header>
+    <div class="flex flex-col gap-4">
+        <header class="flex flex-col gap-1">
             <h4>О курсе</h4>
-            <p
-                class="max-w-[800px] text-md-regular text-on-surface-muted text-balance"
-            >
+            <p class="text-md-regular text-on-surface-muted text-balance">
                 Опишите курс подробнее: расскажите, как он будет проходить,
                 укажите расписание занятий, перечислите ключевые навыки, которые
                 освоят студенты. Добавьте советы по подготовке, полезные
@@ -72,15 +70,12 @@
                 студентам.
             </p>
         </header>
-        <div
-            class={[
-                "h-full min-h-[300px] p-5 border-2 rounded-sm focus-within:border-primary",
-                !readonly
-                    ? "border-primary-border"
-                    : "border-on-surface-disabled"
-            ]}
-        >
-            <TipTap bind:content={courseClone.about} {readonly} />
+        <div class="flex-1 min-h-[300px] max-h-[600px]">
+            <RichEditor
+                bind:content={courseClone.about}
+                {readonly}
+                characterLimit={50000}
+            />
         </div>
     </div>
     {#if !readonly}

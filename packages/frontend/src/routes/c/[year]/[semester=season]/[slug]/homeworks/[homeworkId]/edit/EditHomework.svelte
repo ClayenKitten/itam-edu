@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TipTap from "$lib/components/TipTap.svelte";
+    import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { CreateHomework, Homework } from "$lib/types";
     import { doOnce } from "$lib/utils/doOnce";
@@ -44,14 +44,14 @@
         {/if}
     </header>
     <label class="flex flex-col gap-2">
-        <h4>Название</h4>
-        <input class="input" bind:value={homework.title} />
+        <h5>Название</h5>
+        <input class="input h-15" bind:value={homework.title} />
     </label>
     <div class="flex gap-5">
         <label class="flex flex-col gap-2">
-            <h4>Дедлайн</h4>
+            <h5>Дедлайн</h5>
             <input
-                class="input h-15 border border-on-primary focus:border-primary rounded-sm"
+                class="input h-15"
                 type="date"
                 bind:value={
                     () =>
@@ -66,11 +66,8 @@
             />
         </label>
         <label class="flex flex-col gap-2">
-            <h4>Приём работ</h4>
-            <select
-                class="input h-15 border border-on-primary focus:border-primary rounded-sm"
-                bind:value={homework.deadlineOverride}
-            >
+            <h5>Приём работ</h5>
+            <select class="input h-15" bind:value={homework.deadlineOverride}>
                 <option value={null}>Открыт до дедлайна</option>
                 <option value={true}>Открыт всегда</option>
                 <option value={false}>Закрыт</option>
@@ -78,14 +75,15 @@
         </label>
     </div>
     <div class="flex flex-col gap-2">
-        <h4>Задание</h4>
-        <div
-            class="h-full min-h-[300px] p-5 border-2 border-on-primary rounded-sm focus-within:border-primary"
-        >
-            <TipTap bind:content={homework.content} />
+        <h5>Задание</h5>
+        <div class="flex-1 flex min-h-[300px] max-h-[600px]">
+            <RichEditor
+                bind:content={homework.content}
+                characterLimit={50000}
+            />
         </div>
     </div>
-    <footer class="flex gap-5 justify-end">
+    <footer class="flex gap-2.5 justify-end">
         <button class="btn secondary" onclick={oncancel}>Отменить</button>
         <button
             class="btn"
