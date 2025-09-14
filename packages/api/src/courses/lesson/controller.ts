@@ -4,21 +4,19 @@ import * as schema from "./schema";
 import { REQUIRE_TOKEN } from "../../api/plugins/docs";
 import { HttpError } from "../../api/errors";
 import { AuthenticationPlugin } from "../../api/plugins/authenticate";
-import { CourseRepository } from "../repository";
-import { LessonService } from "./service";
-import { LessonRepository } from "./repository";
 import { LessonQuery } from "./query";
-import { AttendanceQuery } from "./attendance/query";
+import { CreateLesson } from "./create.interactor";
+import { UpdateLesson } from "./update.interactor";
+import { ReorderLessons } from "./reorder.interactor";
 
 @injectable()
 export class LessonController {
     public constructor(
-        protected authPlugin: AuthenticationPlugin,
-        protected courseRepo: CourseRepository,
-        protected lessonService: LessonService,
-        protected lessonRepo: LessonRepository,
-        protected lessonQuery: LessonQuery,
-        protected attendanceQuery: AttendanceQuery
+        private authPlugin: AuthenticationPlugin,
+        private lessonQuery: LessonQuery,
+        private createInteractor: CreateLesson,
+        private updateInteractor: UpdateLesson,
+        private reorderInteractor: ReorderLessons
     ) {}
 
     public toElysia() {
@@ -33,11 +31,6 @@ export class LessonController {
                     { course: t.String({ format: "uuid" }) },
                     { additionalProperties: true }
                 )
-            })
-            .derive(async ({ params, status }) => {
-                const course = await this.courseRepo.getById(params.course);
-                if (!course) return status(404);
-                return { course };
             })
             .get(
                 "",
@@ -60,10 +53,10 @@ export class LessonController {
             )
             .post(
                 "",
-                async ({ user, course, body, status }) => {
-                    const lesson = await this.lessonService.create(
+                async ({ params, user, body, status }) => {
+                    const lesson = await this.createInteractor.invoke(
                         user,
-                        course,
+                        params.course,
                         body.lesson
                     );
                     if (lesson instanceof HttpError) {
@@ -83,10 +76,10 @@ export class LessonController {
             )
             .put(
                 "",
-                async ({ user, course, body }) => {
-                    const result = await this.lessonService.updateAll(
+                async ({ user, body, params }) => {
+                    const result = await this.reorderInteractor.invoke(
                         user,
-                        course,
+                        params.course,
                         body.lessons
                     );
                     if (result instanceof HttpError) {
@@ -95,7 +88,7 @@ export class LessonController {
                 },
                 {
                     requireAuthentication: true,
-                    body: t.Object({ lessons: schema.updateLessonsList }),
+                    body: t.Object({ lessons: schema.reorderLessonsList }),
                     detail: {
                         summary: "Update lessons",
                         description:
@@ -131,16 +124,10 @@ export class LessonController {
             .patch(
                 "/:lesson",
                 async ({ params, body, user, status }) => {
-                    const [course, lesson] = await Promise.all([
-                        this.courseRepo.getById(params.course),
-                        this.lessonRepo.load(params.course, params.lesson)
-                    ]);
-                    if (!course || !lesson) return status(404);
-
-                    const newLesson = await this.lessonService.update(
+                    const newLesson = await this.updateInteractor.invoke(
                         user,
-                        course,
-                        lesson,
+                        params.course,
+                        params.lesson,
                         body
                     );
                     if (newLesson instanceof HttpError) {

@@ -30,4 +30,4 @@ export const createLesson = t.Object({
 
 export const updateLesson = t.Partial(createLesson);
 
-export const updateLessonsList = t.Array(t.String());
+export const reorderLessonsList = t.Array(t.String({ format: "uuid" }));

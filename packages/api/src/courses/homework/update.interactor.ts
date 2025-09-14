@@ -67,8 +67,8 @@ export class UpdateHomework {
 
 class Notification extends NotificationTemplate {
     public constructor(
-        protected course: Course,
-        protected homework: Homework
+        private course: Course,
+        private homework: Homework
     ) {
         super();
     }

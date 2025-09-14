@@ -1,5 +1,6 @@
 <script lang="ts">
     import api from "$lib/api";
+    import PlainEditor from "$lib/components/editor/PlainEditor.svelte";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { formatLessonSchedule } from "$lib/format";
     import type { Course, CreateLesson, Lesson } from "$lib/types";
@@ -33,11 +34,12 @@
     <div class="flex flex-wrap gap-6">
         <label class="flex-1 flex flex-col gap-2 min-w-[min(100%,400px)]">
             <h4>Описание</h4>
-            <textarea
-                class="input h-[200px] resize-none"
-                maxlength="1000"
-                bind:value={lesson.description}
-            ></textarea>
+            <div class="flex-1 min-h-[200px] max-h-[200px]">
+                <PlainEditor
+                    bind:content={lesson.description}
+                    characterLimit={300}
+                />
+            </div>
         </label>
         <label class="shrink-0 flex flex-col gap-2">
             <h4>Обложка</h4>

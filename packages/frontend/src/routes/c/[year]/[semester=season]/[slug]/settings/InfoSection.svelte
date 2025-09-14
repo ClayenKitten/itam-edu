@@ -70,7 +70,7 @@
                 студентам.
             </p>
         </header>
-        <div class="flex-1 min-h-[300px] max-h-[600px]">
+        <div class="flex flex-1 min-h-[300px] max-h-[600px]">
             <RichEditor
                 bind:content={courseClone.about}
                 {readonly}

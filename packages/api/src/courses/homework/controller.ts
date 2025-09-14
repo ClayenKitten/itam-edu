@@ -81,7 +81,7 @@ export class HomeworkController {
                 },
                 {
                     requireAuthentication: true,
-                    body: t.Object({ homeworks: schema.updateHomeworksList }),
+                    body: t.Object({ homeworks: schema.reorderHomeworksList }),
                     params: t.Object({ course: t.String({ format: "uuid" }) }),
                     detail: {
                         summary: "Update homeworks",

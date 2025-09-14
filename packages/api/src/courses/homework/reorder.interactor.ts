@@ -15,7 +15,7 @@ export class ReorderHomeworks {
     public async invoke(
         actor: User,
         courseId: string,
-        homeworksList: typeof schema.updateHomeworksList.static
+        homeworksList: typeof schema.reorderHomeworksList.static
     ): Promise<void | HttpError> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);

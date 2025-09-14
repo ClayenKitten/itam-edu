@@ -8,7 +8,7 @@ import type { Course } from "../entity";
 
 @injectable()
 export class LessonRepository {
-    public constructor(protected postgres: Postgres) {}
+    public constructor(private postgres: Postgres) {}
 
     public async load(
         courseId: string,
@@ -33,7 +33,7 @@ export class LessonRepository {
         return this.toEntity(lesson, homeworks);
     }
 
-    public async getAll(courseId: string): Promise<Lesson[]> {
+    public async loadAll(courseId: string): Promise<Lesson[]> {
         const lessons = await this.postgres.kysely
             .selectFrom("lessons")
             .selectAll()
@@ -64,7 +64,7 @@ export class LessonRepository {
     }
 
     /** Creates or updates the lesson in the database. */
-    public async set(lesson: Lesson) {
+    public async save(lesson: Lesson) {
         const selectPosition = (eb: ExpressionBuilder<DB, "lessons">) => {
             return eb
                 .selectFrom("lessons")
@@ -169,7 +169,7 @@ export class LessonRepository {
         );
     }
 
-    public async updateAll(course: Course, lessonIds: string[]) {
+    public async reorder(course: Course, lessonIds: string[]) {
         await this.postgres.kysely.transaction().execute(async trx => {
             await trx
                 .deleteFrom("lessonHomeworks")

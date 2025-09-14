@@ -80,7 +80,7 @@
 <div
     class={[
         "flex-1 self-stretch size-full",
-        "relative flex flex-col",
+        "relative flex flex-col overflow-clip",
         "border-2 border-primary-border focus-within:border-primary rounded-sm",
         "transition-colors duration-100"
     ]}

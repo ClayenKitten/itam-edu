@@ -22,4 +22,4 @@ export const updateHomework = t.Pick(homework, [
     "deadlineOverride"
 ]);
 
-export const updateHomeworksList = t.Array(t.String());
+export const reorderHomeworksList = t.Array(t.String({ format: "uuid" }));
