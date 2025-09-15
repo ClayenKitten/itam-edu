@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
+    import { invalidate, replaceState } from "$app/navigation";
     import { page } from "$app/state";
     import { env } from "$env/dynamic/public";
     import api from "$lib/api";
@@ -52,7 +52,7 @@
     onclose={() => {
         let url = page.url;
         url.searchParams.delete("login");
-        history.replaceState(null, "", url);
+        replaceState(url, {});
     }}
 >
     <header class="flex flex-col">

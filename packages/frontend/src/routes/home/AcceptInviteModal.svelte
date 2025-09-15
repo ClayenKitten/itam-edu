@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
+    import { invalidate, replaceState } from "$app/navigation";
     import { page } from "$app/state";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
@@ -70,7 +70,7 @@
     function clearUrl() {
         let url = page.url;
         url.searchParams.delete("invite");
-        history.replaceState(null, "", url);
+        replaceState(url, {});
     }
 </script>
 
