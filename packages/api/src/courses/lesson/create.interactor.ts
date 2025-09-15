@@ -82,7 +82,7 @@ class Notification extends NotificationTemplate {
     public toTelegram(id: string, _userId: string) {
         return {
             id,
-            html: this.html,
+            text: this.html,
             link: {
                 text: "🔗 Страница урока",
                 url: `${this.course.path}/lessons/${this.lesson.id}`

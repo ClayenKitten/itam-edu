@@ -1,5 +1,5 @@
-import { randomUUID } from "node:crypto";
 import type { MaybePromise } from "../util";
+import type { OutboundBotMessage } from "../bot";
 
 /**
  * An abstract factory for {@link WebNotification} and {@link TelegramNotification}.
@@ -8,29 +8,21 @@ import type { MaybePromise } from "../util";
  * */
 export abstract class NotificationTemplate {
     public abstract toWeb(
-        /**
-         * Unique id of the notification.
-         *
-         * Must be the same for both {@link WebNotification} and {@link TelegramNotification}.
-         * */
+        /** Unique id of the notification. */
         id: string,
         /** User to whom the notification is sent. */
         userId: string
     ): MaybePromise<WebNotification | null>;
 
     public abstract toTelegram(
-        /**
-         * Unique id of the notification.
-         *
-         * Must be the same for both {@link WebNotification} and {@link TelegramNotification}.
-         * */
+        /** Unique id of the notification. */
         id: string,
         /** User to whom the notification is sent. */
         userId: string
-    ): MaybePromise<TelegramNotification | null>;
+    ): MaybePromise<OutboundBotMessage | null>;
 }
 
-/** Notification  */
+/** Notification displayed to the user at the web platform. */
 export type WebNotification = {
     /** Unique id of the notification. */
     readonly id: string;
@@ -49,20 +41,4 @@ export type WebNotification = {
 
     /** Identifier of the course. */
     readonly courseId: string | null;
-};
-
-export type TelegramNotification = {
-    /** Unique id of the notification. */
-    readonly id: string;
-
-    /** HTML representation of the notification. */
-    readonly html: string;
-
-    /** Link attached to the message. */
-    readonly link: TelegramNotificationLink | null;
-};
-
-export type TelegramNotificationLink = {
-    text: string;
-    url: string;
 };

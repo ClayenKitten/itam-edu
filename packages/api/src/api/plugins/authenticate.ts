@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import logger from "../../logger";
 import { UserRepository } from "../../users/repository";
-import { SessionRepository } from "../../users/session";
+import { SessionRepository } from "../../users/sessions/repository";
 import { injectable } from "inversify";
 
 /** Retrieves user information and permissions, registers macroses for authorization. */

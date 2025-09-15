@@ -3,24 +3,21 @@ import { Elysia, t } from "elysia";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
 import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { UserRepository } from "./repository";
-import { Session, SessionRepository } from "./session";
-import { LoginCodeRepository } from "./login";
 import { CalendarQuery, type CalendarFilters } from "./calendar";
-import { NotificationSender } from "../notifications/sender";
-import { LoginNotificationTemplate } from "./notifications";
-import { Redis } from "../infra/redis";
+import { UserLogin } from "./login";
+import { NotificationsQuery } from "./notifications/query";
 import * as schema from "./schema";
+import { SessionRepository } from "./sessions/repository";
 
 @injectable()
 export class UserController {
     public constructor(
-        protected authPlugin: AuthenticationPlugin,
-        protected userRepo: UserRepository,
-        protected sessionRepo: SessionRepository,
-        protected loginCodeRepo: LoginCodeRepository,
-        protected calendarQuery: CalendarQuery,
-        protected notificationSender: NotificationSender,
-        protected redis: Redis
+        private authPlugin: AuthenticationPlugin,
+        private userRepo: UserRepository,
+        private sessionRepo: SessionRepository,
+        private login: UserLogin,
+        private calendarQuery: CalendarQuery,
+        private notificationsQuery: NotificationsQuery
     ) {}
 
     public toElysia() {
@@ -67,16 +64,11 @@ export class UserController {
             .post(
                 "/sessions",
                 async ({ body, status, cookie }) => {
-                    const user = await this.loginCodeRepo.pop(body.code);
-                    if (!user) return status(404, "Login code does not match");
+                    const session = await this.login.redeemCode(body.code);
+                    if (!session) {
+                        return status(404, "Login code does not match");
+                    }
 
-                    const session = Session.create(user);
-                    await this.sessionRepo.add(session);
-
-                    await this.notificationSender.send(
-                        new LoginNotificationTemplate(),
-                        [user.id]
-                    );
                     cookie["itam-edu-token"]?.set({
                         value: session.token,
                         expires: session.expires,
@@ -147,14 +139,8 @@ export class UserController {
             .get(
                 "/me/notifications",
                 async ({ user }) => {
-                    const stream = await this.redis.xRange(
-                        `notifications:${user.id}`,
-                        "-",
-                        "+"
-                    );
-                    const notifications = stream.map(({ message }) =>
-                        JSON.parse(message.payload!)
-                    );
+                    const notifications =
+                        await this.notificationsQuery.getAll(user);
                     return { notifications };
                 },
                 {

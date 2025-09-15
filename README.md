@@ -24,7 +24,6 @@ ITAM Education platform consists of multiple packages that communicate over HTTP
 | ---------------------------------------- | :--------: | ---------------------------------------- | :---------: |
 | [itam-edu-frontend](./packages/frontend) |   NodeJS   | SvelteKit server                         |     ✅      |
 | [itam-edu-api](./packages/api)           |    Bun     | REST API server                          |     ✅      |
-| [itam-edu-telegram](./packages/telegram) |    Bun     | Telegram bot                             |     ✅      |
 | [itam-edu-files](./packages/files)       |    Bun     | File server with proxy to S3 bucket      |     ✅      |
 | [itam-edu-db](./packages/db)             |   dbmate   | Database migrations                      |     ✅      |
 | [itam-edu-common](./packages/common)     | TS library | Library for common code between packages |     ⛔️     |

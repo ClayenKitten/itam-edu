@@ -1,27 +1,6 @@
 import { injectable } from "inversify";
-import { Postgres } from "../infra/postgres";
-import { randomBytes, randomUUID } from "crypto";
-import type { User } from "itam-edu-common";
-
-export class Session {
-    public constructor(
-        public id: string,
-        public userId: string,
-        public token: string,
-        public expires: Date
-    ) {}
-
-    /** Creates a new session. */
-    public static create(user: User): Session {
-        const id = randomUUID();
-        const token = `itam-edu-${randomBytes(128).toString("base64url")}`;
-        const expires = new Date(new Date().getTime() + this.TTL_MS);
-        return new Session(id, user.id, token, expires);
-    }
-
-    /** Session time-to-live in milliseconds. */
-    public static TTL_MS = 7 * 24 * 60 * 60 * 1000;
-}
+import { Postgres } from "../../infra/postgres";
+import { Session } from "./entity";
 
 @injectable()
 export class SessionRepository {

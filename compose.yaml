@@ -32,13 +32,6 @@ services:
     env_file: ./.env
     restart: unless-stopped
 
-  telegram:
-    image: ghcr.io/clayenkitten/itam-edu-telegram:main
-    build: { <<: *build, dockerfile: ./packages/telegram/Dockerfile }
-    expose: [3000]
-    env_file: ./.env
-    restart: unless-stopped
-
   # Database
   ## PostgreSQL server
   postgres:

@@ -109,7 +109,7 @@ class Notification extends NotificationTemplate {
     public override toTelegram(id: string, _userId: string) {
         return {
             id,
-            html: [
+            text: [
                 "<b>📝 Новый ответ на задание</b>",
                 `Студент @${this.student.telegram.username} сдал(а) задание '${this.homework.title}'.`
             ].join("\n\n"),

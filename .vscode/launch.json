@@ -36,17 +36,6 @@
             }
         },
         {
-            "name": "itam-edu-telegram",
-            "type": "bun",
-            "request": "launch",
-            "runtimeArgs": ["run", "dev"],
-            "cwd": "${workspaceFolder}/packages/telegram",
-            "program": "./src/index.ts",
-            "presentation": {
-                "order": 5
-            }
-        },
-        {
             "name": "itam-edu-devtools",
             "type": "bun",
             "request": "launch",
@@ -77,8 +66,7 @@
             "configurations": [
                 "itam-edu-frontend",
                 "itam-edu-api",
-                "itam-edu-files",
-                "itam-edu-telegram"
+                "itam-edu-files"
             ],
             "stopAll": true,
             "presentation": {

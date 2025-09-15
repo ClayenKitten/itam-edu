@@ -118,7 +118,7 @@ class Notification extends NotificationTemplate {
     public override toTelegram(id: string, _userId: string) {
         return {
             id,
-            html: this.html,
+            text: this.html,
             link: {
                 text: "🔗 Посмотреть",
                 url: `${this.course.path}/homeworks/${this.homework.id}`

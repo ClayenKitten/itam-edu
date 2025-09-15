@@ -41,15 +41,6 @@ jobs:
       dockerfile: packages/files/Dockerfile
       ref: ${{ inputs.ref }}
 
-  build-telegram:
-    uses: "./.github/workflows/build.yaml"
-    with:
-      image: itam-edu-telegram
-      tag: "${{ inputs.tag }}"
-      context: .
-      dockerfile: packages/telegram/Dockerfile
-      ref: ${{ inputs.ref }}
-
   build-db:
     uses: "./.github/workflows/build.yaml"
     with:

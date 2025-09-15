@@ -1,15 +1,16 @@
 import { inject, injectable } from "inversify";
 import { UserRepository } from "../users/repository";
-import { TelegramBot } from "../telegram";
 import type { AppConfig } from "itam-edu-common/config";
 import { Redis } from "../infra/redis";
-import type {
-    NotificationTemplate,
-    TelegramNotification,
-    WebNotification
-} from ".";
+import type { NotificationTemplate, WebNotification } from ".";
 import logger from "../logger";
 import { randomUUID } from "node:crypto";
+import type { InboundBotMessage } from "../bot";
+import { MessagePublisher } from "../infra/queue";
+import {
+    TgOutboundQueueConfig,
+    type TgOutboundEvent
+} from "../infra/telegram/queues";
 
 @injectable()
 export class NotificationSender {
@@ -17,9 +18,15 @@ export class NotificationSender {
         @inject("AppConfig")
         protected config: AppConfig,
         protected userRepo: UserRepository,
-        protected telegramBot: TelegramBot,
         protected redis: Redis
-    ) {}
+    ) {
+        this.telegramPublisher = new MessagePublisher(
+            config.redis.connectionString,
+            TgOutboundQueueConfig
+        );
+    }
+
+    private telegramPublisher: MessagePublisher<TgOutboundEvent>;
 
     /** Sends a notification to specified users. */
     public async send(
@@ -67,16 +74,14 @@ export class NotificationSender {
 
     protected async sendTelegram(
         userId: string,
-        telegramNotification: TelegramNotification
+        msg: InboundBotMessage
     ): Promise<void> {
-        // TODO: refactor telegram.send to accept just an id
         const user = await this.userRepo.getById(userId);
         if (!user) return;
 
-        await this.telegramBot.send(
-            user,
-            telegramNotification.html,
-            telegramNotification.link
-        );
+        await this.telegramPublisher.publish({
+            chatId: user.telegram.id,
+            msg
+        });
     }
 }
