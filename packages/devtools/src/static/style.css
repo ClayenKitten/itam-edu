@@ -167,6 +167,14 @@ body {
                 }
             }
 
+            a {
+                text-decoration: underline;
+            }
+
+            code {
+                background-color: #e3e3e3;
+            }
+
             .note {
                 font-style: italic;
                 opacity: 50%;

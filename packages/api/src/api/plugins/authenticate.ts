@@ -30,8 +30,9 @@ export class AuthenticationPlugin {
             .macro({
                 requireAuthentication: {
                     resolve: ({ session, user, status }) => {
-                        if (!session || !user)
+                        if (!session || !user) {
                             return status(401, "Authentication required");
+                        }
                         return { session, user };
                     }
                 }

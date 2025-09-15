@@ -43,26 +43,26 @@
             "cwd": "${workspaceFolder}/packages/devtools",
             "program": "./src/index.ts",
             "presentation": {
-                "order": 6
+                "order": 5
             }
         }
     ],
     "compounds": [
         {
-            "name": "itam-edu (dev)",
+            "name": "Development",
             "configurations": [
                 "itam-edu-frontend",
-                "itam-edu-api",
-                "itam-edu-files",
-                "itam-edu-devtools"
+                "itam-edu-devtools",
+                "itam-edu-files"
             ],
             "stopAll": true,
             "presentation": {
-                "order": 0
+                "order": 0,
+                "group": "Environments"
             }
         },
         {
-            "name": "itam-edu (staging)",
+            "name": "Staging",
             "configurations": [
                 "itam-edu-frontend",
                 "itam-edu-api",
@@ -70,7 +70,8 @@
             ],
             "stopAll": true,
             "presentation": {
-                "order": 1
+                "order": 1,
+                "group": "Environments"
             }
         }
     ]

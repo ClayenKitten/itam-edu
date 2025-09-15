@@ -20,7 +20,8 @@
         "@faker-js/faker": "^9.7.0",
         "bullmq": "^5.52.2",
         "handlebars": "^4.7.8",
-        "itam-edu-common": "file:../common"
+        "inversify": "^7.10.0",
+        "itam-edu-api": "file:../api"
     },
     "devDependencies": {
         "@types/bun": "^1.2.3",
