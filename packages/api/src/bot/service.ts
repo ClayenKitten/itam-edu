@@ -1,17 +1,18 @@
 import { inject, injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import type { AppConfig } from "itam-edu-common/config";
-import { MessagePublisher, MessageWorker } from "./infra/queue";
+import { MessagePublisher, MessageWorker } from "../infra/queue";
 import {
-    TgInboundQueueConfig,
-    TgOutboundQueueConfig,
-    type TgInboundEvent,
-    type TgOutboundEvent
-} from "./infra/telegram/queues";
-import { UserRepository } from "./users/repository";
-import { UserLogin } from "./users/login";
-import { TelegramBot } from "./infra/telegram";
-import logger from "./logger";
+    BotCommandQueueKind,
+    type BotCommand,
+    BotEventQueueKind,
+    type BotEvent,
+    type OutboundBotMessage
+} from ".";
+import { UserRepository } from "../users/repository";
+import { UserLogin } from "../users/login";
+import { TelegramBot } from "../infra/telegram";
+import logger from "../logger";
 
 /**
  * Handles bot communication.
@@ -21,8 +22,8 @@ import logger from "./logger";
  */
 @injectable()
 export class BotService {
-    private publisher: MessagePublisher<TgOutboundEvent>;
-    private worker: MessageWorker<TgInboundEvent>;
+    private publisher: MessagePublisher<BotCommand>;
+    private worker: MessageWorker<BotEvent>;
 
     public constructor(
         @inject("AppConfig")
@@ -32,18 +33,16 @@ export class BotService {
     ) {
         this.publisher = new MessagePublisher(
             config.redis.connectionString,
-            TgOutboundQueueConfig
+            BotCommandQueueKind
         );
         this.worker = new MessageWorker(
             config.redis.connectionString,
-            TgInboundQueueConfig,
-            async (_jobName, { chatId, userId, msg }) => {
-                const reply = await this.handle(userId, msg);
-                if (reply === null) return;
-                await this.publisher.publish({
-                    chatId,
-                    msg: reply
-                });
+            BotEventQueueKind,
+            async (_jobName, event) => {
+                const commands = await this.handleEvent(event);
+                for (const command of commands) {
+                    await this.publisher.publish(command);
+                }
             }
         );
     }
@@ -57,24 +56,41 @@ export class BotService {
         logger.info("Stopped bot service");
     }
 
-    private async handle(
-        userId: string,
-        msg: InboundBotMessage
-    ): Promise<OutboundBotMessage | null> {
-        const user = await this.userRepo.getById(userId);
+    private async handleEvent(event: BotEvent): Promise<BotCommand[]> {
+        const user = await this.userRepo.getById(event.userId);
         if (!user) {
             logger.error("Incorrect user id in the message queue", {
-                queue: TgInboundQueueConfig.queueName,
-                userId
+                queue: BotEventQueueKind,
+                event
             });
-            return null;
+            return [];
         }
 
-        const text = msg.text.trim();
-        if (text.startsWith("/login")) {
-            return await this.handleLogin(user);
-        } else {
-            return await this.handleHelp();
+        switch (event.kind) {
+            case "PrivateMessage": {
+                const text = event.msg.text.trim();
+                let reply: OutboundBotMessage | null = null;
+                if (text.startsWith("/login")) {
+                    reply = await this.handleLogin(user);
+                } else {
+                    reply = await this.handleHelp();
+                }
+                return [
+                    {
+                        kind: "SendMessage",
+                        chatId: user.telegram.id,
+                        msg: reply
+                    }
+                ];
+            }
+            default: {
+                let guard: never = event.kind;
+                logger.error("Unknown BotEvent kind", {
+                    queue: BotEventQueueKind,
+                    event
+                });
+                return [];
+            }
         }
     }
 
@@ -112,30 +128,3 @@ export class BotService {
         };
     }
 }
-
-/** Message that was received by the bot. */
-export type InboundBotMessage = {
-    text: string;
-};
-
-/** Message that should be sent by the bot. */
-export type OutboundBotMessage = {
-    /** Text of the message with HTML formatting. */
-    text: string;
-    /** Optional link to some content. */
-    link?: {
-        text: string;
-        /**
-         * URL of the content.
-         *
-         * URLs without origin are supported and will be resolved via configured platform origin.
-         *
-         * @example
-         * `https://example.com`
-         *
-         * @example
-         * `/home`
-         * */
-        url: string;
-    };
-};

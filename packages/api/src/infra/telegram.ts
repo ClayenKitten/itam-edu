@@ -1,17 +1,17 @@
 import { Bot as Grammy } from "grammy";
 import type { User as TgUser } from "grammy/types";
-import logger from "../../logger";
-import { BotService } from "../../bot";
+import logger from "../logger";
+import { BotService } from "../bot/service";
 import { inject, injectable } from "inversify";
 import type { AppConfig } from "itam-edu-common/config";
-import { MessagePublisher, MessageWorker } from "../queue";
+import { MessagePublisher, MessageWorker } from "./queue";
+import { UserRepository } from "../users/repository";
 import {
-    TgInboundQueueConfig,
-    TgOutboundQueueConfig,
-    type TgInboundEvent,
-    type TgOutboundEvent
-} from "./queues";
-import { UserRepository } from "../../users/repository";
+    BotCommandQueueKind,
+    BotEventQueueKind,
+    type BotCommand,
+    type BotEvent
+} from "../bot";
 
 /**
  * Telegram bot.
@@ -26,8 +26,8 @@ import { UserRepository } from "../../users/repository";
 @injectable()
 export class TelegramBot {
     private grammy: Grammy;
-    private publisher: MessagePublisher<TgInboundEvent>;
-    private worker: MessageWorker<TgOutboundEvent>;
+    private publisher: MessagePublisher<BotEvent>;
+    private worker: MessageWorker<BotCommand>;
 
     public constructor(
         @inject("AppConfig")
@@ -38,12 +38,12 @@ export class TelegramBot {
 
         this.publisher = new MessagePublisher(
             config.redis.connectionString,
-            TgInboundQueueConfig
+            BotEventQueueKind
         );
         this.worker = new MessageWorker(
             config.redis.connectionString,
-            TgOutboundQueueConfig,
-            async (_jobName, payload) => await this.onOutboundMessage(payload)
+            BotCommandQueueKind,
+            async (_jobName, payload) => await this.onCommand(payload)
         );
 
         this.grammy.chatType("private").use(async (ctx, next) => {
@@ -64,22 +64,22 @@ export class TelegramBot {
 
         this.grammy.chatType("private").command("start", async (ctx, next) => {
             if (ctx.match === "login") {
-                logger.debug("Inbound start command received", {
+                logger.debug("Private message received", {
                     sender: ctx.from,
                     text: ctx.message.text
                 });
-                await this.onInboundMessage(ctx.from, "/login");
+                await this.onPrivateMessage(ctx.from, "/login");
             } else {
                 await next();
             }
         });
 
         this.grammy.chatType("private").on("message:text", async ctx => {
-            logger.debug("Inbound text message received", {
+            logger.debug("Private message received", {
                 sender: ctx.from,
                 text: ctx.message.text
             });
-            await this.onInboundMessage(ctx.from, ctx.message.text);
+            await this.onPrivateMessage(ctx.from, ctx.message.text);
         });
     }
 
@@ -124,35 +124,48 @@ export class TelegramBot {
     }
 
     /** Sends a text message to the specified chat. */
-    protected async onOutboundMessage({
-        chatId,
-        msg: { text, link }
-    }: TgOutboundEvent) {
-        if (link && link.url.includes("localhost")) {
-            text += `\n\n<a href="${link.url}">${link.text}</a>`;
-        }
+    private async onCommand(command: BotCommand) {
+        switch (command.kind) {
+            case "SendMessage": {
+                let {
+                    chatId,
+                    msg: { text, link }
+                } = command;
+                if (link && link.url.includes("localhost")) {
+                    text += `\n\n<a href="${link.url}">${link.text}</a>`;
+                }
 
-        this.grammy.api.sendMessage(chatId, text, {
-            parse_mode: "HTML",
-            link_preview_options: link
-                ? {
-                      url: link.url,
-                      prefer_small_media: true
-                  }
-                : undefined
-        });
-        logger.debug("Outbound message sent to user", { chatId, text });
+                await this.grammy.api.sendMessage(chatId, text, {
+                    parse_mode: "HTML",
+                    link_preview_options: link
+                        ? {
+                              url: link.url,
+                              prefer_small_media: true
+                          }
+                        : undefined
+                });
+                logger.debug("Outbound message sent to user", { chatId, text });
+                break;
+            }
+            default: {
+                let guard: never = command.kind;
+                logger.error("Unknown BotCommand kind", {
+                    queue: BotEventQueueKind,
+                    command
+                });
+            }
+        }
     }
 
-    /** Schedules inbound message into the queue. */
-    protected async onInboundMessage(sender: TgUser, text: string) {
+    private async onPrivateMessage(sender: TgUser, text: string) {
         const user = await this.userRepo.create({
             tgUserId: sender.id.toFixed(0),
             tgUsername: sender.username!,
             firstName: sender.first_name,
             lastName: sender.last_name ?? null
         });
-        this.publisher.publish({
+        await this.publisher.publish({
+            kind: "PrivateMessage",
             chatId: user.telegram.id,
             userId: user.id,
             msg: {

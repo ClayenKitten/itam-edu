@@ -5,13 +5,12 @@ import { Redis } from "../infra/redis";
 import type { NotificationTemplate, WebNotification } from ".";
 import logger from "../logger";
 import { randomUUID } from "node:crypto";
-import type { InboundBotMessage } from "../bot";
 import { MessagePublisher } from "../infra/queue";
 import {
-    TgOutboundQueueConfig,
-    type TgOutboundEvent
-} from "../infra/telegram/queues";
-
+    BotCommandQueueKind,
+    type BotCommand,
+    type OutboundBotMessage
+} from "../bot";
 @injectable()
 export class NotificationSender {
     public constructor(
@@ -20,13 +19,13 @@ export class NotificationSender {
         protected userRepo: UserRepository,
         protected redis: Redis
     ) {
-        this.telegramPublisher = new MessagePublisher(
+        this.commandPublisher = new MessagePublisher(
             config.redis.connectionString,
-            TgOutboundQueueConfig
+            BotCommandQueueKind
         );
     }
 
-    private telegramPublisher: MessagePublisher<TgOutboundEvent>;
+    private commandPublisher: MessagePublisher<BotCommand>;
 
     /** Sends a notification to specified users. */
     public async send(
@@ -74,12 +73,13 @@ export class NotificationSender {
 
     protected async sendTelegram(
         userId: string,
-        msg: InboundBotMessage
+        msg: OutboundBotMessage
     ): Promise<void> {
         const user = await this.userRepo.getById(userId);
         if (!user) return;
 
-        await this.telegramPublisher.publish({
+        await this.commandPublisher.publish({
+            kind: "SendMessage",
             chatId: user.telegram.id,
             msg
         });

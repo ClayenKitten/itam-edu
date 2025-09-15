@@ -1,15 +1,16 @@
 import { Job, Queue, Worker, type JobsOptions } from "bullmq";
-import type { MaybePromise } from "../util";
+import type { Branded, MaybePromise } from "../util";
 
 /**
- * Configuration shared between publisher and worker.
+ * Queue name and payload type.
  *
- * `queueName` ensures both ends talk to the same queue, and type parameter
- * ensures correct payload typing.
- */
-export interface QueueConfig<_T> {
-    queueName: string;
-}
+ * @example
+ * export const AppleQueueKind = "apple" as QueueKind<ApplePayload>;
+ * */
+export type QueueKind<PAYLOAD_TYPE> = Branded<
+    string,
+    ["QueueKind", PAYLOAD_TYPE]
+>;
 
 /**
  * Producer that sends events to the message queue.
@@ -19,8 +20,8 @@ export interface QueueConfig<_T> {
 export class MessagePublisher<T> {
     private queue: Queue<T>;
 
-    constructor(connectionString: string, cfg: QueueConfig<T>) {
-        this.queue = new Queue<T>(cfg.queueName, {
+    constructor(connectionString: string, queueKind: QueueKind<T>) {
+        this.queue = new Queue<T>(queueKind, {
             connection: { url: connectionString }
         });
     }
@@ -48,11 +49,11 @@ export class MessageWorker<T> {
 
     constructor(
         connectionString: string,
-        cfg: QueueConfig<T>,
+        queueKind: QueueKind<T>,
         private onEvent: (jobName: string, payload: T) => MaybePromise<void>
     ) {
         this.worker = new Worker<T>(
-            cfg.queueName,
+            queueKind,
             async job => {
                 await this.onEvent(job.name, job.data);
             },
