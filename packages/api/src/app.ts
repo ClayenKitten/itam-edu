@@ -1,18 +1,29 @@
-import { injectable } from "inversify";
+import { Container } from "inversify";
 import logger from "./logger";
 import { ApiServer } from "./api";
 import { TelegramBot } from "./infra/telegram";
 import { BotService } from "./bot";
+import type { AppConfig } from "itam-edu-common/config";
 
-@injectable()
 export class Application {
-    public constructor(
-        private api: ApiServer,
-        private telegramBot: TelegramBot,
-        private botService: BotService
-    ) {}
+    public constructor(config: AppConfig, container: Container) {
+        this.config = config;
+        this.container = container;
+
+        this.api = this.container.get(ApiServer);
+        this.telegramBot = this.container.get(TelegramBot);
+        this.botService = this.container.get(BotService);
+    }
+
+    public readonly config: AppConfig;
+    public readonly container: Container;
+
+    public readonly api: ApiServer;
+    public readonly telegramBot: TelegramBot;
+    public readonly botService: BotService;
 
     public async start(): Promise<void> {
+        this.setupSignals();
         await Promise.all([
             this.api.start(),
             this.telegramBot.start(),
@@ -28,5 +39,20 @@ export class Application {
             this.botService.stop()
         ]);
         logger.info(`Application stopped`);
+    }
+
+    /** Ensures graceful shutdown based on OS signals. */
+    private setupSignals() {
+        const handleSignal = async (signal: NodeJS.Signals) => {
+            logger.warning(`Received ${signal}`);
+            try {
+                await this.stop();
+                process.exit(0);
+            } catch {
+                process.exit(1);
+            }
+        };
+        process.once("SIGINT", handleSignal);
+        process.once("SIGTERM", handleSignal);
     }
 }
