@@ -1,7 +1,7 @@
 # itam-edu-files
 
-A simple file server backed by S3, designed to offload file streaming from the
-primary backend system.
+A simple file server backed by S3, designed to offload file streaming from the primary backend
+system.
 
 ## Architecture
 
@@ -28,6 +28,6 @@ sequenceDiagram
     itam-edu-files-->>-User: Stream file
 ```
 
-Proxying is used instead of direct S3 server access to support browser caching,
-as S3 presigned URLs have unique query parameters each time they are generated.
-Moreover, it allows the S3 server to only be accessible from the internal network.
+Proxying is used instead of direct S3 server access to support browser caching, as S3 presigned URLs
+have unique query parameters each time they are generated. Moreover, it allows the S3 server to only
+be accessible from the internal network.

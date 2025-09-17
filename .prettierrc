@@ -7,7 +7,24 @@
     "printWidth": 80,
     "plugins": ["prettier-plugin-svelte"],
     "overrides": [
-        { "files": "*.svelte", "options": { "parser": "svelte" } },
-        { "files": ["*.yaml", "*.yml"], "options": { "tabWidth": 2 } }
+        {
+            "files": "*.svelte",
+            "options": {
+                "parser": "svelte"
+            }
+        },
+        {
+            "files": ["*.yaml", "*.yml"],
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "*.md",
+            "options": {
+                "printWidth": 100,
+                "proseWrap": "always"
+            }
+        }
     ]
 }
