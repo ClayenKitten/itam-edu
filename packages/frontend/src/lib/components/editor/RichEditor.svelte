@@ -13,6 +13,7 @@
         type Features
     } from ".";
     import { getToaster } from "$lib/Toaster.svelte";
+    import { getPrompter } from "$lib/Prompter.svelte";
 
     let {
         content = $bindable(null),
@@ -29,6 +30,7 @@
         characterLimit?: number;
     };
     const toaster = getToaster();
+    const prompter = getPrompter();
 
     let editorElement: HTMLDivElement;
     let element: HTMLDivElement;
@@ -37,7 +39,7 @@
     let isFullscreen = $state(false);
 
     const extensions: Extensions = [
-        ...getExtensions(features),
+        ...getExtensions(features, prompter),
         CharacterCount.configure({
             limit: characterLimit
         }),

@@ -4,6 +4,7 @@
     import type { Features } from ".";
     import { browser } from "$app/environment";
     import { setLink } from "./extensions/link";
+    import { getPrompter } from "$lib/Prompter.svelte";
 
     let {
         editor,
@@ -19,6 +20,8 @@
         isFullscreen?: boolean;
         onFullscreen?: () => void;
     };
+
+    const prompter = getPrompter();
 
     let lastUpdate: Date = $state(new Date());
 
@@ -161,7 +164,7 @@
         >
             {#if features.links}
                 {@render toggle({
-                    onclick: () => editor && setLink(editor),
+                    onclick: () => editor && setLink(editor, prompter),
                     isActive: isLink,
                     title: "Ссылка [Ctrl + K]",
                     icon: "link"

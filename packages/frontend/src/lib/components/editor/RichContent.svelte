@@ -3,13 +3,15 @@
 
     import { ALL_FEATURES, getExtensions, normalizeContent } from ".";
     import { generateHTML } from "@tiptap/html";
+    import { getPrompter } from "$lib/Prompter.svelte";
 
     let { content = $bindable(null) }: Props = $props();
     type Props = {
         content?: string | null;
     };
+    const prompter = getPrompter();
 
-    const extensions = getExtensions(ALL_FEATURES);
+    const extensions = getExtensions(ALL_FEATURES, prompter);
     const jsonContent = $derived(normalizeContent(content, extensions));
     let htmlContent = $derived(
         jsonContent ? generateHTML(jsonContent, extensions) : null
