@@ -1,13 +1,14 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import Toaster from "$lib/Toaster.svelte";
-    import { createToaster } from "$lib/Toaster.svelte";
+    import Toaster, { createToaster } from "$lib/Toaster.svelte";
+    import Prompter, { createPrompter } from "$lib/Prompter.svelte";
     import "../app.css";
 
     let { children } = $props();
 
     let metadata = $derived(page.data);
     const toaster = createToaster();
+    const prompter = createPrompter();
 </script>
 
 <svelte:head>
@@ -41,5 +42,6 @@
 </svelte:head>
 
 <Toaster {toaster} />
+<Prompter {prompter} />
 
 {@render children()}

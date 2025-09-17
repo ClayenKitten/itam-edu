@@ -10,7 +10,6 @@ import { TelegramBot } from "itam-edu-api/src/infra/telegram";
 
 if (import.meta.main) {
     const config = createConfigFromEnv();
-    config.debug.disableTelegramBot = true;
 
     const container = await createContainer(config);
 

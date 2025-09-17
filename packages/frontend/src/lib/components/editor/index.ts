@@ -4,8 +4,9 @@ import { TableKit } from "@tiptap/extension-table";
 import { generateJSON } from "@tiptap/html";
 import { PatchedCode, PatchedStrike, WrappedTable } from "./extensions/patches";
 import { all, createLowlight } from "lowlight";
-import { Link } from "./extensions/link";
 import { CodeBlock } from "./extensions/codeBlock";
+import type { Prompter } from "$lib/Prompter.svelte";
+import { createLinkExtension } from "./extensions/link";
 
 export const ALL_FEATURES = {
     fullscreen: true,
@@ -21,7 +22,10 @@ export const ALL_FEATURES = {
 export type Feature = keyof typeof ALL_FEATURES;
 export type Features = Partial<Record<Feature, boolean>>;
 
-export function getExtensions(features: Features): AnyExtension[] {
+export function getExtensions(
+    features: Features,
+    prompter: Prompter
+): AnyExtension[] {
     const extensions: AnyExtension[] = [
         StarterKit.configure({
             // Formatting
@@ -48,14 +52,8 @@ export function getExtensions(features: Features): AnyExtension[] {
         extensions.push(PatchedStrike, PatchedCode);
     }
     if (features.links) {
-        extensions.push(
-            Link.configure({
-                openOnClick: false,
-                enableClickSelection: false,
-                linkOnPaste: false,
-                defaultProtocol: "https"
-            })
-        );
+        const ext = createLinkExtension(prompter);
+        extensions.push(ext);
     }
     if (features.codeBlocks) {
         const lowlight = createLowlight(all);
