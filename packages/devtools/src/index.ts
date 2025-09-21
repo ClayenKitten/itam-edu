@@ -2,14 +2,33 @@ import Handlebars from "handlebars";
 import * as db from "./db";
 import { fakerRU as faker } from "@faker-js/faker";
 import { randomUUID } from "crypto";
-import { createConfigFromEnv } from "itam-edu-common/config";
+import {
+    ConfigError,
+    createConfigFromEnv,
+    type AppConfig
+} from "itam-edu-common/config";
 import { createContainer } from "itam-edu-api/src/di";
 import { Application } from "itam-edu-api/src/app";
 import { FakeTelegramBot } from "./telegram";
 import { TelegramBot } from "itam-edu-api/src/infra/telegram";
+import { exit } from "process";
 
 if (import.meta.main) {
-    const config = createConfigFromEnv();
+    let config: AppConfig;
+    try {
+        config = createConfigFromEnv();
+    } catch (e) {
+        if (e instanceof ConfigError) {
+            console.error("Invalid configuration provided", {
+                fields: e.fields
+            });
+        } else {
+            console.error("Unknown error during configuration gathering", {
+                error: e
+            });
+        }
+        exit(1);
+    }
 
     const container = await createContainer(config);
 
