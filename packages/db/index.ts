@@ -58,7 +58,7 @@ export interface Courses {
   /**
    * Optional semester in which the course takes place
    */
-  semester: SemesterEnum | null;
+  semester: SemesterEnum;
   /**
    * Machine-readable name of the course that is unique in combination with year and semester
    */
