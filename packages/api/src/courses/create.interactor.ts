@@ -25,7 +25,7 @@ export class CreateCourse {
         actor: User,
         dto: CreateCourseDto
     ): Promise<Course | HttpError> {
-        if (actor.permissions.createCourses !== true) {
+        if (actor.permissions.courses.create !== true) {
             return new ForbiddenError("You are not allowed to create courses");
         }
 

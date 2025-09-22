@@ -46,6 +46,19 @@
     >
         <i class="ph ph-house text-primary text-[20px]"></i>
     </a>
+    {#if user && (user.info.role === "admin" || user.info.role === "supervisor")}
+        <a
+            class={[
+                "flex justify-center items-center h-full aspect-square",
+                "hover:bg-on-primary rounded-xs transition-colors duration-100"
+            ]}
+            aria-label="Административная панель"
+            title="Административная панель"
+            href="/admin"
+        >
+            <i class="ph ph-star text-primary text-[20px]"></i>
+        </a>
+    {/if}
     <a
         class={[
             "flex justify-center items-center h-full aspect-square",

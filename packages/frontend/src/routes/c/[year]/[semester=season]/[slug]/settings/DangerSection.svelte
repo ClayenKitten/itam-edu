@@ -11,11 +11,7 @@
         course: Course;
     };
 
-    const save = async (
-        changes: Partial<
-            Pick<Course, "isArchived" | "isPublished" | "isEnrollmentOpen">
-        >
-    ) => {
+    const save = async (changes: Partial<Pick<Course, "isEnrollmentOpen">>) => {
         const result = await api({ fetch })
             .courses({ course: course.id })
             .patch(changes);
@@ -32,26 +28,6 @@
         <h3>Опасная зона</h3>
     </header>
     <div class="flex gap-4 w-max">
-        {@render veryScaryToggle({
-            enabled: course.isPublished,
-            text: e => (e ? "Снять курс с публикации" : "Опубликовать курс"),
-            description: e =>
-                e
-                    ? "Курс будет доступен только сотрудникам"
-                    : "Курс станет публично доступен",
-            onclick: () => save({ isPublished: !course.isPublished }),
-            disabled: course.permissions.course.publish !== true
-        })}
-        {@render veryScaryToggle({
-            enabled: course.isArchived,
-            text: e => (e ? "Разархивировать курс" : "Архивировать курс"),
-            description: e =>
-                e
-                    ? "Курс снова станет редактируемым, а студенты смогут сдавать работы"
-                    : "Курс будет доступен только для чтения, а приём работ закрыт",
-            onclick: () => save({ isArchived: !course.isArchived }),
-            disabled: course.permissions.course.archive !== true
-        })}
         {@render veryScaryToggle({
             enabled: course.isEnrollmentOpen,
             text: e =>

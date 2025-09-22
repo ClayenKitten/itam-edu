@@ -1,6 +1,7 @@
 import { format as formatDate } from "date-fns";
 import { ru } from "date-fns/locale";
 import type { LessonScheduleDTO } from "itam-edu-api/src/courses/lesson/query";
+import type { GlobalRole } from "itam-edu-common";
 
 export function formatLessonSchedule(
     schedule: LessonScheduleDTO | null
@@ -22,6 +23,28 @@ export function formatLessonSchedule(
     str = str.charAt(0).toUpperCase() + str.slice(1);
 
     return str;
+}
+
+export function formatPeriod({
+    year,
+    semester
+}: {
+    year: number;
+    semester: "autumn" | "spring";
+}) {
+    if (semester === "autumn") {
+        return `Осень ${year}`;
+    } else {
+        return `Весна ${year}`;
+    }
+}
+
+export function formatGlobalRole(role: GlobalRole) {
+    if (role === "admin") return "Администратор";
+    if (role === "supervisor") return "Менеджер";
+    if (role === "default") return "Пользователь";
+    let guard: never = role;
+    return role;
 }
 
 /**

@@ -17,8 +17,6 @@ export function coursePermissions(
     return {
         course: {
             update: editLevel >= EditLevel.Admin,
-            publish: editLevel === EditLevel.Owner,
-            archive: editLevel === EditLevel.Owner,
             toggleEnrollment: editLevel === EditLevel.Owner
         },
         lessons: {

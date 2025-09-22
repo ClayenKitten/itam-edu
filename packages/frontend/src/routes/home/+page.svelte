@@ -4,13 +4,10 @@
     import CourseCard from "./CourseCard.svelte";
     import TinyCalendar from "./TinyCalendar.svelte";
     import EventsList from "./EventsList.svelte";
-    import CreateCourseWindow from "$lib/windows/CreateCourseWindow.svelte";
     import AcceptInviteModal from "./AcceptInviteModal.svelte";
     import { page } from "$app/state";
 
     let { data } = $props();
-
-    let createCourseWindow: CreateCourseWindow;
 
     let highlightedDate: Date | null = $state(null);
     let selectedDate: Date | null = $state(null);
@@ -43,7 +40,6 @@
 </script>
 
 <AcceptInviteModal user={data.user} />
-<CreateCourseWindow bind:this={createCourseWindow} />
 
 <div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} courses={data.courses} standalone />
@@ -100,19 +96,6 @@
             {#each data.courses.filter(filter) as course (course.id)}
                 <CourseCard {course} />
             {/each}
-            {#if data.user && data.user.permissions.createCourses === true}
-                <menu class="col-span-full">
-                    <button
-                        class="btn h-11"
-                        onclick={() => {
-                            createCourseWindow.show();
-                        }}
-                    >
-                        <i class="ph ph-plus text-on-primary text-[20px]"></i>
-                        Создать новый курс
-                    </button>
-                </menu>
-            {/if}
         </section>
     </main>
 </div>

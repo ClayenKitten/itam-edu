@@ -20,7 +20,7 @@ export class UpdateCourse {
 
         for (const key of Object.keys(dto) as (keyof UpdateCourseDto)[]) {
             if (dto[key] === undefined) continue;
-            if (!this.isAllowedToModifyField(permissions, key)) {
+            if (!this.isAllowedToModifyField(actor, permissions, key)) {
                 return new ForbiddenError();
             }
         }
@@ -34,6 +34,7 @@ export class UpdateCourse {
 
     /** Checks if user is authorized to modify provided field. */
     protected isAllowedToModifyField(
+        user: User,
         permissions: CoursePermissions,
         updatedField: keyof UpdateCourseDto
     ): boolean {
@@ -48,11 +49,11 @@ export class UpdateCourse {
             case "status":
                 return permissions.course.update === true;
             case "isPublished":
-                return permissions.course.publish === true;
+                return user.permissions.courses.publish === true;
+            case "isArchived":
+                return user.permissions.courses.archive === true;
             case "isEnrollmentOpen":
                 return permissions.course.toggleEnrollment === true;
-            case "isArchived":
-                return permissions.course.archive === true;
             default:
                 let guard: never = updatedField;
                 return false;

@@ -1,0 +1,233 @@
+<script lang="ts">
+    import api from "$lib/api";
+    import { goto, invalidate } from "$app/navigation";
+    import { coursePath } from "$lib/path";
+    import { getPrompter } from "$lib/Prompter.svelte";
+    import type { CoursePartial, CreateCourse } from "$lib/types";
+    import { doOnce } from "$lib/utils/doOnce";
+    import { courseFilePath, User } from "itam-edu-common";
+    import CoursePrompt from "./CoursePrompt.svelte";
+    import { getToaster } from "$lib/Toaster.svelte";
+    import { formatPeriod } from "$lib/format";
+
+    const { courses }: Props = $props();
+    type Props = {
+        courses: CoursePartial[];
+    };
+    const prompter = getPrompter();
+    const toaster = getToaster();
+
+    const periods = $derived(
+        Array.from(new Set(courses.map(c => formatPeriod(c))).values())
+    );
+    let period: string = $state(
+        formatPeriod({
+            year: new Date().getFullYear(),
+            semester:
+                new Date().getMonth() <= 4 || new Date().getMonth() === 11
+                    ? "spring"
+                    : "autumn"
+        })
+    );
+
+    async function createCourse(data: CreateCourse) {
+        const result = await api({ fetch }).courses.post(data);
+        if (result.error) {
+            if (result.status === 409) {
+                toaster.add(
+                    "Курс с таким идентификатором и периодом уже существует",
+                    "error"
+                );
+            } else {
+                toaster.add("Не удалось создать курс", "error");
+            }
+            return;
+        }
+        await Promise.all([invalidate("app:courses"), invalidate("app:user")]);
+        await goto(coursePath(result.data));
+    }
+</script>
+
+<section class="flex flex-col gap-5">
+    <article class="flex flex-col gap-5 p-6 rounded-lg shadow">
+        <h4>
+            <select bind:value={period}>
+                {#each periods as option (option)}
+                    <option class="text-lg-medium">{option}</option>
+                {/each}
+            </select>
+        </h4>
+        <div
+            class={[
+                "grid gap-y-4 gap-x-12 items-center",
+                "grid-cols-[max-content_1fr]"
+            ]}
+        >
+            <div class="text-md-medium text-on-surface-muted">Курс</div>
+            <div></div>
+            <hr class="border-surface-border my-1 col-span-full" />
+            {#each courses.filter(c => formatPeriod(c) === period) as course (course.id)}
+                <a class="flex gap-4 max-w-120" href={coursePath(course)}>
+                    <div
+                        class={[
+                            "size-[86px] shrink-0 flex justify-center items-center",
+                            "bg-cover bg-center bg-primary rounded-md "
+                        ]}
+                        style:background-image={course.cover
+                            ? `url(${courseFilePath(course.id).public(course.cover)})`
+                            : null}
+                    >
+                        {#if !course.cover}
+                            <span class="text-on-primary text-sm-regular">
+                                {course.title.slice(0, 8)}
+                            </span>
+                        {/if}
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <h4 class="flex gap-2 text-on-surface-contrast">
+                            {course.title}
+                            {#if course.isArchived}
+                                <div
+                                    class={[
+                                        "px-3 py-1",
+                                        "bg-on-primary text-primary text-sm-regular",
+                                        "rounded-xs"
+                                    ]}
+                                >
+                                    Архивирован
+                                </div>
+                            {/if}
+                            {#if !course.isPublished}
+                                <div
+                                    class={[
+                                        "px-3 py-1",
+                                        "bg-on-primary text-primary text-sm-regular",
+                                        "rounded-xs"
+                                    ]}
+                                >
+                                    Неопубликован
+                                </div>
+                            {/if}
+                        </h4>
+                        <p
+                            class="text-on-surface text-md-regular line-clamp-2 text-ellipsis"
+                        >
+                            {#if course.description}
+                                {course.description}
+                            {:else}
+                                <span class="text-on-surface-muted italic">
+                                    Здесь должно быть описание курса...
+                                </span>
+                            {/if}
+                        </p>
+                    </div>
+                </a>
+                <div class="group relative size-12 ml-auto">
+                    <button
+                        class={[
+                            "size-12 flex justify-center items-center",
+                            "bg-surface hover:bg-surface-tint rounded-xs"
+                        ]}
+                        aria-label="Меню"
+                        onclick={() => {}}
+                    >
+                        <i class="ph ph-dots-three-outline-vertical text-[20px]"
+                        ></i>
+                    </button>
+                    <menu
+                        class="not-group-focus-within:hidden context-menu absolute top-12 right-0 z-10"
+                    >
+                        {@render contextMenuBtns(course)}
+                    </menu>
+                </div>
+            {:else}
+                <div class="col-span-full mx-auto p-12 text-xl-medium">
+                    Пусто! 🧐
+                </div>
+            {/each}
+        </div>
+    </article>
+    <menu class="flex">
+        <button
+            class="btn h-11"
+            onclick={doOnce("createCourse", async () => {
+                const newCourse = await prompter.show(CoursePrompt, {});
+                if (!newCourse) return;
+                await createCourse(newCourse);
+            })}
+        >
+            <i class="ph ph-plus text-on-primary text-[20px]"></i>
+            Создать новый курс
+        </button>
+    </menu>
+</section>
+
+{#snippet contextMenuBtns(course: CoursePartial)}
+    <button
+        class="context-menu-item"
+        onclick={async () => {
+            const confirmed = confirm(
+                course.isArchived
+                    ? "Преподаватели вновь смогут редактировать курс, а студенты — сдавать работы.\n\nВы уверены?"
+                    : "Курс будет доступен только для чтения, а приём работ — закрыт.\n\nВы уверены?"
+            );
+            if (!confirmed) return;
+            const result = await api({ fetch })
+                .courses({ course: course.id })
+                .patch({
+                    isArchived: !course.isArchived
+                });
+            if (result.status !== 200) {
+                toaster.add("Не удалось сохранить изменения", "error");
+                return;
+            }
+            await invalidate("app:courses");
+        }}
+    >
+        {#if !course.isArchived}
+            <i class="ph ph-archive"></i>
+            Архивировать
+        {:else}
+            <i class="ph ph-archive"></i>
+            Разархивировать
+        {/if}
+    </button>
+    <button
+        class="context-menu-item"
+        onclick={async () => {
+            const confirmed = confirm(
+                course.isPublished
+                    ? "Курс станет доступен только преподавателям.\n\nВы уверены?"
+                    : "Курс станет доступен всем посетителям платформы.\n\nВы уверены?"
+            );
+            if (!confirmed) return;
+            const result = await api({ fetch })
+                .courses({ course: course.id })
+                .patch({
+                    isPublished: !course.isPublished
+                });
+            if (result.status !== 200) {
+                toaster.add("Не удалось сохранить изменения", "error");
+                return;
+            }
+            await invalidate("app:courses");
+        }}
+    >
+        {#if !course.isPublished}
+            <i class="ph ph-globe"></i>
+            Опубликовать
+        {:else}
+            <i class="ph ph-globe-x"></i>
+            Снять с публикации
+        {/if}
+    </button>
+    <button
+        class="context-menu-item"
+        onclick={e => {
+            alert("Sorry, not implemented yet!");
+        }}
+    >
+        <i class="ph ph-trash"></i>
+        Удалить
+    </button>
+{/snippet}

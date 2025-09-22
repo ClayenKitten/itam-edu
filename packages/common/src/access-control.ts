@@ -1,6 +1,14 @@
 export type GlobalRole = "default" | "supervisor" | "admin";
 export type GlobalPermissions = {
-    createCourses: boolean;
+    users: {
+        view: boolean;
+        ban: boolean;
+    };
+    courses: {
+        create: boolean;
+        publish: boolean;
+        archive: boolean;
+    };
 };
 
 export type CourseRole = "student" | "teacher" | "admin";
@@ -8,10 +16,6 @@ export type CoursePermissions = {
     course: {
         /** Edit main information of the course: title, description, etc. */
         update: boolean;
-        /** Publish or unpublish course. */
-        publish: boolean;
-        /** Archive or unarchive course. */
-        archive: boolean;
         /** Enable or disable student enrollment. */
         toggleEnrollment: boolean;
     };

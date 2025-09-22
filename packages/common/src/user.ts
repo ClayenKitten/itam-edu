@@ -57,8 +57,25 @@ export class User {
 
     public get permissions(): GlobalPermissions {
         return {
-            createCourses:
-                this.info.role === "admin" || this.info.role === "supervisor"
+            users: {
+                view:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor",
+                ban:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor"
+            },
+            courses: {
+                create:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor",
+                archive:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor",
+                publish:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor"
+            }
         };
     }
 }

@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
-    import api from "$lib/api";
-    import { coursePath } from "$lib/path";
-    import { doOnce } from "$lib/utils/doOnce";
+    import { type PromptProps } from "$lib/Prompter.svelte";
+    import { onMount } from "svelte";
+    import type { CreateCourse } from "$lib/types";
 
-    export function show() {
-        dialog.showModal();
-    }
+    const { onConfirm, onCancel }: Props = $props();
+    type Props = PromptProps<CreateCourse>;
+
     let dialog: HTMLDialogElement;
+    onMount(() => {
+        dialog.showModal();
+    });
 
     let title: string = $state("");
     let slug: string = $state("");
@@ -58,27 +60,6 @@
                     slug.length <= maxSlugLength)) &&
             year >= 2000
     );
-
-    async function createCourse() {
-        const result = await api({ fetch }).courses.post({
-            title,
-            slug: slug.length > 0 ? slug : autoSlug,
-            year,
-            semester
-        });
-        if (result.error) {
-            if (result.status === 409) {
-                alert(
-                    "Курс с таким идентификатором, годом и семестром уже существует."
-                );
-            } else {
-                alert(result.error.status);
-            }
-            return;
-        }
-        await Promise.all([invalidate("app:courses"), invalidate("app:user")]);
-        await goto(coursePath(result.data));
-    }
 </script>
 
 <dialog
@@ -87,6 +68,7 @@
         "hidden open:flex flex-col gap-5 w-150 px-10 pt-10 pb-12.5 m-auto text-on-surface bg-surface rounded-xl",
         "backdrop:bg-[black] backdrop:opacity-30"
     ]}
+    onclose={() => onCancel()}
     bind:this={dialog}
 >
     <header class="flex flex-col">
@@ -153,7 +135,14 @@
         <button
             class="btn big"
             disabled={!valid}
-            onclick={doOnce("createCourse", createCourse)}
+            onclick={() => {
+                onConfirm({
+                    title,
+                    slug: slug.length > 0 ? slug : autoSlug,
+                    semester,
+                    year
+                });
+            }}
         >
             Создать курс
         </button>

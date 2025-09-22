@@ -8,12 +8,15 @@ import { UserLogin } from "./login";
 import { NotificationsQuery } from "./notifications/query";
 import * as schema from "./schema";
 import { SessionRepository } from "./sessions/repository";
+import { UserQuery } from "./query";
+import { HttpError } from "../api/errors";
 
 @injectable()
 export class UserController {
     public constructor(
         private authPlugin: AuthenticationPlugin,
         private userRepo: UserRepository,
+        private userQuery: UserQuery,
         private sessionRepo: SessionRepository,
         private login: UserLogin,
         private calendarQuery: CalendarQuery,
@@ -23,6 +26,25 @@ export class UserController {
     public toElysia() {
         return new Elysia({ prefix: "/users", tags: ["Users"] })
             .use(this.authPlugin.toElysia())
+            .get(
+                "",
+                async ({ user, status }) => {
+                    const result = await this.userQuery.getAll(user);
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return result;
+                },
+                {
+                    requireAuthentication: true,
+                    detail: {
+                        summary: "Get current user",
+                        description:
+                            "Returns information about the current user.",
+                        security: REQUIRE_TOKEN
+                    }
+                }
+            )
             .get(
                 "/me",
                 async ({ user }) => {
