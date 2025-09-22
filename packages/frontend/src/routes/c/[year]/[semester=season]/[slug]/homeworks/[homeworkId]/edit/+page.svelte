@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import api from "$lib/api";
     import { coursePath } from "$lib/path";
     import { getToaster } from "$lib/Toaster.svelte";
@@ -28,11 +28,7 @@
             return;
         }
 
-        await Promise.allSettled([
-            invalidate("app:homeworks"),
-            invalidate("app:homework"),
-            invalidate("app:calendar")
-        ]);
+        await invalidateAll();
         await goto(`${coursePath(data.course)}/homeworks/${homework.id}`);
     }
 

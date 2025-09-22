@@ -42,6 +42,7 @@
             class="input"
             disabled={readonly}
             bind:value={courseClone.title}
+            maxlength={32}
         />
     </label>
     <div class="flex flex-col gap-4">

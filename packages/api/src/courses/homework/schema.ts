@@ -4,7 +4,7 @@ export const homework = t.Object({
     id: t.String({ format: "uuid" }),
     courseId: t.String({ format: "uuid" }),
     createdAt: t.Date(),
-    title: t.String({ minLength: 3 }),
+    title: t.String({ minLength: 3, maxLength: 80 }),
     content: t.Nullable(t.String()),
     deadline: t.Nullable(t.Date()),
     deadlineOverride: t.Nullable(t.Boolean())

@@ -23,7 +23,9 @@
             <h5 class="group-hover:underline">К списку уроков</h5>
         </a>
         <header class="flex justify-between gap-8">
-            <h2>Урок {data.lesson.position + 1}. {data.lesson.title}</h2>
+            <h2 class="wrap-anywhere">
+                Урок {data.lesson.position + 1}. {data.lesson.title}
+            </h2>
             <menu class="flex gap-2">
                 {#if data.course.permissions.submissions.view === true}
                     <a

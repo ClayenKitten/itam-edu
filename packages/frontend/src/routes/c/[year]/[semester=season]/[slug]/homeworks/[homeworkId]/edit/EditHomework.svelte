@@ -45,7 +45,7 @@
     </header>
     <label class="flex flex-col gap-2">
         <h5>Название</h5>
-        <input class="input h-15" bind:value={homework.title} />
+        <input class="input h-15" bind:value={homework.title} maxlength={80} />
     </label>
     <div class="flex gap-5">
         <label class="flex flex-col gap-2">

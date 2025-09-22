@@ -29,7 +29,7 @@
     </header>
     <label class="flex flex-col gap-2">
         <h4>Название</h4>
-        <input class="input" bind:value={lesson.title} />
+        <input class="input" bind:value={lesson.title} maxlength={80} />
     </label>
     <div class="flex flex-wrap gap-6">
         <label class="flex-1 flex flex-col gap-2 min-w-[min(100%,400px)]">

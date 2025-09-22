@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto, invalidate, invalidateAll } from "$app/navigation";
     import { coursePath } from "$lib/path.js";
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
@@ -64,10 +64,7 @@
             return;
         }
 
-        await Promise.allSettled([
-            invalidate("app:lesson"),
-            invalidate("app:calendar")
-        ]);
+        await invalidateAll();
         await goto(`${coursePath(data.course)}/lessons/${data.lesson.id}`);
     }
 </script>

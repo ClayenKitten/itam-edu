@@ -55,31 +55,22 @@
 </script>
 
 <section class="relative flex flex-col gap-10 p-6 rounded-xl bg-surface shadow">
-    <section class="flex flex-col">
-        <header class="flex flex-col gap-2">
-            <header class="flex items-center gap-3">
-                <h2>{homework.title}</h2>
+    <article class="flex flex-col gap-2">
+        <header class="flex items-center gap-3">
+            <h2 class="flex-1 wrap-anywhere">
+                {homework.title}
                 {#if !doesAcceptSubmissions}
                     <span
                         class={[
-                            "py-2 px-3",
-                            "text-sm-regular leading-[1]",
-                            "text-on-surface bg-[#e5e5e5] rounded-xs"
+                            "self-start py-2 px-3 align-middle",
+                            "text-sm-regular text-on-surface bg-[#e5e5e5] rounded-xs"
                         ]}
                     >
                         Закрыто
                     </span>
                 {/if}
-            </header>
-            <h5 class="text-on-surface-muted">
-                {#if homework.deadline}
-                    Дедлайн до
-                    {formatDate(homework.deadline, "dd.MM.yyyy HH:mm")}
-                {:else}
-                    Без дедлайна
-                {/if}
-            </h5>
-            <menu class="absolute top-5.5 right-6 flex gap-2">
+            </h2>
+            <menu class="shrink-0 self-start flex gap-2">
                 {#if course.permissions.submissions.view === true}
                     <a
                         class={[
@@ -110,6 +101,13 @@
                 {/if}
             </menu>
         </header>
+        <h5 class="text-on-surface-muted">
+            {#if homework.deadline}
+                Дедлайн {formatDate(homework.deadline, "dd.MM.yyyy в HH:mm")}
+            {:else}
+                Без дедлайна
+            {/if}
+        </h5>
         {#if homework.content}
             <article class="mt-4">
                 <RichContent content={homework.content} />
@@ -133,7 +131,7 @@
                 {/each}
             </footer>
         {/if}
-    </section>
+    </article>
     {#if canSubmit}
         <section class="flex flex-col gap-4">
             <div class="flex min-h-[240px] max-h-[600px]">
