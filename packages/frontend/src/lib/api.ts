@@ -4,9 +4,7 @@ import { treaty } from "@elysiajs/eden";
 import type { ApiTreaty } from "itam-edu-api/src/api";
 
 export default function api(params: ApiParams) {
-    const baseUrl = browser
-        ? env.ITAMEDU_PUBLIC_API_URL_BROWSER!
-        : env.ITAMEDU_PUBLIC_API_URL_SERVER!;
+    const baseUrl = env.ITAMEDU_PUBLIC_API_URL_BROWSER!;
 
     const client = treaty<ApiTreaty>(baseUrl, {
         fetcher: params.fetch,
