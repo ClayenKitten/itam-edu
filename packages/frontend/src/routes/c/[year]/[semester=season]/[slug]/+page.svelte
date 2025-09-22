@@ -17,9 +17,7 @@
                         "w-full h-full object-cover object-center",
                         data.course.banner ? `` : ""
                     ]}
-                    src={courseFilePath(data.course.id).public(
-                        data.course.banner
-                    )}
+                    src={courseFilePath(data.course.id, data.course.banner)}
                     alt=""
                 />
             {/if}

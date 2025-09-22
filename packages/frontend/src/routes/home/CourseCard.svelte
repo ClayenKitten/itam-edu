@@ -24,7 +24,7 @@
         {#if course.cover}
             <img
                 class="size-full object-cover object-top"
-                src={courseFilePath(course.id).public(course.cover)}
+                src={courseFilePath(course.id, course.cover)}
                 alt=""
             />
         {:else}

@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ parent }) => {
         description: lesson.description || description,
         pageImage: lesson.banner
             ? {
-                  url: courseFilePath(course.id).public(lesson.banner),
+                  url: courseFilePath(course.id, lesson.banner),
                   width: 996,
                   height: 600
               }

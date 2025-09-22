@@ -23,7 +23,7 @@ export const load: LayoutLoad = async ({ fetch, params, depends }) => {
     }
     if (course.cover) {
         metadata.pageImage = {
-            url: courseFilePath(course.id).public(course.cover),
+            url: courseFilePath(course.id, course.cover),
             width: 315,
             height: 315
         };

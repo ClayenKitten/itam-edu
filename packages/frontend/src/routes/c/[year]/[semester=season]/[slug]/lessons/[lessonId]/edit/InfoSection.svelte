@@ -49,7 +49,7 @@
                     aspectRatio="320/200"
                     height="200px"
                     filenameToSrc={filename =>
-                        courseFilePath(lesson.courseId).public(filename)}
+                        courseFilePath(lesson.courseId, filename)}
                     onUpload={async file => {
                         const response = await api({ fetch })
                             .files.courses({ course: course.id })

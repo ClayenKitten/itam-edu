@@ -26,7 +26,7 @@
     </header>
     <div class="flex items-center gap-4">
         <VideoUploader
-            url={video ? courseFilePath(course.id).public(video) : null}
+            url={video ? courseFilePath(course.id, video) : null}
             {onUploaded}
             {onDeleted}
         />

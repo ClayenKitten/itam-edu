@@ -17,7 +17,7 @@
     >
         {#if data.course.banner}
             <img
-                src={courseFilePath(data.course.id).public(data.course.banner)}
+                src={courseFilePath(data.course.id, data.course.banner)}
                 alt=""
                 class="w-full h-full object-cover object-center"
             />

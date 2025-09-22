@@ -96,7 +96,7 @@
                 height="315px"
                 aspectRatio="315/315"
                 filenameToSrc={filename =>
-                    courseFilePath(courseClone.id).public(filename)}
+                    courseFilePath(courseClone.id, filename)}
                 onUpload={async file => {
                     const response = await api({ fetch })
                         .files.courses({ course: courseClone.id })
@@ -126,7 +126,7 @@
                 height="128px"
                 aspectRatio="1/1"
                 filenameToSrc={filename =>
-                    courseFilePath(courseClone.id).public(filename)}
+                    courseFilePath(courseClone.id, filename)}
                 onUpload={async file => {
                     const response = await api({ fetch })
                         .files.courses({ course: courseClone.id })
@@ -154,8 +154,7 @@
         <ImageUploader
             bind:filename={courseClone.banner}
             aspectRatio="5/1"
-            filenameToSrc={filename =>
-                courseFilePath(courseClone.id).public(filename)}
+            filenameToSrc={filename => courseFilePath(courseClone.id, filename)}
             onUpload={async file => {
                 const response = await api({ fetch })
                     .files.courses({ course: courseClone.id })

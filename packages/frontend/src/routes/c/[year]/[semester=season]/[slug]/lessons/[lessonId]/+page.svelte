@@ -71,9 +71,7 @@
             preload="metadata"
             class="self-start max-h-150 shadow rounded-xs"
         >
-            <source
-                src={courseFilePath(data.course.id).public(data.lesson.video)}
-            />
+            <source src={courseFilePath(data.course.id, data.lesson.video)} />
         </video>
     {/if}
     {#if data.lesson.content}

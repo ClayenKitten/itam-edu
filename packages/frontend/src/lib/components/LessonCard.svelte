@@ -31,7 +31,7 @@
         {#if lesson.banner}
             <img
                 class="w-full h-full overflow-hidden object-cover"
-                src={courseFilePath(lesson.courseId).public(lesson.banner)}
+                src={courseFilePath(lesson.courseId, lesson.banner)}
                 alt=""
             />
         {:else}

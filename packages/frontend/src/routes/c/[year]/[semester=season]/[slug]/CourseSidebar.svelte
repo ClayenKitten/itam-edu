@@ -144,7 +144,7 @@
             <div class="flex items-center gap-1.5">
                 {#if course.icon}
                     <img
-                        src={courseFilePath(course.id).public(course.icon)}
+                        src={courseFilePath(course.id, course.icon)}
                         class="size-8"
                         alt=""
                     />
@@ -173,7 +173,8 @@
                 >
                     {#if courseOption.icon}
                         <img
-                            src={courseFilePath(courseOption.id).public(
+                            src={courseFilePath(
+                                courseOption.id,
                                 courseOption.icon
                             )}
                             class="size-8"

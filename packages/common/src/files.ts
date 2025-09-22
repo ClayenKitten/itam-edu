@@ -6,8 +6,6 @@ export const userFilePath = (user: string) => ({
 });
 
 /** Builder for course file paths. */
-export const courseFilePath = (course: string) => ({
-    public: (file: string) => {
-        return `/files/courses/${course}/${file}`;
-    }
-});
+export const courseFilePath = (course: string, path: string) => {
+    return `/files/courses/${course}/${path}`;
+};

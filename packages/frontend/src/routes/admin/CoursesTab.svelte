@@ -74,7 +74,7 @@
                             "bg-cover bg-center bg-primary rounded-md "
                         ]}
                         style:background-image={course.cover
-                            ? `url(${courseFilePath(course.id).public(course.cover)})`
+                            ? `url(${courseFilePath(course.id, course.cover)})`
                             : null}
                     >
                         {#if !course.cover}
