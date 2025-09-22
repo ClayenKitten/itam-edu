@@ -186,7 +186,7 @@
             {:else}
                 <div class="text-md-regular bg-surface-tint p-4 rounded-b-xs">
                     Пусто! Записаться на новые курсы можно на
-                    <a class="text-primary hover:underline" href="/home">
+                    <a class="text-primary hover:underline" href="/">
                         домашней странице
                     </a>.
                 </div>

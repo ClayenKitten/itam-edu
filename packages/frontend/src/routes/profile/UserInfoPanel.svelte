@@ -56,7 +56,7 @@
             return;
         }
         await invalidate("app:user");
-        await goto("/home");
+        await goto("/");
     };
 </script>
 

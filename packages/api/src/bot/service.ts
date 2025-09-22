@@ -107,7 +107,7 @@ export class BotService {
             ].join("\n\n"),
             link: {
                 text: "🔗 Войти",
-                url: `${this.config.server.origin}/home?login=${code}`
+                url: `${this.config.server.origin}?login=${code}`
             }
         };
     }

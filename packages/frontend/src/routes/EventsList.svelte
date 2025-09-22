@@ -55,7 +55,7 @@
                 let _: never = event;
                 break;
         }
-        return coursePath(course) ?? "/home";
+        return coursePath(course);
     };
 </script>
 

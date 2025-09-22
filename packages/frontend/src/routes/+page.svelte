@@ -1,78 +1,101 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import { coursePath } from "$lib/path";
+    import type { CoursePartial } from "$lib/types";
+    import CourseCard from "./CourseCard.svelte";
+    import TinyCalendar from "./TinyCalendar.svelte";
+    import EventsList from "./EventsList.svelte";
+    import AcceptInviteModal from "./AcceptInviteModal.svelte";
+    import { page } from "$app/state";
 
     let { data } = $props();
+
+    let highlightedDate: Date | null = $state(null);
+    let selectedDate: Date | null = $state(null);
+
+    const tabs = data.user
+        ? (["my", "active", "archive"] as const)
+        : (["active", "archive"] as const);
+    type Tab = (typeof tabs)[number];
+    const tab = $derived.by<Tab>(() => {
+        const param = page.url.searchParams.get("tab");
+        if (tabs.some(t => t === param)) return param as Tab;
+        return tabs[0];
+    });
+
+    let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
+        switch (tab) {
+            case "my":
+                return c => {
+                    if (data.user === null) return false;
+                    if (c.isArchived) return false;
+                    if (!data.user.isCourseMember(c.id)) return false;
+                    return true;
+                };
+            case "active":
+                return c => !c.isArchived;
+            case "archive":
+                return c => c.isArchived;
+        }
+    });
 </script>
 
-<div id="wrapper" class="flex flex-col min-h-dvh bg-background">
+<AcceptInviteModal user={data.user} />
+
+<div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} courses={data.courses} standalone />
-    <main class="flex flex-col gap-2 mx-auto max-w-[1000px] px-16 py-8">
-        <h2 class="mt-8 mb-2">Пространство IT-образования</h2>
-        <p class="indent-4">
-            ITAM Education &mdash; это образовательное подразделение
-            студенческого IT-сообщества
-            <a class="text-primary underline" href="https://itatmisis.ru">
-                ITAM
-            </a>. Здесь мы создаем среду, где легко задавать вопросы, находить
-            поддержку и вместе разбираться в сложных темах. Присоединяйся!
-        </p>
-        <h2 id="Курсы" class="mt-8 mb-2">Курсы</h2>
-        <section class="flex flex-col gap-4">
-            <p class="text-on-background indent-4">
-                Курсы ITAM — это уникальная возможность быстро погрузится в
-                интересующее тебя направление, получить знания от
-                студентов-старшекурсников, выпускников и начать как можно
-                быстрее применять эти знания на различных соревнованиях,
-                проектах и стажировках.
-            </p>
-            <ul class="grid grid-cols-3 gap-8 mt-1">
-                {#each data.courses as course}
-                    <a
-                        href={coursePath(course)}
-                        class="flex flex-col gap-2 p-8 text-on-surface bg-surface shadow rounded-[8px]"
-                    >
-                        <h3>{course.title}</h3>
-                        <p class="text-on-surface-muted">
-                            {course.year}
-                        </p>
-                        {#if course.description}
-                            <p
-                                class="text-on-surface max-w-120 mt-4 line-clamp-4"
-                            >
-                                {course.description}
-                            </p>
-                        {/if}
-                    </a>
-                {/each}
-            </ul>
-        </section>
-        <h2 id="Менторская программа" class="mt-8 mb-2">
-            Менторская программа
-        </h2>
-        <section class="flex flex-col gap-4">
-            <p class="indent-4">
-                Менторство – это процесс, в рамках которого более опытное и
-                знающее лицо (ментор) помогает в профессиональном развитии менее
-                опытному человеку (менти) в процессе их взаимодействия.
-                Программа менторства от ITAM.Alumni – это возможность получить
-                ценные знания и опыт от профессионалов в области. Выбери
-                интересного тебе специалиста, сформируй свой запрос и начни
-                расти вместе с IT сообществом Университета МИСИС.
-            </p>
+    <main
+        class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-12.5 px-7.5 gap-7.5"
+    >
+        <menu class="flex h-12 gap-2">
+            {#if data.user !== null}
+                <a
+                    class={["tabBtn", tab === "my" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}`}
+                >
+                    Мои
+                </a>
+                <a
+                    class={["tabBtn", tab === "active" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}?tab=active`}
+                >
+                    Текущие
+                </a>
+            {:else}
+                <a
+                    class={["tabBtn", tab === "active" && "selected"]}
+                    href={`${page.url.origin}${page.url.pathname}`}
+                >
+                    Текущие
+                </a>
+            {/if}
             <a
-                href="https://info.itatmisis.ru/mentors"
-                target="_blank"
-                class="btn w-max"
+                class={["tabBtn", tab === "archive" && "selected"]}
+                href={`${page.url.origin}${page.url.pathname}?tab=archive`}
             >
-                Менторская программа
-                <i class="ph ph-arrow-right text-[20px]"></i>
+                Архивные
             </a>
+        </menu>
+        <aside
+            class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
+        >
+            <TinyCalendar
+                user={data.user}
+                bind:selected={selectedDate}
+                bind:highlighted={highlightedDate}
+            />
+            <EventsList
+                user={data.user}
+                courses={data.courses}
+                bind:selected={selectedDate}
+                bind:highlighted={highlightedDate}
+            />
+        </aside>
+        <section
+            class="grid grid-cols-[repeat(auto-fill,317px)] h-min items-start gap-x-4 gap-y-6.5"
+        >
+            {#each data.courses.filter(filter) as course (course.id)}
+                <CourseCard {course} />
+            {/each}
         </section>
     </main>
-    <footer
-        class="flex items-center px-8 bg-surface h-20 w-full mt-auto shadow"
-    >
-        © ITAM 2025
-    </footer>
 </div>

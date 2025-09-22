@@ -30,7 +30,7 @@
     };
     const disconnect = async () => {
         await room.disconnect();
-        await goto("/home");
+        await goto("/");
     };
 </script>
 

@@ -110,6 +110,6 @@
                 })}
             </span>
         </div>
-        <div class="text-sm-regular">{notification.title}</div>
+        <div class="text-sm-regular wrap-anywhere">{notification.title}</div>
     </div>
 {/snippet}

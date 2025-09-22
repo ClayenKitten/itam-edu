@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ fetch, depends, parent }) => {
     const { user } = await parent();
 
     if (!user) {
-        redirect(307, "/home?login");
+        redirect(307, "?login");
     }
 
     return { user, title: "Профиль | ITAM Education" };

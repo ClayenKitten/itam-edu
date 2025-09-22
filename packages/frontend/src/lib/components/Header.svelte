@@ -42,7 +42,7 @@
         ]}
         aria-label="Домашняя страница"
         title="Домашняя страница"
-        href="/home"
+        href="/"
     >
         <i class="ph ph-house text-primary text-[20px]"></i>
     </a>

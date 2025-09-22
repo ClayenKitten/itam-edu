@@ -238,8 +238,7 @@
                 <button
                     class="context-menu-item"
                     onclick={e => {
-                        const url =
-                            page.url.origin + `/home?invite=${invite.code}`;
+                        const url = page.url.origin + `?invite=${invite.code}`;
                         window.navigator.clipboard.writeText(url);
                         toaster.add("Ссылка-приглашение скопирована");
                         e.currentTarget.blur();

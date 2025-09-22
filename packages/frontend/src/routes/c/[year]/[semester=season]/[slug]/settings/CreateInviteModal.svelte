@@ -27,7 +27,7 @@
             return;
         }
         const { code } = result.data;
-        const url = page.url.origin + `/home?invite=${code}`;
+        const url = page.url.origin + `?invite=${code}`;
         await window.navigator.clipboard.writeText(url);
         toaster.add("Ссылка-приглашение скопирована");
         await invalidate("app:invites");

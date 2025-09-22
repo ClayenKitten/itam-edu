@@ -25,7 +25,7 @@
     {/if}
     <a
         class="group self-center flex items-center h-min mt-8 gap-2 text-primary"
-        href={`${coursePath(page.data.course)}/home`}
+        href={coursePath(page.data.course)}
     >
         <i class="ph ph-caret-left text-[20px]"></i>
         <h5 class="group-hover:underline">На главную</h5>
