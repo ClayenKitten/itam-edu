@@ -32,7 +32,7 @@
         "group relative flex justify-center items-center",
         "border-2 rounded-sm overflow-hidden",
         !readonly
-            ? "border-on-primary focus-within:border-primary cursor-pointer"
+            ? "border-primary-border focus-within:border-primary cursor-pointer"
             : "border-surface-border",
         "bg-center bg-origin-border",
         size === "cover" ? "bg-cover" : "bg-contain bg-no-repeat"

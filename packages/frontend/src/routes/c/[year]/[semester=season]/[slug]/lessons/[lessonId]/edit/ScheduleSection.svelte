@@ -35,7 +35,7 @@
     </header>
     {#if schedule === null}
         <button
-            class="btn w-min text-nowrap"
+            class="btn w-max"
             onclick={() => {
                 schedule = saved ?? {
                     online: null,
@@ -53,11 +53,11 @@
             Запланировать урок
         </button>
     {:else}
-        <div class="flex flex-wrap gap-8">
-            <label class="shrink flex flex-col gap-2 min-w-[300px]">
-                <h4>Дата</h4>
+        <div class="shrink flex flex-col gap-2 min-w-[360px]">
+            <h4>Дата и время</h4>
+            <div class="flex gap-2">
                 <input
-                    class="input"
+                    class="input px-6"
                     type="date"
                     required
                     bind:value={
@@ -70,9 +70,6 @@
                         }
                     }
                 />
-            </label>
-            <label class="shrink flex flex-col gap-2 min-w-[200px]">
-                <h4>Время</h4>
                 <input
                     class="input"
                     type="time"
@@ -87,42 +84,50 @@
                         }
                     }
                 />
-            </label>
+            </div>
         </div>
-        <div class="w-80 flex flex-col gap-2">
-            <h4>Формат</h4>
-            <label>
-                <input
-                    type="checkbox"
-                    bind:checked={
-                        () => schedule!.online !== null,
-                        val => (schedule!.online = val ? {} : null)
-                    }
-                />
-                Провести урок онлайн
-            </label>
-            <label>
-                <input
-                    type="checkbox"
-                    bind:checked={
-                        () => schedule!.offline !== null,
-                        val =>
-                            (schedule!.offline = val ? { location: "" } : null)
-                    }
-                />
-                Провести урок офлайн
-            </label>
-            {#if schedule.offline}
-                <input
-                    class="input"
-                    placeholder="Место проведения"
-                    maxlength="60"
-                    bind:value={schedule.offline.location}
-                />
-            {/if}
+        <div class="flex flex-col gap-2">
+            <h4>Формат проведения</h4>
+            <div class="flex gap-8">
+                <div class="w-80 flex flex-col gap-2">
+                    <label>
+                        <input
+                            type="checkbox"
+                            bind:checked={
+                                () => schedule!.offline !== null,
+                                val =>
+                                    (schedule!.offline = val
+                                        ? { location: "" }
+                                        : null)
+                            }
+                        />
+                        Провести урок очно
+                    </label>
+                    {#if schedule.offline}
+                        <input
+                            class="input"
+                            placeholder="Место проведения"
+                            maxlength={60}
+                            bind:value={schedule.offline.location}
+                        />
+                    {/if}
+                </div>
+                <div class="w-80 flex flex-col gap-2">
+                    <label>
+                        <input
+                            type="checkbox"
+                            bind:checked={
+                                () => schedule!.online !== null,
+                                val => (schedule!.online = val ? {} : null)
+                            }
+                        />
+                        Провести урок онлайн
+                    </label>
+                </div>
+            </div>
         </div>
         <button
-            class="btn secondary w-min text-nowrap"
+            class="btn secondary w-max"
             onclick={() => {
                 saved = schedule;
                 schedule = null;
