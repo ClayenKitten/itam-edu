@@ -1,6 +1,6 @@
 export abstract class HttpError extends Error {
     public constructor(
-        public code: number,
+        public code: 400 | 401 | 403 | 404 | 409,
         message?: string
     ) {
         super(message);

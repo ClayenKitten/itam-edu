@@ -35,9 +35,9 @@ export class CallController {
             )
             .get(
                 "/calls/:call",
-                async ({ params, error }) => {
+                async ({ params, status }) => {
                     const call = await this.callService.getById(params.call);
-                    if (!call) return error(404);
+                    if (!call) return status(404);
                     return { id: call.id, ...call.metadata };
                 },
                 {

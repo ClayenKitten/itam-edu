@@ -20,7 +20,9 @@ export class AuthenticationPlugin {
                     cookie["itam-edu-token"]?.value;
                 if (!token) return { session: null, user: null };
 
-                const session = await this.sessionRepo.getByToken(token);
+                const session = await this.sessionRepo.getByToken(
+                    token as string
+                );
                 if (!session) return { session: null, user: null };
 
                 let user = await this.userRepo.getById(session.userId);

@@ -1,13 +1,13 @@
 import { Elysia } from "elysia";
-import { swagger } from "@elysiajs/swagger";
+import { openapi } from "@elysiajs/openapi";
 
 export function docsPlugin() {
     return new Elysia({ name: "docs" })
         .use(
-            swagger({
+            openapi({
                 provider: "swagger-ui",
                 path: "docs",
-                swaggerOptions: {
+                swagger: {
                     persistAuthorization: true
                 },
                 documentation: {
