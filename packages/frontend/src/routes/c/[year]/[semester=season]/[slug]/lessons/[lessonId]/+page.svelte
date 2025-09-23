@@ -84,11 +84,14 @@
             </article>
         </section>
     {/if}
-    {#if data.lesson.homeworks.length > 0}
+    {#if data.lesson.homeworkIds.length > 0}
         <section class="flex flex-col gap-5">
             <h3>Задания</h3>
             <ul class="flex flex-col gap-2.5">
-                {#each data.lesson.homeworks as homework}
+                {#each data.lesson.homeworkIds as homeworkId}
+                    {@const homework = data.course.homeworks.find(
+                        h => h.id === homeworkId
+                    )!}
                     <a
                         class="flex justify-between p-5 bg-surface rounded-xs shadow"
                         href={`${coursePath(data.course)}/homeworks/${homework.id}`}

@@ -97,7 +97,6 @@ export interface LessonAttendees {
 export interface LessonHomeworks {
   homeworkId: string;
   lessonId: string;
-  position: number;
 }
 
 export interface Lessons {

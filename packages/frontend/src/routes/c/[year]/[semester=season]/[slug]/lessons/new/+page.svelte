@@ -21,7 +21,7 @@
         banner: null,
         video: null,
         content: null,
-        homeworks: [],
+        homeworkIds: [],
         schedule: null
     });
     let modifiedHomeworks: string[] = $state([]);
@@ -93,8 +93,10 @@
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}
-        homeworks={lesson.homeworks}
-        bind:modifiedHomeworks
+        homeworkIds={lesson.homeworkIds}
+        onUpdate={hwIds => {
+            modifiedHomeworks = hwIds;
+        }}
     />
     <footer class="flex gap-4">
         <a class="btn secondary w-max" href="{coursePath(data.course)}/lessons">

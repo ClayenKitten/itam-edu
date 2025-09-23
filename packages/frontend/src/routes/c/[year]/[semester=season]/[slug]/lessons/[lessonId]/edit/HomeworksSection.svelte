@@ -2,28 +2,24 @@
     import { coursePath } from "$lib/path";
     import type { Course, Lesson } from "$lib/types";
     import { format as formatDate } from "date-fns";
-    import { SvelteSet } from "svelte/reactivity";
-    import ReorderableCard from "$lib/components/ReorderableCard.svelte";
-    import { sortable } from "$lib/actions/sortable.svelte";
     import HomeworkAttachmentWindow from "./HomeworkAttachmentWindow.svelte";
 
     let {
         course,
-        homeworks,
-        modifiedHomeworks = $bindable()
+        homeworkIds: originalHomeworkIds,
+        onUpdate
     }: Props = $props();
 
     type Props = {
         course: Course;
-        homeworks: Lesson["homeworks"];
-        modifiedHomeworks: string[];
+        homeworkIds: string[];
+        onUpdate: (homeworkIds: string[]) => void;
     };
 
-    let sorted: string[] = $state(homeworks.map(h => h.id));
-    let deleted: SvelteSet<string> = new SvelteSet();
+    let homeworkIds: string[] = $state(originalHomeworkIds);
 
     $effect(() => {
-        modifiedHomeworks = sorted.filter(id => !deleted.has(id));
+        onUpdate(homeworkIds);
     });
 
     let homeworkAttachmentWindow: HomeworkAttachmentWindow;
@@ -32,11 +28,11 @@
 <HomeworkAttachmentWindow
     bind:this={homeworkAttachmentWindow}
     {course}
-    addedHomeworks={sorted}
-    onHomeworkAdded={id => sorted.push(id)}
+    addedHomeworks={homeworkIds}
+    onHomeworkAdded={id => homeworkIds.push(id)}
 />
 
-<section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
+<section class="flex flex-col gap-4 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
         <h3>Задания</h3>
         <p class="max-w-[800px] text-balance">
@@ -44,33 +40,66 @@
             Одно и то же задание может быть прикреплено к нескольким урокам.
         </p>
     </header>
-    {#if sorted.length > 0}
-        {#key sorted}
-            <ul
-                class="flex flex-col gap-5 w-full"
-                use:sortable={{ handle: ".dnd-handle", animation: 200 }}
-                onsortchanged={e => (sorted = e.detail.sortable.toArray())}
-            >
-                {#each sorted as homeworkId (homeworkId)}
-                    {@const homework = course.homeworks.find(
-                        h => h.id === homeworkId
-                    )!}
-                    <ReorderableCard
-                        id={homework.id}
-                        title={homework.title}
-                        subtitle={homework.deadline
-                            ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
-                            : "Без дедлайна"}
-                        href="{coursePath(course)}/homeworks/{homework.id}"
-                        isDeleted={deleted.has(homework.id)}
-                        onDelete={() => deleted.add(homework.id)}
-                        onRecover={() => deleted.delete(homework.id)}
-                    />
-                {/each}
-            </ul>
-        {/key}
+    {#if homeworkIds.length > 0}
+        <ol class="flex flex-col gap-2 w-full">
+            {#each homeworkIds as homeworkId (homeworkId)}
+                {@const homework = course.homeworks.find(
+                    h => h.id === homeworkId
+                )!}
+                <li
+                    class={[
+                        "flex grow items-center justify-between px-5 py-4",
+                        "bg-surface border border-surface-border rounded-sm shadow"
+                    ]}
+                >
+                    <div class="flex flex-col gap-1.75">
+                        <span class="text-xl-medium text-on-surface">
+                            {homework.title}
+                        </span>
+                        <span class="text-sm-regular text-on-surface-muted">
+                            {homework.deadline
+                                ? `До ${formatDate(homework.deadline, "dd.MM.yy HH:mm")}`
+                                : "Без дедлайна"}
+                        </span>
+                    </div>
+                    <menu
+                        class="flex gap-4 text-on-surface-muted group-hover:text-on-surface"
+                    >
+                        <a
+                            class={[
+                                "flex justify-center items-center w-9 h-9 border",
+                                "text-primary bg-on-primary border-primary-border rounded-2xs",
+                                "hover:text-on-primary hover:bg-primary hover:border-primary",
+                                "transition-colors duration-200"
+                            ]}
+                            aria-label="Открыть"
+                            href={`${coursePath(course)}/homeworks/${homework.id}`}
+                            target="_blank"
+                        >
+                            <i class="ph ph-arrow-square-out text-[18px]"></i>
+                        </a>
+                        <button
+                            class={[
+                                "flex justify-center items-center w-9 h-9 border",
+                                "text-primary bg-on-primary border-primary-border rounded-2xs",
+                                "hover:text-on-primary hover:bg-primary hover:border-primary",
+                                "transition-colors duration-200"
+                            ]}
+                            aria-label="Удалить"
+                            onclick={() => {
+                                homeworkIds = homeworkIds.filter(
+                                    id => id !== homeworkId
+                                );
+                            }}
+                        >
+                            <i class="ph ph-trash text-[20px]"></i>
+                        </button>
+                    </menu>
+                </li>
+            {/each}
+        </ol>
     {/if}
-    {#if sorted.length !== course.homeworks.length}
+    {#if homeworkIds.length !== course.homeworks.length}
         <button
             class="btn w-min"
             onclick={() => homeworkAttachmentWindow.show()}

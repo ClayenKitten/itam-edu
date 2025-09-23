@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
-import type { DB, LessonHomeworks } from "itam-edu-db";
+import type { DB } from "itam-edu-db";
 import { sql } from "kysely";
 import type { ExpressionBuilder, Selectable } from "kysely";
 import { Lesson, type LessonSchedule } from "./entity";
@@ -23,43 +23,17 @@ export class LessonRepository {
             .executeTakeFirst();
         if (!lesson) return null;
 
-        const homeworks = await this.postgres.kysely
+        const homeworkIds = await this.postgres.kysely
             .selectFrom("lessonHomeworks")
-            .selectAll()
+            .innerJoin("homeworks", "homeworks.id", "homeworkId")
+            .select("homeworks.id")
+            .orderBy("homeworks.position")
             .where("lessonId", "=", lesson.id)
-            .orderBy("position")
             .execute();
 
-        return this.toEntity(lesson, homeworks);
-    }
-
-    public async loadAll(courseId: string): Promise<Lesson[]> {
-        const lessons = await this.postgres.kysely
-            .selectFrom("lessons")
-            .selectAll()
-            .orderBy("position asc")
-            .where("courseId", "=", courseId)
-            .execute();
-
-        let homeworks: Selectable<LessonHomeworks>[] = [];
-        if (lessons.length > 0) {
-            homeworks = await this.postgres.kysely
-                .selectFrom("lessonHomeworks")
-                .selectAll()
-                .where(
-                    "lessonId",
-                    "in",
-                    lessons.map(l => l.id)
-                )
-                .orderBy("position")
-                .execute();
-        }
-
-        return lessons.map(l =>
-            this.toEntity(
-                l,
-                homeworks.filter(h => h.lessonId === l.id)
-            )
+        return this.toEntity(
+            lesson,
+            homeworkIds.map(({ id }) => id)
         );
     }
 
@@ -130,10 +104,9 @@ export class LessonRepository {
                 await trx
                     .insertInto("lessonHomeworks")
                     .values(
-                        lesson.homeworks.map((h, i) => ({
-                            homeworkId: h,
-                            lessonId: lesson.id,
-                            position: i
+                        lesson.homeworks.map(id => ({
+                            homeworkId: id,
+                            lessonId: lesson.id
                         }))
                     )
                     .execute();
@@ -141,10 +114,7 @@ export class LessonRepository {
         });
     }
 
-    private toEntity(
-        lesson: Selectable<DB["lessons"]>,
-        lessonHomeworks: Selectable<DB["lessonHomeworks"]>[]
-    ) {
+    private toEntity(lesson: Selectable<DB["lessons"]>, homeworkIds: string[]) {
         let schedule: LessonSchedule | null = null;
         if (lesson.scheduledAt) {
             schedule = {
@@ -164,7 +134,7 @@ export class LessonRepository {
                 video: lesson.video
             },
             lesson.content,
-            lessonHomeworks.map(x => x.homeworkId),
+            homeworkIds,
             schedule
         );
     }

@@ -44,15 +44,11 @@ export class LessonQuery {
             .executeTakeFirst();
         if (!lesson) return new NotFoundError();
 
-        const homeworks = await this.postgres.kysely
+        const homeworkIds = await this.postgres.kysely
             .selectFrom("lessonHomeworks")
             .innerJoin("homeworks", "homeworks.id", "homeworkId")
-            .select([
-                "homeworks.id as id",
-                "homeworks.title",
-                "homeworks.deadline"
-            ])
-            .orderBy("lessonHomeworks.position")
+            .select("homeworks.id")
+            .orderBy("homeworks.position")
             .where("lessonId", "=", lesson.id)
             .execute();
 
@@ -66,7 +62,7 @@ export class LessonQuery {
             video: lesson.video,
             position: lesson.position,
             createdAt: lesson.createdAt,
-            homeworks,
+            homeworkIds: homeworkIds.map(({ id }) => id),
             schedule: lesson.scheduledAt
                 ? {
                       date: lesson.scheduledAt,
@@ -134,11 +130,7 @@ export type LessonDTO = {
     position: number;
     createdAt: Date;
     content: string | null;
-    homeworks: {
-        id: string;
-        title: string;
-        deadline: Date | null;
-    }[];
+    homeworkIds: string[];
     schedule: LessonScheduleDTO | null;
 };
 

@@ -39,21 +39,20 @@
         </button>
         <h4>Прикрепление задания</h4>
     </header>
-
     <ul class="flex flex-col gap-2.5">
         {#each course.homeworks as homework (homework.id)}
             {#if !addedHomeworks.includes(homework.id)}
                 <button
                     onclick={() => addHomework(homework.id)}
-                    class="flex grow items-center justify-between p-5 shadow rounded-xs"
+                    class="flex gap-4 grow justify-between p-5 shadow rounded-xs"
                 >
-                    <div class="flex flex-col gap-3 items-start">
-                        <header>
-                            <h5>{homework.title}</h5>
-                        </header>
-                        <p
-                            class="text-md-regular text-on-surface-contrast opacity-50"
+                    <div class="flex-1 min-w-0 flex flex-col gap-3 items-start">
+                        <h5
+                            class="max-w-full overflow-hidden overflow-ellipsis"
                         >
+                            {homework.title}
+                        </h5>
+                        <p class="text-md-regular text-on-surface-muted">
                             {#if homework.deadline}
                                 <span>Дедлайн до</span>
                                 <span>
@@ -67,7 +66,9 @@
                             {/if}
                         </p>
                     </div>
-                    <i class="ph ph-caret-right text-[26px] self-center"></i>
+                    <i
+                        class="shrink-0 ph ph-caret-right text-[26px] self-center"
+                    ></i>
                 </button>
             {/if}
         {/each}

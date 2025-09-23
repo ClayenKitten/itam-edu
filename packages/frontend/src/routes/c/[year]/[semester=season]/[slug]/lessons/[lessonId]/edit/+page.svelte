@@ -15,9 +15,7 @@
     const toaster = getToaster();
 
     let lesson: LessonDTO = $state(structuredClone(data.lesson));
-    let modifiedHomeworks: string[] = $state(
-        data.lesson.homeworks.map(h => h.id)
-    );
+    let modifiedHomeworks: string[] = $state(data.lesson.homeworkIds);
     let uploadVideoFile: File | null = $state(null);
 
     async function save() {
@@ -89,8 +87,10 @@
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}
-        homeworks={lesson.homeworks}
-        bind:modifiedHomeworks
+        homeworkIds={lesson.homeworkIds}
+        onUpdate={hwIds => {
+            modifiedHomeworks = hwIds;
+        }}
     />
     <footer class="flex gap-4">
         <a
