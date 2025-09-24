@@ -68,7 +68,7 @@ export class CourseCover extends ImageSpec {
 /** Course icon. */
 export class CourseIcon extends ImageSpec {
     public constructor(public readonly courseId: UUID) {
-        super({ width: 64, height: 64 });
+        super({ width: 128, height: 128 });
     }
 
     public static parse(path: ReadonlyArray<string>): CourseIcon | null {

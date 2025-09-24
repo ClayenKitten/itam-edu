@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { dismissable } from "$lib/attachments/dismissable.svelte";
+
     let {
         url,
         onChange,
@@ -30,77 +32,123 @@
     let src = $derived(isDeleted ? null : (objectUrl ?? url));
 
     function uploadImage(file: File) {
+        menuCoords = null;
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         objectUrl = URL.createObjectURL(file);
         isDeleted = false;
         onChange?.(file);
     }
     function deleteImage() {
+        menuCoords = null;
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         isDeleted = true;
         onChange?.(null);
     }
+
+    let menuCoords: { x: number; y: number } | null = $state(null);
 </script>
 
-<label
-    class={[
-        "group relative flex justify-center items-center",
-        "border-2 rounded-sm overflow-hidden",
-        !readonly
-            ? "border-primary-border focus-within:border-primary cursor-pointer"
-            : "border-surface-border",
-        "bg-center bg-origin-border",
-        size === "cover" ? "bg-cover" : "bg-contain bg-no-repeat"
-    ]}
+<div
+    class="group relative"
     style:height
     style:width
-    style:background-image={src ? `url(${src})` : null}
     style:aspect-ratio={aspectRatio}
 >
-    {#if !readonly}
-        {@render fileInput()}
-    {/if}
-    {#if src && !readonly}
-        <button
-            class={[
-                "absolute top-4 right-4 flex items-center justify-center h-[46px] w-[46px]",
-                "rounded-full bg-primary text-on-primary hover:bg-on-primary hover:text-primary",
-                "transition-colors duration-100"
-            ]}
-            onclick={deleteImage}
-            aria-label="Удалить"
+    <label
+        class={[
+            "size-full flex justify-center items-center overflow-hidden",
+            "border-2 rounded-sm",
+            !readonly
+                ? "border-primary-border focus-within:border-primary"
+                : "border-surface-border",
+            "bg-center bg-origin-border",
+            size === "cover" ? "bg-cover" : "bg-contain bg-no-repeat"
+        ]}
+        style:background-image={src ? `url(${src})` : null}
+    >
+        {#if src === null}
+            <label
+                class={[
+                    "size-full flex items-center justify-center",
+                    "bg-on-primary text-primary",
+                    readonly ? "cursor-default" : "cursor-pointer"
+                ]}
+            >
+                <div
+                    class={[
+                        "flex items-center justify-center size-[46px]",
+                        "bg-on-primary text-primary",
+                        !readonly && [
+                            "group-hover:bg-primary group-hover:text-on-primary",
+                            "group-focus-within:bg-primary group-focus-within:text-on-primary"
+                        ],
+                        "rounded-full",
+                        "transition-colors duration-200"
+                    ]}
+                >
+                    {#if !readonly}
+                        <i class="ph ph-upload-simple text-[20px]"></i>
+                    {:else}
+                        <i class="ph ph-prohibit text-[20px]"></i>
+                    {/if}
+                </div>
+                {@render fileSelector()}
+            </label>
+        {:else}
+            <button
+                class={[
+                    "size-full text-xl-medium rounded-sm",
+                    readonly ? "cursor-default" : "cursor-pointer",
+                    src === null
+                        ? "bg-on-primary text-primary"
+                        : "bg-transparent"
+                ]}
+                onclick={e => {
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    menuCoords = {
+                        x: e.clientX - rect.left,
+                        y: e.clientY - rect.top
+                    };
+                }}
+                disabled={readonly}
+            >
+                {#if src === null}{/if}
+            </button>
+        {/if}
+    </label>
+    {#if menuCoords}
+        <menu
+            class="context-menu absolute"
+            style:left="{menuCoords.x}px"
+            style:top="{menuCoords.y}px"
+            {@attach dismissable(() => (menuCoords = null))}
         >
-            <i class="ph ph-trash text-[20px]"></i>
-        </button>
-    {:else if !readonly}
-        <div
-            class={[
-                "flex items-center justify-center h-[46px] w-[46px]",
-                "rounded-full",
-                !readonly
-                    ? "bg-primary text-on-primary group-hover:bg-on-primary group-hover:text-primary"
-                    : "bg-on-surface-muted text-on-primary",
-                "transition-colors duration-100"
-            ]}
-        >
-            {#if !readonly}
-                <i class="ph ph-upload-simple text-[20px]"></i>
-            {:else}
-                <i class="ph ph-prohibit text-[20px]"></i>
-            {/if}
-        </div>
+            <label class="context-menu-item">
+                <i class="ph ph-pencil-simple"></i>
+                <span class="h-4.5">Выбрать фото</span>
+                {@render fileSelector()}
+            </label>
+            <button class="context-menu-item" onclick={deleteImage}>
+                <i class="ph ph-trash"></i>
+                <span>Удалить</span>
+            </button>
+        </menu>
     {/if}
-</label>
+</div>
 
-{#snippet fileInput()}
+{#snippet fileSelector()}
     <input
+        class="size-0 outline-0"
         type="file"
-        class="hidden"
         accept="image/png,image/jpeg"
         onchange={async e => {
-            const file = (e.target! as HTMLInputElement).files?.item(0);
-            if (!file) return;
-            uploadImage(file);
+            const file = e.currentTarget.files?.item(0);
+            if (file) uploadImage(file);
         }}
+        oncancel={() => {
+            menuCoords = null;
+        }}
+        disabled={readonly}
     />
 {/snippet}

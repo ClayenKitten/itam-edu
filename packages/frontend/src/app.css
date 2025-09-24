@@ -323,8 +323,8 @@
 
         > .context-menu-item {
             @apply flex items-center gap-2 p-3
-                bg-surface hover:bg-surface-tint
-                transition-colors duration-100
+                bg-surface hover:bg-surface-tint focus-within:bg-surface-tint
+                outline-0 transition-colors duration-100
                 cursor-pointer;
 
             > .ph,
