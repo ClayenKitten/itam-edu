@@ -2,7 +2,16 @@ import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../courses/repository";
 import { S3 } from "../infra/s3";
-import { getFileRoute, type FileRoute } from "./router";
+import { parseFileSpec } from "./parser";
+import {
+    UserAvatar,
+    CourseCover,
+    CourseBanner,
+    CourseIcon,
+    LessonCover,
+    LessonVideo,
+    type FileSpec
+} from "./specs";
 import { BadRequestError, NotFoundError, type HttpError } from "../api/errors";
 
 /** Uploads file. */
@@ -14,22 +23,15 @@ export class UploadFile {
     ) {}
 
     public async invoke(
-        /** User uploading the file. */
         actor: User | null,
-        /**
-         * Path to the file.
-         *
-         * @example
-         * ["courses", "1234", "banner.png"]
-         * */
         path: string[],
-        /** Binary data to upload. */
         blob: Blob
     ): Promise<string | HttpError> {
-        const route = getFileRoute(path);
-        if (!route) return new BadRequestError("Requested route is invalid.");
+        const spec = parseFileSpec(path);
+        if (!spec) return new BadRequestError("Requested route is invalid.");
 
-        if (!this.isAllowed(actor, route)) {
+        const allowed = await this.isAllowed(actor, spec);
+        if (!allowed) {
             return new NotFoundError(
                 "You are not allowed to upload that file."
             );
@@ -42,44 +44,41 @@ export class UploadFile {
 
     private async isAllowed(
         actor: User | null,
-        route: FileRoute
+        spec: FileSpec
     ): Promise<boolean> {
-        switch (route.scope) {
-            case "course":
-            case "course":
-            case "course": {
-                const course = await this.courseRepository.getById(
-                    route.courseId
-                );
-                const permissions = course?.getPermissionsFor(actor);
-                if (!course || !permissions) {
-                    return false;
-                }
-                if (permissions.course.update !== true) {
-                    return false;
-                }
-                return true;
-            }
-            case "lesson":
-            case "lesson": {
-                const course = await this.courseRepository.getById(
-                    route.courseId
-                );
-                const permissions = course?.getPermissionsFor(actor);
-                if (!course || !permissions) {
-                    return false;
-                }
-                if (permissions.lessons.edit !== true) {
-                    return false;
-                }
-                return true;
-            }
-            case "user": {
-                return actor !== null && actor.id === route.userId;
-            }
-            default:
-                let guard: never = route;
-                return false;
+        if (spec instanceof UserAvatar) {
+            return actor !== null && actor.id === spec.userId;
         }
+
+        if (
+            spec instanceof CourseCover ||
+            spec instanceof CourseBanner ||
+            spec instanceof CourseIcon
+        ) {
+            const course = await this.courseRepository.getById(spec.courseId);
+            const permissions = course?.getPermissionsFor(actor);
+            if (!course || !permissions) {
+                return false;
+            }
+            if (permissions.course.update !== true) {
+                return false;
+            }
+            return true;
+        }
+
+        if (spec instanceof LessonCover || spec instanceof LessonVideo) {
+            const course = await this.courseRepository.getById(spec.courseId);
+            const permissions = course?.getPermissionsFor(actor);
+            if (!course || !permissions) {
+                return false;
+            }
+            if (permissions.lessons.edit !== true) {
+                return false;
+            }
+            return true;
+        }
+
+        const _never: never = spec as never;
+        return false;
     }
 }

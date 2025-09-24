@@ -2,7 +2,16 @@ import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../courses/repository";
 import { S3 } from "../infra/s3";
-import { getFileRoute, type FileRoute } from "./router";
+import { parseFileSpec } from "./parser";
+import {
+    UserAvatar,
+    CourseCover,
+    CourseBanner,
+    CourseIcon,
+    LessonCover,
+    LessonVideo,
+    type FileSpec
+} from "./specs";
 import { BadRequestError, NotFoundError, type HttpError } from "../api/errors";
 
 /**
@@ -10,7 +19,7 @@ import { BadRequestError, NotFoundError, type HttpError } from "../api/errors";
  *
  * `itam-edu-files` is expected to proxy returned urls, though some clients
  * may decide to use them directly.
- * */
+ */
 @injectable()
 export class PresignDownloadUrl {
     public constructor(
@@ -20,62 +29,48 @@ export class PresignDownloadUrl {
 
     /** Returns presigned url to download a file. */
     public async invoke(
-        /** User requesting presigned url. */
         actor: User | null,
-        /**
-         * Path to the file.
-         *
-         * @example
-         * ["courses", "1234", "banner.png"]
-         * */
         path: string[]
     ): Promise<string | HttpError> {
-        const route = getFileRoute(path);
-        if (!route) return new BadRequestError("Requested route is invalid.");
+        const spec = parseFileSpec(path);
+        if (!spec) {
+            return new BadRequestError("Requested route is invalid.");
+        }
 
-        if (!this.isAllowed(actor, route)) {
+        const allowed = await this.isAllowed(actor, spec);
+        if (!allowed) {
             return new NotFoundError("Requested file does not exist.");
         }
 
         const pathStr = `/${path.join("/")}`;
-        const url = await this.s3.signUrl(pathStr, "GET");
-        return url;
+        return this.s3.signUrl(pathStr, "GET");
     }
 
     private async isAllowed(
         actor: User | null,
-        route: FileRoute
+        spec: FileSpec
     ): Promise<boolean> {
-        switch (route.scope) {
-            case "course":
-            case "course":
-            case "course": {
-                const course = await this.courseRepository.getById(
-                    route.courseId
-                );
-                const permissions = course?.getPermissionsFor(actor);
-                if (!course || !permissions) {
-                    return false;
-                }
-                return true;
-            }
-            case "lesson":
-            case "lesson": {
-                const course = await this.courseRepository.getById(
-                    route.courseId
-                );
-                const permissions = course?.getPermissionsFor(actor);
-                if (!course || !permissions) {
-                    return false;
-                }
-                return true;
-            }
-            case "user": {
-                return true;
-            }
-            default:
-                let guard: never = route;
+        if (spec instanceof UserAvatar) return true;
+        if (
+            spec instanceof CourseCover ||
+            spec instanceof CourseBanner ||
+            spec instanceof CourseIcon
+        ) {
+            const course = await this.courseRepository.getById(spec.courseId);
+            const permissions = course?.getPermissionsFor(actor);
+            if (!course || !permissions) {
                 return false;
+            }
+            return true;
         }
+        if (spec instanceof LessonCover || spec instanceof LessonVideo) {
+            const course = await this.courseRepository.getById(spec.courseId);
+            const permissions = course?.getPermissionsFor(actor);
+            if (!course || !permissions) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
