@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../courses/repository";
 import { S3 } from "../infra/s3";
+import sharp from "sharp";
 import { parseFileSpec } from "./parser";
 import {
     UserAvatar,
@@ -10,6 +11,7 @@ import {
     CourseIcon,
     LessonCover,
     LessonVideo,
+    ImageSpec,
     type FileSpec
 } from "./specs";
 import { BadRequestError, NotFoundError, type HttpError } from "../api/errors";
@@ -37,9 +39,32 @@ export class UploadFile {
             );
         }
 
-        const pathStr = `/${path.join("/")}`;
-        await this.s3.upload(pathStr, blob);
-        return pathStr;
+        if (spec instanceof ImageSpec) {
+            const imgBuffer = await blob.bytes();
+            const pngBuffer = await sharp(imgBuffer, {})
+                .resize(spec.size.width, spec.size.height, { fit: "cover" })
+                .png()
+                .toBuffer();
+            const newPath = this.withPngExtension(path);
+            const pathStr = `/${newPath.join("/")}`;
+
+            // Prefer correct content-type. Wrap Buffer to Blob for existing S3.upload signature.
+            const pngBlob = new Blob([pngBuffer], { type: "image/png" });
+            await this.s3.upload(pathStr, pngBlob);
+            return pathStr;
+        } else {
+            const pathStr = `/${path.join("/")}`;
+            await this.s3.upload(pathStr, blob);
+            return pathStr;
+        }
+    }
+
+    private withPngExtension(path: string[]): string[] {
+        if (path.length === 0) return path;
+        const parts = [...path];
+        const base = parts[parts.length - 1]!.replace(/\.[^.]+$/, "");
+        parts[parts.length - 1] = `${base}.png`;
+        return parts;
     }
 
     private async isAllowed(

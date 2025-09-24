@@ -2,6 +2,7 @@
     import PlainEditor from "$lib/components/editor/PlainEditor.svelte";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { formatLessonSchedule } from "$lib/format";
+    import { filePath } from "$lib/path";
     import type { LessonSchedule } from "$lib/types";
 
     let {
@@ -51,7 +52,7 @@
             <h4>Обложка</h4>
             <div class="h-[200px]">
                 <ImageUploader
-                    url={banner}
+                    url={banner ? filePath(banner) : null}
                     onChange={onBannerChange}
                     aspectRatio="320/200"
                     height="200px"
