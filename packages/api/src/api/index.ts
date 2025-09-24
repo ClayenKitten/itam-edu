@@ -67,7 +67,7 @@ export class ApiServer {
 
     private async createElysia() {
         return new Elysia({
-            serve: { maxRequestBodySize: 50 * 1024 * 1024 },
+            serve: { maxRequestBodySize: 5 * 1024 * 1024 * 1024 },
             strictPath: true
         })
             .use(corsPlugin())
