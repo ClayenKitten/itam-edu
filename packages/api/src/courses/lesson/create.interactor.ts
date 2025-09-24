@@ -40,9 +40,14 @@ export class CreateLesson {
         const newLesson = new Lesson(
             randomUUID(),
             course.id,
-            data.info,
+            {
+                title: data.title,
+                description: data.description,
+                banner: null,
+                video: null
+            },
             data.content,
-            data.homeworks,
+            data.homeworkIds,
             data.schedule
         );
 

@@ -5,7 +5,6 @@
     import Loader from "$lib/components/Loader.svelte";
     import type { Course, Lesson } from "$lib/types";
     import { qr } from "@svelte-put/qr/svg";
-    import { courseFilePath } from "itam-edu-common";
 
     const { course, lesson }: Props = $props();
     type Props = {

@@ -3,9 +3,9 @@ import type {
     CourseQueryPartialDto
 } from "itam-edu-api/src/courses/query";
 import type {
-    CreateLessonDTO,
     LessonDTO,
-    LessonPartialDTO
+    LessonPartialDTO,
+    LessonScheduleDTO
 } from "itam-edu-api/src/courses/lesson/query";
 import type {
     CreateHomeworkDTO,
@@ -35,7 +35,7 @@ export type Student = StudentDto;
 
 export type Lesson = LessonDTO;
 export type LessonPartial = LessonPartialDTO;
-export type CreateLesson = CreateLessonDTO;
+export type LessonSchedule = LessonScheduleDTO;
 export type Attendee = AttendeeDto;
 
 export type Homework = HomeworkDTO;

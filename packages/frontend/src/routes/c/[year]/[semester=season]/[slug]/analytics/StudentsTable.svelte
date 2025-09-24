@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type {
         Attendee,
         Course,
@@ -10,7 +10,6 @@
         Student,
         SubmissionPartial
     } from "$lib/types";
-    import { userFilePath } from "itam-edu-common";
 
     const {
         course,
@@ -104,7 +103,7 @@
             <div
                 class="cover size-[50px] text-md-regular rounded-xs"
                 style:background-image={student.avatar
-                    ? `url(${userFilePath(student.id).avatar(student.avatar)})`
+                    ? `url(${filePath(student.avatar)})`
                     : null}
             >
                 <span>{student.tgUsername[0]}</span>

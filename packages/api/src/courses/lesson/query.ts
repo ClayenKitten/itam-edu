@@ -144,8 +144,6 @@ export type LessonPartialDTO = {
     schedule: LessonScheduleDTO | null;
 };
 
-export type CreateLessonDTO = Omit<LessonDTO, "id" | "position" | "createdAt">;
-
 export type LessonScheduleDTO = {
     date: Date;
     online: {} | null;

@@ -1,9 +1,10 @@
 <script lang="ts">
     import LoginWindow from "$lib/windows/LoginWindow.svelte";
-    import { userFilePath, type User } from "itam-edu-common";
+    import type { User } from "itam-edu-common";
     import type { CoursePartial } from "$lib/types";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
     import Notifications from "./Notifications.svelte";
+    import { filePath } from "$lib/path";
 
     let { user, courses, standalone = false }: Props = $props();
 
@@ -103,7 +104,7 @@
                 "text-on-primary text-md-medium bg-primary rounded-xs overflow-hidden"
             ]}
             style:background-image={user.info.avatar
-                ? `url(${userFilePath(user.id).avatar(user.info.avatar)})`
+                ? `url(${filePath(user.info.avatar)})`
                 : null}
             aria-label="Профиль"
             title="Профиль"

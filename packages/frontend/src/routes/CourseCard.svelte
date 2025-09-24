@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type { CoursePartial } from "$lib/types";
-    import { courseFilePath } from "itam-edu-common";
 
     const { course }: Props = $props();
 
@@ -24,7 +23,7 @@
         {#if course.cover}
             <img
                 class="size-full object-cover object-top"
-                src={courseFilePath(course.id, course.cover)}
+                src={filePath(course.cover)}
                 alt=""
             />
         {:else}

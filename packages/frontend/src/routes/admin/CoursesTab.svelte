@@ -1,11 +1,10 @@
 <script lang="ts">
     import api from "$lib/api";
     import { goto, invalidate } from "$app/navigation";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import { getPrompter } from "$lib/Prompter.svelte";
     import type { CoursePartial, CreateCourse } from "$lib/types";
     import { doOnce } from "$lib/utils/doOnce";
-    import { courseFilePath, User } from "itam-edu-common";
     import CoursePrompt from "./CoursePrompt.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import { formatPeriod } from "$lib/format";
@@ -74,7 +73,7 @@
                             "bg-cover bg-center bg-primary rounded-md "
                         ]}
                         style:background-image={course.cover
-                            ? `url(${courseFilePath(course.id, course.cover)})`
+                            ? `url(${filePath(course.cover)})`
                             : null}
                     >
                         {#if !course.cover}

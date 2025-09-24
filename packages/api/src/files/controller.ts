@@ -3,137 +3,66 @@ import Elysia, { t } from "elysia";
 import { AuthenticationPlugin } from "../api/plugins/authenticate";
 import { randomUUID } from "crypto";
 import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { S3 } from "../infra/s3";
-import { FileAuthorizer } from "./file-authorizer";
+import { PresignDownloadUrl } from "./presign-download.interactor";
+import { UploadFile } from "./upload.interactor";
+import { HttpError } from "../api/errors";
 
 @injectable()
 export class FileController {
     public constructor(
-        protected authPlugin: AuthenticationPlugin,
-        protected s3: S3,
-        protected authorizer: FileAuthorizer
+        private authPlugin: AuthenticationPlugin,
+        private presignDownloadInteractor: PresignDownloadUrl,
+        private uploadInteractor: UploadFile
     ) {}
 
     public toElysia() {
         return new Elysia({ tags: ["Files"], prefix: "/files" })
             .use(this.authPlugin.toElysia())
             .get(
-                "/courses/:course/:file",
+                "/*",
                 async ({ user, params, status, redirect }) => {
-                    if (
-                        !this.authorizer.canDownloadCourseFile(
-                            user,
-                            params.course,
-                            params.file
-                        )
-                    )
-                        return status(403);
-                    const url = await this.s3.signUrl(
-                        `/courses/${params.course}/${params.file}`,
-                        "GET"
+                    const path = params["*"].split("/");
+                    const result = await this.presignDownloadInteractor.invoke(
+                        user,
+                        path
                     );
-                    return redirect(url, 307);
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return redirect(result, 307);
                 },
                 {
                     detail: {
-                        summary: "Download course file",
+                        summary: "Download file",
                         description:
-                            "Returns redirect to signed download URL of course file."
+                            "Returns redirect to presigned download URL of the file."
                     }
                 }
             )
             .post(
-                "/courses/:course",
+                "/*",
                 async ({ user, params, status, body }) => {
-                    if (
-                        !this.authorizer.canUploadCourseFile(
-                            user,
-                            params.course,
-                            body.file.name
-                        )
-                    )
-                        return status(403);
-
-                    const filename = this.cleanupFilename(body.file.name);
-                    await this.s3.upload(
-                        `/courses/${params.course}/${filename}`,
+                    const path = params["*"].split("/");
+                    const result = await this.uploadInteractor.invoke(
+                        user,
+                        path,
                         body.file
                     );
-                    return { filename };
+                    if (result instanceof HttpError) {
+                        return status(result.code, result.message);
+                    }
+                    return { filename: result };
                 },
                 {
                     requireAuthentication: true,
                     body: t.Object({
                         file: t.File({
-                            type: [
-                                "image/png",
-                                "image/jpeg",
-                                "video/mp4",
-                                "video/mpeg",
-                                "video/webm"
-                            ],
-                            maxSize: "1024m",
-                            description: "File to upload"
+                            description: "File to upload."
                         })
                     }),
                     detail: {
-                        summary: "Upload course file",
-                        description: "Uploads course file to the S3 storage.",
-                        security: REQUIRE_TOKEN
-                    }
-                }
-            )
-            .get(
-                "/users/:user/avatar/:file",
-                async ({ user, params, status, redirect }) => {
-                    if (
-                        !this.authorizer.canDownloadUserAvatar(
-                            user,
-                            params.user
-                        )
-                    )
-                        return status(403);
-
-                    const url = await this.s3.signUrl(
-                        `/users/${params.user}/avatar/${params.file}`,
-                        "GET"
-                    );
-                    return redirect(url, 307);
-                },
-                {
-                    detail: {
-                        summary: "Download user avatar",
-                        description:
-                            "Redirects to signed download URL of user avatar.",
-                        security: REQUIRE_TOKEN
-                    }
-                }
-            )
-            .post(
-                "/users/:user/avatar",
-                async ({ user, params, status, body }) => {
-                    if (!this.authorizer.canUploadUserAvatar(user, params.user))
-                        return status(403);
-
-                    const filename = this.cleanupFilename(body.file.name);
-                    await this.s3.upload(
-                        `/users/${params.user}/avatar/${filename}`,
-                        body.file
-                    );
-                    return { filename };
-                },
-                {
-                    requireAuthentication: true,
-                    body: t.Object({
-                        file: t.File({
-                            type: ["image/png", "image/jpeg"],
-                            maxSize: "10m",
-                            description: "File to upload"
-                        })
-                    }),
-                    detail: {
-                        summary: "Upload avatar",
-                        description: "Uploads user avatar to the S3 storage.",
+                        summary: "Upload file",
+                        description: "Uploads file to the S3 storage.",
                         security: REQUIRE_TOKEN
                     }
                 }

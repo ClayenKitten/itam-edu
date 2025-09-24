@@ -1,8 +1,7 @@
 <script lang="ts">
     let {
-        filename = $bindable(null),
-        filenameToSrc,
-        onUpload,
+        url,
+        onChange,
         aspectRatio = "1/1",
         size = "cover",
         height = "auto",
@@ -11,9 +10,9 @@
     }: Props = $props();
 
     type Props = {
-        filename: string | null;
-        filenameToSrc: (filename: string) => string;
-        onUpload: (file: File) => Promise<string | null>;
+        /** URL of the initiailly uploaded file, if any. */
+        url: string | null;
+        onChange: (file: File | null) => void | Promise<void>;
         height?: `${number}px` | `${number}%` | "auto" | null;
         width?: `${number}px` | `${number}%` | "auto" | null;
         /** Aspect ratio of the uploaded image. */
@@ -25,6 +24,22 @@
         size?: "contain" | "cover";
         readonly?: boolean;
     };
+
+    let objectUrl: string | null = $state(null);
+    let isDeleted = $state(false);
+    let src = $derived(isDeleted ? null : (objectUrl ?? url));
+
+    function uploadImage(file: File) {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = URL.createObjectURL(file);
+        isDeleted = false;
+        onChange?.(file);
+    }
+    function deleteImage() {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        isDeleted = true;
+        onChange?.(null);
+    }
 </script>
 
 <label
@@ -39,31 +54,20 @@
     ]}
     style:height
     style:width
-    style:background-image={filename ? `url(${filenameToSrc(filename)})` : null}
+    style:background-image={src ? `url(${src})` : null}
     style:aspect-ratio={aspectRatio}
 >
     {#if !readonly}
-        <input
-            class="h-0 w-0 outline-0"
-            type="file"
-            accept="image/png,image/jpeg"
-            onchange={async e => {
-                const file = (e.target! as HTMLInputElement).files?.item(0);
-                if (file) {
-                    let newFilename = await onUpload(file);
-                    if (newFilename) filename = newFilename;
-                }
-            }}
-        />
+        {@render fileInput()}
     {/if}
-    {#if filename && !readonly}
+    {#if src && !readonly}
         <button
             class={[
                 "absolute top-4 right-4 flex items-center justify-center h-[46px] w-[46px]",
                 "rounded-full bg-primary text-on-primary hover:bg-on-primary hover:text-primary",
                 "transition-colors duration-100"
             ]}
-            onclick={() => (filename = null)}
+            onclick={deleteImage}
             aria-label="Удалить"
         >
             <i class="ph ph-trash text-[20px]"></i>
@@ -87,3 +91,16 @@
         </div>
     {/if}
 </label>
+
+{#snippet fileInput()}
+    <input
+        type="file"
+        class="hidden"
+        accept="image/png,image/jpeg"
+        onchange={async e => {
+            const file = (e.target! as HTMLInputElement).files?.item(0);
+            if (!file) return;
+            uploadImage(file);
+        }}
+    />
+{/snippet}

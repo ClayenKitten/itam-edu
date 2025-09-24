@@ -1,7 +1,7 @@
 <script lang="ts">
     import VideoUploader from "$lib/components/upload/VideoUploader.svelte";
+    import { filePath } from "$lib/path";
     import type { Course } from "$lib/types";
-    import { courseFilePath } from "itam-edu-common";
 
     let { course, video, onUploaded, onDeleted }: Props = $props();
 
@@ -26,7 +26,7 @@
     </header>
     <div class="flex items-center gap-4">
         <VideoUploader
-            url={video ? courseFilePath(course.id, video) : null}
+            url={video ? filePath(video) : null}
             {onUploaded}
             {onDeleted}
         />

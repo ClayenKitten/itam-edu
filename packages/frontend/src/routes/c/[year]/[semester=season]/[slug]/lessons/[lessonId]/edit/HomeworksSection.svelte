@@ -4,23 +4,12 @@
     import { format as formatDate } from "date-fns";
     import HomeworkAttachmentWindow from "./HomeworkAttachmentWindow.svelte";
 
-    let {
-        course,
-        homeworkIds: originalHomeworkIds,
-        onUpdate
-    }: Props = $props();
+    let { course, homeworkIds = $bindable() }: Props = $props();
 
     type Props = {
         course: Course;
         homeworkIds: string[];
-        onUpdate: (homeworkIds: string[]) => void;
     };
-
-    let homeworkIds: string[] = $state(originalHomeworkIds);
-
-    $effect(() => {
-        onUpdate(homeworkIds);
-    });
 
     let homeworkAttachmentWindow: HomeworkAttachmentWindow;
 </script>

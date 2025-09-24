@@ -1,6 +1,6 @@
 <script lang="ts">
     import RichContent from "$lib/components/editor/RichContent.svelte";
-    import { courseFilePath, userFilePath } from "itam-edu-common";
+    import { filePath } from "$lib/path";
 
     let { data } = $props();
 </script>
@@ -17,7 +17,7 @@
     >
         {#if data.course.banner}
             <img
-                src={courseFilePath(data.course.id, data.course.banner)}
+                src={filePath(data.course.banner)}
                 alt=""
                 class="w-full h-full object-cover object-center"
             />
@@ -42,9 +42,7 @@
                         <div
                             class="cover h-full aspect-square text-md-medium rounded-lg"
                             style:background-image={staffMember.avatar
-                                ? `url(${userFilePath(staffMember.id).avatar(
-                                      staffMember.avatar
-                                  )})`
+                                ? `url(${filePath(staffMember.avatar)})`
                                 : null}
                         >
                             <span>{staffMember.tgUsername[0] ?? "?"}</span>
@@ -56,7 +54,7 @@
                                     {staffMember.lastName}
                                 </h4>
                                 <a
-                                    class="text-primary text-md-regular hover:underline"
+                                    class="self-start text-primary text-md-regular hover:underline"
                                     href={`https://t.me/${staffMember.tgUsername}`}
                                     target="_blank"
                                 >

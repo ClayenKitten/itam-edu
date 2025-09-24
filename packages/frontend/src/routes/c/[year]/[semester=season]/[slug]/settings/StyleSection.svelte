@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
-    import api from "$lib/api";
+    import { invalidateAll } from "$app/navigation";
+    import api, { UploadClient } from "$lib/api";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { getColors, themes, type Theme } from "$lib/metadata";
+    import { filePath } from "$lib/path";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { Course } from "$lib/types";
-    import { courseFilePath } from "itam-edu-common";
+
     import { getContext } from "svelte";
 
     let { readonly, course }: Props = $props();
@@ -21,23 +22,47 @@
         themeOverride.theme = courseClone.theme as Theme;
     });
 
+    let uploadCover: File | null | undefined = $state();
+    let uploadIcon: File | null | undefined = $state();
+    let uploadBanner: File | null | undefined = $state();
+
     async function save() {
+        const fileClient = new UploadClient({ fetch });
+
+        const [cover, icon, banner] = await Promise.all([
+            uploadCover !== undefined
+                ? uploadCover === null
+                    ? null
+                    : fileClient.uploadCourseFile(
+                          course.id,
+                          "cover",
+                          uploadCover
+                      )
+                : courseClone.cover,
+            uploadIcon !== undefined
+                ? uploadIcon === null
+                    ? null
+                    : fileClient.uploadCourseFile(course.id, "icon", uploadIcon)
+                : courseClone.icon,
+            uploadBanner !== undefined
+                ? uploadBanner === null
+                    ? null
+                    : fileClient.uploadCourseFile(
+                          course.id,
+                          "banner",
+                          uploadBanner
+                      )
+                : courseClone.banner
+        ]);
+
         const result = await api({ fetch })
             .courses({ course: courseClone.id })
-            .patch({
-                theme: courseClone.theme,
-                cover: courseClone.cover,
-                icon: courseClone.icon,
-                banner: courseClone.banner
-            });
+            .patch({ theme: courseClone.theme, cover, icon, banner });
         if (result.error) {
             toaster.add("Не удалось сохранить изменения", "error");
             return;
         }
-        await Promise.all([
-            invalidate("app:course"),
-            invalidate("app:courses")
-        ]);
+        await invalidateAll();
         toaster.add("Изменения сохранены");
     }
 </script>
@@ -92,22 +117,12 @@
                 </p>
             </header>
             <ImageUploader
-                bind:filename={courseClone.cover}
+                url={courseClone.cover ? filePath(courseClone.cover) : null}
+                onChange={file => {
+                    uploadCover = file;
+                }}
                 height="315px"
                 aspectRatio="315/315"
-                filenameToSrc={filename =>
-                    courseFilePath(courseClone.id, filename)}
-                onUpload={async file => {
-                    const response = await api({ fetch })
-                        .files.courses({ course: courseClone.id })
-                        .post({ file });
-                    if (response.error) {
-                        alert(response.status);
-                        return null;
-                    }
-                    const { filename } = response.data;
-                    return filename;
-                }}
                 {readonly}
             />
         </div>
@@ -122,22 +137,12 @@
                 </p>
             </header>
             <ImageUploader
-                bind:filename={courseClone.icon}
+                url={courseClone.icon ? filePath(courseClone.icon) : null}
+                onChange={file => {
+                    uploadIcon = file;
+                }}
                 height="128px"
                 aspectRatio="1/1"
-                filenameToSrc={filename =>
-                    courseFilePath(courseClone.id, filename)}
-                onUpload={async file => {
-                    const response = await api({ fetch })
-                        .files.courses({ course: courseClone.id })
-                        .post({ file });
-                    if (response.error) {
-                        alert(response.status);
-                        return null;
-                    }
-                    const { filename } = response.data;
-                    return filename;
-                }}
                 {readonly}
             />
         </div>
@@ -152,20 +157,11 @@
             </p>
         </header>
         <ImageUploader
-            bind:filename={courseClone.banner}
-            aspectRatio="5/1"
-            filenameToSrc={filename => courseFilePath(courseClone.id, filename)}
-            onUpload={async file => {
-                const response = await api({ fetch })
-                    .files.courses({ course: courseClone.id })
-                    .post({ file });
-                if (response.error) {
-                    alert(response.status);
-                    return null;
-                }
-                const { filename } = response.data;
-                return filename;
+            url={courseClone.banner ? filePath(courseClone.banner) : null}
+            onChange={file => {
+                uploadBanner = file;
             }}
+            aspectRatio="5/1"
             {readonly}
         />
     </div>

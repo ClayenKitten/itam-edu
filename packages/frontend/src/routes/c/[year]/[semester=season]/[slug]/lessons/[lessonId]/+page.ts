@@ -1,4 +1,4 @@
-import { courseFilePath } from "itam-edu-common";
+import { filePath } from "$lib/path";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ parent }) => {
@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ parent }) => {
         description: lesson.description || description,
         pageImage: lesson.banner
             ? {
-                  url: courseFilePath(course.id, lesson.banner),
+                  url: filePath(lesson.banner),
                   width: 996,
                   height: 600
               }

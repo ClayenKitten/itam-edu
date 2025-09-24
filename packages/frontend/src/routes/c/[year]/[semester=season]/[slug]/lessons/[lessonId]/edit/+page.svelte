@@ -5,7 +5,7 @@
     import ContentSection from "./ContentSection.svelte";
     import InfoSection from "./InfoSection.svelte";
     import type { LessonDTO } from "itam-edu-api/src/courses/lesson/query";
-    import api from "$lib/api";
+    import api, { UploadClient } from "$lib/api";
     import ScheduleSection from "./ScheduleSection.svelte";
     import equal from "fast-deep-equal";
     import VideoSection from "./VideoSection.svelte";
@@ -16,7 +16,9 @@
 
     let lesson: LessonDTO = $state(structuredClone(data.lesson));
     let modifiedHomeworks: string[] = $state(data.lesson.homeworkIds);
-    let uploadVideoFile: File | null = $state(null);
+
+    let uploadVideoFile: File | null | undefined = $state();
+    let uploadBannerFile: File | null | undefined = $state();
 
     async function save() {
         let changedSchedule = !equal(data.lesson.schedule, lesson.schedule);
@@ -29,34 +31,46 @@
             return;
         }
 
-        let video: string | null = lesson.video;
-        if (uploadVideoFile !== null) {
-            const response = await api({ fetch })
-                .files.courses({ course: data.course.id })
-                .post({ file: uploadVideoFile });
-            if (response.error) {
-                toaster.add("Не удалось сохранить видео", "error");
-                return null;
+        const fileClient = new UploadClient({ fetch });
+
+        if (uploadBannerFile !== undefined) {
+            if (uploadBannerFile === null) {
+                lesson.banner = null;
+            } else {
+                lesson.banner = await fileClient.uploadLessonFile(
+                    data.course.id,
+                    data.lesson.id,
+                    "cover",
+                    uploadBannerFile
+                );
             }
-            video = response.data.filename;
         }
 
-        const update = {
-            info: {
-                title: lesson.title,
-                description: lesson.description,
-                banner: lesson.banner,
-                video
-            },
-            content: lesson.content,
-            homeworks: modifiedHomeworks,
-            schedule: changedSchedule ? lesson.schedule : undefined
-        };
+        if (uploadVideoFile !== undefined) {
+            if (uploadVideoFile === null) {
+                lesson.video = null;
+            } else {
+                lesson.video = await fileClient.uploadLessonFile(
+                    data.course.id,
+                    data.lesson.id,
+                    "video",
+                    uploadVideoFile
+                );
+            }
+        }
 
         const result = await api({ fetch })
             .courses({ course: data.course.id })
             .lessons({ lesson: data.lesson.id })
-            .patch(update);
+            .patch({
+                title: lesson.title,
+                description: lesson.description,
+                banner: lesson.banner,
+                video: lesson.video,
+                content: lesson.content,
+                homeworkIds: modifiedHomeworks,
+                schedule: changedSchedule ? lesson.schedule : undefined
+            });
         if (result.error) {
             toaster.add("Не удалось сохранить урок", "error");
             return;
@@ -73,7 +87,16 @@
         "max-w-[1000px] mx-10 @min-[1200px]/main:mx-40"
     ]}
 >
-    <InfoSection course={data.course} bind:lesson />
+    <InfoSection
+        position={lesson.position}
+        bind:title={lesson.title}
+        bind:description={lesson.description}
+        schedule={lesson.schedule}
+        banner={lesson.banner}
+        onBannerChange={file => {
+            uploadBannerFile = file;
+        }}
+    />
     <ScheduleSection bind:schedule={lesson.schedule} />
     <VideoSection
         course={data.course}
@@ -87,10 +110,7 @@
     <ContentSection bind:content={lesson.content} />
     <HomeworksSection
         course={data.course}
-        homeworkIds={lesson.homeworkIds}
-        onUpdate={hwIds => {
-            modifiedHomeworks = hwIds;
-        }}
+        bind:homeworkIds={lesson.homeworkIds}
     />
     <footer class="flex gap-4">
         <a

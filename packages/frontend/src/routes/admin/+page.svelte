@@ -2,7 +2,6 @@
     import { page } from "$app/state";
     import Header from "$lib/components/Header.svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import { userFilePath } from "itam-edu-common";
     import UsersTab from "./UsersTab.svelte";
     import CoursesTab from "./CoursesTab.svelte";
 
@@ -19,7 +18,7 @@
 
 <div id="wrapper" class="flex flex-col bg-background">
     <Header user={data.user} courses={data.courses} standalone />
-    <main class="flex flex-col h-full gap-7 m-10 min-[1200px]:mx-80">
+    <main class="flex flex-col h-full gap-7 m-10 min-[1400px]:mx-80">
         <h2>Административная панель</h2>
         <menu class="flex h-12 gap-2">
             <a

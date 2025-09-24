@@ -1,9 +1,8 @@
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
-import { lookupCourseId } from "$lib/path";
+import { filePath, lookupCourseId } from "$lib/path";
 import type { Metadata, Theme } from "$lib/metadata";
-import { courseFilePath } from "itam-edu-common";
 
 export const load: LayoutLoad = async ({ fetch, params, depends }) => {
     depends("app:course", "app:lessons", "app:homeworks");
@@ -16,14 +15,14 @@ export const load: LayoutLoad = async ({ fetch, params, depends }) => {
         theme: course.theme as Theme
     };
     if (course.icon) {
-        metadata.favicon = `/files/courses/${course.id}/${course.icon}`;
+        metadata.favicon = filePath(course.icon);
     }
     if (course.description) {
         metadata.description = course.description;
     }
     if (course.cover) {
         metadata.pageImage = {
-            url: courseFilePath(course.id, course.cover),
+            url: filePath(course.cover),
             width: 315,
             height: 315
         };

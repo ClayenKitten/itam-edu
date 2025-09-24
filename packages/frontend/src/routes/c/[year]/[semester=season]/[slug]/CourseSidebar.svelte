@@ -3,9 +3,9 @@
     import { page } from "$app/state";
     import api from "$lib/api";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type { Course, CoursePartial } from "$lib/types";
-    import { courseFilePath, type User } from "itam-edu-common";
+    import type { User } from "itam-edu-common";
 
     const { course, courses, user }: Props = $props();
     type Props = {
@@ -143,11 +143,7 @@
         >
             <div class="flex items-center gap-1.5">
                 {#if course.icon}
-                    <img
-                        src={courseFilePath(course.id, course.icon)}
-                        class="size-8"
-                        alt=""
-                    />
+                    <img src={filePath(course.icon)} class="size-8" alt="" />
                 {/if}
                 {course.title}
             </div>
@@ -173,10 +169,7 @@
                 >
                     {#if courseOption.icon}
                         <img
-                            src={courseFilePath(
-                                courseOption.id,
-                                courseOption.icon
-                            )}
+                            src={filePath(courseOption.icon)}
                             class="size-8"
                             alt=""
                         />

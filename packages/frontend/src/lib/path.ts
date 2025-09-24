@@ -16,6 +16,10 @@ export function coursePath({
     return `/c/${year}/${semester}/${slug}`;
 }
 
+export function filePath(file: string) {
+    return `/files/${file}`;
+}
+
 export async function lookupCourseId(
     fetch: typeof window.fetch,
     params: { year: string; slug: string; semester: "autumn" | "spring" }

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
+    import { filePath } from "$lib/path";
     import type {
         Attendee,
         Course,
@@ -8,7 +9,6 @@
         StaffMember,
         Student
     } from "$lib/types";
-    import { userFilePath } from "itam-edu-common";
 
     const { course, lesson, staff, students, attendees }: Props = $props();
     type Props = {
@@ -183,7 +183,7 @@
             <div
                 class="cover size-[24px] text-sm-regular rounded-2xs"
                 style:background-image={member.avatar
-                    ? `url(${userFilePath(member.id).avatar(member.avatar)})`
+                    ? `url(${filePath(member.avatar)})`
                     : null}
             >
                 <span>{member.tgUsername[0]}</span>
@@ -210,9 +210,7 @@
                     <div
                         class="cover size-[50px] text-md-regular rounded-xs"
                         style:background-image={member?.avatar
-                            ? `url(${userFilePath(member.id).avatar(
-                                  member.avatar
-                              )})`
+                            ? `url(${filePath(member.avatar)})`
                             : null}
                     >
                         <span>{member?.tgUsername[0] ?? "?"}</span>

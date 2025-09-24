@@ -1,66 +1,60 @@
 <script lang="ts">
-    import api from "$lib/api";
     import PlainEditor from "$lib/components/editor/PlainEditor.svelte";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
     import { formatLessonSchedule } from "$lib/format";
-    import type { Course, CreateLesson, Lesson } from "$lib/types";
-    import { courseFilePath } from "itam-edu-common";
+    import type { LessonSchedule } from "$lib/types";
 
-    let { course, lesson = $bindable() }: Props = $props();
+    let {
+        position,
+        title = $bindable(),
+        description = $bindable(),
+        schedule,
+        banner,
+        onBannerChange
+    }: Props = $props();
 
     type Props = {
-        course: Course;
-        lesson: Lesson | CreateLesson;
+        position: number | null;
+        title: string;
+        description: string | null;
+        schedule: LessonSchedule | null;
+        banner: string | null;
+        onBannerChange: (file: File | null) => void;
     };
 </script>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
-        {#if "position" in lesson}
-            <h2>Урок {lesson.position + 1}</h2>
+        {#if position !== null}
+            <h2>Урок {position + 1}</h2>
         {:else}
             <h2>Новый урок</h2>
         {/if}
-        {#if lesson.schedule}
+        {#if schedule}
             <p class="text-md-regular text-on-surface-muted">
-                {formatLessonSchedule(lesson.schedule)}
+                {formatLessonSchedule(schedule)}
             </p>
         {/if}
     </header>
     <label class="flex flex-col gap-2">
         <h4>Название</h4>
-        <input class="input" bind:value={lesson.title} maxlength={80} />
+        <input class="input" bind:value={title} maxlength={80} />
     </label>
     <div class="flex flex-wrap gap-6">
         <label class="flex-1 flex flex-col gap-2 min-w-[min(100%,400px)]">
             <h4>Описание</h4>
             <div class="flex-1 min-h-[200px] max-h-[200px]">
-                <PlainEditor
-                    bind:content={lesson.description}
-                    characterLimit={300}
-                />
+                <PlainEditor bind:content={description} characterLimit={300} />
             </div>
         </label>
         <label class="shrink-0 flex flex-col gap-2">
             <h4>Обложка</h4>
             <div class="h-[200px]">
                 <ImageUploader
-                    bind:filename={lesson.banner}
+                    url={banner}
+                    onChange={onBannerChange}
                     aspectRatio="320/200"
                     height="200px"
-                    filenameToSrc={filename =>
-                        courseFilePath(lesson.courseId, filename)}
-                    onUpload={async file => {
-                        const response = await api({ fetch })
-                            .files.courses({ course: course.id })
-                            .post({ file });
-                        if (response.error) {
-                            alert(response.status);
-                            return null;
-                        }
-                        const { filename } = response.data;
-                        return filename;
-                    }}
                 />
             </div>
         </label>

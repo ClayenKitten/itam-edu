@@ -1,9 +1,8 @@
 <script lang="ts">
     import RichContent from "$lib/components/editor/RichContent.svelte";
     import { formatLessonSchedule } from "$lib/format.js";
-    import { coursePath } from "$lib/path.js";
+    import { coursePath, filePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
-    import { courseFilePath } from "itam-edu-common";
 
     let { data } = $props();
 </script>
@@ -73,7 +72,7 @@
             preload="metadata"
             class="self-start max-h-150 shadow rounded-xs"
         >
-            <source src={courseFilePath(data.course.id, data.lesson.video)} />
+            <source src={filePath(data.lesson.video)} />
         </video>
     {/if}
     {#if data.lesson.content}

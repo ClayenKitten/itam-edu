@@ -2,9 +2,9 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type { CoursePartial } from "$lib/types";
-    import { courseFilePath, User } from "itam-edu-common";
+    import { User } from "itam-edu-common";
 
     let { user, course }: Props = $props();
     type Props = {
@@ -49,7 +49,7 @@
                 "bg-cover bg-center bg-primary rounded-md "
             ]}
             style:background-image={course.cover
-                ? `url(${courseFilePath(course.id, course.cover)})`
+                ? `url(${filePath(course.cover)})`
                 : null}
         >
             {#if !course.cover}

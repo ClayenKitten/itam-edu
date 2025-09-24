@@ -44,13 +44,27 @@ export class UpdateLesson {
             lesson.id,
             lesson.courseId,
             {
-                ...lesson.info,
-                ...change.info
+                title:
+                    change.title === undefined
+                        ? lesson.info.title
+                        : change.title,
+                description:
+                    change.description === undefined
+                        ? lesson.info.description
+                        : change.description,
+                banner:
+                    change.banner === undefined
+                        ? lesson.info.banner
+                        : change.banner,
+                video:
+                    change.video === undefined
+                        ? lesson.info.video
+                        : change.video
             },
             change.content === undefined ? lesson.content : change.content,
-            change.homeworks === undefined
+            change.homeworkIds === undefined
                 ? lesson.homeworks
-                : change.homeworks,
+                : change.homeworkIds,
             change.schedule === undefined ? lesson.schedule : change.schedule
         );
         await this.repo.save(newLesson);

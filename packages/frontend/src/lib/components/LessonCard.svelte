@@ -1,10 +1,9 @@
 <script lang="ts">
     import { formatLessonSchedule } from "$lib/format";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type { Course, LessonPartial } from "$lib/types";
     import { format as formatDate } from "date-fns";
     import { ru } from "date-fns/locale";
-    import { courseFilePath } from "itam-edu-common";
 
     const { course, position, lesson }: Props = $props();
 
@@ -31,7 +30,7 @@
         {#if lesson.banner}
             <img
                 class="w-full h-full overflow-hidden object-cover"
-                src={courseFilePath(lesson.courseId, lesson.banner)}
+                src={filePath(lesson.banner)}
                 alt=""
             />
         {:else}

@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import type { Course, Submission } from "$lib/types";
     import type { SubmissionPartial } from "$lib/types";
-    import { userFilePath } from "itam-edu-common";
 
     const { course, submissions, selectedSubmission }: Props = $props();
     type Props = {
@@ -56,7 +55,7 @@
                         "bg-cover bg-center bg-primary rounded-2xs"
                     ]}
                     style:background-image={submission.student.avatar
-                        ? `url(${userFilePath(submission.student.id).avatar(submission.student.avatar)})`
+                        ? `url(${filePath(submission.student.avatar)})`
                         : null}
                 >
                     {#if !submission.student.avatar}

@@ -1,10 +1,11 @@
 <script lang="ts">
     import type { Course, Homework, Submission } from "$lib/types";
-    import { userFilePath, type User } from "itam-edu-common";
+    import type { User } from "itam-edu-common";
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import RichContent from "$lib/components/editor/RichContent.svelte";
+    import { filePath } from "$lib/path";
 
     const { course, homework, submission }: Props = $props();
     type Props = {
@@ -43,7 +44,7 @@
                 "bg-cover bg-center bg-primary rounded-sm"
             ]}
             style:background-image={submission.student.avatar
-                ? `url(${userFilePath(submission.student.id).avatar(submission.student.avatar)})`
+                ? `url(${filePath(submission.student.avatar)})`
                 : null}
         >
             {#if !submission.student.avatar}

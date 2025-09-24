@@ -1,7 +1,8 @@
 <script lang="ts">
-    import api from "$lib/api";
+    import { UploadClient } from "$lib/api";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
-    import { userFilePath, type User } from "itam-edu-common";
+    import { filePath } from "$lib/path";
+    import type { User } from "itam-edu-common";
 
     let { user, avatar, onchange }: Props = $props();
 
@@ -13,25 +14,27 @@
 
     let menuCoords: { x: number; y: number } | null = $state(null);
 
+    let key: string | null = $state(null); // Key for cache-busting on update
+    let url = $derived.by(() => {
+        if (avatar === null) return null;
+        return filePath(avatar) + (key ? `?key=${key}` : "");
+    });
     const upload = async (file: File) => {
-        const response = await api({ fetch })
-            .files.users({ user: user.id })
-            .avatar.post({ file });
-        if (response.error) {
-            alert(response.status);
-            return null;
+        const client = new UploadClient({ fetch });
+        try {
+            const filename = await client.uploadAvatar(user.id, file);
+            onchange?.(filename);
+        } catch (e) {
+            alert("Не удалось сохранить аватар.");
         }
-        const { filename } = response.data;
-        onchange?.(filename);
+        key = crypto.randomUUID().slice(0, 6);
     };
 </script>
 
 <div class="relative size-40">
     <button
         class="cover size-40 bg-primary rounded-2xl overflow-hidden text-on-primary text-xl-medium"
-        style:background-image={avatar
-            ? `url(${userFilePath(user.id).avatar(avatar)})`
-            : null}
+        style:background-image={avatar ? `url(${url})` : null}
         onclick={e => {
             e.stopPropagation();
             const rect = e.currentTarget.getBoundingClientRect();

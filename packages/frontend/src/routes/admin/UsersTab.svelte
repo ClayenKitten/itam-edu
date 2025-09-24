@@ -1,8 +1,9 @@
 <script lang="ts">
     import Loader from "$lib/components/Loader.svelte";
     import { formatGlobalRole } from "$lib/format";
+    import { filePath } from "$lib/path";
     import type { UserDto } from "itam-edu-api/src/users/query";
-    import { User, userFilePath } from "itam-edu-common";
+    import type { User } from "itam-edu-common";
 
     const { user, users }: Props = $props();
     type Props = {
@@ -32,9 +33,7 @@
                     <div
                         class="cover size-[50px] text-md-regular rounded-xs"
                         style:background-image={curUser.avatar
-                            ? `url(${userFilePath(curUser.id).avatar(
-                                  curUser.avatar
-                              )})`
+                            ? `url(${filePath(curUser.avatar)})`
                             : null}
                     >
                         <span>{curUser.tgUsername[0]}</span>

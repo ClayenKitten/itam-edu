@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { userFilePath } from "itam-edu-common";
     import AddUserDialog from "./AddUserDialog.svelte";
     import { format as formatDate } from "date-fns";
     import { ru } from "date-fns/locale";
     import api from "$lib/api";
     import { invalidate } from "$app/navigation";
     import type { StaffMember, Student } from "$lib/types";
-    import { coursePath } from "$lib/path";
+    import { coursePath, filePath } from "$lib/path";
     import QrCodeDialog from "./QrCodeDialog.svelte";
 
     const { data } = $props();
@@ -145,9 +144,7 @@
                         <div
                             class="cover size-[50px] text-md-regular rounded-xs"
                             style:background-image={member?.avatar
-                                ? `url(${userFilePath(member.id).avatar(
-                                      member.avatar
-                                  )})`
+                                ? `url(${filePath(member.avatar)})`
                                 : null}
                         >
                             <span>{member?.tgUsername[0] ?? "?"}</span>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import LessonCard from "$lib/components/LessonCard.svelte";
-    import { coursePath } from "$lib/path";
-    import { courseFilePath } from "itam-edu-common";
+    import { coursePath, filePath } from "$lib/path";
+
     import { getCourseChangeDisplay } from "./courseUpdate";
     import { format as formatDate } from "date-fns";
 
@@ -17,7 +17,7 @@
                         "w-full h-full object-cover object-center",
                         data.course.banner ? `` : ""
                     ]}
-                    src={courseFilePath(data.course.id, data.course.banner)}
+                    src={filePath(data.course.banner)}
                     alt=""
                 />
             {/if}

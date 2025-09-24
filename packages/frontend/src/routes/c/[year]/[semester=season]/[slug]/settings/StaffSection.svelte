@@ -2,13 +2,12 @@
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
     import type { Course, Invite, StaffMember } from "$lib/types";
-    import { userFilePath } from "itam-edu-common";
     import CreateInviteModal from "./CreateInviteModal.svelte";
     import { formatDistanceToNowStrict } from "date-fns";
     import { ru } from "date-fns/locale";
     import { getToaster } from "$lib/Toaster.svelte";
     import { page } from "$app/state";
-    import { coursePath } from "$lib/path";
+    import { filePath } from "$lib/path";
 
     const { course, staff, invites }: Props = $props();
     interface Props {
@@ -95,9 +94,7 @@
         <div
             class="cover size-16 text-md-regular rounded-2xs"
             style:background-image={staffMember.avatar
-                ? `url(${userFilePath(staffMember.id).avatar(
-                      staffMember.avatar
-                  )})`
+                ? `url(${filePath(staffMember.avatar)})`
                 : null}
         >
             {staffMember.tgUsername[0]}
