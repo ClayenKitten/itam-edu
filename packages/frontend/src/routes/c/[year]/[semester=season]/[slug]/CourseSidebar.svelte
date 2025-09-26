@@ -136,7 +136,7 @@
     >
         <summary
             class={[
-                "w-full flex justify-between items-center h-13 px-4 bg-surface-tint",
+                "w-full h-13 flex justify-between items-center px-4 bg-surface-dimmed",
                 "border border-surface-border",
                 "rounded-xs overflow-hidden shadow"
             ]}

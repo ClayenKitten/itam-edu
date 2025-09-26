@@ -188,7 +188,7 @@
 
         td {
             &.selectedCell {
-                background-color: var(--color-surface-tint);
+                background-color: var(--color-surface-dimmed);
             }
         }
 
