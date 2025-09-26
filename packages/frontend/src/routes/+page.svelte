@@ -22,19 +22,25 @@
         return tabs[0];
     });
 
-    let filter = $derived.by((): ((c: CoursePartial) => boolean) => {
+    const my = data.courses.filter(c => {
+        if (data.user === null) return false;
+        if (c.isArchived) return false;
+        if (!data.user.isCourseMember(c.id)) return false;
+        return true;
+    });
+    const active = data.courses.filter(c => !c.isArchived);
+    const archived = data.courses.filter(c => c.isArchived);
+    const displayed = $derived.by(() => {
         switch (tab) {
             case "my":
-                return c => {
-                    if (data.user === null) return false;
-                    if (c.isArchived) return false;
-                    if (!data.user.isCourseMember(c.id)) return false;
-                    return true;
-                };
+                return my;
             case "active":
-                return c => !c.isArchived;
+                return active;
             case "archive":
-                return c => c.isArchived;
+                return archived;
+            default:
+                let guard: never = tab;
+                return [];
         }
     });
 </script>
@@ -47,33 +53,37 @@
         class="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] content-start py-12.5 px-7.5 gap-7.5"
     >
         <menu class="flex h-12 gap-2">
-            {#if data.user !== null}
-                <a
-                    class={["tabBtn", tab === "my" && "selected"]}
-                    href={`${page.url.origin}${page.url.pathname}`}
-                >
-                    Мои
-                </a>
-                <a
-                    class={["tabBtn", tab === "active" && "selected"]}
-                    href={`${page.url.origin}${page.url.pathname}?tab=active`}
-                >
-                    Текущие
-                </a>
-            {:else}
-                <a
-                    class={["tabBtn", tab === "active" && "selected"]}
-                    href={`${page.url.origin}${page.url.pathname}`}
-                >
-                    Текущие
-                </a>
+            {#if data.user !== null || archived.length > 0}
+                {#if data.user !== null}
+                    <a
+                        class={["tabBtn", tab === "my" && "selected"]}
+                        href={`${page.url.origin}${page.url.pathname}`}
+                    >
+                        Мои
+                    </a>
+                    <a
+                        class={["tabBtn", tab === "active" && "selected"]}
+                        href={`${page.url.origin}${page.url.pathname}?tab=active`}
+                    >
+                        Текущие
+                    </a>
+                {:else}
+                    <a
+                        class={["tabBtn", tab === "active" && "selected"]}
+                        href={`${page.url.origin}${page.url.pathname}`}
+                    >
+                        Текущие
+                    </a>
+                {/if}
+                {#if archived.length > 0}
+                    <a
+                        class={["tabBtn", tab === "archive" && "selected"]}
+                        href={`${page.url.origin}${page.url.pathname}?tab=archive`}
+                    >
+                        Архивные
+                    </a>
+                {/if}
             {/if}
-            <a
-                class={["tabBtn", tab === "archive" && "selected"]}
-                href={`${page.url.origin}${page.url.pathname}?tab=archive`}
-            >
-                Архивные
-            </a>
         </menu>
         <aside
             class="row-span-2 w-[400px] h-min flex flex-col gap-5 p-5 border border-on-primary rounded-sm"
@@ -90,12 +100,42 @@
                 bind:highlighted={highlightedDate}
             />
         </aside>
-        <section
-            class="grid grid-cols-[repeat(auto-fill,317px)] h-min items-start gap-x-4 gap-y-6.5"
-        >
-            {#each data.courses.filter(filter) as course (course.id)}
-                <CourseCard {course} />
-            {/each}
-        </section>
+        {#if displayed.length > 0}
+            <section
+                class="grid grid-cols-[repeat(auto-fill,317px)] h-min items-start gap-x-4 gap-y-6.5"
+            >
+                {#each displayed as course (course.id)}
+                    <CourseCard {course} />
+                {/each}
+            </section>
+        {:else}
+            <div class="flex flex-col mt-[25dvh] items-center gap-2">
+                {#if tab === "my"}
+                    <h4 class="text-on-surface-contrast">
+                        Пора записаться на курс! 🎓
+                    </h4>
+                    <span class="text-lg-regular text-on-surface-muted">
+                        Посмотреть список идущих сейчас курсов можно в
+                        <a class="text-primary underline" href="?tab=active">
+                            соседней вкладке
+                        </a>.
+                    </span>
+                {:else}
+                    <h4 class="text-on-surface-contrast">
+                        Как-то здесь пустовато! 🫒
+                    </h4>
+                    <span class="text-lg-regular text-on-surface-muted">
+                        Ждать появления курса приятнее с друзьями в
+                        <a
+                            class="text-primary underline"
+                            href="https://info.itatmisis.ru/coworking"
+                            target="_blank"
+                        >
+                            коворкинге
+                        </a>.
+                    </span>
+                {/if}
+            </div>
+        {/if}
     </main>
 </div>
