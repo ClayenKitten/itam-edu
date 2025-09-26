@@ -6,6 +6,7 @@
     import StudentsTable from "./StudentsTable.svelte";
     import LessonsTable from "./LessonsTable.svelte";
     import HomeworksTable from "./HomeworksTable.svelte";
+    import { formatNounAfterNum } from "$lib/format";
 
     const { data } = $props();
 
@@ -39,19 +40,37 @@
             class="flex-1 flex flex-col gap-2 p-6 bg-surface rounded-sm shadow"
         >
             <h2>{data.students.length}</h2>
-            <p class="text-xl-medium text-on-surface-muted">Студентов</p>
+            <p class="text-xl-medium text-on-surface-muted">
+                {formatNounAfterNum(data.students.length, [
+                    "Студент",
+                    "Студента",
+                    "Студентов"
+                ])}
+            </p>
         </div>
         <div
             class="flex-1 flex flex-col gap-2 p-6 bg-surface rounded-sm shadow"
         >
             <h2>{data.course.lessons.length}</h2>
-            <p class="text-xl-medium text-on-surface-muted">Уроков</p>
+            <p class="text-xl-medium text-on-surface-muted">
+                {formatNounAfterNum(data.lessons.length, [
+                    "Урок",
+                    "Урока",
+                    "Уроков"
+                ])}
+            </p>
         </div>
         <div
             class="flex-1 flex flex-col gap-2 p-6 bg-surface rounded-sm shadow"
         >
             <h2>{data.course.homeworks.length}</h2>
-            <p class="text-xl-medium text-on-surface-muted">Заданий</p>
+            <p class="text-xl-medium text-on-surface-muted">
+                {formatNounAfterNum(data.homeworks.length, [
+                    "Задание",
+                    "Задания",
+                    "Заданий"
+                ])}
+            </p>
         </div>
     </section>
     <!-- Page and mode selectors -->
