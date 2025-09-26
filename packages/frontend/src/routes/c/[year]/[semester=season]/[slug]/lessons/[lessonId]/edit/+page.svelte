@@ -15,7 +15,6 @@
     const toaster = getToaster();
 
     let lesson: LessonDTO = $state(structuredClone(data.lesson));
-    let modifiedHomeworks: string[] = $state(data.lesson.homeworkIds);
 
     let uploadVideoFile: File | null | undefined = $state();
     let uploadBannerFile: File | null | undefined = $state();
@@ -68,7 +67,7 @@
                 banner: lesson.banner,
                 video: lesson.video,
                 content: lesson.content,
-                homeworkIds: modifiedHomeworks,
+                homeworkIds: lesson.homeworkIds,
                 schedule: changedSchedule ? lesson.schedule : undefined
             });
         if (result.error) {
