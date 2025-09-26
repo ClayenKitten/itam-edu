@@ -51,102 +51,105 @@
 
 <section class="flex flex-col gap-5">
     <article class="flex flex-col gap-5 p-6 rounded-lg shadow">
-        <h4>
-            <select bind:value={period}>
-                {#each periods as option (option)}
-                    <option class="text-lg-medium">{option}</option>
-                {/each}
-            </select>
-        </h4>
-        <div
-            class={[
-                "grid gap-y-4 gap-x-12 items-center",
-                "grid-cols-[max-content_1fr]"
-            ]}
-        >
-            <div class="text-md-medium text-on-surface-muted">Курс</div>
-            <div></div>
-            <hr class="border-surface-border my-1 col-span-full" />
+        {#if periods.length > 0}
+            <h4>
+                <select bind:value={period}>
+                    {#each periods as option (option)}
+                        <option class="text-lg-medium">{option}</option>
+                    {/each}
+                </select>
+            </h4>
+            <hr class="border-surface-border" />
+        {/if}
+        <ul class="flex flex-col gap-4">
             {#each courses.filter(c => formatPeriod(c) === period) as course (course.id)}
-                <a class="flex gap-4 max-w-120" href={coursePath(course)}>
-                    <div
-                        class={[
-                            "size-[86px] shrink-0 flex justify-center items-center",
-                            "bg-cover bg-center bg-primary rounded-md "
-                        ]}
-                        style:background-image={course.cover
-                            ? `url(${filePath(course.cover)})`
-                            : null}
+                <li class="flex">
+                    <a
+                        class="flex-1 flex items-start gap-4"
+                        href={coursePath(course)}
                     >
-                        {#if !course.cover}
-                            <span class="text-on-primary text-sm-regular">
-                                {course.title.slice(0, 8)}
-                            </span>
-                        {/if}
-                    </div>
-                    <div class="flex-1 flex flex-col">
-                        <h4 class="flex gap-2 text-on-surface-contrast">
-                            {course.title}
-                            {#if course.isArchived}
-                                <div
-                                    class={[
-                                        "px-3 py-1",
-                                        "bg-on-primary text-primary text-sm-regular",
-                                        "rounded-xs"
-                                    ]}
-                                >
-                                    Архивирован
-                                </div>
-                            {/if}
-                            {#if !course.isPublished}
-                                <div
-                                    class={[
-                                        "px-3 py-1",
-                                        "bg-on-primary text-primary text-sm-regular",
-                                        "rounded-xs"
-                                    ]}
-                                >
-                                    Неопубликован
-                                </div>
-                            {/if}
-                        </h4>
-                        <p
-                            class="text-on-surface text-md-regular line-clamp-2 text-ellipsis"
+                        <div
+                            class={[
+                                "size-[86px] shrink-0 flex justify-center items-center",
+                                "bg-cover bg-center bg-primary rounded-md "
+                            ]}
+                            style:background-image={course.cover
+                                ? `url(${filePath(course.cover)})`
+                                : null}
                         >
-                            {#if course.description}
-                                {course.description}
-                            {:else}
-                                <span class="text-on-surface-muted italic">
-                                    Здесь должно быть описание курса...
+                            {#if !course.cover}
+                                <span class="text-on-primary text-sm-regular">
+                                    {course.title.slice(0, 8)}
                                 </span>
                             {/if}
-                        </p>
+                        </div>
+                        <div class="flex-1 flex flex-col">
+                            <h4
+                                class="flex items-start gap-2 text-on-surface-contrast"
+                            >
+                                {course.title}
+                                {#if course.isArchived}
+                                    <div
+                                        class={[
+                                            "px-3 py-1",
+                                            "bg-on-primary text-primary text-sm-regular",
+                                            "rounded-xs"
+                                        ]}
+                                    >
+                                        Архивирован
+                                    </div>
+                                {/if}
+                                {#if !course.isPublished}
+                                    <div
+                                        class={[
+                                            "px-3 py-1",
+                                            "bg-on-primary text-primary text-sm-regular",
+                                            "rounded-xs"
+                                        ]}
+                                    >
+                                        Неопубликован
+                                    </div>
+                                {/if}
+                            </h4>
+                            <p
+                                class="text-on-surface text-md-regular line-clamp-2 text-ellipsis"
+                            >
+                                {#if course.description}
+                                    {course.description}
+                                {:else}
+                                    <span class="text-on-surface-muted italic">
+                                        Здесь должно быть описание курса...
+                                    </span>
+                                {/if}
+                            </p>
+                        </div>
+                    </a>
+                    <div class="shrink-0 group relative size-12">
+                        <button
+                            class={[
+                                "size-12 flex justify-center items-center",
+                                "bg-surface hover:bg-surface-tint rounded-xs"
+                            ]}
+                            aria-label="Меню"
+                            onclick={() => {}}
+                        >
+                            <i
+                                class="ph ph-dots-three-outline-vertical text-[20px]"
+                            ></i>
+                        </button>
+                        <menu
+                            class="not-group-focus-within:hidden context-menu absolute top-12 right-0 z-10"
+                        >
+                            {@render contextMenuBtns(course)}
+                        </menu>
                     </div>
-                </a>
-                <div class="group relative size-12 ml-auto">
-                    <button
-                        class={[
-                            "size-12 flex justify-center items-center",
-                            "bg-surface hover:bg-surface-tint rounded-xs"
-                        ]}
-                        aria-label="Меню"
-                        onclick={() => {}}
-                    >
-                        <i class="ph ph-dots-three-outline-vertical text-[20px]"
-                        ></i>
-                    </button>
-                    <menu
-                        class="not-group-focus-within:hidden context-menu absolute top-12 right-0 z-10"
-                    >
-                        {@render contextMenuBtns(course)}
-                    </menu>
-                </div>
+                </li>
             {:else}
                 <div class="col-span-full mx-auto p-12 text-xl-medium">
                     Пусто! 🧐
                 </div>
             {/each}
-        </div>
+        </ul>
     </article>
     <menu class="flex">
         <button
