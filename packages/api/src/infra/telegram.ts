@@ -31,7 +31,7 @@ export class TelegramBot {
 
     public constructor(
         @inject("AppConfig")
-        config: AppConfig,
+        private config: AppConfig,
         private userRepo: UserRepository
     ) {
         this.grammy = new Grammy(config.telegram.token);
@@ -123,7 +123,6 @@ export class TelegramBot {
         await Promise.allSettled([this.grammy.stop(), this.worker.stop()]);
     }
 
-    /** Sends a text message to the specified chat. */
     private async onCommand(command: BotCommand) {
         switch (command.kind) {
             case "SendMessage": {
@@ -134,16 +133,38 @@ export class TelegramBot {
                 if (link && link.url.includes("localhost")) {
                     text += `\n\n<a href="${link.url}">${link.text}</a>`;
                 }
+                if (link && link.url.startsWith("/")) {
+                    link.url = this.config.server.origin + link.url;
+                }
 
-                await this.grammy.api.sendMessage(chatId, text, {
-                    parse_mode: "HTML",
-                    link_preview_options: link
-                        ? {
-                              url: link.url,
-                              prefer_small_media: true
-                          }
-                        : undefined
-                });
+                try {
+                    await this.grammy.api.sendMessage(chatId, text, {
+                        parse_mode: "HTML",
+                        reply_markup: link
+                            ? {
+                                  inline_keyboard: [
+                                      [
+                                          {
+                                              text: link.text,
+                                              url: link.url
+                                          }
+                                      ]
+                                  ]
+                              }
+                            : undefined,
+                        link_preview_options: link
+                            ? {
+                                  url: link.url,
+                                  prefer_small_media: true
+                              }
+                            : undefined
+                    });
+                } catch (error) {
+                    logger.warning("Failed to send Telegram message", {
+                        error
+                    });
+                    throw error;
+                }
                 logger.debug("Outbound message sent to user", { chatId, text });
                 break;
             }
