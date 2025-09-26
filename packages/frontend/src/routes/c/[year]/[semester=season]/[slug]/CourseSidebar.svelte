@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/state";
-    import api from "$lib/api";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
+    import { formatLessonPlace } from "$lib/format";
     import { coursePath, filePath } from "$lib/path";
-    import type { Course, CoursePartial } from "$lib/types";
+    import type { Course, CoursePartial, LessonPartial } from "$lib/types";
+    import { format as formatDate, formatDistanceToNowStrict } from "date-fns";
+    import { ru } from "date-fns/locale";
     import type { User } from "itam-edu-common";
 
     const { course, courses, user }: Props = $props();
@@ -16,75 +17,28 @@
 
     let isCourseSelectorOpen = $state(false);
 
-    const enroll = async () => {
-        if (!user) {
-            await goto("?login");
-            return;
-        }
-        const result = await api({ fetch })
-            .courses({ course: course.id })
-            .students({ student: user.id })
-            .put();
-        if (result.error) {
-            alert(result.status);
-            return;
-        }
-        await Promise.all([invalidate("app:course"), invalidate("app:user")]);
-    };
+    const scheduledLessons = $derived(
+        course.lessons
+            .filter(l => l.schedule !== null)
+            .sort(
+                (a, b) =>
+                    a.schedule!.date.getTime() - b.schedule!.date.getTime()
+            ) as LessonPartialWithSchedule[]
+    );
 
-    const enrollmentButton = $derived.by((): EnrollmentButton => {
-        const isStaff = user && user.isCourseStaff(course.id);
-        const isStudent = user && user.isCourseStudent(course.id);
+    const ongoingLesson = $derived(
+        scheduledLessons.find(l => {
+            const diff = new Date().getTime() - l.schedule.date.getTime();
+            return diff > 0 && diff < 2 * 60 * 60 * 1000;
+        }) ?? null
+    );
 
-        if (!course.isPublished) {
-            return {
-                text: "Курс не опубликован",
-                icon: "eye-slash",
-                mode: "label"
-            };
-        }
-        if (course.isArchived) {
-            return {
-                text: "Курс в архиве",
-                icon: "archive",
-                mode: isStaff ? "label" : "disabled"
-            };
-        }
+    const upcomingLesson = $derived(
+        scheduledLessons.find(l => l.schedule!.date > new Date()) ?? null
+    );
 
-        if (isStudent) {
-            return {
-                text: "Вы студент курса",
-                icon: "student",
-                mode: "label"
-            };
-        } else if (isStaff) {
-            return {
-                text: course.isEnrollmentOpen
-                    ? "Запись открыта"
-                    : "Запись закрыта",
-                icon: course.isEnrollmentOpen ? "door-open" : "door",
-                mode: "label"
-            };
-        } else {
-            if (course.isEnrollmentOpen) {
-                return {
-                    text: "Записаться на курс",
-                    icon: "student",
-                    mode: "button"
-                };
-            } else {
-                return {
-                    text: "Запись закрыта",
-                    icon: "student",
-                    mode: "disabled"
-                };
-            }
-        }
-    });
-    type EnrollmentButton = {
-        text: string;
-        icon: string;
-        mode: "button" | "label" | "disabled";
+    type LessonPartialWithSchedule = LessonPartial & {
+        schedule: Exclude<LessonPartial["schedule"], null>;
     };
 </script>
 
@@ -108,24 +62,7 @@
             {@render link("/settings", "Настройки", "gear-six")}
         </ul>
     {/if}
-    <button
-        class={[
-            "mt-auto flex justify-center items-center gap-2.5 h-11",
-            "text-md-medium rounded-xs text-nowrap",
-            enrollmentButton.mode === "button" && "text-on-primary bg-primary",
-            enrollmentButton.mode === "label" &&
-                "text-primary bg-on-primary cursor-default",
-            enrollmentButton.mode === "disabled" &&
-                "text-on-surface-muted bg-on-surface-disabled cursor-default"
-        ]}
-        disabled={enrollmentButton.mode !== "button"}
-        onclick={enroll}
-    >
-        {#key enrollmentButton.icon}
-            <i class="ph ph-{enrollmentButton.icon} text-[24px]"></i>
-        {/key}
-        <span>{enrollmentButton.text}</span>
-    </button>
+    {@render lessonNotification()}
 </nav>
 
 {#snippet courseSelector()}
@@ -145,7 +82,9 @@
                 {#if course.icon}
                     <img src={filePath(course.icon)} class="size-8" alt="" />
                 {/if}
-                <span class="overflow-hidden overflow-ellipsis">
+                <span
+                    class="overflow-hidden overflow-ellipsis whitespace-nowrap"
+                >
                     {course.title}
                 </span>
             </div>
@@ -216,5 +155,69 @@
             <i class="ph ph-{icon} text-[24px]"></i>
         {/if}
         <span>{text}</span>
+    </a>
+{/snippet}
+
+{#snippet lessonNotification()}
+    {#if ongoingLesson !== null}
+        {@render lessonNotificationCard({
+            title: "Урок уже начался!",
+            place: formatLessonPlace(ongoingLesson.schedule),
+            href: `${coursePath(course)}/lessons/${ongoingLesson.id}`,
+            highlighted: true
+        })}
+    {:else if upcomingLesson !== null}
+        {@const isSoon = (() => {
+            const diff =
+                upcomingLesson.schedule.date.getTime() - new Date().getTime();
+            return diff > 0 && diff < 8 * 60 * 60 * 1000;
+        })()}
+        {@render lessonNotificationCard({
+            title: isSoon ? "Урок начнётся через" : "Следующий урок",
+            subtitle: isSoon
+                ? `${formatDistanceToNowStrict(upcomingLesson.schedule.date, { locale: ru })}`
+                : formatDate(
+                      upcomingLesson.schedule.date,
+                      "dd.MM (cccccc) в HH:mm",
+                      { locale: ru }
+                  ),
+            place: formatLessonPlace(upcomingLesson.schedule),
+            href: `${coursePath(course)}/lessons/${upcomingLesson.id}`,
+            highlighted: isSoon
+        })}
+    {/if}
+{/snippet}
+
+{#snippet lessonNotificationCard(opts: {
+    title: string;
+    subtitle?: string;
+    place: string;
+    href: string;
+    highlighted: boolean;
+})}
+    <a
+        class={[
+            "mt-auto px-5 py-3 flex flex-col",
+            opts.highlighted
+                ? "bg-on-primary border-primary-border hover:border-primary"
+                : "bg-surface-tint hover:bg-on-primary border-primary-border hover:border-primary",
+            "border rounded-sm",
+            "whitespace-nowrap",
+            "transition-colors duration-200"
+        ]}
+        href={opts.href}
+    >
+        <p class="text-lg-medium text-on-surface">{opts.title}</p>
+        {#if opts.subtitle}
+            <p class="text-lg-medium text-on-surface">{opts.subtitle}</p>
+        {/if}
+        <p
+            class={[
+                "mt-1 overflow-hidden overflow-ellipsis",
+                "text-sm-regular text-on-surface-muted"
+            ]}
+        >
+            {opts.place}
+        </p>
     </a>
 {/snippet}
