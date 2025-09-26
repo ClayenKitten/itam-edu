@@ -1,6 +1,6 @@
 import Code from "@tiptap/extension-code";
 import Strike from "@tiptap/extension-strike";
-import { Table } from "@tiptap/extension-table";
+import { Table, TableCell, TableHeader } from "@tiptap/extension-table";
 import type { DOMOutputSpec } from "@tiptap/pm/model";
 
 /**
@@ -36,4 +36,12 @@ export const PatchedCode = Code.extend({
             "Mod-Shift-m": () => this.editor.commands.toggleCode()
         };
     }
+});
+
+export const PatchedTableHeader = TableHeader.extend({
+    content: "paragraph"
+});
+
+export const PatchedTableCell = TableCell.extend({
+    content: "paragraph+"
 });

@@ -2,7 +2,13 @@ import { type AnyExtension, type JSONContent } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { TableKit } from "@tiptap/extension-table";
 import { generateJSON } from "@tiptap/html";
-import { PatchedCode, PatchedStrike, WrappedTable } from "./extensions/patches";
+import {
+    PatchedCode,
+    PatchedStrike,
+    PatchedTableCell,
+    PatchedTableHeader,
+    WrappedTable
+} from "./extensions/patches";
 import { all, createLowlight } from "lowlight";
 import { CodeBlock } from "./extensions/codeBlock";
 import type { Prompter } from "$lib/Prompter.svelte";
@@ -71,11 +77,15 @@ export function getExtensions(
     if (features.tables) {
         extensions.push(
             TableKit.configure({
-                table: false
+                table: false,
+                tableHeader: false,
+                tableCell: false
             }),
             WrappedTable.configure({
                 resizable: true
-            })
+            }),
+            PatchedTableHeader,
+            PatchedTableCell
         );
     }
     return extensions;
