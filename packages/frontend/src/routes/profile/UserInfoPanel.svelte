@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { invalidate, invalidateAll } from "$app/navigation";
     import api from "$lib/api";
     import type { User } from "itam-edu-common";
     import Avatar from "./Avatar.svelte";
@@ -52,11 +52,11 @@
     const logout = async () => {
         const response = await api({ fetch }).users.sessions.current.delete();
         if (response.error) {
-            alert(response.status);
+            toaster.add("Не удалось выйти из аккаунта", "error");
             return;
         }
-        await invalidate("app:user");
-        await goto("/");
+        await invalidateAll();
+        toaster.add("Вы вышли из аккаунта");
     };
 </script>
 
