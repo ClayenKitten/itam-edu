@@ -68,11 +68,7 @@
 
 <menu class="flex h-11 gap-2">
     <input
-        class={[
-            "flex-1 mr-auto px-2.5 max-w-90",
-            "text-md-regular text-on-surface placeholder:text-on-surface-muted",
-            "bg-surface-tint border border-surface-border rounded-2xs"
-        ]}
+        class="input-small flex-1 mr-auto px-2.5 max-w-90"
         type="search"
         placeholder="Поиск..."
         bind:value={search}
