@@ -77,36 +77,31 @@
 <dialog
     class={[
         "modal",
-        "hidden open:flex flex-col gap-7.5 w-150 max-h-150 px-10 pt-10 pb-12.5 m-auto",
+        "hidden open:flex flex-col gap-4 w-150 max-h-150 p-8 m-auto",
         "text-on-surface bg-surface rounded-xl",
         "backdrop:bg-[black] backdrop:opacity-30"
     ]}
     bind:this={dialog}
     onclose={clearUrl}
 >
-    <header class="flex flex-col">
-        <button
-            class="self-end flex justify-center items-center h-8 w-8 border border-primary rounded-[8px]"
-            aria-label="Закрыть"
-            onclick={() => dialog.close()}
-        >
-            <i class="ph ph-x text-[12.5px]"></i>
-        </button>
-        <h2 class="self-center">Приглашение на курс</h2>
-    </header>
+    <h2>Приглашение</h2>
     {#if user && invite}
-        <div class="flex flex-col gap-5">
-            <p class="text-center text-lg-regular">
+        <p class="text-lg-medium">
+            {#if invite.role === "admin"}
                 Вы приглашены на курс "{invite.courseTitle}" в роли
-                {#if invite.role === "admin"}
-                    администратора.
-                {:else if invite.role === "teacher"}
-                    преподавателя.
-                {/if}.
-            </p>
-            <button class="btn big" onclick={() => redeem(invite!)}>
+                администратора.
+            {:else if invite.role === "teacher"}
+                Вы приглашены на курс "{invite.courseTitle}" в роли
+                преподавателя.
+            {/if}
+        </p>
+        <menu class="flex justify-end gap-2">
+            <button class="btn secondary" onclick={() => dialog.close()}>
+                Отклонить
+            </button>
+            <button class="btn" onclick={() => redeem(invite!)}>
                 Принять
             </button>
-        </div>
+        </menu>
     {/if}
 </dialog>

@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
+    import { invalidateAll } from "$app/navigation";
     import api from "$lib/api";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
     import { coursePath, filePath } from "$lib/path";
+    import { getToaster } from "$lib/Toaster.svelte";
     import type { CoursePartial } from "$lib/types";
     import { User } from "itam-edu-common";
 
@@ -11,6 +12,7 @@
         user: User;
         course: CoursePartial;
     };
+    const toaster = getToaster();
 
     let showContextMenu = $state(false);
 
@@ -29,11 +31,11 @@
             .students({ student: user.id })
             .delete();
         if (response.error) {
-            alert(response.status);
+            toaster.add("Не удалось покинуть курс", "error");
             return;
         }
-        await Promise.all([invalidate("app:courses"), invalidate("app:user")]);
-        alert(`Вы покинули курс ${course.title}`);
+        await invalidateAll();
+        toaster.add(`Вы покинули курс ${course.title}`);
     };
 </script>
 
