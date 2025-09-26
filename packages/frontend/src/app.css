@@ -39,6 +39,7 @@
     --color-surface: #ffffff;
     --color-surface-tint: #f9fafb;
     --color-surface-border: #e9e9e9;
+    --color-surface-border-focus: #c8c8c8;
     --color-on-surface: #33383f;
     --color-on-surface-contrast: #111315;
     --color-on-surface-muted: #6f767e;
@@ -249,8 +250,38 @@
         &:disabled {
             border-color: var(--color-on-surface-disabled);
         }
-        &:user-invalid {
+        &:user-invalid,
+        &.invalid {
             border-color: var(--color-danger);
+        }
+    }
+
+    .input-small {
+        display: flex;
+        align-items: center;
+        height: 44px;
+        padding: 0 10px;
+
+        color: var(--color-on-surface-contrast);
+        background-color: var(--color-surface-tint);
+
+        font-size: var(--text-md-medium);
+        line-height: var(--text-md-medium--line-height);
+        font-weight: var(--text-md-medium--font-weight);
+
+        border: 1px var(--color-surface-border) solid;
+        border-radius: var(--radius-2xs);
+        outline: none;
+
+        &::placeholder {
+            color: var(--color-on-surface-muted);
+        }
+        &:focus-within {
+            border-color: var(--color-surface-border-focus);
+        }
+        &:user-invalid,
+        &.invalid {
+            border-color: var(--color-danger-border);
         }
     }
 

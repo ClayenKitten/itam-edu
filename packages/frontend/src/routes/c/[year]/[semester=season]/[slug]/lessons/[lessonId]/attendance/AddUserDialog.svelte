@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidate } from "$app/navigation";
     import api from "$lib/api";
+    import SuggestionSearch from "$lib/components/SuggestionSearch.svelte";
     import { filePath } from "$lib/path";
     import type {
         Attendee,
@@ -19,52 +20,12 @@
         attendees: Attendee[];
     };
 
+    let query = $state("");
     const members = $derived([...students, ...staff]);
-    const getMember = (id: string) => {
-        return members.find(m => m.id === id) ?? null;
-    };
 
     let stagedUsers: { id: string; format: "online" | "offline" }[] = $state(
         []
     );
-
-    let search: string = $state("");
-    const filteredMembers = $derived.by(() => {
-        if (search.trim() === "") return [];
-
-        let searchWords = search.trim().toLowerCase().split(" ");
-        return members.filter(member => {
-            if (stagedUsers.find(staged => staged.id === member.id)) {
-                return false;
-            }
-            return searchWords.every(searchWord => {
-                if (
-                    ("@" + member.tgUsername.toLowerCase()).includes(searchWord)
-                ) {
-                    return true;
-                }
-                if (member.firstName.toLowerCase().includes(searchWord)) {
-                    return true;
-                }
-                if (member.lastName?.toLowerCase().includes(searchWord)) {
-                    return true;
-                }
-                return false;
-            });
-        });
-    });
-
-    const addToStaging = (userId: string) => {
-        if (attendees.some(a => a.userId === userId)) {
-            return;
-        }
-
-        stagedUsers.push({
-            id: userId,
-            format: "offline"
-        });
-        search = "";
-    };
 
     const save = async () => {
         const results = await Promise.allSettled(
@@ -99,10 +60,6 @@
         "backdrop:bg-[black] backdrop:opacity-30"
     ]}
     bind:this={dialog}
-    onclose={() => {
-        stagedUsers = [];
-        search = "";
-    }}
 >
     <header class="flex justify-between">
         <h2>Отметить</h2>
@@ -110,13 +67,82 @@
             <i class="ph ph-x text-[30px]"></i>
         </button>
     </header>
-    {@render searchSection()}
+    <SuggestionSearch
+        bind:query
+        suggestions={members.filter(member => {
+            let searchWords = query.trim().toLowerCase().split(" ");
+            if (stagedUsers.find(staged => staged.id === member.id)) {
+                return false;
+            }
+            return searchWords.every(searchWord => {
+                const match = (s: string) =>
+                    s.toLowerCase().includes(searchWord);
+                if (match("@" + member.tgUsername)) return true;
+                if (match(member.firstName)) return true;
+                if (match(member.lastName ?? "")) return true;
+                return false;
+            });
+        })}
+        placeholder="Начните вводить имя или Telegram-юзернейм..."
+        isSelectable={member => !attendees.some(a => a.userId === member.id)}
+        onSelect={member => {
+            stagedUsers.push({
+                id: member.id,
+                format: "offline"
+            });
+            query = "";
+        }}
+    >
+        {#snippet suggestion(member: Student | StaffMember, { selectable })}
+            <div
+                class={[
+                    "flex items-center gap-1.5 w-full h-11 px-2.5",
+                    "text-md-regular text-nowrap overflow-ellipsis outline-0",
+                    "bg-surface",
+                    selectable
+                        ? "hover:bg-on-primary focus:bg-on-primary"
+                        : "cursor-not-allowed"
+                ]}
+            >
+                <div
+                    class="cover size-[24px] text-sm-regular rounded-2xs"
+                    style:background-image={member.avatar
+                        ? `url(${filePath(member.avatar)})`
+                        : null}
+                >
+                    <span>{member.tgUsername[0]}</span>
+                </div>
+                <span class="text-md-regular text-nowrap overflow-ellipsis">
+                    {member.firstName}
+                    {member.lastName},
+                </span>
+                <span class="text-on-surface-muted">@{member.tgUsername}</span>
+                {#if !selectable}
+                    <span class="ml-auto text-sm-medium text-on-surface-muted">
+                        Уже отмечен(а)
+                    </span>
+                {/if}
+            </div>
+        {/snippet}
+        {#snippet empty()}
+            <span
+                class={[
+                    "flex items-center gap-1.5 h-11 px-2.5",
+                    "bg-surface text-md-regular text-on-surface-muted ITALIC"
+                ]}
+            >
+                Не найдено
+            </span>
+        {/snippet}
+    </SuggestionSearch>
     {@render stagingSection()}
     <footer class="flex gap-5">
         <button
             class="grow-1 btn big"
             onclick={async () => {
                 await save();
+                query = "";
+                stagedUsers = [];
                 dialog.close();
             }}
         >
@@ -125,86 +151,10 @@
     </footer>
 </dialog>
 
-{#snippet searchSection()}
-    <section class="relative">
-        <input
-            class={[
-                "w-full h-11 px-2.5",
-                "text-md-regular text-on-surface placeholder:text-on-surface-muted",
-                "bg-surface-tint border border-surface-border rounded-2xs outline-0",
-                search && "border-b-0 rounded-b-none"
-            ]}
-            type="search"
-            placeholder="Начните вводить имя или Telegram-юзернейм..."
-            bind:value={search}
-            onkeydown={e => {
-                if (e.key === "Enter" && filteredMembers.length > 0) {
-                    addToStaging(filteredMembers[0].id);
-                }
-            }}
-        />
-        {#if search}
-            <ul
-                class={[
-                    "z-10 flex flex-col shadow absolute top-11 inset-x-0",
-                    "border border-t-0 border-surface-border rounded-b-2xs"
-                ]}
-            >
-                {#each filteredMembers.slice(0, 5) as member}
-                    {@render searchSuggestion(member)}
-                {:else}
-                    <span
-                        class={[
-                            "flex items-center gap-1.5 h-11 px-2.5",
-                            "bg-surface text-md-regular text-on-surface-muted ITALIC"
-                        ]}
-                    >
-                        Не найдено
-                    </span>
-                {/each}
-            </ul>
-        {/if}
-    </section>
-
-    {#snippet searchSuggestion(member: Student | StaffMember)}
-        {@const alreadyAttended = attendees.some(a => a.userId === member.id)}
-        <button
-            class={[
-                "flex items-center gap-1.5 h-11 px-2.5",
-                "text-md-regular text-nowrap overflow-ellipsis outline-0",
-                "bg-surface",
-                !alreadyAttended
-                    ? "hover:bg-on-primary focus:bg-on-primary"
-                    : "cursor-not-allowed"
-            ]}
-            onclick={() => addToStaging(member.id)}
-            disabled={alreadyAttended}
-        >
-            <div
-                class="cover size-[24px] text-sm-regular rounded-2xs"
-                style:background-image={member.avatar
-                    ? `url(${filePath(member.avatar)})`
-                    : null}
-            >
-                <span>{member.tgUsername[0]}</span>
-            </div>
-            <span>{member.firstName} {member.lastName},</span>
-            <span class="text-on-surface-muted">
-                @{member.tgUsername}
-            </span>
-            {#if alreadyAttended}
-                <span class="ml-auto text-sm-medium text-on-surface-muted">
-                    Уже отмечен(а)
-                </span>
-            {/if}
-        </button>
-    {/snippet}
-{/snippet}
-
 {#snippet stagingSection()}
     <ul class="flex-1 flex flex-col gap-5 overflow-y-auto">
         {#each stagedUsers as stagedUser}
-            {@const member = getMember(stagedUser.id)}
+            {@const member = members.find(m => m.id === stagedUser.id) ?? null}
             <li class="flex">
                 <div class="flex gap-2">
                     <div

@@ -21,53 +21,29 @@
             return this.#components.values();
         }
 
-        public async show<
-            COMP extends Component<Record<string, unknown> & PromptProps>
-        >(
-            component: COMP,
-            props: Omit<ComponentProps<COMP>, "onConfirm" | "onCancel">
-        ): Promise<PromptReturnType<COMP> | null> {
+        public async show<PROPS extends PromptProps<any>>(
+            component: Component<PROPS>,
+            props: Omit<PROPS, keyof PromptProps<any>>
+        ): Promise<RetOf<PROPS> | null> {
             const { promise, resolve } =
-                Promise.withResolvers<PromptReturnType<COMP> | null>();
-            let onConfirm = (data: PromptReturnType<COMP>) => resolve(data);
+                Promise.withResolvers<RetOf<PROPS> | null>();
+            let onConfirm = (data: RetOf<PROPS>) => resolve(data);
             let onCancel = () => resolve(null);
 
-            const key = this.add(component, {
-                ...props,
-                onConfirm,
-                onCancel
+            const key = crypto.randomUUID();
+            this.#components.set(key, {
+                component,
+                props: { ...props, onConfirm, onCancel }
             });
 
             try {
                 const result = await promise;
-                this.remove(key);
+                this.#components.delete(key);
                 return result;
             } catch (e) {
-                this.remove(key);
+                this.#components.delete(key);
                 throw e;
             }
-        }
-
-        /**
-         * Adds component to the displayed list.
-         *
-         * @returns key
-         * */
-        public add<
-            PROPS extends Record<string, unknown>,
-            COMP extends Component<PROPS>
-        >(component: COMP, props: PROPS): string {
-            const key = crypto.randomUUID();
-            this.#components.set(key, {
-                component,
-                props
-            });
-            return key;
-        }
-
-        /** Removes component from the displayed list by key.*/
-        public remove(key: string) {
-            this.#components.delete(key);
         }
     }
 
@@ -80,16 +56,11 @@
         return setContext(prompterKey, prompter);
     }
 
-    // export type PromptComponent<
-    //     RET,
-    //     PROPS extends PromptProps<RET>
-    // > = Component<PROPS>;
-    export type PromptReturnType<COMP extends Component<PromptProps>> =
-        Parameters<ComponentProps<COMP>["onConfirm"]>[0];
-    export type PromptProps<RET = unknown> = {
+    export type PromptProps<RET> = {
         onConfirm: (data: RET) => void;
         onCancel: () => void;
     };
+    type RetOf<P> = P extends PromptProps<infer R> ? R : never;
 </script>
 
 <script lang="ts">

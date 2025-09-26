@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
     import Header from "$lib/components/Header.svelte";
-    import Loader from "$lib/components/Loader.svelte";
     import UsersTab from "./UsersTab.svelte";
     import CoursesTab from "./CoursesTab.svelte";
 
@@ -43,7 +42,7 @@
         {#if tab === "users"}
             <UsersTab user={data.user} users={data.users} />
         {:else if tab === "courses"}
-            <CoursesTab courses={data.courses} />
+            <CoursesTab users={data.users} courses={data.courses} />
         {:else if tab === "calls"}
             WIP
         {/if}

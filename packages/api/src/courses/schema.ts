@@ -32,7 +32,8 @@ export const createCourse = t.Pick(course, [
     "slug",
     "year",
     "semester",
-    "title"
+    "title",
+    "ownerId"
 ]);
 export type CreateCourseDto = typeof createCourse.static;
 

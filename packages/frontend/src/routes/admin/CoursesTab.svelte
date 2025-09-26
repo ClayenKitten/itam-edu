@@ -5,12 +5,14 @@
     import { getPrompter } from "$lib/Prompter.svelte";
     import type { CoursePartial, CreateCourse } from "$lib/types";
     import { doOnce } from "$lib/utils/doOnce";
-    import CoursePrompt from "./CoursePrompt.svelte";
+    import NewCoursePrompt from "./NewCoursePrompt.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import { formatPeriod } from "$lib/format";
+    import type { UserDto } from "itam-edu-api/src/users/query";
 
-    const { courses }: Props = $props();
+    const { users, courses }: Props = $props();
     type Props = {
+        users: Promise<UserDto[]>;
         courses: CoursePartial[];
     };
     const prompter = getPrompter();
@@ -150,7 +152,9 @@
         <button
             class="btn h-11"
             onclick={doOnce("createCourse", async () => {
-                const newCourse = await prompter.show(CoursePrompt, {});
+                const newCourse = await prompter.show(NewCoursePrompt, {
+                    users: await users
+                });
                 if (!newCourse) return;
                 await createCourse(newCourse);
             })}

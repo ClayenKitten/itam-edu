@@ -7,12 +7,15 @@ import { randomUUID } from "node:crypto";
 import { CourseRepository } from "./repository";
 import { ConflictError, ForbiddenError, HttpError } from "../api/errors";
 import { CourseChangelog } from "./changes";
+import { NotificationTemplate } from "../notifications";
+import { NotificationSender } from "../notifications/sender";
 
 @injectable()
 export class CreateCourse {
     public constructor(
         private postgres: Postgres,
         private repository: CourseRepository,
+        private notificationSender: NotificationSender,
         private changelog: CourseChangelog
     ) {}
 
@@ -51,7 +54,7 @@ export class CreateCourse {
                     year: dto.year,
                     semester: dto.semester,
                     title: dto.title,
-                    ownerId: actor.id,
+                    ownerId: dto.ownerId,
                     isArchived: false,
                     isEnrollmentOpen: false,
                     isPublished: false
@@ -60,7 +63,7 @@ export class CreateCourse {
             await trx
                 .insertInto("userCourses")
                 .values({
-                    userId: actor.id,
+                    userId: dto.ownerId,
                     courseId: id,
                     role: "admin"
                 })
@@ -70,7 +73,44 @@ export class CreateCourse {
         if (course === null) {
             throw Error("course must be non-null after creation");
         }
-        await this.changelog.add(actor, course, { kind: "course-created" });
+
+        await Promise.all([
+            this.notificationSender.send(new Notification(course), [
+                dto.ownerId
+            ]),
+            this.changelog.add(actor, course, { kind: "course-created" })
+        ]);
         return course;
+    }
+}
+
+class Notification extends NotificationTemplate {
+    public constructor(private course: Course) {
+        super();
+    }
+
+    public toWeb(id: string, _userId: string) {
+        return {
+            id,
+            timestamp: Date.now(),
+            courseId: this.course.id,
+            title: `Вы назначены владельцем курса '${this.course.info.title}'`,
+            icon: "magic-wand",
+            url: this.course.path
+        };
+    }
+
+    public toTelegram(id: string, _userId: string) {
+        return {
+            id,
+            text: [
+                `<b>🪄 Вы назначены владельцем курса '${this.course.info.title}'</b>\n`,
+                "Пора приступать к заполнению! Когда будете готовы к публикации — обратитесь к администрации платформы."
+            ].join("\n"),
+            link: {
+                text: "🔗 Страница урока",
+                url: this.course.path
+            }
+        };
     }
 }
