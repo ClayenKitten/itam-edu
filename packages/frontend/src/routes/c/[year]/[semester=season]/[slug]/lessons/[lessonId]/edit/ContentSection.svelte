@@ -11,11 +11,7 @@
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-2">
         <h3>Теория и материалы</h3>
-        <p class="max-w-[600px] text-balance">
-            Здесь вы можете написать текстовую теорию и прикрепить ссылки на
-            материалы. Для форматирования можно использовать горячие клавиши,
-            синтаксис Markdown и всплывающее меню.
-        </p>
+        <p>Здесь вы можете написать теорию и прикрепить полезные материалы.</p>
     </header>
     <div class="flex min-h-[400px] max-h-[800px]">
         <RichEditor bind:content characterLimit={50000} />

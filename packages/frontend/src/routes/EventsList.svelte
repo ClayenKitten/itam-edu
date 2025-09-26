@@ -38,7 +38,7 @@
             : { after: new Date().toISOString() };
         const result = await api({ fetch }).users.me.calendar.get({ query });
         if (result.error) {
-            toaster.add("Не удалось список событий", "error");
+            toaster.add("Не удалось загрузить список событий", "error");
             return [];
         }
         return result.data;

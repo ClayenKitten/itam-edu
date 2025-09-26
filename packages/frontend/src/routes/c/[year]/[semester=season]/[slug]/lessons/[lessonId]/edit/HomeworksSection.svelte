@@ -12,6 +12,8 @@
     };
 
     let homeworkAttachmentWindow: HomeworkAttachmentWindow;
+
+    const canAdd = $derived(homeworkIds.length !== course.homeworks.length);
 </script>
 
 <HomeworkAttachmentWindow
@@ -88,13 +90,17 @@
             {/each}
         </ol>
     {/if}
-    {#if homeworkIds.length !== course.homeworks.length}
-        <button
-            class="btn w-min"
-            onclick={() => homeworkAttachmentWindow.show()}
-        >
-            Добавить
-            <i class="ph ph-plus text-[18px]"></i>
-        </button>
-    {/if}
+    <button
+        class={["btn w-min", !canAdd && "cursor-not-allowed"]}
+        onclick={() => homeworkAttachmentWindow.show()}
+        title={canAdd
+            ? null
+            : course.homeworks.length === 0
+              ? "На курс ещё не добавлено ни одного задания"
+              : "Вы прикрепили все задания курса к этому уроку"}
+        disabled={!canAdd}
+    >
+        <i class="ph ph-stack-plus text-[18px]"></i>
+        Прикрепить
+    </button>
 </section>

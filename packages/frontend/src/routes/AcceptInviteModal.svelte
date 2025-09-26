@@ -76,7 +76,7 @@
 
 <dialog
     class={[
-        "modal",
+        "modal outline-0",
         "hidden open:flex flex-col gap-4 w-150 max-h-150 p-8 m-auto",
         "text-on-surface bg-surface rounded-xl",
         "backdrop:bg-[black] backdrop:opacity-30"

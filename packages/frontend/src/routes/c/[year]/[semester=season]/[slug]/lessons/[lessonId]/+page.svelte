@@ -62,7 +62,7 @@
             </p>
         {/if}
         {#if data.lesson.description}
-            <p class="mt-4">{data.lesson.description}</p>
+            <p class="mt-4 wrap-anywhere">{data.lesson.description}</p>
         {/if}
     </section>
     {#if data.lesson.video}
