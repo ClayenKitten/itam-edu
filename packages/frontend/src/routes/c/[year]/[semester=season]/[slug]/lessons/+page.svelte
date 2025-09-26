@@ -3,6 +3,7 @@
     import IconButton from "$lib/components/IconButton.svelte";
     import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath } from "$lib/path";
+    import EnrollSuggestion from "../EnrollSuggestion.svelte";
     import LessonEditModal from "./LessonEditModal.svelte";
 
     let { data } = $props();
@@ -54,3 +55,10 @@
         {/each}
     </div>
 </div>
+{#if data.course.isEnrollmentOpen && data.course.role === null}
+    <EnrollSuggestion
+        text="Поступи на курс, чтобы получать уведомления о переносе уроков"
+        user={data.user}
+        course={data.course}
+    />
+{/if}

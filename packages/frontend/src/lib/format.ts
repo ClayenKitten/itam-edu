@@ -3,12 +3,7 @@ import { ru } from "date-fns/locale";
 import type { LessonScheduleDTO } from "itam-edu-api/src/courses/lesson/query";
 import type { GlobalRole } from "itam-edu-common";
 
-export function formatLessonSchedule(
-    schedule: LessonScheduleDTO | null
-): string | null {
-    if (!schedule) return null;
-
-    // Location
+export function formatLessonPlace(schedule: LessonScheduleDTO): string {
     let str = "";
     if (schedule.online) {
         str += "онлайн";
@@ -16,11 +11,21 @@ export function formatLessonSchedule(
     }
     if (schedule.offline) str += "офлайн";
     if (schedule.offline?.location) str += ` в ${schedule.offline.location}`;
-    // Date
+
+    if (str === "") return "";
+
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function formatLessonSchedule(
+    schedule: LessonScheduleDTO | null
+): string | null {
+    if (!schedule) return null;
+    let str = formatLessonPlace(schedule);
+
     if (str !== "") str += ", ";
     str += formatDate(schedule.date, "d MMMM (cccc), HH:mm", { locale: ru });
     // Capitalize
-    str = str.charAt(0).toUpperCase() + str.slice(1);
 
     return str;
 }

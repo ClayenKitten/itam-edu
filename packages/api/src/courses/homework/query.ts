@@ -128,11 +128,3 @@ export type CreateHomeworkDTO = Omit<
     HomeworkDTO,
     "id" | "courseId" | "position" | "createdAt"
 >;
-
-export type LessonScheduleDTO = {
-    date: Date;
-    online: {} | null;
-    offline: {
-        location: string | null;
-    } | null;
-};

@@ -1,9 +1,9 @@
 <script lang="ts">
     import LessonCard from "$lib/components/LessonCard.svelte";
     import { coursePath, filePath } from "$lib/path";
-
     import { getCourseChangeDisplay } from "./courseUpdate";
     import { format as formatDate } from "date-fns";
+    import EnrollSuggestion from "./EnrollSuggestion.svelte";
 
     let { data } = $props();
 </script>
@@ -131,6 +131,13 @@
         </ol>
     </section>
 </div>
+{#if data.course.isEnrollmentOpen && data.course.role === null}
+    <EnrollSuggestion
+        text="Поступи на курс, чтобы получить диплом о его прохождении"
+        user={data.user}
+        course={data.course}
+    />
+{/if}
 
 <style>
     .banner {

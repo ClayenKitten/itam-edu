@@ -6,6 +6,7 @@
     import { format as formatDate } from "date-fns";
     import HomeworkListEditModal from "./HomeworkListEditModal.svelte";
     import type { HomeworkPartial } from "$lib/types";
+    import EnrollSuggestion from "../EnrollSuggestion.svelte";
 
     let { data } = $props();
 
@@ -112,3 +113,10 @@
         {/each}
     </div>
 </div>
+{#if data.course.isEnrollmentOpen && data.course.role === null}
+    <EnrollSuggestion
+        text="Поступи на курс, чтобы сдавать задания на проверку преподавателям"
+        user={data.user}
+        course={data.course}
+    />
+{/if}
