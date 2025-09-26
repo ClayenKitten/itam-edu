@@ -138,14 +138,16 @@
             class={[
                 "w-full h-13 flex justify-between items-center px-4 bg-surface-dimmed",
                 "border border-surface-border",
-                "rounded-xs overflow-hidden shadow"
+                "rounded-xs shadow"
             ]}
         >
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
                 {#if course.icon}
                     <img src={filePath(course.icon)} class="size-8" alt="" />
                 {/if}
-                {course.title}
+                <span class="overflow-hidden overflow-ellipsis">
+                    {course.title}
+                </span>
             </div>
             <i class="hidden group-open:flex ph ph-caret-up"></i>
             <i class="group-open:hidden flex ph ph-caret-down"></i>
@@ -174,11 +176,15 @@
                             alt=""
                         />
                     {/if}
-                    {courseOption.title}
+                    <span
+                        class="overflow-hidden overflow-ellipsis whitespace-nowrap"
+                    >
+                        {courseOption.title}
+                    </span>
                 </a>
             {:else}
                 <div class="text-md-regular bg-surface-tint p-4 rounded-b-xs">
-                    Пусто! Записаться на новые курсы можно на
+                    Пусто! Поступить на новые курсы можно на
                     <a class="text-primary hover:underline" href="/">
                         домашней странице
                     </a>.

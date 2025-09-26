@@ -24,7 +24,7 @@
     ]}
 >
     <div
-        class="w-full h-[200px] mb-3 rounded-md overflow-hidden"
+        class="w-full h-[200px] shrink-0 mb-3 rounded-md overflow-hidden"
         aria-hidden="true"
     >
         {#if lesson.banner}
@@ -54,5 +54,12 @@
             </span>
         {/if}
     </header>
-    <p class="text-md-regular text-on-surface-muted px-1">{lesson.title}</p>
+    <p
+        class={[
+            "text-md-regular text-on-surface-muted px-1",
+            "overflow-hidden overflow-ellipsis whitespace-nowrap"
+        ]}
+    >
+        {lesson.title}
+    </p>
 </a>

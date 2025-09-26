@@ -36,7 +36,9 @@
     </div>
     <div class="w-[315px] flex flex-col gap-1.5 pt-2.5 pb-4 px-3">
         <header class="mt-2.5 flex flex-col justify-between">
-            <h4 class="text-on-surface">{course.title}</h4>
+            <h4 class="overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {course.title}
+            </h4>
             <p class="text-sm-regular text-on-surface-muted">
                 {#if course.semester === "autumn"}
                     Осень
@@ -46,7 +48,10 @@
                 {course.year}
             </p>
         </header>
-        <p class="text-md-regular text-on-surface line-clamp-3 text-ellipsis">
+        <p
+            class="text-md-regular text-on-surface line-clamp-3 text-ellipsis"
+            title={course.description}
+        >
             {course.description}
         </p>
     </div>
