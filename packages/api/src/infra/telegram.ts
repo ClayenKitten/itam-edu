@@ -64,11 +64,18 @@ export class TelegramBot {
 
         this.grammy.chatType("private").command("start", async (ctx, next) => {
             if (ctx.match === "login") {
-                logger.debug("Private message received", {
+                logger.debug("Login command received via start", {
                     sender: ctx.from,
                     text: ctx.message.text
                 });
                 await this.onPrivateMessage(ctx.from, "/login");
+            } else if (ctx.match.startsWith("attend_")) {
+                const token = ctx.match.replace("attend_", "");
+                logger.debug("Attend command received via start", {
+                    sender: ctx.from,
+                    text: ctx.message.text
+                });
+                await this.onPrivateMessage(ctx.from, `/attend ${token}`);
             } else {
                 await next();
             }

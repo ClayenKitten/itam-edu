@@ -67,50 +67,20 @@
     <div
         class="flex-1 self-center aspect-square p-4 border border-surface-border shadow rounded-md"
     >
-        {#if page === "attendance"}
-            {#if token}
-                <svg
-                    use:qr={{
-                        data: token,
-                        logo: "/favicon.png",
-                        shape: "square"
-                    }}
-                    aria-label="QR-код"
-                />
-            {:else}
-                <Loader />
-            {/if}
-        {:else if page === "tg-bot"}
+        {#if token}
             <svg
                 use:qr={{
-                    data: `https://t.me/${env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}`,
-                    logo: "/telegram.png",
+                    data: `https://t.me/${env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}?start=attend_${token}`,
+                    logo: "/favicon.png",
                     shape: "square"
                 }}
                 aria-label="QR-код"
             />
+        {:else}
+            <Loader />
         {/if}
     </div>
     <p class="self-center flex text-xl-medium text-on-surface-contrast">
-        {#if page === "attendance"}
-            <span>Отсканируйте QR-код в Telegram-боте</span>
-            <button
-                class="flex items-center ml-1 text-primary"
-                onclick={() => (page = "tg-bot")}
-            >
-                <i class="ph ph-qr-code text-[21px]"></i>
-                <span class="hover:underline">
-                    {env.ITAMEDU_PUBLIC_TELEGRAM_BOT_USERNAME}
-                </span>
-            </button>
-        {:else if page === "tg-bot"}
-            <button
-                class="flex items-center ml-1 text-primary"
-                onclick={() => (page = "attendance")}
-            >
-                <i class="ph ph-caret-left text-[21px]"></i>
-                <span class="hover:underline">Назад</span>
-            </button>
-        {/if}
+        Отсканируйте QR-код, чтобы отметить своё посещение
     </p>
 </dialog>

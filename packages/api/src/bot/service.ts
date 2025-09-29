@@ -13,6 +13,8 @@ import { UserRepository } from "../users/repository";
 import { UserLogin } from "../users/login";
 import { TelegramBot } from "../infra/telegram";
 import logger from "../logger";
+import { ApplyAttendanceToken } from "../courses/lesson/attendance/token/apply.interactor";
+import { HttpError } from "../api/errors";
 
 /**
  * Handles bot communication.
@@ -29,7 +31,8 @@ export class BotService {
         @inject("AppConfig")
         private config: AppConfig,
         private userRepo: UserRepository,
-        private login: UserLogin
+        private login: UserLogin,
+        private applyAttendanceToken: ApplyAttendanceToken
     ) {
         this.publisher = new MessagePublisher(
             config.redis.connectionString,
@@ -72,6 +75,9 @@ export class BotService {
                 let reply: OutboundBotMessage | null = null;
                 if (text.startsWith("/login")) {
                     reply = await this.handleLogin(user);
+                } else if (text.startsWith("/attend")) {
+                    const token = text.replace("/attend ", "").trim();
+                    reply = await this.handleAttend(user, token);
                 } else {
                     reply = await this.handleHelp();
                 }
@@ -109,6 +115,22 @@ export class BotService {
                 text: "🔗 Войти",
                 url: `${this.config.server.origin}?login=${code}`
             }
+        };
+    }
+
+    private async handleAttend(
+        actor: User,
+        token: string
+    ): Promise<OutboundBotMessage> {
+        const result = await this.applyAttendanceToken.invoke(actor, token);
+        if (result instanceof HttpError) {
+            logger.error("Failed to record attendance", { error: result });
+            return {
+                text: "Не удалось отметить посещение :("
+            };
+        }
+        return {
+            text: "✨ Посещение занятия отмечено"
         };
     }
 
