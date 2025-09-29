@@ -41,7 +41,8 @@
             title="Начать новый звонок"
             onclick={async () => {
                 const result = await prompter.show(NewCallPrompt, {
-                    lessons: data.lessons
+                    lessons: data.lessons,
+                    calls: data.calls
                 });
                 if (!result) return;
 

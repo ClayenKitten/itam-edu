@@ -2,17 +2,28 @@
     import { type PromptProps } from "$lib/Prompter.svelte";
     import { onMount } from "svelte";
     import type { LessonPartial } from "$lib/types";
-    import Combobox from "$lib/components/Combobox.svelte";
+    import type { CallDto } from "itam-edu-api/src/calls/dao";
 
-    const { lessons, onConfirm, onCancel }: Props = $props();
+    const { lessons, calls, onConfirm, onCancel }: Props = $props();
     type Props = PromptProps<{ title: string } | { lessonId: string }> & {
         lessons: LessonPartial[];
+        calls: CallDto[];
     };
 
     let dialog: HTMLDialogElement;
     onMount(() => {
         dialog.showModal();
     });
+
+    const filteredLesson = $derived(
+        lessons.filter(
+            l =>
+                l.schedule !== null &&
+                l.schedule.isOnline !== false &&
+                l.title.includes(lessonQuery) &&
+                !calls.some(c => l.id === c.id)
+        )
+    );
 
     let title: string = $state("");
     let lesson: LessonPartial | null = $state(null);
@@ -71,58 +82,18 @@
                     title !== "" && "w-0"
                 ]}
             >
-                <Combobox
-                    placeholder="Выберите урок"
+                <select
+                    class={[
+                        "input-small",
+                        lesson === null && "text-on-surface-muted"
+                    ]}
                     bind:value={lesson}
-                    bind:query={lessonQuery}
-                    suggestions={lessons.filter(
-                        l =>
-                            l.schedule !== null && l.title.includes(lessonQuery)
-                    )}
                 >
-                    {#snippet selected(l)}
-                        <div
-                            class={[
-                                "flex items-center gap-1.5 w-full h-11 px-2.5",
-                                "bg-surface text-md-regular text-nowrap overflow-ellipsis outline-0"
-                            ]}
-                        >
-                            <span
-                                class="text-md-regular text-nowrap overflow-ellipsis"
-                            >
-                                {l.title}
-                            </span>
-                            <button
-                                class="ml-auto p-2 rounded-full hover:bg-surface-tint"
-                                aria-label="Удалить"
-                                onclick={() => (lesson = null)}
-                            >
-                                <i class="ph ph-x"></i>
-                            </button>
-                        </div>
-                        {l.title}
-                    {/snippet}
-                    {#snippet suggestion(l)}
-                        <div
-                            class={[
-                                "flex items-center gap-1.5 w-full h-11 px-2.5",
-                                "bg-surface text-md-regular text-nowrap overflow-ellipsis outline-0"
-                            ]}
-                        >
-                            {l.title}
-                        </div>
-                    {/snippet}
-                    {#snippet empty()}
-                        <div
-                            class={[
-                                "flex items-center gap-1.5 w-full px-2.5 py-4",
-                                "bg-surface text-md-regular outline-0"
-                            ]}
-                        >
-                            Пусто! Запланируйте хотя бы один урок.
-                        </div>
-                    {/snippet}
-                </Combobox>
+                    <option value={null}>Выберите урок</option>
+                    {#each filteredLesson as lesson}
+                        <option value={lesson}>{lesson.title}</option>
+                    {/each}
+                </select>
             </div>
         {/if}
     </div>
