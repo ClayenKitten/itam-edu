@@ -74,7 +74,7 @@ export class LessonRepository {
                     banner: lesson.info.banner,
                     video: lesson.info.video,
                     content: lesson.content,
-                    isOnline: lesson.schedule?.isOnline ?? null,
+                    isOnline: lesson.schedule?.isOnline ?? false,
                     location: lesson.schedule?.location ?? null,
                     scheduledAt: lesson.schedule?.date ?? null,
                     position: eb => selectPosition(eb)
@@ -87,7 +87,7 @@ export class LessonRepository {
                         banner: lesson.info.banner,
                         video: lesson.info.video,
                         content: lesson.content,
-                        isOnline: lesson.schedule?.isOnline ?? null,
+                        isOnline: lesson.schedule?.isOnline ?? false,
                         location: lesson.schedule?.location ?? null,
                         scheduledAt: lesson.schedule?.date ?? null
                     })
