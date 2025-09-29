@@ -7,25 +7,12 @@ const banner = t.Nullable(t.String({ minLength: 1 }));
 const video = t.Nullable(t.String({ minLength: 1 }));
 const homeworkIds = t.Array(t.String({ format: "uuid" }), { maxItems: 10 });
 
-export const lessonInfo = t.Object({
-    title,
-    description,
-    banner,
-    video
-});
-
 export const lessonSchedule = t.Object({
     /** Date of the lesson. */
     date: t.Date(),
-    /** Online lesson properties. */
-    online: t.Nullable(t.Object({})),
-    /** Whether lesson will take place offline. */
-    offline: t.Nullable(
-        t.Object({
-            /** Physical location of the lesson. */
-            location: t.Nullable(t.String({ maxLength: 60 }))
-        })
-    )
+    /** Physical location of the lesson. */
+    location: t.Nullable(t.String({ maxLength: 60 })),
+    isOnline: t.Boolean()
 });
 
 export const createLesson = t.Object({

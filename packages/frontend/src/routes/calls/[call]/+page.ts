@@ -6,8 +6,12 @@ export const load: PageLoad = async ({ fetch, params, depends }) => {
     depends("app:call");
 
     const call = await getCall(fetch, params.call);
+    if (!call) error(404);
 
-    return { call, title: `${call.title} | ITAM Education` };
+    return {
+        call,
+        title: `${call.title} | ITAM Education`
+    };
 };
 
 async function getCall(fetch: typeof window.fetch, call: string) {

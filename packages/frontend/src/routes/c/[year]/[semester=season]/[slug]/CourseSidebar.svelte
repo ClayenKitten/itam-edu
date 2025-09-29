@@ -58,6 +58,7 @@
     {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
         <hr class="text-surface-border -mx-5" />
         <ul class="flex flex-col gap-2">
+            {@render link("/calls", "Звонки", "video-conference")}
             {@render link("/analytics", "Аналитика", "chart-line")}
             {@render link("/settings", "Настройки", "gear-six")}
         </ul>

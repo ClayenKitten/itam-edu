@@ -9,6 +9,10 @@ export type GlobalPermissions = {
         publish: boolean;
         archive: boolean;
     };
+    calls: {
+        view: boolean;
+        create: boolean;
+    };
 };
 
 export type CourseRole = "student" | "teacher" | "admin";
@@ -56,6 +60,10 @@ export type CoursePermissions = {
         view: boolean;
     };
     calls: {
+        /** List course calls. */
+        list: boolean;
+        /** Join course calls. */
+        join: boolean;
         /** Start course calls. */
         start: boolean;
         /** Stop course calls. */

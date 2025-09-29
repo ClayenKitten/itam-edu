@@ -75,6 +75,14 @@ export class User {
                 publish:
                     this.info.role === "admin" ||
                     this.info.role === "supervisor"
+            },
+            calls: {
+                view:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor",
+                create:
+                    this.info.role === "admin" ||
+                    this.info.role === "supervisor"
             }
         };
     }

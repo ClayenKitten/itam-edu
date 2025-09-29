@@ -1,24 +1,21 @@
 import { format as formatDate } from "date-fns";
 import { ru } from "date-fns/locale";
-import type { LessonScheduleDTO } from "itam-edu-api/src/courses/lesson/query";
+import type { LessonScheduleDto } from "itam-edu-api/src/courses/lesson/query";
 import type { GlobalRole } from "itam-edu-common";
 
-export function formatLessonPlace(schedule: LessonScheduleDTO): string {
+export function formatLessonPlace(schedule: LessonScheduleDto): string {
     let str = "";
-    if (schedule.online) {
+    if (schedule.isOnline) {
         str += "онлайн";
-        if (schedule.offline) str += " и ";
+        if (schedule.location) str += " и ";
     }
-    if (schedule.offline) str += "офлайн";
-    if (schedule.offline?.location) str += ` в ${schedule.offline.location}`;
-
+    if (schedule.location) str += `в ${schedule.location}`;
     if (str === "") return "";
-
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export function formatLessonSchedule(
-    schedule: LessonScheduleDTO | null
+    schedule: LessonScheduleDto | null
 ): string | null {
     if (!schedule) return null;
     let str = formatLessonPlace(schedule);

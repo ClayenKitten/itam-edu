@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import type { VideoTrackState } from "./state.svelte";
 
-    let { track, disablepictureinpicture = false }: Props = $props();
+    let { track }: Props = $props();
 
     type Props = {
         track: VideoTrackState;
@@ -17,9 +17,4 @@
 </script>
 
 <!-- svelte-ignore a11y_media_has_caption -->
-<video
-    class="h-full w-full"
-    controls={false}
-    bind:this={video}
-    disablepictureinpicture={disablepictureinpicture ? true : null}
-></video>
+<video class="h-full w-full" controls={false} bind:this={video}></video>

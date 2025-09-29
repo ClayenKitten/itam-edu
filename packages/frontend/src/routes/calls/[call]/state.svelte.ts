@@ -79,18 +79,22 @@ export class ParticipantState {
     public name: string | undefined = $state();
 
     public microphoneTrack: AudioTrackState | null = $state(null);
-    public microphoneEnabled: boolean = $derived(
+    public readonly microphoneEnabled: boolean = $derived(
         this.microphoneTrack !== null && !this.microphoneTrack.isMuted
     );
 
     public cameraTrack: VideoTrackState | null = $state(null);
-    public cameraEnabled: boolean = $derived(
+    public readonly cameraEnabled: boolean = $derived(
         this.cameraTrack !== null && !this.cameraTrack.isMuted
     );
 
     public screenTrack: VideoTrackState | null = $state(null);
     public screenEnabled: boolean = $derived(
         this.screenTrack !== null && !this.screenTrack.isMuted
+    );
+
+    public readonly permissions = $derived.by(
+        () => this.participant.permissions
     );
 }
 
@@ -161,11 +165,19 @@ export class LocalParticipantState extends ParticipantState {
                 autoGainControl: true
             });
             if (!result) throw new Error();
-            this.microphoneTrack = new AudioTrackState(result.audioTrack!);
+            if (result.isMuted) {
+                this.microphoneTrack = null;
+            } else {
+                this.microphoneTrack = new AudioTrackState(result.audioTrack!);
+            }
         } else if (source === "camera") {
             let result = await this.participant.setCameraEnabled(value);
             if (!result) throw new Error();
-            this.cameraTrack = new VideoTrackState(result.videoTrack!);
+            if (result.isMuted) {
+                this.cameraTrack = null;
+            } else {
+                this.cameraTrack = new VideoTrackState(result.videoTrack!);
+            }
         } else if (source === "screen_share") {
             let result = await this.participant.setScreenShareEnabled(value);
             if (!result?.videoTrack) this.screenTrack = null;

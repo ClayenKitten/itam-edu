@@ -135,13 +135,14 @@ class Notification extends NotificationTemplate {
                 })
         );
         // Location
-        let postfix = this.lesson.schedule.offline?.location
-            ? ` в ${this.lesson.schedule.offline.location}`
+        let postfix = this.lesson.schedule.location
+            ? ` в ${this.lesson.schedule.location}`
             : "";
-        if (this.lesson.schedule.online && this.lesson.schedule.offline)
+        if (this.lesson.schedule.isOnline && this.lesson.schedule.location)
             lines.push(`📍 Онлайн и офлайн` + postfix);
-        else if (this.lesson.schedule.online) lines.push(`📍 Онлайн` + postfix);
-        else if (this.lesson.schedule.offline)
+        else if (this.lesson.schedule.isOnline)
+            lines.push(`📍 Онлайн` + postfix);
+        else if (this.lesson.schedule.location)
             lines.push("📍 Офлайн" + postfix);
 
         return lines.join("\n");

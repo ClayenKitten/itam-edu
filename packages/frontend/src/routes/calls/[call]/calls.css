@@ -1,0 +1,48 @@
+/* Tailwind */
+@import "tailwindcss";
+@import "../../../app.css";
+
+[data-page-scope="calls"] {
+    color: var(--color-on-surface);
+
+    --color-background: rgb(20, 20, 20);
+    --color-on-background: rgb(230, 230, 230);
+    --color-on-background-contrast: rgb(250, 250, 250);
+    --color-on-background-muted: rgb(200, 200, 200);
+
+    --color-surface: rgb(35, 35, 35);
+    --color-surface-tint: rgb(40, 40, 40);
+    --color-surface-dimmed: rgb(50, 50, 50);
+    --color-surface-border: rgb(85, 85, 85);
+    --color-surface-focus: rgb(95, 95, 95);
+
+    --color-on-surface: rgb(230, 230, 230);
+    --color-on-surface-contrast: rgb(250, 250, 250);
+    --color-on-surface-muted: rgb(200, 200, 200);
+    --color-on-surface-disabled: rgb(220, 220, 220);
+}
+
+@layer components {
+    .call-toggle {
+        @apply flex justify-center items-center w-12 h-12 rounded-xl shadow;
+        @apply text-primary bg-on-primary border border-on-primary;
+        @apply transition-all duration-100;
+
+        &:not(:has(:disabled)) {
+            @apply hover:border-primary hover:border-on-primary;
+        }
+
+        &.enabled {
+            @apply text-on-primary bg-primary;
+            @apply border-primary;
+
+            &:not(:has(:disabled)) {
+                @apply hover:opacity-95;
+            }
+        }
+
+        &:has(:disabled) {
+            @apply cursor-not-allowed opacity-70;
+        }
+    }
+}

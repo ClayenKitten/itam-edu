@@ -74,9 +74,8 @@ export class LessonRepository {
                     banner: lesson.info.banner,
                     video: lesson.info.video,
                     content: lesson.content,
-                    isOnline: lesson.schedule?.online !== null,
-                    isOffline: lesson.schedule?.offline !== null,
-                    location: lesson.schedule?.offline?.location ?? null,
+                    isOnline: lesson.schedule?.isOnline ?? null,
+                    location: lesson.schedule?.location ?? null,
                     scheduledAt: lesson.schedule?.date ?? null,
                     position: eb => selectPosition(eb)
                 })
@@ -88,9 +87,8 @@ export class LessonRepository {
                         banner: lesson.info.banner,
                         video: lesson.info.video,
                         content: lesson.content,
-                        isOnline: lesson.schedule?.online !== null,
-                        isOffline: lesson.schedule?.offline !== null,
-                        location: lesson.schedule?.offline?.location ?? null,
+                        isOnline: lesson.schedule?.isOnline ?? null,
+                        location: lesson.schedule?.location ?? null,
                         scheduledAt: lesson.schedule?.date ?? null
                     })
                 )
@@ -119,8 +117,8 @@ export class LessonRepository {
         if (lesson.scheduledAt) {
             schedule = {
                 date: lesson.scheduledAt,
-                online: lesson.isOnline ? {} : null,
-                offline: lesson.isOffline ? { location: lesson.location } : null
+                isOnline: lesson.isOnline ?? false,
+                location: lesson.location
             };
         }
 

@@ -33,6 +33,25 @@ export type SemesterEnum = "autumn" | "spring";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface CallParticipants {
+  callId: string;
+  firstJoinedAt: Generated<Timestamp>;
+  isMuted: Generated<boolean>;
+  lastLeftAt: Timestamp | null;
+  userId: string;
+}
+
+export interface Calls {
+  courseId: string | null;
+  cover: string | null;
+  endedAt: Timestamp | null;
+  endedBy: string | null;
+  id: Generated<string>;
+  startedAt: Generated<Timestamp>;
+  startedBy: string;
+  title: string;
+}
+
 export interface CourseChanges {
   actorId: string;
   courseId: string;
@@ -115,8 +134,7 @@ export interface Lessons {
    * Machine-readable name of the lesson that is unique within a course
    */
   id: Generated<string>;
-  isOffline: boolean;
-  isOnline: boolean;
+  isOnline: boolean | null;
   location: string | null;
   position: number;
   scheduledAt: Timestamp | null;
@@ -180,6 +198,8 @@ export interface UserSessions {
 }
 
 export interface DB {
+  callParticipants: CallParticipants;
+  calls: Calls;
   courseChanges: CourseChanges;
   courses: Courses;
   homeworks: Homeworks;

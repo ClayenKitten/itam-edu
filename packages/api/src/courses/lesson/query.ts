@@ -35,7 +35,6 @@ export class LessonQuery {
                 "position",
                 "createdAt",
                 "location",
-                "isOffline",
                 "isOnline",
                 "scheduledAt"
             ])
@@ -66,10 +65,8 @@ export class LessonQuery {
             schedule: lesson.scheduledAt
                 ? {
                       date: lesson.scheduledAt,
-                      online: lesson.isOnline ? {} : null,
-                      offline: lesson.isOffline
-                          ? { location: lesson.location }
-                          : null
+                      location: lesson.location,
+                      isOnline: lesson.isOnline ?? false
                   }
                 : null
         };
@@ -95,7 +92,6 @@ export class LessonQuery {
                 "banner",
                 "createdAt",
                 "location",
-                "isOffline",
                 "isOnline",
                 "scheduledAt"
             ])
@@ -112,8 +108,8 @@ export class LessonQuery {
             schedule: l.scheduledAt
                 ? {
                       date: l.scheduledAt,
-                      online: l.isOnline ? {} : null,
-                      offline: l.isOffline ? { location: l.location } : null
+                      location: l.location,
+                      isOnline: l.isOnline ?? false
                   }
                 : null
         }));
@@ -131,7 +127,7 @@ export type LessonDTO = {
     createdAt: Date;
     content: string | null;
     homeworkIds: string[];
-    schedule: LessonScheduleDTO | null;
+    schedule: LessonScheduleDto | null;
 };
 
 export type LessonPartialDTO = {
@@ -141,13 +137,11 @@ export type LessonPartialDTO = {
     banner: string | null;
     video: string | null;
     createdAt: Date;
-    schedule: LessonScheduleDTO | null;
+    schedule: LessonScheduleDto | null;
 };
 
-export type LessonScheduleDTO = {
+export type LessonScheduleDto = {
     date: Date;
-    online: {} | null;
-    offline: {
-        location: string | null;
-    } | null;
+    location: string | null;
+    isOnline: boolean;
 };

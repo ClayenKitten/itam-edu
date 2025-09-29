@@ -1,14 +1,14 @@
 <script lang="ts">
-    import type { Lesson } from "$lib/types";
+    import type { LessonSchedule } from "$lib/types";
     import { set } from "date-fns";
 
     let { schedule = $bindable() }: Props = $props();
 
     type Props = {
-        schedule: Lesson["schedule"] | null;
+        schedule: LessonSchedule | null;
     };
 
-    let saved: Lesson["schedule"] = $state(null);
+    let saved: LessonSchedule | null = $state(null);
 
     const formatDate = (date: Date): { date: string; time: string } => {
         let d = date.toLocaleDateString("ru-RU", {
@@ -25,12 +25,11 @@
     };
 </script>
 
-<section class="flex flex-col gap-8 p-7.5 rounded-xl bg-surface shadow">
-    <header class="flex flex-col gap-2">
+<section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
+    <header class="flex flex-col gap-1">
         <h3>Планирование урока</h3>
-        <p class="max-w-[800px] text-balance">
-            Запланируйте урок, чтобы он отобразился в календаре. Студенты и
-            преподаватели получат уведомление в зависимости от своих настроек.
+        <p class="text-on-surface-muted">
+            Запланируйте урок, чтобы он отобразился в календаре.
         </p>
     </header>
     {#if schedule === null}
@@ -38,14 +37,14 @@
             class="btn w-max"
             onclick={() => {
                 schedule = saved ?? {
-                    online: null,
-                    offline: null,
                     date: set(new Date(), {
                         hours: 18,
                         minutes: 30,
                         seconds: 0,
                         milliseconds: 0
-                    })
+                    }),
+                    location: null,
+                    isOnline: true
                 };
             }}
         >
@@ -53,9 +52,8 @@
             Запланировать урок
         </button>
     {:else}
-        <div class="shrink flex flex-col gap-2 min-w-[360px]">
-            <h4>Дата и время</h4>
-            <div class="flex gap-2">
+        <div class="flex flex-col gap-2">
+            <div class="flex flex-wrap gap-2">
                 <input
                     class="input px-6"
                     type="date"
@@ -84,47 +82,17 @@
                         }
                     }
                 />
+                <input
+                    class="input w-80"
+                    placeholder={'Место проведения, напр. "Б-3"'}
+                    maxlength={60}
+                    bind:value={schedule.location}
+                />
             </div>
-        </div>
-        <div class="flex flex-col gap-2">
-            <h4>Формат проведения</h4>
-            <div class="flex gap-8">
-                <div class="w-80 flex flex-col gap-2">
-                    <label>
-                        <input
-                            type="checkbox"
-                            bind:checked={
-                                () => schedule!.offline !== null,
-                                val =>
-                                    (schedule!.offline = val
-                                        ? { location: "" }
-                                        : null)
-                            }
-                        />
-                        Провести урок очно
-                    </label>
-                    {#if schedule.offline}
-                        <input
-                            class="input"
-                            placeholder="Место проведения"
-                            maxlength={60}
-                            bind:value={schedule.offline.location}
-                        />
-                    {/if}
-                </div>
-                <div class="w-80 flex flex-col gap-2">
-                    <label>
-                        <input
-                            type="checkbox"
-                            bind:checked={
-                                () => schedule!.online !== null,
-                                val => (schedule!.online = val ? {} : null)
-                            }
-                        />
-                        Провести урок онлайн
-                    </label>
-                </div>
-            </div>
+            <label>
+                <input type="checkbox" bind:checked={schedule.isOnline} />
+                Провести онлайн-трансляцию
+            </label>
         </div>
         <button
             class="btn secondary w-max"

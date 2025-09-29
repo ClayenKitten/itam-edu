@@ -19,7 +19,12 @@ export class Lesson {
 }
 
 /** Basic information of the lesson. */
-export type LessonInfo = typeof schema.lessonInfo.static;
+export type LessonInfo = {
+    title: string;
+    description: string | null;
+    banner: string | null;
+    video: string | null;
+};
 
 /** Time and location of the lesson. */
 export type LessonSchedule = typeof schema.lessonSchedule.static;
