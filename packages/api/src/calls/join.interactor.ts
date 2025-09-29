@@ -46,7 +46,7 @@ export class JoinCall {
             room: callId,
             roomJoin: true,
             roomCreate: false,
-            hidden: true,
+            hidden: false,
             canSubscribe: true,
             canPublish: permissions.canPublish,
             roomAdmin: permissions.isAdmin,
