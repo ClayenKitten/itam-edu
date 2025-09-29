@@ -107,6 +107,13 @@
     --text-sm-regular: 13px;
     --text-sm-regular--line-height: 18px;
     --text-sm-regular--font-weight: 400;
+
+    /* Breakpoints */
+    --breakpoint-sm: 40rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
 }
 
 @layer base {
@@ -171,6 +178,8 @@
         border-color: var(--color-primary);
         border-radius: var(--radius-xs);
 
+        transition: all;
+        transition-duration: 100ms;
         cursor: pointer;
 
         &.square {
@@ -183,6 +192,10 @@
             font-size: var(--text-xl-medium);
             line-height: var(--text-xl-medium--line-height);
             font-weight: var(--text-xl-medium--font-weight);
+        }
+
+        &:hover {
+            filter: brightness(0.9);
         }
 
         &.secondary {
@@ -297,7 +310,7 @@
         height: 1.5em;
         border-radius: var(--radius-2xs);
         transform: translateY(-0.075em);
-        border: 1px solid var(--color-on-primary);
+        border: 1px solid var(--color-surface-border);
         cursor: pointer;
         transition-duration: 100ms;
         transition-property: border-color background-color;
