@@ -8,7 +8,6 @@ import { CreateCall } from "./create.interactor";
 import { LiveKitWebhookHandler } from "./webhook";
 import { HttpError } from "../api/errors";
 import { StopCall } from "./stop.interactor";
-import logger from "../logger";
 
 @injectable()
 export class CallController {
@@ -140,7 +139,7 @@ export class CallController {
                     if (result instanceof HttpError) {
                         return status(result.code, result.message);
                     }
-                    return { token: result };
+                    return result;
                 },
                 {
                     detail: {

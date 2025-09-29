@@ -84,7 +84,6 @@ export class CallParticipantDao {
             .set({ lastLeftAt: new Date() })
             .where("callId", "=", callId)
             .where("userId", "=", userId)
-            .where("lastLeftAt", "is", null)
             .execute();
     }
 

@@ -45,10 +45,9 @@ export function coursePermissions(
             view: viewLevel === ViewLevel.Full
         },
         calls: {
-            list: editLevel >= EditLevel.Teacher,
-            join: true,
-            start: editLevel >= EditLevel.Teacher,
-            stop: editLevel >= EditLevel.Teacher
+            list: viewLevel === ViewLevel.Full,
+            manage: editLevel >= EditLevel.Teacher,
+            join: true
         }
     };
 

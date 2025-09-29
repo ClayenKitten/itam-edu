@@ -27,6 +27,7 @@ import type {
     UpdateCourseDto
 } from "itam-edu-api/src/courses/schema";
 import type { CallDto } from "itam-edu-api/src/calls/dao";
+import type { JoinDto } from "itam-edu-api/src/calls/join.interactor";
 
 export type Course = CourseQueryDto;
 export type CoursePartial = CourseQueryPartialDto;
@@ -51,5 +52,6 @@ export type Submission = SubmissionDto;
 export type SubmissionPartial = SubmissionPartialDto;
 
 export type Call = CallDto;
+export type CallJoinData = JoinDto;
 
 export type Notification = WebNotification;

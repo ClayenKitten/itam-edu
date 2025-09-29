@@ -8,12 +8,13 @@
     import PhasePrepare from "./PhasePrepare.svelte";
     import PhaseCall from "./PhaseCall.svelte";
     import { invalidate } from "$app/navigation";
+    import type { CallJoinData } from "$lib/types";
 
     let { data } = $props();
     const toaster = getToaster();
 
     let room = new RoomState();
-    let token: string | undefined = $state();
+    let joinData: CallJoinData | undefined = $state();
     const url = env.ITAMEDU_PUBLIC_LIVEKIT_URL!;
 
     onMount(() => {
@@ -30,9 +31,9 @@
             await invalidate("app:call");
             return;
         }
-        token = resp.data.token;
+        joinData = resp.data;
         try {
-            await room.connect(url, token);
+            await room.connect(url, joinData.token);
         } catch {
             toaster.add("Не удалось подключиться к звонку", "error");
             return;
@@ -75,11 +76,12 @@
                 {/if}
             </div>
         </main>
-    {:else}
+    {:else if room.state === ConnectionState.Connected && joinData !== undefined}
         <PhaseCall
             user={data.user}
             courses={data.courses}
             call={data.call}
+            {joinData}
             {room}
         />
     {/if}

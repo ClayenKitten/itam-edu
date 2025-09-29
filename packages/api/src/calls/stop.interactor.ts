@@ -29,7 +29,7 @@ export class StopCall {
             if (!course || !permissions) {
                 return new NotFoundError("Call does not exist.");
             }
-            if (permissions.calls.start !== true) {
+            if (permissions.calls.manage !== true) {
                 return new NotFoundError("Call does not exist.");
             }
         }

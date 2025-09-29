@@ -2,7 +2,7 @@
     import type { CallDto } from "itam-edu-api/src/calls/dao";
     import type { ParticipantState, RoomState } from "./state.svelte";
     import type { User } from "itam-edu-common";
-    import type { CoursePartial } from "$lib/types";
+    import type { CallJoinData, CoursePartial } from "$lib/types";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
     import { goto } from "$app/navigation";
@@ -14,6 +14,7 @@
         room,
         focus = $bindable(null),
         tab = $bindable(),
+        joinData,
         onClose
     }: Props = $props();
     type Props = {
@@ -23,6 +24,7 @@
         room: RoomState;
         focus: ParticipantState | null;
         tab: "people" | "chat" | "settings";
+        joinData: CallJoinData;
         onClose: () => void;
     };
     const toaster = getToaster();
@@ -116,18 +118,20 @@
         >
             <i class="ph ph-chats text-[25px]"></i>
         </button>
-        <button
-            class={[
-                "flex-1 flex justify-center items-center",
-                tab === "settings" ? "bg-surface" : "bg-surface-dimmed",
-                "text-on-surface hover:bg-surface transition-colors duration-100"
-            ]}
-            title="Настройки"
-            aria-label="Настройки"
-            onclick={() => (tab = "settings")}
-        >
-            <i class="ph ph-gear-six text-[25px]"></i>
-        </button>
+        {#if joinData.permissions.isAdmin}
+            <button
+                class={[
+                    "flex-1 flex justify-center items-center",
+                    tab === "settings" ? "bg-surface" : "bg-surface-dimmed",
+                    "text-on-surface hover:bg-surface transition-colors duration-100"
+                ]}
+                title="Настройки"
+                aria-label="Настройки"
+                onclick={() => (tab = "settings")}
+            >
+                <i class="ph ph-gear-six text-[25px]"></i>
+            </button>
+        {/if}
     </nav>
 </aside>
 

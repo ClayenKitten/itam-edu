@@ -4,12 +4,9 @@ import { error } from "@sveltejs/kit";
 
 export const load: PageLoad = async ({ fetch, depends, parent }) => {
     depends("app:calls");
-    const { course, user } = await parent();
+    const { course } = await parent();
 
-    if (
-        !user ||
-        (!user.isCourseStaff(course.id) && !user.permissions.calls.view)
-    ) {
+    if (!course.permissions.calls.list) {
         error(403);
     }
 

@@ -35,7 +35,7 @@ export class CreateCall {
             if (!course || !permissions) {
                 return new NotFoundError("Course does not exist.");
             }
-            if (permissions.calls.start !== true) {
+            if (permissions.calls.manage !== true) {
                 return new ForbiddenError(
                     "You are not allowed to create course calls."
                 );

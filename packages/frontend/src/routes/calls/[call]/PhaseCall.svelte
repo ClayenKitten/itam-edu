@@ -1,21 +1,21 @@
 <script lang="ts">
     import { getToaster } from "$lib/Toaster.svelte";
-    import type { CoursePartial } from "$lib/types";
+    import type { CallJoinData, CoursePartial } from "$lib/types";
     import type { CallDto } from "itam-edu-api/src/calls/dao";
     import type { User } from "itam-edu-common";
     import ParticipantVideo from "./ParticipantVideo.svelte";
     import ParticipantAudio from "./ParticipantAudio.svelte";
     import type { ParticipantState, RoomState } from "./state.svelte";
-    import { goto } from "$app/navigation";
     import Sidebar from "./Sidebar.svelte";
     import { onMount } from "svelte";
 
-    let { user, courses, call, room }: Props = $props();
+    let { user, courses, call, joinData, room }: Props = $props();
     type Props = {
         user: User | null;
         courses: CoursePartial[];
         call: CallDto;
         room: RoomState;
+        joinData: CallJoinData;
     };
     const toaster = getToaster();
 
@@ -140,6 +140,7 @@
             {courses}
             {call}
             {room}
+            {joinData}
             bind:tab={sidebarTab}
             onClose={() => {
                 sidebarTab = null;

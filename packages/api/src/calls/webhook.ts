@@ -31,6 +31,7 @@ export class LiveKitWebhookHandler {
                     event.room!.name,
                     event.participant!.identity
                 );
+                break;
             }
             case "participant_left": {
                 if (event.participant!.identity.startsWith("guest:")) {
@@ -40,6 +41,7 @@ export class LiveKitWebhookHandler {
                     event.room!.name,
                     event.participant!.identity
                 );
+                break;
             }
             default: {
                 // We are not interested in other event types.

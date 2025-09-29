@@ -62,11 +62,9 @@ export type CoursePermissions = {
     calls: {
         /** List course calls. */
         list: boolean;
+        /** Manage course calls. */
+        manage: boolean;
         /** Join course calls. */
         join: boolean;
-        /** Start course calls. */
-        start: boolean;
-        /** Stop course calls. */
-        stop: boolean;
     };
 };
