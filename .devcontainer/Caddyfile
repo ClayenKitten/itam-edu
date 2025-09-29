@@ -16,6 +16,10 @@ http://www.localhost {
     }
 }
 
+https://turn.localhost {
+    reverse_proxy livekit:443
+}
+
 http://db.localhost {
     reverse_proxy dbgate:3000
     handle_errors {

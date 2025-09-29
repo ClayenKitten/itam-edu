@@ -17,7 +17,10 @@ export function coursePath({
 }
 
 export function filePath(file: string) {
-    return `/files/${file}`;
+    if (file.startsWith("http://") || file.startsWith("https://")) {
+        return file;
+    }
+    return `/files/${file}`.replace("//", "/");
 }
 
 export async function lookupCourseId(

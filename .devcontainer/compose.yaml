@@ -21,8 +21,6 @@ services:
       - caddy_config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile
 
-  # Databases
-  ## PostgreSQL server
   postgres:
     image: postgres:17
     expose: [5432]
@@ -40,14 +38,12 @@ services:
       start_period: 30s
       start_interval: 500ms
 
-  ## Redis server
   redis:
     image: redis:8.0
     command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
     expose: [6379]
     volumes: [redis:/data]
 
-  ## Minio
   minio:
     image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
     entrypoint: sh -c "mc mb /data/files --ignore-existing && minio server --console-address ":9001" /data"
@@ -62,6 +58,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  livekit:
+    image: livekit/livekit-server:v1.9.1
+    entrypoint:
+      - /bin/sh
+      - -c
+      - /livekit-server --config /etc/livekit.yaml --bind 0.0.0.0 --node-ip "$$LIVEKIT_NODE_IP"
+    env_file: [../.env, .env.dev]
+    restart: unless-stopped
+    ports:
+      - 7880:7880 # API
+      - 7881:7881 # WebRTC over TCP (fallback)
+      - 52012:52012/udp # TURN UDP
+      - 56001-56010:56001-56010/udp # WebRTC
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml
 
   # Web interface for databases
   dbgate:
