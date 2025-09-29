@@ -134,7 +134,7 @@ export interface Lessons {
    * Machine-readable name of the lesson that is unique within a course
    */
   id: Generated<string>;
-  isOnline: boolean | null;
+  isOnline: boolean;
   location: string | null;
   position: number;
   scheduledAt: Timestamp | null;

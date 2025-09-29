@@ -30,7 +30,7 @@ export class CallQuery {
     ): Promise<CallDto[] | HttpError> {
         if (actor.permissions.calls.view !== true) {
             return new ForbiddenError(
-                "You are not allowed to view global calls list."
+                "You are not allowed to view course calls list."
             );
         }
         return await this.dao.getAll(courseId);
