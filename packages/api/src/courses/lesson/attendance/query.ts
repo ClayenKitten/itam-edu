@@ -33,12 +33,14 @@ export class AttendanceQuery {
 
         let query = this.postgres.kysely
             .selectFrom("lessonAttendees")
+            .innerJoin("lessons", "lessons.id", "lessonAttendees.lessonId")
+            .where("lessons.courseId", "=", courseId)
             .select([
-                "lessonId",
-                "userId",
-                "format",
-                "recordedAt",
-                "manuallyAddedBy"
+                "lessonAttendees.lessonId",
+                "lessonAttendees.userId",
+                "lessonAttendees.format",
+                "lessonAttendees.recordedAt",
+                "lessonAttendees.manuallyAddedBy"
             ]);
         if (lessonId) {
             query = query.where("lessonId", "=", lessonId);
