@@ -4,13 +4,13 @@
 
     let { track }: Props = $props();
 
-    type Props = {
-        track: VideoTrackState;
-        disablepictureinpicture?: boolean;
-    };
+    type Props = { track: VideoTrackState };
 
     onMount(() => {
         track.attach(video);
+        return () => {
+            track.detach();
+        };
     });
 
     let video: HTMLVideoElement;

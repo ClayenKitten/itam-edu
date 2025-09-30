@@ -212,4 +212,8 @@ export class VideoTrackState {
     public attach(element?: HTMLMediaElement): HTMLMediaElement {
         return element ? this.track.attach(element) : this.track.attach();
     }
+
+    public detach() {
+        this.track.detach();
+    }
 }

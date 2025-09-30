@@ -80,56 +80,58 @@
 
 <div id="wrapper" class="h-dvh flex bg-background">
     <div class="flex-1 flex flex-col gap-4 md:m-4">
-        <main
-            class={[
-                "relative flex-1 overflow-hidden",
-                "flex flex-col gap-4 justify-center items-center",
-                "bg-surface shadow md:rounded-xs"
-            ]}
-        >
-            {#if focus && focus.screenTrack}
-                <div class="size-full overflow-hidden">
-                    <ParticipantVideo track={focus.screenTrack} />
-                </div>
-                {#if focus && focus.cameraTrack}
-                    <div
-                        class="absolute top-4 right-4 max-h-60 max-w-60 overflow-hidden rounded-xs"
-                    >
+        {#key focus}
+            <main
+                class={[
+                    "relative flex-1 overflow-hidden",
+                    "flex flex-col gap-4 justify-center items-center",
+                    "bg-surface shadow md:rounded-xs"
+                ]}
+            >
+                {#if focus && focus.screenTrack}
+                    <div class="size-full overflow-hidden">
+                        <ParticipantVideo track={focus.screenTrack} />
+                    </div>
+                    {#if focus && focus.cameraTrack}
+                        <div
+                            class="absolute top-4 right-4 max-h-60 max-w-60 overflow-hidden rounded-xs"
+                        >
+                            <ParticipantVideo track={focus.cameraTrack} />
+                        </div>
+                    {/if}
+                {:else if focus && focus.cameraTrack}
+                    <div class="size-full overflow-hidden">
                         <ParticipantVideo track={focus.cameraTrack} />
                     </div>
+                {:else}
+                    <div
+                        class={[
+                            "absolute top-0 left-0 w-max",
+                            "flex flex-col gap-1 p-4",
+                            "bg-surface-dimmed shadow rounded-br-xs",
+                            focus &&
+                                (focus.cameraEnabled || focus.screenEnabled) &&
+                                "hidden"
+                        ]}
+                    >
+                        <h4>{call.title}</h4>
+                        {#if course}
+                            <h5>Курс {course.title}</h5>
+                        {/if}
+                    </div>
                 {/if}
-            {:else if focus && focus.cameraTrack}
-                <div class="size-full overflow-hidden">
-                    <ParticipantVideo track={focus.cameraTrack} />
-                </div>
-            {:else}
-                <div
-                    class={[
-                        "absolute top-0 left-0 w-max",
-                        "flex flex-col gap-1 p-4",
-                        "bg-surface-dimmed shadow rounded-br-xs",
-                        focus &&
-                            (focus.cameraEnabled || focus.screenEnabled) &&
-                            "hidden"
-                    ]}
-                >
-                    <h4>{call.title}</h4>
-                    {#if course}
-                        <h5>Курс {course.title}</h5>
-                    {/if}
-                </div>
-            {/if}
-            {#if focus}
-                <div
-                    class={[
-                        "absolute bottom-4 left-4 px-3 py-2",
-                        "bg-primary text-on-primary text-md-regular rounded-full"
-                    ]}
-                >
-                    {focus.name}
-                </div>
-            {/if}
-        </main>
+                {#if focus}
+                    <div
+                        class={[
+                            "absolute bottom-4 left-4 px-3 py-2",
+                            "bg-primary text-on-primary text-md-regular rounded-full"
+                        ]}
+                    >
+                        {focus.name}
+                    </div>
+                {/if}
+            </main>
+        {/key}
         <menu class="shrink-0 h-max flex justify-center gap-2">
             {@render tools()}
         </menu>
