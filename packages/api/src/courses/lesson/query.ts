@@ -87,6 +87,7 @@ export class LessonQuery {
             .select([
                 "id",
                 "courseId",
+                "position",
                 "title",
                 "video",
                 "banner",
@@ -101,6 +102,7 @@ export class LessonQuery {
         return lessons.map(l => ({
             id: l.id,
             courseId: l.courseId,
+            position: l.position,
             title: l.title,
             banner: l.banner,
             video: l.video,
@@ -133,6 +135,7 @@ export type LessonDTO = {
 export type LessonPartialDTO = {
     id: string;
     courseId: string;
+    position: number;
     title: string;
     banner: string | null;
     video: string | null;

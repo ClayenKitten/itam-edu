@@ -5,12 +5,13 @@
     import { format as formatDate } from "date-fns";
     import { ru } from "date-fns/locale";
 
-    const { course, position, lesson }: Props = $props();
+    const { course, position, lesson, showSoon = false }: Props = $props();
 
     type Props = {
         course: Course;
         position: number;
         lesson: LessonPartial;
+        showSoon?: boolean;
     };
 </script>
 
@@ -24,9 +25,27 @@
     ]}
 >
     <div
-        class="w-full h-[200px] shrink-0 mb-3 rounded-md overflow-hidden"
+        class="relative w-full h-[200px] shrink-0 mb-3 rounded-md overflow-hidden"
         aria-hidden="true"
     >
+        {#if showSoon}
+            <div
+                class={[
+                    "absolute bottom-3 inset-x-0",
+                    "flex justify-center items-center"
+                ]}
+            >
+                <div
+                    class={[
+                        "flex justify-center items-center gap-2 px-3 py-0.5",
+                        "text-on-surface bg-surface shadow rounded-full"
+                    ]}
+                >
+                    <i class="ph ph-clock-countdown"></i>
+                    Скоро
+                </div>
+            </div>
+        {/if}
         {#if lesson.banner}
             <img
                 class="w-full h-full overflow-hidden object-cover"

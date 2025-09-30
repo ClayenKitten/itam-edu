@@ -4,8 +4,18 @@
     import { getCourseChangeDisplay } from "./courseUpdate";
     import { format as formatDate } from "date-fns";
     import EnrollSuggestion from "./EnrollSuggestion.svelte";
+    import { groupLessonsBySchedule } from "$lib/utils/lessons-group";
 
     let { data } = $props();
+
+    const lessonGroups = groupLessonsBySchedule(data.lessons);
+    const lastLessons = [
+        ...lessonGroups.ended,
+        ...lessonGroups.ongoing,
+        ...lessonGroups.soon
+    ]
+        .toReversed()
+        .slice(0, 4);
 </script>
 
 <div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
@@ -45,11 +55,12 @@
                 "@min-[1600px]/main:w-[calc(356px_*_4_+_16px_*_3)]"
             ]}
         >
-            {#each data.lessons.toReversed().slice(0, 4) as lesson, i}
+            {#each lastLessons as lesson}
                 <LessonCard
                     course={data.course}
                     {lesson}
-                    position={data.lessons.length - i}
+                    position={lesson.position + 1}
+                    showSoon={lessonGroups.soon.some(l => l.id === lesson.id)}
                 />
             {:else}
                 <div
