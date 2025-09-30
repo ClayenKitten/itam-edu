@@ -1,5 +1,6 @@
 <script lang="ts">
     import { coursePath } from "$lib/path";
+    import EnrollSuggestion from "../../EnrollSuggestion.svelte";
     import HomeworkInfoSection from "./HomeworkInfoSection.svelte";
     import SubmissionAttempt from "./SubmissionAttempt.svelte";
 
@@ -35,3 +36,10 @@
         </ol>
     {/if}
 </div>
+{#if data.course.isEnrollmentOpen && data.course.role === null}
+    <EnrollSuggestion
+        text="Поступи на курс, чтобы сдавать задания на проверку преподавателям"
+        user={data.user}
+        course={data.course}
+    />
+{/if}
