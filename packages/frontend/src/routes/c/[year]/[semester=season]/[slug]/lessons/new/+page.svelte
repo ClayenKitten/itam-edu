@@ -115,11 +115,14 @@
     />
     <ContentSection bind:content />
     <HomeworksSection course={data.course} bind:homeworkIds />
-    <footer class="flex gap-4">
-        <a class="btn secondary w-max" href="{coursePath(data.course)}/lessons">
+    <footer class="flex justify-end gap-2.5">
+        <a
+            class="btn secondary shadow"
+            href="{coursePath(data.course)}/lessons"
+        >
             Отмена
         </a>
-        <button class="btn w-max" onclick={doOnce("create-lesson", create)}>
+        <button class="btn shadow" onclick={doOnce("create-lesson", create)}>
             Опубликовать
         </button>
     </footer>

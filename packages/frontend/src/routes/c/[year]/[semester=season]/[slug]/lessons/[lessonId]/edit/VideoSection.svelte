@@ -3,7 +3,7 @@
     import { filePath } from "$lib/path";
     import type { Course } from "$lib/types";
 
-    let { course, video, onUploaded, onDeleted }: Props = $props();
+    let { video, onUploaded, onDeleted }: Props = $props();
 
     type Props = {
         course: Course;
@@ -14,14 +14,12 @@
 </script>
 
 <section
-    class="flex flex-col justify-between gap-4 p-7.5 rounded-xl bg-surface shadow"
+    class="flex flex-col justify-between gap-6 p-7.5 rounded-xl bg-surface shadow"
 >
-    <header class="flex flex-col gap-2">
+    <header class="flex flex-col gap-1">
         <h3>Видеозапись</h3>
-        <p class="max-w-[800px] text-balance">
-            Загрузите видеозапись прошедшего занятия. Если вы проведёте
-            трансляцию на платформе, то видеозапись будет загружена
-            автоматически.
+        <p class="text-md-regular text-on-surface-muted">
+            Загрузите видеозапись прошедшего занятия.
         </p>
     </header>
     <div class="flex items-center gap-4">

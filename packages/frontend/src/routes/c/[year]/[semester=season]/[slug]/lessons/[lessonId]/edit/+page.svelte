@@ -111,11 +111,11 @@
         course={data.course}
         bind:homeworkIds={lesson.homeworkIds}
     />
-    <footer class="flex gap-4">
+    <footer class="flex justify-end gap-2.5">
         <a
-            class="btn secondary w-max"
+            class="btn secondary shadow"
             href="{coursePath(data.course)}/lessons/{data.lesson.id}">Отмена</a
         >
-        <button class="btn w-max" onclick={save}>Сохранить</button>
+        <button class="btn shadow" onclick={save}>Сохранить</button>
     </footer>
 </div>

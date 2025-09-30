@@ -1,7 +1,6 @@
 <script lang="ts">
     import PlainEditor from "$lib/components/editor/PlainEditor.svelte";
     import ImageUploader from "$lib/components/upload/ImageUploader.svelte";
-    import { formatLessonSchedule } from "$lib/format";
     import { filePath } from "$lib/path";
     import type { LessonSchedule } from "$lib/types";
 
@@ -30,11 +29,6 @@
             <h2>Урок {position + 1}</h2>
         {:else}
             <h2>Новый урок</h2>
-        {/if}
-        {#if schedule}
-            <p class="text-md-regular text-on-surface-muted">
-                {formatLessonSchedule(schedule)}
-            </p>
         {/if}
     </header>
     <label class="flex flex-col gap-2">

@@ -23,12 +23,14 @@
     onHomeworkAdded={id => homeworkIds.push(id)}
 />
 
-<section class="flex flex-col gap-4 p-7.5 rounded-xl bg-surface shadow">
-    <header class="flex flex-col gap-2">
+<section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
+    <header class="flex flex-col gap-1">
         <h3>Задания</h3>
-        <p class="max-w-[800px] text-balance">
-            К уроку могут быть прикреплены задания для выполнения студентами.
-            Одно и то же задание может быть прикреплено к нескольким урокам.
+        <p
+            class="text-md-regular text-on-surface-muted max-w-[800px] text-balance"
+        >
+            Прикрепите задания для выполнения студентами. Одно и то же задание
+            может быть прикреплено к нескольким урокам.
         </p>
     </header>
     {#if homeworkIds.length > 0}
@@ -39,12 +41,14 @@
                 )!}
                 <li
                     class={[
-                        "flex grow items-center justify-between px-5 py-4",
+                        "flex grow items-center justify-between gap-4 px-5 py-4",
                         "bg-surface border border-surface-border rounded-sm shadow"
                     ]}
                 >
-                    <div class="flex flex-col gap-1.75">
-                        <span class="text-xl-medium text-on-surface">
+                    <div class="flex-1 flex flex-col gap-1.75 overflow-hidden">
+                        <span
+                            class="text-xl-medium text-on-surface overflow-ellipsis overflow-hidden"
+                        >
                             {homework.title}
                         </span>
                         <span class="text-sm-regular text-on-surface-muted">

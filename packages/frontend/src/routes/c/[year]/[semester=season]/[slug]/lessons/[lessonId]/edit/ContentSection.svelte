@@ -9,9 +9,12 @@
 </script>
 
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
-    <header class="flex flex-col gap-2">
+    <header class="flex flex-col gap-1">
         <h3>Теория и материалы</h3>
-        <p>Здесь вы можете написать теорию и прикрепить полезные материалы.</p>
+        <p class="text-md-regular text-on-surface-muted">
+            Напишите теорию к уроку и прикрепите полезные материалы для
+            изучения.
+        </p>
     </header>
     <div class="flex min-h-[400px] max-h-[800px]">
         <RichEditor bind:content characterLimit={50000} />

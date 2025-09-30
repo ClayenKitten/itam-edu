@@ -161,25 +161,12 @@
 
 @layer components {
     .btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        height: 44px;
-        padding: 0 20px;
+        @apply flex justify-center items-center gap-2.5;
+        @apply h-11 px-5;
 
-        font-size: var(--text-lg-medium);
-        line-height: var(--text-lg-medium--line-height);
-        font-weight: var(--text-lg-medium--font-weight);
-
-        color: var(--color-on-primary);
-        background-color: var(--color-primary);
-        border-width: 1px;
-        border-color: var(--color-primary);
-        border-radius: var(--radius-xs);
-
-        transition: all;
-        transition-duration: 100ms;
+        @apply text-on-primary text-lg-medium bg-primary;
+        @apply border border-primary rounded-xs;
+        @apply transition-all duration-200;
         cursor: pointer;
 
         &.square {
@@ -204,7 +191,7 @@
             border-color: var(--color-on-primary);
 
             &:hover {
-                border-color: var(--color-primary);
+                filter: brightness(0.95);
             }
         }
 

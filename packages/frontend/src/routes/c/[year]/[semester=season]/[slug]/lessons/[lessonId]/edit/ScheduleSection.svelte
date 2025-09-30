@@ -28,7 +28,7 @@
 <section class="flex flex-col gap-6 p-7.5 rounded-xl bg-surface shadow">
     <header class="flex flex-col gap-1">
         <h3>Планирование урока</h3>
-        <p class="text-on-surface-muted">
+        <p class="text-md-regular text-on-surface-muted">
             Запланируйте урок, чтобы он отобразился в календаре.
         </p>
     </header>
