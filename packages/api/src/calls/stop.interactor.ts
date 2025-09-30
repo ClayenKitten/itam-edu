@@ -4,13 +4,15 @@ import { CallDao } from "./dao";
 import { NotFoundError, type HttpError } from "../api/errors";
 import { CourseRepository } from "../courses/repository";
 import { LiveKit } from "../infra/livekit";
+import { CallParticipantDao } from "./participant.dao";
 
 @injectable()
 export class StopCall {
     public constructor(
         private dao: CallDao,
         private courseRepo: CourseRepository,
-        private livekit: LiveKit
+        private livekit: LiveKit,
+        private participantDao: CallParticipantDao
     ) {}
 
     public async invoke(
@@ -34,6 +36,7 @@ export class StopCall {
             }
         }
         await this.dao.end(callId, actor.id);
+        await this.participantDao.callEnded(callId);
         await this.livekit.roomService.deleteRoom(callId);
     }
 }
