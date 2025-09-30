@@ -26,10 +26,10 @@
             return;
         }
 
-        if (user.isCourseStaff(course.id)){
+        if (user.isCourseStaff(course.id)) {
             const response = await api({ fetch })
                 .courses({ course: course.id })
-                .staff({staffMember: user.id})
+                .staff({ staffMember: user.id })
                 .delete();
             if (response.error) {
                 toaster.add("Не удалось покинуть курс", "error");
