@@ -89,7 +89,7 @@ export class ParticipantState {
     );
 
     public screenTrack: VideoTrackState | null = $state(null);
-    public screenEnabled: boolean = $derived(
+    public readonly screenEnabled: boolean = $derived(
         this.screenTrack !== null && !this.screenTrack.isMuted
     );
 

@@ -136,11 +136,23 @@
 </aside>
 
 {#snippet peopleTab()}
+    {@const participants = [
+        room.localParticipant,
+        ...room.remoteParticipants
+    ].sort((a, b) => {
+        const rank = (p: typeof a): number => {
+            if (p.cameraEnabled || p.screenEnabled) return 0;
+            if (p.microphoneEnabled) return 1;
+            if (p.identity.startsWith("guest:")) return 1000;
+            return 2;
+        };
+        return rank(a) - rank(b);
+    })}
     <ul class="flex-1 shrink-0 flex flex-col overflow-y-auto">
-        {#each [room.localParticipant, ...room.remoteParticipants] as participant}
+        {#each participants as participant}
             <button
                 class={[
-                    "flex items-center gap-1 h-10 px-2",
+                    "shrink-0 flex items-center gap-1 h-10 px-2",
                     focus?.identity !== participant.identity
                         ? "bg-surface"
                         : "bg-surface-tint",
