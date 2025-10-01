@@ -14,7 +14,7 @@ import { UserLogin } from "../users/login";
 import { TelegramBot } from "../infra/telegram";
 import logger from "../logger";
 import { ApplyAttendanceToken } from "../courses/lesson/attendance/token/apply.interactor";
-import { HttpError } from "../api/errors";
+import { AppError } from "../errors";
 
 /**
  * Handles bot communication.
@@ -122,16 +122,34 @@ export class BotService {
         actor: User,
         token: string
     ): Promise<OutboundBotMessage> {
-        const result = await this.applyAttendanceToken.invoke(actor, token);
-        if (result instanceof HttpError) {
-            logger.error("Failed to record attendance", { error: result });
+        try {
+            await this.applyAttendanceToken.invoke(actor, token);
             return {
-                text: "Не удалось отметить посещение :("
+                text: [
+                    "<b>Посещение занятия отмечено ✨</b>",
+                    "Спасибо, что вы с нами!"
+                ].join("\n\n")
             };
+        } catch (e) {
+            if (e instanceof AppError) {
+                logger.debug("Failed to record attendance", {
+                    error: e
+                });
+                return {
+                    text: [
+                        "<b>Не удалось отметить посещение 😥</b>",
+                        e.message
+                    ].join("\n\n")
+                };
+            } else {
+                logger.error("Failed to record attendance", {
+                    error: e
+                });
+                return {
+                    text: "Не удалось отметить посещение 😥"
+                };
+            }
         }
-        return {
-            text: "✨ Посещение занятия отмечено"
-        };
     }
 
     private async handleHelp(): Promise<OutboundBotMessage> {

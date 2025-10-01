@@ -9,11 +9,11 @@ export class AttendanceTokenService {
 
     /** Generates an attendance token. */
     public async create(payload: AttendanceTokenPayload): Promise<string> {
-        const token = randomBytes(24).toString("base64url");
+        const token = randomBytes(12).toString("hex");
         const key = `attendance-tokens:${token}`;
 
         await this.redis.set(key, JSON.stringify(payload), {
-            expiration: { type: "EX", value: 15 }
+            expiration: { type: "EX", value: 30 }
         });
 
         return token;

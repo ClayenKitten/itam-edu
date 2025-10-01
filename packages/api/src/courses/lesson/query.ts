@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
-import { HttpError, NotFoundError } from "../../api/errors";
 import { CourseRepository } from "../repository";
 import type { User } from "itam-edu-common";
+import { CourseNotFound, LessonNotFound } from "../errors";
 
 @injectable()
 export class LessonQuery {
@@ -11,15 +11,21 @@ export class LessonQuery {
         private courseRepo: CourseRepository
     ) {}
 
+    /**
+     * Returns a lesson.
+     *
+     * @throws {CourseNotFound}
+     * @throws {LessonNotFound}
+     */
     public async get(
         actor: User | null,
         courseId: string,
         lessonId: string
-    ): Promise<LessonDTO | HttpError> {
+    ): Promise<LessonDTO> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
         if (!course || !permissions) {
-            return new NotFoundError("Course does not exist.");
+            throw new CourseNotFound(courseId);
         }
 
         const lesson = await this.postgres.kysely
@@ -41,7 +47,9 @@ export class LessonQuery {
             .where("id", "=", lessonId)
             .where("courseId", "=", courseId)
             .executeTakeFirst();
-        if (!lesson) return new NotFoundError();
+        if (!lesson) {
+            throw new LessonNotFound(lessonId);
+        }
 
         const homeworkIds = await this.postgres.kysely
             .selectFrom("lessonHomeworks")
@@ -72,14 +80,19 @@ export class LessonQuery {
         };
     }
 
+    /**
+     * Returns all lessons is course.
+     *
+     * @throws {CourseNotFound}
+     */
     public async getAll(
         actor: User | null,
         courseId: string
-    ): Promise<LessonPartialDTO[] | HttpError> {
+    ): Promise<LessonPartialDTO[]> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
         if (!course || !permissions) {
-            return new NotFoundError("Course does not exist.");
+            throw new CourseNotFound(courseId);
         }
 
         const lessons = await this.postgres.kysely

@@ -2,14 +2,14 @@ import { injectable } from "inversify";
 import { AttendanceDao } from "../dao";
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../../../repository";
-import {
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
-    type HttpError
-} from "../../../../api/errors";
 import { LessonRepository } from "../../repository";
 import { AttendanceTokenService } from "./service";
+import { AppError } from "../../../../errors";
+import {
+    CourseNotFound,
+    LessonNotFound,
+    UserIsNotCourseStudent
+} from "../../../errors";
 
 @injectable()
 export class ApplyAttendanceToken {
@@ -20,26 +20,38 @@ export class ApplyAttendanceToken {
         private tokenService: AttendanceTokenService
     ) {}
 
-    public async invoke(actor: User, token: string): Promise<void | HttpError> {
+    /**
+     * Apply a provided attendance token.
+     *
+     * @throws {CourseNotFound}
+     * @throws {LessonNotFound}
+     * @throws {UserIsNotCourseStudent}
+     * @throws {BadToken}
+     */
+    public async invoke(actor: User, token: string): Promise<void> {
         const payload = await this.tokenService.verify(token);
         if (!payload) {
-            return new BadRequestError("Failed to verify provided token.");
+            throw new BadToken();
         }
         const { courseId, lessonId } = payload;
 
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
         if (!course || !permissions) {
-            return new NotFoundError("Course does not exist.");
+            throw new CourseNotFound(courseId);
         }
         if (!actor.isCourseStudent(course.id)) {
-            return new ForbiddenError("You are not a course student.");
+            throw new UserIsNotCourseStudent();
         }
         const lesson = await this.lessonRepo.load(courseId, lessonId);
         if (!lesson) {
-            return new NotFoundError("Lesson not found.");
+            throw new LessonNotFound(lessonId);
         }
-
         await this.dao.add(lesson, actor, "offline");
     }
+}
+
+export class BadToken extends AppError {
+    public code = "bad-attendance-token";
+    public message = "Неправильный или устаревший код";
 }

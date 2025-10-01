@@ -167,14 +167,8 @@ export class AttendanceController {
             )
             .post(
                 "/:lesson/attendance-tokens/apply",
-                async ({ user, body, status }) => {
-                    const result = await this.applyToken.invoke(
-                        user,
-                        body.token
-                    );
-                    if (result instanceof HttpError) {
-                        return status(result.code, result.message);
-                    }
+                async ({ user, body }) => {
+                    return await this.applyToken.invoke(user, body.token);
                 },
                 {
                     requireAuthentication: true,

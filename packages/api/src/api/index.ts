@@ -3,6 +3,7 @@ import { Elysia, type AnyElysia } from "elysia";
 
 import logger from "../logger";
 import type { AppConfig } from "itam-edu-common/config";
+import { AppError, errorToHttpStatus } from "../errors";
 
 import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
 import { corsPlugin } from "./plugins/cors";
@@ -70,16 +71,41 @@ export class ApiServer {
             serve: { maxRequestBodySize: 5 * 1024 * 1024 * 1024 },
             strictPath: true
         })
+            .onError(async ({ code, error, status }) => {
+                if (error instanceof AppError) {
+                    logger?.debug("Operation completed with a error", {
+                        error: {
+                            code: error.code,
+                            message: error.message,
+                            meta: error.meta,
+                            cause: error.cause
+                        }
+                    });
+                    const httpStatus = errorToHttpStatus(error);
+                    return status(httpStatus, {
+                        error: {
+                            code: error.code,
+                            message: error.message
+                        } satisfies ErrorShape
+                    });
+                }
+                if (code === "NOT_FOUND") {
+                    return status(404, {
+                        error: {
+                            code: "unknown-route",
+                            message: "Неверный путь запроса к API"
+                        } satisfies ErrorShape
+                    });
+                }
+                logger?.error("Unhandled error", {
+                    error,
+                    stack: (error as Error).stack
+                });
+            })
             .use(corsPlugin())
             .use(docsPlugin())
             .use(this.authPlugin.toElysia())
             .use(httpLoggerPlugin())
-            .onError(async ctx => {
-                logger?.error("Unhandled Exception", {
-                    error: ctx.error,
-                    stack: (ctx.error as Error).stack
-                });
-            })
             .use(this.userController.toElysia())
             .use(this.courseController.toElysia())
             .use(this.lessonController.toElysia())
@@ -106,3 +132,8 @@ export class ApiServer {
 export type ApiTreaty = Awaited<
     ReturnType<InstanceType<typeof ApiServer>["createElysia"]>
 >;
+
+export type ErrorShape = {
+    code: string;
+    message: string;
+};
