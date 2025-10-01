@@ -8,14 +8,12 @@
 
     let { data } = $props();
 
-    const lessonGroups = groupLessonsBySchedule(data.lessons);
-    const lastLessons = [
-        ...lessonGroups.ended,
-        ...lessonGroups.ongoing,
-        ...lessonGroups.soon
-    ]
-        .toReversed()
-        .slice(0, 4);
+    const lessonGroups = $derived(groupLessonsBySchedule(data.lessons));
+    const lastLessons = $derived(
+        [...lessonGroups.ended, ...lessonGroups.ongoing, ...lessonGroups.soon]
+            .toReversed()
+            .slice(0, 4)
+    );
 </script>
 
 <div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
