@@ -26,13 +26,24 @@
             return;
         }
 
-        const response = await api({ fetch })
-            .courses({ course: course.id })
-            .students({ student: user.id })
-            .delete();
-        if (response.error) {
-            toaster.add("Не удалось покинуть курс", "error");
-            return;
+        if (user.isCourseStaff(course.id)) {
+            const response = await api({ fetch })
+                .courses({ course: course.id })
+                .staff({ staffMember: user.id })
+                .delete();
+            if (response.error) {
+                toaster.add("Не удалось покинуть курс", "error");
+                return;
+            }
+        } else {
+            const response = await api({ fetch })
+                .courses({ course: course.id })
+                .students({ student: user.id })
+                .delete();
+            if (response.error) {
+                toaster.add("Не удалось покинуть курс", "error");
+                return;
+            }
         }
         await invalidateAll();
         toaster.add(`Вы покинули курс ${course.title}`);
