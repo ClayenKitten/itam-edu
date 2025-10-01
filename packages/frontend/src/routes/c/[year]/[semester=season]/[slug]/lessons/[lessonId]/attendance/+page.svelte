@@ -199,12 +199,14 @@
                             : ""}
                     </div>
                     <div class="ml-auto">
-                        <button
-                            class="btn secondary"
-                            onclick={() => member && remove(member)}
-                        >
-                            Удалить
-                        </button>
+                        {#if attendee.manuallyAddedBy !== null}
+                            <button
+                                class="btn secondary"
+                                onclick={() => member && remove(member)}
+                            >
+                                Удалить
+                            </button>
+                        {/if}
                     </div>
                 {:else}
                     <div

@@ -7,6 +7,7 @@ import {
     type HttpError
 } from "../../../api/errors";
 import { CourseRepository } from "../../repository";
+import { sql } from "kysely";
 
 @injectable()
 export class AttendanceQuery {
@@ -31,22 +32,52 @@ export class AttendanceQuery {
             );
         }
 
-        let query = this.postgres.kysely
-            .selectFrom("lessonAttendees")
-            .innerJoin("lessons", "lessons.id", "lessonAttendees.lessonId")
+        let attendeesQuery = this.postgres.kysely
+            .selectFrom("lessonAttendees as la")
+            .innerJoin("lessons", "lessons.id", "la.lessonId")
             .where("lessons.courseId", "=", courseId)
             .select([
-                "lessonAttendees.lessonId",
-                "lessonAttendees.userId",
-                "lessonAttendees.format",
-                "lessonAttendees.recordedAt",
-                "lessonAttendees.manuallyAddedBy"
+                "la.lessonId",
+                "la.userId",
+                "la.format",
+                "la.recordedAt",
+                "la.manuallyAddedBy"
             ]);
+
+        let callQuery = this.postgres.kysely
+            .selectFrom("callParticipants as ca")
+            .innerJoin("lessons", "lessons.id", "ca.callId")
+            .where("lessons.courseId", "=", courseId)
+            .innerJoin("userCourses", join =>
+                join
+                    .onRef("userCourses.userId", "=", "ca.userId")
+                    .onRef("userCourses.courseId", "=", "lessons.courseId")
+            )
+            .where("userCourses.role", "=", "student")
+            .leftJoin("lessonAttendees as la", join =>
+                join
+                    .onRef("la.lessonId", "=", "ca.callId")
+                    .onRef("la.userId", "=", "ca.userId")
+            )
+            .where("la.userId", "is", null)
+            .select([
+                "ca.callId as lessonId",
+                "ca.userId",
+                sql.lit<"online">("online").as("format"),
+                "ca.firstJoinedAt as recordedAt",
+                sql.lit(null).as("manuallyAddedBy")
+            ]);
+
         if (lessonId) {
-            query = query.where("lessonId", "=", lessonId);
+            attendeesQuery = attendeesQuery.where("la.lessonId", "=", lessonId);
+            callQuery = callQuery.where("ca.callId", "=", lessonId);
         }
 
-        return await query.execute();
+        const rows: AttendeeDto[] = await attendeesQuery
+            .unionAll(callQuery)
+            .execute();
+
+        return rows;
     }
 }
 
