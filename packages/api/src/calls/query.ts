@@ -1,8 +1,10 @@
 import { injectable } from "inversify";
 import { User } from "itam-edu-common";
-import { ForbiddenError, NotFoundError, type HttpError } from "../api/errors";
 import { CallDao, type CallDto } from "./dao";
 import { CourseRepository } from "../courses/repository";
+import { CallNotFound } from "./errors";
+import { ForbiddenError } from "../errors";
+import { CourseNotFound } from "../courses/errors";
 
 @injectable()
 export class CallQuery {
@@ -11,35 +13,53 @@ export class CallQuery {
         private courseRepo: CourseRepository
     ) {}
 
+    /**
+     * Returns a call by id.
+     *
+     * @throws {CallNotFound}
+     */
     public async get(
         actor: User | null,
         callId: string
-    ): Promise<CallDto | null | HttpError> {
+    ): Promise<CallDto | null> {
         const call = await this.dao.get(callId);
+        if (!call) throw new CallNotFound(callId);
         return call;
     }
 
-    public async getAll(actor: User): Promise<CallDto[] | HttpError> {
+    /**
+     * Returns all calls.
+     *
+     * @throws {ForbiddenError}
+     * */
+    public async getAll(actor: User): Promise<CallDto[]> {
         if (actor.permissions.calls.view !== true) {
-            return new ForbiddenError(
-                "You are not allowed to view global calls list."
+            throw new ForbiddenError(
+                "not-allowed-get-all-calls",
+                "Вы не имеете права на просмотр списка звонков"
             );
         }
         return await this.dao.getAll();
     }
 
+    /**
+     * Returns all calls for the course.
+     *
+     * @throws {ForbiddenError}
+     * */
     public async getAllForCourse(
         actor: User,
         courseId: string
-    ): Promise<CallDto[] | HttpError> {
+    ): Promise<CallDto[]> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
         if (!course || !permissions) {
-            return new NotFoundError("Course does not exist.");
+            throw new CourseNotFound(courseId);
         }
         if (permissions.calls.list !== true) {
-            return new ForbiddenError(
-                "You are not allowed to view course calls list."
+            throw new ForbiddenError(
+                "not-allowed-get-all-course-calls",
+                "Вы не имеете права на просмотр списка звонков курса"
             );
         }
         return await this.dao.getAll(courseId);

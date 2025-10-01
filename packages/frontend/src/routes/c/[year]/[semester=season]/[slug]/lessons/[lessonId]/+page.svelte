@@ -3,6 +3,7 @@
     import { formatLessonSchedule } from "$lib/format.js";
     import { coursePath, filePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
+    import CallBanner from "./CallBanner.svelte";
 
     let { data } = $props();
 </script>
@@ -65,6 +66,7 @@
             <p class="mt-4 wrap-anywhere">{data.lesson.description}</p>
         {/if}
     </section>
+    <CallBanner lesson={data.lesson} />
     {#if data.lesson.video}
         <!-- svelte-ignore a11y_media_has_caption -->
         <video
@@ -76,7 +78,7 @@
         </video>
     {/if}
     {#if data.lesson.content}
-        <section class="flex flex-col gap-5">
+        <section class="flex flex-col gap-3">
             <h3>Теория и материалы</h3>
             <article class="shadow px-8 py-6 rounded-lg">
                 <RichContent content={data.lesson.content} />
@@ -84,7 +86,7 @@
         </section>
     {/if}
     {#if data.lesson.homeworkIds.length > 0}
-        <section class="flex flex-col gap-5">
+        <section class="flex flex-col gap-3">
             <h3>Задания</h3>
             <ul class="flex flex-col gap-2.5">
                 {#each data.lesson.homeworkIds as homeworkId}

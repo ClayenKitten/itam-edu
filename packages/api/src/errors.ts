@@ -16,7 +16,20 @@ export abstract class NotFoundError extends AppError {
     } = undefined;
 }
 
-export abstract class ForbiddenError extends AppError {}
+export class ForbiddenError extends AppError {
+    public constructor(
+        /** Machine-friendly error code that will be forwarded to the client. */
+        public code: string,
+        /** Human-readable message that will be forwarded to the client. */
+        public message: string,
+        /** Structured metadata for logging. */
+        public meta?: Record<string, unknown>,
+        /** Optional parent error. */
+        public cause?: Error
+    ) {
+        super();
+    }
+}
 
 export abstract class ConflictError extends AppError {}
 
