@@ -181,7 +181,7 @@
             font-weight: var(--text-xl-medium--font-weight);
         }
 
-        &:hover {
+        &:hover:not(:disabled) {
             filter: brightness(0.9);
         }
 
@@ -190,7 +190,7 @@
             background-color: var(--color-on-primary);
             border-color: var(--color-on-primary);
 
-            &:hover {
+            &:hover:not(:disabled) {
                 filter: brightness(0.95);
             }
         }
@@ -199,12 +199,7 @@
             color: var(--color-on-surface-muted);
             background-color: var(--color-on-surface-disabled);
             border-color: var(--color-on-surface-disabled);
-            cursor: default;
-
-            &:hover {
-                background-color: var(--color-on-surface-disabled);
-                border-color: var(--color-on-surface-disabled);
-            }
+            cursor: not-allowed;
         }
     }
 
