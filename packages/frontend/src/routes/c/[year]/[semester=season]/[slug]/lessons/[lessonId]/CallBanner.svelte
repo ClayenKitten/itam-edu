@@ -51,7 +51,7 @@
                 return true;
             }
         } else {
-            return now >= showFrom;
+            return now >= showFrom && now <= start + twoHour;
         }
     });
 
