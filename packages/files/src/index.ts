@@ -3,6 +3,7 @@ import logger from "./logger";
 import { CookieMap, env } from "bun";
 
 const config = createConfigFromEnv();
+const baseUrl = env.ITAMEDU_PUBLIC_API_URL_SERVER;
 
 Bun.serve({
     hostname: "0.0.0.0",
@@ -15,41 +16,73 @@ Bun.serve({
             return new Response(null, { status: 405 });
         }
 
-        let url = baseUrl + "/files" + new URL(req.url).pathname;
+        const incoming = new URL(req.url);
+        const apiURL = baseUrl + "/files" + incoming.pathname;
 
-        // Presigned URL may expect internal `Host` header (e.g. minio:9000), which may not match
-        // if request was sent to public hostname, therefore triggering CORS protection.
-        req.headers.delete("Host");
-
+        const apiHeaders = new Headers();
         const token = getTokenFromRequest(req);
-        if (token) req.headers.set("Authorization", token);
+        if (token) apiHeaders.set("Authorization", token);
 
-        const response = await fetch(url, {
-            headers: req.headers,
-            method: req.method,
-            body: req.body,
-            // Backend is expected to reply with redirect.
-            redirect: "follow"
+        const apiResp = await fetch(apiURL, {
+            method: "GET",
+            headers: apiHeaders,
+            redirect: "manual"
         });
-        if (response.status == 404) {
+
+        if (apiResp.status === 404) {
             return new Response("Requested file was not found", {
                 status: 404
             });
         }
-        response.headers.append("Via", "itam-edu-files");
-        return response;
+
+        if (apiResp.status < 300 || apiResp.status >= 400) {
+            const passthrough = new Response(apiResp.body, apiResp);
+            passthrough.headers.append("Via", "itam-edu-files");
+            return passthrough;
+        }
+
+        const location = apiResp.headers.get("Location");
+        if (!location) {
+            return new Response("Missing redirect location from API", {
+                status: 502
+            });
+        }
+
+        const s3Headers = new Headers();
+
+        // Forward only headers relevant to caching/ranges/data
+        // Critically: DO NOT forward Authorization/Cookie/etc to S3
+        // S3 will validate via the presigned query string, not headers.
+        copyHeaderIfPresent(req.headers, s3Headers, "range");
+        copyHeaderIfPresent(req.headers, s3Headers, "if-range");
+        copyHeaderIfPresent(req.headers, s3Headers, "if-none-match");
+        copyHeaderIfPresent(req.headers, s3Headers, "if-modified-since");
+        copyHeaderIfPresent(req.headers, s3Headers, "if-match");
+        copyHeaderIfPresent(req.headers, s3Headers, "if-unmodified-since");
+        copyHeaderIfPresent(req.headers, s3Headers, "accept");
+        copyHeaderIfPresent(req.headers, s3Headers, "accept-encoding");
+
+        const s3Resp = await fetch(location, {
+            method: req.method,
+            headers: s3Headers
+        });
+        const out = new Response(s3Resp.body, s3Resp);
+        out.headers.append("Via", "itam-edu-files");
+        return out;
     }
 });
-logger.info("Started file server", { port: config.server.ports.files });
+
+function copyHeaderIfPresent(from: Headers, to: Headers, name: string) {
+    const v = from.get(name);
+    if (v) to.set(name, v);
+}
 
 export function getTokenFromRequest(request: Request): string | null {
     let token = request.headers.get("authorization");
     if (!token) {
-        let cookies = request.headers.get("cookie");
+        const cookies = request.headers.get("cookie");
         if (!cookies) return null;
         token = new CookieMap(cookies).get("itam-edu-token");
     }
     return token;
 }
-
-export const baseUrl = env.ITAMEDU_PUBLIC_API_URL_SERVER;
