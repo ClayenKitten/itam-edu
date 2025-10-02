@@ -1,8 +1,8 @@
 <script lang="ts">
+    import AsyncButton from "$lib/components/AsyncButton.svelte";
     import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { CreateHomework, Homework } from "$lib/types";
-    import { doOnce } from "$lib/utils/doOnce";
 
     let { homework = $bindable(), onsave, oncancel }: Props = $props();
     type Props = {
@@ -85,18 +85,25 @@
     </div>
     <footer class="flex gap-2.5 justify-end">
         <button class="btn secondary" onclick={oncancel}>Отменить</button>
-        <button
+        <AsyncButton
             class="btn"
-            onclick={doOnce("save-homework", async () => {
+            onclick={async () => {
                 if (!validate()) return;
                 await onsave();
-            })}
+            }}
         >
             {#if "id" in homework}
                 Сохранить
             {:else}
                 Создать
             {/if}
-        </button>
+            {#snippet loading()}
+                {#if "id" in homework}
+                    Сохраняем...
+                {:else}
+                    Создаём...
+                {/if}
+            {/snippet}
+        </AsyncButton>
     </footer>
 </section>

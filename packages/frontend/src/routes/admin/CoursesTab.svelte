@@ -4,11 +4,11 @@
     import { coursePath, filePath } from "$lib/path";
     import { getPrompter } from "$lib/Prompter.svelte";
     import type { CoursePartial, CreateCourse } from "$lib/types";
-    import { doOnce } from "$lib/utils/doOnce";
     import NewCoursePrompt from "./NewCoursePrompt.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import { formatPeriod } from "$lib/format";
     import type { UserDto } from "itam-edu-api/src/users/query";
+    import AsyncButton from "$lib/components/AsyncButton.svelte";
 
     const { users, courses }: Props = $props();
     type Props = {
@@ -152,19 +152,23 @@
         </ul>
     </article>
     <menu class="flex">
-        <button
+        <AsyncButton
             class="btn h-11"
-            onclick={doOnce("createCourse", async () => {
+            onclick={async () => {
                 const newCourse = await prompter.show(NewCoursePrompt, {
                     users: await users
                 });
                 if (!newCourse) return;
                 await createCourse(newCourse);
-            })}
+            }}
         >
-            <i class="ph ph-plus text-on-primary text-[20px]"></i>
+            <i class="ph ph-plus text-[20px]"></i>
             Создать новый курс
-        </button>
+            {#snippet loading()}
+                <i class="ph ph-plus text-[20px]"></i>
+                Создаём курс...
+            {/snippet}
+        </AsyncButton>
     </menu>
 </section>
 

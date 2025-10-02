@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate, invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import { coursePath } from "$lib/path.js";
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
@@ -10,6 +10,7 @@
     import equal from "fast-deep-equal";
     import VideoSection from "./VideoSection.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
+    import AsyncButton from "$lib/components/AsyncButton.svelte";
 
     let { data } = $props();
     const toaster = getToaster();
@@ -116,6 +117,11 @@
             class="btn secondary shadow"
             href="{coursePath(data.course)}/lessons/{data.lesson.id}">Отмена</a
         >
-        <button class="btn shadow" onclick={save}>Сохранить</button>
+        <AsyncButton class="btn shadow" onclick={save}>
+            Сохранить
+            {#snippet loading()}
+                Сохраняем...
+            {/snippet}
+        </AsyncButton>
     </footer>
 </div>

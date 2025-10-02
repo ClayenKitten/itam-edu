@@ -7,9 +7,9 @@
     import api, { UploadClient } from "$lib/api";
     import ScheduleSection from "../[lessonId]/edit/ScheduleSection.svelte";
     import VideoSection from "../[lessonId]/edit/VideoSection.svelte";
-    import { doOnce } from "$lib/utils/doOnce";
     import { getToaster } from "$lib/Toaster.svelte";
     import type { LessonSchedule } from "$lib/types";
+    import AsyncButton from "$lib/components/AsyncButton.svelte";
 
     let { data } = $props();
     const toaster = getToaster();
@@ -122,8 +122,11 @@
         >
             Отмена
         </a>
-        <button class="btn shadow" onclick={doOnce("create-lesson", create)}>
+        <AsyncButton class="btn shadow" onclick={create}>
             Опубликовать
-        </button>
+            {#snippet loading()}
+                Публикуем...
+            {/snippet}
+        </AsyncButton>
     </footer>
 </div>
