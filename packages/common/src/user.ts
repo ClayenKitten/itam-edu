@@ -29,7 +29,10 @@ export class User {
 
     /** Returns name that should be displayed. */
     public get displayName(): string {
-        let result = this.info.firstName ?? "" + this.info.lastName ?? "";
+        let result = this.info.firstName;
+        if (this.info.lastName) {
+            result += " " + this.info.lastName;
+        }
         if (result === "") return this.telegram.username;
         return result;
     }
