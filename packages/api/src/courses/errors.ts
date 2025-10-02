@@ -28,6 +28,6 @@ export class UserIsNotCourseStudent extends ForbiddenError {
     public message: string = "Вы не являетесь студентом курса";
 
     public constructor() {
-        super();
+        super("not-course-student", "Вы не являетесь студентом курса");
     }
 }
