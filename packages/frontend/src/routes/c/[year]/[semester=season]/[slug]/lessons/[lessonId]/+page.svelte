@@ -99,7 +99,7 @@
                     >
                         <div class="flex flex-col gap-3">
                             <header>
-                                <h4>{homework.title}</h4>
+                                <h5>{homework.title}</h5>
                             </header>
                             <p class="text-on-surface-contrast opacity-50">
                                 {#if homework.deadline}
