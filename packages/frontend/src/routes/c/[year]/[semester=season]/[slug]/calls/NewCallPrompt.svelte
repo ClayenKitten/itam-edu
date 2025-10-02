@@ -79,12 +79,13 @@
             <div
                 class={[
                     "flex-1 flex flex-col gap-1 transition-all duration-200",
+                    "overflow-hidden",
                     title !== "" && "w-0"
                 ]}
             >
                 <select
                     class={[
-                        "input-small",
+                        "input-small overflow-ellipsis",
                         lesson === null && "text-on-surface-muted"
                     ]}
                     bind:value={lesson}
