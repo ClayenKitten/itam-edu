@@ -3,6 +3,7 @@
     import Header from "$lib/components/Header.svelte";
     import UsersTab from "./UsersTab.svelte";
     import CoursesTab from "./CoursesTab.svelte";
+    import CallsTab from "./CallsTab.svelte";
 
     let { data } = $props();
 
@@ -44,7 +45,7 @@
         {:else if tab === "courses"}
             <CoursesTab users={data.users} courses={data.courses} />
         {:else if tab === "calls"}
-            WIP
+            <CallsTab calls={data.calls} courses={data.courses} />
         {/if}
     </main>
 </div>
