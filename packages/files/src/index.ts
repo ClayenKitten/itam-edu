@@ -8,9 +8,15 @@ const baseUrl = env.ITAMEDU_PUBLIC_API_URL_SERVER;
 Bun.serve({
     hostname: "0.0.0.0",
     port: config.server.ports.files,
+    idleTimeout: 240,
 
     async fetch(req) {
         logger.debug("HTTP Request", { method: req.method, url: req.url });
+
+        const proxyAbortController = new AbortController();
+        req.signal.addEventListener("abort", () => {
+            proxyAbortController.abort();
+        });
 
         if (req.method !== "GET") {
             return new Response(null, { status: 405 });
@@ -70,7 +76,8 @@ Bun.serve({
 
         const s3Resp = await fetch(location, {
             method: req.method,
-            headers: s3Headers
+            headers: s3Headers,
+            signal: proxyAbortController.signal
         });
 
         logger.debug("File sent", {
