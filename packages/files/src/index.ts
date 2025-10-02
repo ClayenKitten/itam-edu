@@ -16,8 +16,8 @@ Bun.serve({
             return new Response(null, { status: 405 });
         }
 
-        const incoming = new URL(req.url);
-        const apiURL = baseUrl + "/files" + incoming.pathname;
+        const filePath = new URL(req.url).pathname;
+        const apiURL = baseUrl + "/files" + filePath;
 
         const apiHeaders = new Headers();
         const token = getTokenFromRequest(req);
@@ -36,6 +36,12 @@ Bun.serve({
         }
 
         if (apiResp.status < 300 || apiResp.status >= 400) {
+            logger.debug("Non-redirect response from API", {
+                file: filePath,
+                userId: apiResp.headers.get("x-user-id"),
+                requestedRange: req.headers.get("range"),
+                status: apiResp.status
+            });
             const passthrough = new Response(apiResp.body, apiResp);
             passthrough.headers.append("Via", "itam-edu-files");
             return passthrough;
@@ -65,6 +71,15 @@ Bun.serve({
         const s3Resp = await fetch(location, {
             method: req.method,
             headers: s3Headers
+        });
+
+        logger.debug("File sent", {
+            file: filePath,
+            userId: apiResp.headers.get("x-user-id"),
+            requestedRange: req.headers.get("range"),
+            contentLength: s3Resp.headers.get("content-length"),
+            contentRange: s3Resp.headers.get("content-range"),
+            status: s3Resp.status
         });
         const out = new Response(s3Resp.body, s3Resp);
         out.headers.append("Via", "itam-edu-files");

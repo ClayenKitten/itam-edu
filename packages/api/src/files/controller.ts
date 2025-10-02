@@ -20,7 +20,7 @@ export class FileController {
             .use(this.authPlugin.toElysia())
             .get(
                 "/*",
-                async ({ user, params, status, redirect }) => {
+                async ({ user, params, status, redirect, set }) => {
                     const path = params["*"].split("/");
                     const result = await this.presignDownloadInteractor.invoke(
                         user,
@@ -28,6 +28,9 @@ export class FileController {
                     );
                     if (result instanceof HttpError) {
                         return status(result.code, result.message);
+                    }
+                    if (user) {
+                        set.headers["x-user-id"] = user.id;
                     }
                     return redirect(result, 307);
                 },
