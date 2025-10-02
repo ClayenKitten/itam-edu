@@ -24,7 +24,7 @@
 
 @layer components {
     .call-toggle {
-        @apply flex justify-center items-center w-12 h-12 rounded-xl shadow;
+        @apply flex justify-center items-center size-12 rounded-full;
         @apply text-primary bg-on-primary border border-on-primary;
         @apply transition-all duration-100;
 

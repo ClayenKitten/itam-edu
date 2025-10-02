@@ -97,8 +97,10 @@
         <button
             class={[
                 "flex-1 flex justify-center items-center",
-                tab === "people" ? "bg-surface" : "bg-surface-dimmed",
-                "text-on-surface hover:bg-surface transition-colors duration-100"
+                tab === "people"
+                    ? "bg-surface"
+                    : "bg-surface-dimmed hover:bg-surface-tint",
+                "text-on-surface transition-colors duration-100"
             ]}
             title="Участники"
             aria-label="Участники"
@@ -109,8 +111,10 @@
         <button
             class={[
                 "flex-1 flex justify-center items-center",
-                tab === "chat" ? "bg-surface" : "bg-surface-dimmed",
-                "text-on-surface hover:bg-surface transition-colors duration-100"
+                tab === "chat"
+                    ? "bg-surface"
+                    : "bg-surface-dimmed hover:bg-surface-tint",
+                "text-on-surface transition-colors duration-100"
             ]}
             title="Чат"
             aria-label="Чат"
@@ -122,8 +126,10 @@
             <button
                 class={[
                     "flex-1 flex justify-center items-center",
-                    tab === "settings" ? "bg-surface" : "bg-surface-dimmed",
-                    "text-on-surface hover:bg-surface transition-colors duration-100"
+                    tab === "settings"
+                        ? "bg-surface"
+                        : "bg-surface-dimmed hover:bg-surface-tint",
+                    "text-on-surface transition-colors duration-100"
                 ]}
                 title="Настройки"
                 aria-label="Настройки"
@@ -152,15 +158,17 @@
         {#each participants as participant}
             <button
                 class={[
-                    "shrink-0 flex items-center gap-1 h-10 px-2",
+                    "shrink-0 flex items-center gap-1 h-10",
+                    "px-4 border-l-4",
+                    "whitespace-nowrap overflow-hidden",
                     focus?.identity !== participant.identity
-                        ? "bg-surface"
-                        : "bg-surface-tint",
-                    "hover:bg-surface-tint transition-colors duration-100"
+                        ? "border-transparent"
+                        : "border-primary",
+                    "bg-surface hover:bg-surface-tint transition-all duration-200"
                 ]}
                 onclick={() => (focus = participant)}
             >
-                <span class="mr-auto">
+                <span class="mr-auto overflow-hidden overflow-ellipsis">
                     {participant.name}
                     {#if participant === room.localParticipant}
                         <span class="text-on-surface-muted">(вы)</span>
