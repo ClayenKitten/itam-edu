@@ -64,9 +64,11 @@
                 <div
                     class="self-center mx-auto flex flex-col items-center gap-2"
                 >
-                    <h4 class="text-on-surface-contrast">Уроков ещё нет 🫠</h4>
+                    <h4 class="text-on-surface-contrast">
+                        Уроки курса ещё не начались 🏝️
+                    </h4>
                     <span class="text-lg-regular text-on-surface-muted">
-                        Но скоро будут!
+                        Но это ненадолго!
                         <a
                             class="text-primary underline"
                             href="https://info.itatmisis.ru/coworking"
