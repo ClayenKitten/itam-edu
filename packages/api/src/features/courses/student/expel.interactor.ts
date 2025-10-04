@@ -78,7 +78,7 @@ export class ExpelStudent {
                 submission.lastAttempt.review = {
                     accepted: false,
                     content:
-                        "Automatically rejected due to student expulsion from the course.",
+                        "Автоматически отклонено в связи с отчислением студента с курса.",
                     files: [],
                     reviewerId: null,
                     sentAt: new Date()
