@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Submission } from "./entity";
+import { Submission, type SubmissionAttempt } from "./entity";
 import { Postgres } from "../../../infra/postgres";
 
 @injectable()
@@ -108,5 +108,74 @@ export class SubmissionRepository {
                     .execute();
             }
         });
+    }
+
+    public async loadForStudent(
+        studentId: string,
+        courseId: string
+    ): Promise<Submission[]> {
+        const attempts = await this.postgres.kysely
+            .selectFrom("submissionAttempts")
+            .innerJoin(
+                "homeworks",
+                "homeworks.id",
+                "submissionAttempts.homeworkId"
+            )
+            .where("submissionAttempts.studentId", "=", studentId)
+            .where("homeworks.courseId", "=", courseId)
+            .select([
+                "submissionAttempts.id",
+                "submissionAttempts.content",
+                "submissionAttempts.files",
+                "submissionAttempts.sentAt",
+                "submissionAttempts.homeworkId"
+            ])
+            .execute();
+
+        const attemptIds = attempts.map(a => a.id);
+        const reviews = await this.postgres.kysely
+            .selectFrom("submissionReviews")
+            .where("submissionReviews.attemptId", "in", attemptIds)
+            .select([
+                "submissionReviews.attemptId",
+                "submissionReviews.accepted",
+                "submissionReviews.content",
+                "submissionReviews.files",
+                "submissionReviews.reviewerId",
+                "submissionReviews.sentAt"
+            ])
+            .execute();
+        const submissionsMap = new Map<string, Submission>();
+        for (const attempt of attempts) {
+            const review =
+                reviews.find(r => r.attemptId === attempt.id) ?? null;
+            const attemptData: SubmissionAttempt = {
+                id: attempt.id,
+                content: attempt.content,
+                files: attempt.files,
+                sentAt: attempt.sentAt,
+                review: review
+                    ? {
+                          accepted: review.accepted,
+                          content: review.content,
+                          files: review.files,
+                          reviewerId: review.reviewerId,
+                          sentAt: review.sentAt
+                      }
+                    : null
+            };
+            if (!submissionsMap.has(attempt.homeworkId)) {
+                submissionsMap.set(
+                    attempt.homeworkId,
+                    new Submission(attempt.homeworkId, studentId, [attemptData])
+                );
+            } else {
+                submissionsMap
+                    .get(attempt.homeworkId)!
+                    .attempts.unshift(attemptData);
+            }
+        }
+        const submissions = [...submissionsMap.values()];
+        return submissions;
     }
 }

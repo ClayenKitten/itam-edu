@@ -10,13 +10,15 @@ import {
 import { Postgres } from "../../../infra/postgres";
 import { CourseChangelog } from "../changes";
 import { StudentCounter } from "../analytics/student-counter";
+import { SubmissionRepository } from "../submission/repository";
 
 @injectable()
 export class ExpelStudent {
     public constructor(
         private postgres: Postgres,
         private changelog: CourseChangelog,
-        private studentCounter: StudentCounter
+        private studentCounter: StudentCounter,
+        private submissionRepo: SubmissionRepository
     ) {}
 
     /** Expels student. */
@@ -43,7 +45,8 @@ export class ExpelStudent {
                 role: "student",
                 userId: student.id
             }),
-            this.studentCounter.record(course.id)
+            this.studentCounter.record(course.id),
+            this.rejectSubmissions(course, student)
         ]);
     }
 
@@ -60,5 +63,28 @@ export class ExpelStudent {
             .where("userCourses.role", "=", "student")
             .executeTakeFirst();
         return result.numDeletedRows > 0n;
+    }
+
+    /**
+     * Rejects all unreviewed submissions from an expelled student.
+     * */
+    private async rejectSubmissions(course: Course, user: User): Promise<void> {
+        const submissions = await this.submissionRepo.loadForStudent(
+            user.id,
+            course.id
+        );
+        for (const submission of submissions) {
+            if (submission.lastAttempt.review === null) {
+                submission.lastAttempt.review = {
+                    accepted: false,
+                    content:
+                        "Automatically rejected due to student expulsion from the course.",
+                    files: [],
+                    reviewerId: null,
+                    sentAt: new Date()
+                };
+                await this.submissionRepo.save(submission);
+            }
+        }
     }
 }
