@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { Elysia, type AnyElysia } from "elysia";
+import { Elysia, t, type AnyElysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 
 import logger from "../../logger";
@@ -115,14 +115,21 @@ export class HttpServer {
             .use(this.inviteController.toElysia())
             .use(this.callController.toElysia())
             .use(this.fileController.toElysia())
-            .get("/healthz", () => "Ok", {
-                tags: ["Infra"],
-                detail: {
-                    summary: "Healthcheck",
-                    description: "Always returns `200 Ok`.",
-                    security: NO_AUTHENTICATION
+            .get(
+                "/healthz",
+                () => {
+                    return "Ok" as const;
+                },
+                {
+                    tags: ["Infra"],
+                    detail: {
+                        summary: "Healthcheck",
+                        description: "Always returns `200 Ok`.",
+                        security: NO_AUTHENTICATION
+                    },
+                    response: t.Literal("Ok")
                 }
-            });
+            );
     }
 }
 
