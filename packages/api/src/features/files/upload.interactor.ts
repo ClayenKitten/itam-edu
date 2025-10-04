@@ -107,7 +107,6 @@ export class UploadFile {
             return true;
         }
 
-        const _never: never = spec as never;
         return false;
     }
 }

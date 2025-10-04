@@ -65,9 +65,10 @@ export function coursePermissions(
                 return course.info.isPublished
                     ? ViewLevel.Basic
                     : ViewLevel.None;
-            default:
-                let guard: never = courseRole;
+            default: {
+                const _guard: never = courseRole;
                 return ViewLevel.None;
+            }
         }
     }
 
@@ -94,9 +95,10 @@ export function coursePermissions(
                     : EditLevel.None;
             case null:
                 return EditLevel.None;
-            default:
-                let guard: never = courseRole;
+            default: {
+                const _guard: never = courseRole;
                 return EditLevel.None;
+            }
         }
     }
 }

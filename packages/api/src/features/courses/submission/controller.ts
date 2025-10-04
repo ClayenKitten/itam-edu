@@ -95,7 +95,7 @@ export class SubmissionController {
             .post(
                 "/homeworks/:homework/submissions",
                 async ({ user, params, body, status }) => {
-                    let result = await this.submitInteractor.invoke(
+                    const result = await this.submitInteractor.invoke(
                         user,
                         params.course,
                         params.homework,
@@ -124,7 +124,7 @@ export class SubmissionController {
             .post(
                 "/homeworks/:homework/submissions/:student/review",
                 async ({ user, params, body, status }) => {
-                    let result = await this.reviewInteractor.invoke(
+                    const result = await this.reviewInteractor.invoke(
                         user,
                         params.course,
                         params.homework,

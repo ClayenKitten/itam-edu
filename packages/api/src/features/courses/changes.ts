@@ -48,7 +48,7 @@ export class CourseChangelog {
         course: Course,
         user: User | null
     ): Promise<CourseChange[]> {
-        let events: CourseChange[] = await this.postgres.kysely
+        const events: CourseChange[] = await this.postgres.kysely
             .selectFrom("courseChanges")
             .select(["id", "actorId", "courseId", "createdAt", "payload"])
             .where("courseId", "=", course.id)
@@ -82,9 +82,10 @@ export class CourseChangelog {
                 if (user === null) return false;
                 if (user.id === change.payload.studentId) return true;
                 return false;
-            default:
-                let guard: never = change.payload;
+            default: {
+                const _guard: never = change.payload;
                 return false;
+            }
         }
     }
 

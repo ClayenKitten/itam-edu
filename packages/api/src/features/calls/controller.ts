@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Elysia, status, t } from "elysia";
+import { Elysia, t } from "elysia";
 import { REQUIRE_TOKEN } from "../../ports/http/openapi";
 import { AuthenticationPlugin } from "../../ports/http/authn";
 import { CallQuery } from "./query";

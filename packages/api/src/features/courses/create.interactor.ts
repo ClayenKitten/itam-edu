@@ -19,11 +19,7 @@ export class CreateCourse {
         private changelog: CourseChangelog
     ) {}
 
-    /**
-     * Creates new course.
-     *
-     * {@link actor} is automatically added as an owner of the course.
-     * */
+    /** Creates new course. */
     public async invoke(
         actor: User,
         dto: CreateCourseDto

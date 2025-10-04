@@ -119,7 +119,9 @@ class Notification extends NotificationTemplate {
     protected get html() {
         if (!this.lesson.schedule) throw new Error("schedule must be present");
         // Header
-        let lines = [`<b>📅 Урок '${this.lesson.info.title}' перенесён</b>.\n`];
+        const lines = [
+            `<b>📅 Урок '${this.lesson.info.title}' перенесён</b>.\n`
+        ];
         if (this.lesson.info.description)
             lines.push(`${this.lesson.info.description}\n`);
         // Date
@@ -135,7 +137,7 @@ class Notification extends NotificationTemplate {
                 })
         );
         // Location
-        let postfix = this.lesson.schedule.location
+        const postfix = this.lesson.schedule.location
             ? ` в ${this.lesson.schedule.location}`
             : "";
         if (this.lesson.schedule.isOnline && this.lesson.schedule.location)

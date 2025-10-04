@@ -54,9 +54,10 @@ export class UpdateCourse {
                 return user.permissions.courses.archive === true;
             case "isEnrollmentOpen":
                 return permissions.course.toggleEnrollment === true;
-            default:
-                let guard: never = updatedField;
+            default: {
+                const _guard: never = updatedField;
                 return false;
+            }
         }
     }
 }

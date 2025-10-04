@@ -15,7 +15,7 @@ export class AuthenticationPlugin {
     public toElysia() {
         return new Elysia({ name: "authenticate" })
             .derive(async ({ headers, cookie }) => {
-                let token =
+                const token =
                     headers["authorization"]?.replace(/^Bearer /, "") ||
                     cookie["itam-edu-token"]?.value;
                 if (!token) return { session: null, user: null };
@@ -25,7 +25,7 @@ export class AuthenticationPlugin {
                 );
                 if (!session) return { session: null, user: null };
 
-                let user = await this.userRepo.getById(session.userId);
+                const user = await this.userRepo.getById(session.userId);
                 return { session, user };
             })
             .onTransform(({ user }) => logger.extend({ user: user?.id }))

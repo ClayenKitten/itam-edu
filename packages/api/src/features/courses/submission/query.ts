@@ -7,7 +7,6 @@ import {
     UnauthorizedError
 } from "../../../api/errors";
 import type { User } from "itam-edu-common";
-import type { Course } from "../entity";
 import type { SubmissionAttempt } from "./entity";
 import { CourseRepository } from "../repository";
 

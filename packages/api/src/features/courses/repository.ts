@@ -5,7 +5,6 @@ import { schemaFields } from "../../util";
 import { Course } from "./entity";
 import { Postgres } from "../../infra/postgres";
 import type { DB } from "itam-edu-db";
-import type { CourseRole } from "itam-edu-common";
 
 @injectable()
 export class CourseRepository {

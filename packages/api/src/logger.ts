@@ -25,12 +25,15 @@ export class Logger {
      *
      * NOTE: should be called in **non-async** lifecycle handler, e.g. `onTransform(() => { ... })`.
      * */
-    public extend(meta: Object) {
+    public extend(meta: Record<string, unknown>) {
         asyncLocalStorage.enterWith({ ...this.meta, ...meta });
     }
 
     /** Extends logger meta in a callback. */
-    public with(meta: Object, callback: () => void | Promise<void>) {
+    public with(
+        meta: Record<string, unknown>,
+        callback: () => void | Promise<void>
+    ) {
         return asyncLocalStorage.run({ ...this.meta, ...meta }, callback);
     }
 
@@ -70,7 +73,7 @@ export { logger as default };
 
 const asyncLocalStorage = new AsyncLocalStorage<Meta>();
 
-export type Meta = Record<keyof {}, unknown>;
+export type Meta = Record<string, unknown>;
 
 function getConsoleTransport(production: boolean) {
     return new winston.transports.Console({

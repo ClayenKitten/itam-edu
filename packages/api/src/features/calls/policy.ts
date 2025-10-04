@@ -27,7 +27,7 @@ export class CallPolicy {
         }
 
         if (call.courseId === null) {
-            let canPublish = await this.canPublish(call, user);
+            const canPublish = await this.canPublish(call, user);
             return { canPublish, isAdmin: false };
         } else {
             const course = await this.courseRepo.getById(call.courseId);
@@ -36,7 +36,7 @@ export class CallPolicy {
 
             if (coursePermissions.calls.join !== true) return null;
 
-            let canPublish = await this.canPublish(call, user);
+            const canPublish = await this.canPublish(call, user);
             if (coursePermissions.calls.manage === true) {
                 return { canPublish, isAdmin: true };
             }

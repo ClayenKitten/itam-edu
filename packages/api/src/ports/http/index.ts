@@ -42,9 +42,7 @@ export class HttpServer {
         protected callController: CallController,
         protected fileController: FileController
     ) {
-        this.elysia = new Promise(async resolve =>
-            resolve(await this.createElysia())
-        );
+        this.elysia = this.createElysia();
     }
 
     /** Starts serving. */

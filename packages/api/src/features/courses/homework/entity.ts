@@ -24,7 +24,7 @@ export default class Homework {
      *
      * Homework submission is open if it has no deadline or the deadline hasn't passed yet.
      *
-     * Default behaviour may be overridden by {@link deadlineOverride} flag.
+     * Default behaviour may be overridden by `deadlineOverride` flag.
      */
     public get isSubmissionOpen(): boolean {
         if (this.deadlineOverride !== null) {

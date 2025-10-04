@@ -21,7 +21,8 @@
                 "vitest.explorer",
                 "github.vscode-github-actions",
                 "oven.bun-vscode",
-                "bradlc.vscode-tailwindcss"
+                "bradlc.vscode-tailwindcss",
+                "dbaeumer.vscode-eslint"
             ],
             "settings": {
                 "remote.autoForwardPorts": false,

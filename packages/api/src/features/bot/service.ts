@@ -90,7 +90,7 @@ export class BotService {
                 ];
             }
             default: {
-                let guard: never = event.kind;
+                const _guard: never = event.kind;
                 logger.error("Unknown BotEvent kind", {
                     queue: BotEventQueueKind,
                     event

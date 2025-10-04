@@ -48,7 +48,7 @@ export class CourseQuery {
 
     public async getAll(actor: User | null): Promise<CourseQueryPartialDto[]> {
         const courses = await this.courseRepo.getAll();
-        let courseQueryDtos = [];
+        const courseQueryDtos = [];
         for (const course of courses) {
             const role = actor ? course.getRoleFor(actor) : null;
             const permissions = course.getPermissionsFor(actor);

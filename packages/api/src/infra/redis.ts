@@ -14,6 +14,7 @@ import logger from "../logger";
  * benefits to our use-case.
  */
 @injectable()
+// eslint-disable-next-line
 export abstract class Redis {
     public static async connect(url: string): Promise<Redis> {
         const client = createClient({ url });
@@ -32,4 +33,5 @@ export abstract class Redis {
 }
 
 // Some black magic fuckery with interface merging to get a desired API
+// eslint-disable-next-line
 export interface Redis extends ReturnType<typeof createClient> {}

@@ -97,7 +97,7 @@ class Notification extends NotificationTemplate {
 
     protected get html() {
         // Header
-        let lines = [
+        const lines = [
             `<b>📖 Новый урок '${this.lesson.info.title}' опубликован</b>`
         ];
         if (this.lesson.info.description) {
@@ -117,7 +117,7 @@ class Notification extends NotificationTemplate {
                     })
             );
             // Location
-            let postfix = this.lesson.schedule.location
+            const postfix = this.lesson.schedule.location
                 ? ` в ${this.lesson.schedule.location}`
                 : "";
             if (this.lesson.schedule.isOnline && this.lesson.schedule.location)

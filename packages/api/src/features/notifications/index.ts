@@ -2,7 +2,7 @@ import type { MaybePromise } from "../../util";
 import type { OutboundBotMessage } from "../bot";
 
 /**
- * An abstract factory for {@link WebNotification} and {@link TelegramNotification}.
+ * An abstract factory for {@link WebNotification} and {@link OutboundBotMessage}.
  *
  * Should be implemented by concrete factories of specific notification types.
  * */

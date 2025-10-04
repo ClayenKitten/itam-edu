@@ -176,7 +176,7 @@ export class TelegramBot {
                 break;
             }
             default: {
-                let guard: never = command.kind;
+                const _guard: never = command.kind;
                 logger.error("Unknown BotCommand kind", {
                     queue: BotEventQueueKind,
                     command
