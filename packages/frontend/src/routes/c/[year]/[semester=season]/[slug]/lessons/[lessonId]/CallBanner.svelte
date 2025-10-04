@@ -9,8 +9,7 @@
     import { goto } from "$app/navigation";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
-    import type { LessonPartial } from "$lib/types";
-    import type { CallDto } from "itam-edu-api/src/calls/dao";
+    import type { Call, LessonPartial } from "$lib/types";
     import { onMount } from "svelte";
 
     const { lesson }: Props = $props();
@@ -19,7 +18,7 @@
     };
     const toaster = getToaster();
 
-    let call: CallDto | null = $state(null);
+    let call: Call | null = $state(null);
 
     let currentDate = $state(new Date());
     const timerText = $derived.by(() => {

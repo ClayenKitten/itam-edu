@@ -1,33 +1,33 @@
 import type {
     CourseQueryDto,
     CourseQueryPartialDto
-} from "itam-edu-api/src/courses/query";
+} from "itam-edu-api/src/features/courses/query";
 import type {
     LessonDTO,
     LessonPartialDTO,
     LessonScheduleDto
-} from "itam-edu-api/src/courses/lesson/query";
+} from "itam-edu-api/src/features/courses/lesson/query";
 import type {
     CreateHomeworkDTO,
     HomeworkDTO,
     HomeworkPartialDTO
-} from "itam-edu-api/src/courses/homework/query";
+} from "itam-edu-api/src/features/courses/homework/query";
 import type {
     SubmissionDto,
     SubmissionPartialDto
-} from "itam-edu-api/src/courses/submission/query";
-import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/courses/changes";
-import type { WebNotification } from "itam-edu-api/src/notifications";
-import type { StaffMemberDto } from "itam-edu-api/src/courses/staff/schema";
-import type { InviteDto } from "itam-edu-api/src/courses/staff/invites/query";
-import type { StudentDto } from "itam-edu-api/src/courses/student/schema";
-import type { AttendeeDto } from "itam-edu-api/src/courses/lesson/attendance/query";
+} from "itam-edu-api/src/features/courses/submission/query";
+import type { CourseChange as CourseChangeDto } from "itam-edu-api/src/features/courses/changes";
+import type { WebNotification } from "itam-edu-api/src/features/notifications";
+import type { StaffMemberDto } from "itam-edu-api/src/features/courses/staff/schema";
+import type { InviteDto } from "itam-edu-api/src/features/courses/staff/invites/query";
+import type { StudentDto } from "itam-edu-api/src/features/courses/student/schema";
+import type { AttendeeDto } from "itam-edu-api/src/features/courses/lesson/attendance/query";
 import type {
     CreateCourseDto,
     UpdateCourseDto
-} from "itam-edu-api/src/courses/schema";
-import type { CallDto } from "itam-edu-api/src/calls/dao";
-import type { JoinDto } from "itam-edu-api/src/calls/join.interactor";
+} from "itam-edu-api/src/features/courses/schema";
+import type { CallDto } from "itam-edu-api/src/features/calls/dao";
+import type { JoinDto } from "itam-edu-api/src/features/calls/join.interactor";
 
 export type Course = CourseQueryDto;
 export type CoursePartial = CourseQueryPartialDto;

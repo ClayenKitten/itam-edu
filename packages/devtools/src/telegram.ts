@@ -7,7 +7,7 @@ import {
     BotEventQueueKind,
     type BotCommand,
     type BotEvent
-} from "itam-edu-api/src/bot";
+} from "itam-edu-api/src/features/bot";
 
 export class FakeTelegramBot {
     private publisher: MessagePublisher<BotEvent>;

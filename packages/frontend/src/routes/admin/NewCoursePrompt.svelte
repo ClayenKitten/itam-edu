@@ -3,7 +3,7 @@
     import { onMount } from "svelte";
     import type { CreateCourse } from "$lib/types";
     import Combobox from "$lib/components/Combobox.svelte";
-    import type { UserDto } from "itam-edu-api/src/users/query";
+    import type { UserDto } from "itam-edu-api/src/features/users/query";
     import { filePath } from "$lib/path";
 
     const { users, onConfirm, onCancel }: Props = $props();

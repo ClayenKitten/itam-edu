@@ -1,8 +1,8 @@
-import type { UserDto } from "itam-edu-api/src/users/query";
+import type { UserDto } from "itam-edu-api/src/features/users/query";
 import type { LayoutLoad } from "./$types";
 import api from "$lib/api";
 import { error } from "@sveltejs/kit";
-import type { CallDto } from "itam-edu-api/src/calls/dao";
+import type { Call } from "$lib/types";
 
 export const load: LayoutLoad = ({ data, fetch }) => {
     const users = getUsers(fetch);
@@ -22,7 +22,7 @@ async function getUsers(fetch: typeof window.fetch): Promise<UserDto[]> {
     return response.data;
 }
 
-async function getCalls(fetch: typeof window.fetch): Promise<CallDto[]> {
+async function getCalls(fetch: typeof window.fetch): Promise<Call[]> {
     const response = await api({ fetch }).calls.get();
     if (response.error) {
         error(response.status, "Не удалось загрузить список звонков");

@@ -1,9 +1,9 @@
 import { format as formatDate } from "date-fns";
 import { ru } from "date-fns/locale";
-import type { LessonScheduleDto } from "itam-edu-api/src/courses/lesson/query";
 import type { GlobalRole } from "itam-edu-common";
+import type { LessonSchedule } from "./types";
 
-export function formatLessonPlace(schedule: LessonScheduleDto): string {
+export function formatLessonPlace(schedule: LessonSchedule): string {
     let str = "";
     if (schedule.isOnline) {
         str += "онлайн";
@@ -15,7 +15,7 @@ export function formatLessonPlace(schedule: LessonScheduleDto): string {
 }
 
 export function formatLessonSchedule(
-    schedule: LessonScheduleDto | null
+    schedule: LessonSchedule | null
 ): string | null {
     if (!schedule) return null;
     let str = formatLessonPlace(schedule);

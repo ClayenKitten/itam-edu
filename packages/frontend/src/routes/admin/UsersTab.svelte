@@ -2,7 +2,7 @@
     import Loader from "$lib/components/Loader.svelte";
     import { formatGlobalRole } from "$lib/format";
     import { filePath } from "$lib/path";
-    import type { UserDto } from "itam-edu-api/src/users/query";
+    import type { UserDto } from "itam-edu-api/src/features/users/query";
     import type { User } from "itam-edu-common";
 
     const { user, users }: Props = $props();

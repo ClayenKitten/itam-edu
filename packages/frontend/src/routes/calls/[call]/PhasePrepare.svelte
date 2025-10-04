@@ -4,8 +4,7 @@
     import Loader from "$lib/components/Loader.svelte";
     import { coursePath } from "$lib/path";
     import { getToaster } from "$lib/Toaster.svelte";
-    import type { CoursePartial } from "$lib/types";
-    import type { CallDto } from "itam-edu-api/src/calls/dao";
+    import type { Call, CoursePartial } from "$lib/types";
     import type { User } from "itam-edu-common";
     import { onMount } from "svelte";
 
@@ -13,7 +12,7 @@
     type Props = {
         user: User | null;
         courses: CoursePartial[];
-        call: CallDto;
+        call: Call;
         onReady: (options: { audio: boolean; video: boolean }) => void;
     };
     const toaster = getToaster();

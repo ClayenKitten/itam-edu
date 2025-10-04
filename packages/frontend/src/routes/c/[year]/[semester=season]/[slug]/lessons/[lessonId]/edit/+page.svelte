@@ -4,18 +4,18 @@
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
     import InfoSection from "./InfoSection.svelte";
-    import type { LessonDTO } from "itam-edu-api/src/courses/lesson/query";
     import api, { UploadClient } from "$lib/api";
     import ScheduleSection from "./ScheduleSection.svelte";
     import equal from "fast-deep-equal";
     import VideoSection from "./VideoSection.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import AsyncButton from "$lib/components/AsyncButton.svelte";
+    import type { Lesson } from "$lib/types";
 
     let { data } = $props();
     const toaster = getToaster();
 
-    let lesson: LessonDTO = $state(structuredClone(data.lesson));
+    let lesson: Lesson = $state(structuredClone(data.lesson));
 
     let uploadVideoFile: File | null | undefined = $state();
     let uploadBannerFile: File | null | undefined = $state();

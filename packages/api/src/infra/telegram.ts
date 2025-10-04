@@ -1,17 +1,17 @@
 import { Bot as Grammy } from "grammy";
 import type { User as TgUser } from "grammy/types";
 import logger from "../logger";
-import { BotService } from "../bot/service";
+import { BotService } from "../features/bot/service";
 import { inject, injectable } from "inversify";
 import type { AppConfig } from "itam-edu-common/config";
 import { MessagePublisher, MessageWorker } from "./queue";
-import { UserRepository } from "../users/repository";
+import { UserRepository } from "../features/users/repository";
 import {
     BotCommandQueueKind,
     BotEventQueueKind,
     type BotCommand,
     type BotEvent
-} from "../bot";
+} from "../features/bot";
 
 /**
  * Telegram bot.

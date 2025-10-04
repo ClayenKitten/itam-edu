@@ -10,17 +10,17 @@ import { AppError, errorToHttpStatus } from "../../errors";
 import { AuthenticationPlugin } from "./authn";
 import { httpLoggerPlugin } from "./logger";
 
-import { UserController } from "../../users/controller";
-import { CourseController } from "../../courses/controller";
-import { LessonController } from "../../courses/lesson/controller";
-import { AttendanceController } from "../../courses/lesson/attendance/controller";
-import { HomeworkController } from "../../courses/homework/controller";
-import { StudentController } from "../../courses/student/controller";
-import { SubmissionController } from "../../courses/submission/controller";
-import { StaffController } from "../../courses/staff/controller";
-import { InviteController } from "../../courses/staff/invites/controller";
-import { CallController } from "../../calls/controller";
-import { FileController } from "../../files/controller";
+import { UserController } from "../../features/users/controller";
+import { CourseController } from "../../features/courses/controller";
+import { LessonController } from "../../features/courses/lesson/controller";
+import { AttendanceController } from "../../features/courses/lesson/attendance/controller";
+import { HomeworkController } from "../../features/courses/homework/controller";
+import { StudentController } from "../../features/courses/student/controller";
+import { SubmissionController } from "../../features/courses/submission/controller";
+import { StaffController } from "../../features/courses/staff/controller";
+import { InviteController } from "../../features/courses/staff/invites/controller";
+import { CallController } from "../../features/calls/controller";
+import { FileController } from "../../features/files/controller";
 
 @injectable()
 export class HttpServer {

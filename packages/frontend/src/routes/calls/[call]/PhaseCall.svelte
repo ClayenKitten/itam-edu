@@ -1,7 +1,6 @@
 <script lang="ts">
     import { getToaster } from "$lib/Toaster.svelte";
-    import type { CallJoinData, CoursePartial } from "$lib/types";
-    import type { CallDto } from "itam-edu-api/src/calls/dao";
+    import type { Call, CallJoinData, CoursePartial } from "$lib/types";
     import type { User } from "itam-edu-common";
     import ParticipantVideo from "./ParticipantVideo.svelte";
     import ParticipantAudio from "./ParticipantAudio.svelte";
@@ -14,7 +13,7 @@
     type Props = {
         user: User | null;
         courses: CoursePartial[];
-        call: CallDto;
+        call: Call;
         room: RoomState;
         joinData: CallJoinData;
     };

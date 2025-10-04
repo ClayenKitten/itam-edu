@@ -7,7 +7,7 @@
     import NewCoursePrompt from "./NewCoursePrompt.svelte";
     import { getToaster } from "$lib/Toaster.svelte";
     import { formatPeriod } from "$lib/format";
-    import type { UserDto } from "itam-edu-api/src/users/query";
+    import type { UserDto } from "itam-edu-api/src/features/users/query";
     import AsyncButton from "$lib/components/AsyncButton.svelte";
 
     const { users, courses }: Props = $props();

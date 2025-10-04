@@ -1,13 +1,12 @@
 <script lang="ts">
     import { type PromptProps } from "$lib/Prompter.svelte";
     import { onMount } from "svelte";
-    import type { LessonPartial } from "$lib/types";
-    import type { CallDto } from "itam-edu-api/src/calls/dao";
+    import type { Call, LessonPartial } from "$lib/types";
 
     const { lessons, calls, onConfirm, onCancel }: Props = $props();
     type Props = PromptProps<{ title: string } | { lessonId: string }> & {
         lessons: LessonPartial[];
-        calls: CallDto[];
+        calls: Call[];
     };
 
     let dialog: HTMLDialogElement;

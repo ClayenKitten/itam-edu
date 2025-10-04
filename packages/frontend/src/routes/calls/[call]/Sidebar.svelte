@@ -1,8 +1,7 @@
 <script lang="ts">
-    import type { CallDto } from "itam-edu-api/src/calls/dao";
     import type { ParticipantState, RoomState } from "./state.svelte";
     import type { User } from "itam-edu-common";
-    import type { CallJoinData, CoursePartial } from "$lib/types";
+    import type { Call, CallJoinData, CoursePartial } from "$lib/types";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
     import { goto } from "$app/navigation";
@@ -20,7 +19,7 @@
     type Props = {
         user: User | null;
         courses: CoursePartial[];
-        call: CallDto;
+        call: Call;
         room: RoomState;
         focus: ParticipantState | null;
         tab: "people" | "chat" | "settings";

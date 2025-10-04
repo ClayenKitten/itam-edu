@@ -2,7 +2,7 @@ import { Container } from "inversify";
 import logger from "./logger";
 import { HttpServer } from "./ports/http";
 import { TelegramBot } from "./infra/telegram";
-import { BotService } from "./bot/service";
+import { BotService } from "./features/bot/service";
 import type { AppConfig } from "itam-edu-common/config";
 
 export class Application {
