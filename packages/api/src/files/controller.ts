@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import Elysia, { t } from "elysia";
-import { AuthenticationPlugin } from "../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../ports/http/authn";
 import { randomUUID } from "crypto";
-import { REQUIRE_TOKEN } from "../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../ports/http/openapi";
 import { PresignDownloadUrl } from "./presign-download.interactor";
 import { UploadFile } from "./upload.interactor";
 import { HttpError } from "../api/errors";

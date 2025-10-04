@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { openapi } from "@elysiajs/openapi";
 
-export function docsPlugin() {
+export function openapiPlugin() {
     return new Elysia({ name: "docs" })
         .use(
             openapi({

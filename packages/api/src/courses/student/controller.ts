@@ -1,13 +1,13 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
-import { AuthenticationPlugin } from "../../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../../ports/http/authn";
 import { UserRepository } from "../../users/repository";
 import { CourseRepository } from "../repository";
 import { StudentQuery } from "./query";
 import { EnrollStudent } from "./enroll.interactor";
 import { ExpelStudent } from "./expel.interactor";
 import { HttpError } from "../../api/errors";
-import { REQUIRE_TOKEN } from "../../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../../ports/http/openapi";
 
 @injectable()
 export class StudentController {

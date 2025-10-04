@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
-import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../api/plugins/docs";
-import { AuthenticationPlugin } from "../api/plugins/authenticate";
+import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../ports/http/openapi";
+import { AuthenticationPlugin } from "../ports/http/authn";
 import { UserRepository } from "./repository";
 import { CalendarQuery, type CalendarFilters } from "./calendar";
 import { UserLogin } from "./login";

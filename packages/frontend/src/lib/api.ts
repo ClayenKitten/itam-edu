@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/public";
 import { treaty } from "@elysiajs/eden";
-import type { ApiTreaty } from "itam-edu-api/src/api";
+import type { ApiTreaty } from "itam-edu-api/src/ports/http";
 
 export default function api(params: ApiParams) {
     const baseUrl = env.ITAMEDU_PUBLIC_API_URL_BROWSER!;

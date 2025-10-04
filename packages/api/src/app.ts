@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import logger from "./logger";
-import { ApiServer } from "./api";
+import { HttpServer } from "./ports/http";
 import { TelegramBot } from "./infra/telegram";
 import { BotService } from "./bot/service";
 import type { AppConfig } from "itam-edu-common/config";
@@ -10,7 +10,7 @@ export class Application {
         this.config = config;
         this.container = container;
 
-        this.api = this.container.get(ApiServer);
+        this.api = this.container.get(HttpServer);
         this.telegramBot = this.container.get(TelegramBot);
         this.botService = this.container.get(BotService);
     }
@@ -18,7 +18,7 @@ export class Application {
     public readonly config: AppConfig;
     public readonly container: Container;
 
-    public readonly api: ApiServer;
+    public readonly api: HttpServer;
     public readonly telegramBot: TelegramBot;
     public readonly botService: BotService;
 

@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
-import { REQUIRE_TOKEN } from "../../../api/plugins/docs";
+import { REQUIRE_TOKEN } from "../../../ports/http/openapi";
 import { HttpError } from "../../../api/errors";
-import { AuthenticationPlugin } from "../../../api/plugins/authenticate";
+import { AuthenticationPlugin } from "../../../ports/http/authn";
 import { InviteQuery } from "./query";
 import { CreateInvite } from "./create.interactor";
 import { RemoveInvite } from "./remove.interactor";

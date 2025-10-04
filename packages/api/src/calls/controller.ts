@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { Elysia, status, t } from "elysia";
-import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { AuthenticationPlugin } from "../api/plugins/authenticate";
+import { REQUIRE_TOKEN } from "../ports/http/openapi";
+import { AuthenticationPlugin } from "../ports/http/authn";
 import { CallQuery } from "./query";
 import { JoinCall } from "./join.interactor";
 import { CreateCall } from "./create.interactor";

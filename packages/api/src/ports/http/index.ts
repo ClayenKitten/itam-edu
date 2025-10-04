@@ -1,29 +1,29 @@
 import { inject, injectable } from "inversify";
 import { Elysia, type AnyElysia } from "elysia";
+import { cors } from "@elysiajs/cors";
 
-import logger from "../logger";
+import logger from "../../logger";
 import type { AppConfig } from "itam-edu-common/config";
-import { AppError, errorToHttpStatus } from "../errors";
+import { NO_AUTHENTICATION, openapiPlugin } from "./openapi";
+import { AppError, errorToHttpStatus } from "../../errors";
 
-import { docsPlugin, NO_AUTHENTICATION } from "./plugins/docs";
-import { corsPlugin } from "./plugins/cors";
-import { AuthenticationPlugin } from "./plugins/authenticate";
-import { httpLoggerPlugin } from "./plugins/logger";
+import { AuthenticationPlugin } from "./authn";
+import { httpLoggerPlugin } from "./logger";
 
-import { UserController } from "../users/controller";
-import { CourseController } from "../courses/controller";
-import { LessonController } from "../courses/lesson/controller";
-import { AttendanceController } from "../courses/lesson/attendance/controller";
-import { HomeworkController } from "../courses/homework/controller";
-import { StudentController } from "../courses/student/controller";
-import { SubmissionController } from "../courses/submission/controller";
-import { StaffController } from "../courses/staff/controller";
-import { InviteController } from "../courses/staff/invites/controller";
-import { CallController } from "../calls/controller";
-import { FileController } from "../files/controller";
+import { UserController } from "../../users/controller";
+import { CourseController } from "../../courses/controller";
+import { LessonController } from "../../courses/lesson/controller";
+import { AttendanceController } from "../../courses/lesson/attendance/controller";
+import { HomeworkController } from "../../courses/homework/controller";
+import { StudentController } from "../../courses/student/controller";
+import { SubmissionController } from "../../courses/submission/controller";
+import { StaffController } from "../../courses/staff/controller";
+import { InviteController } from "../../courses/staff/invites/controller";
+import { CallController } from "../../calls/controller";
+import { FileController } from "../../files/controller";
 
 @injectable()
-export class ApiServer {
+export class HttpServer {
     private elysia: Promise<AnyElysia>;
 
     public constructor(
@@ -102,8 +102,8 @@ export class ApiServer {
                     stack: (error as Error).stack
                 });
             })
-            .use(corsPlugin())
-            .use(docsPlugin())
+            .use(cors({ origin: true }))
+            .use(openapiPlugin())
             .use(this.authPlugin.toElysia())
             .use(httpLoggerPlugin())
             .use(this.userController.toElysia())
@@ -130,7 +130,7 @@ export class ApiServer {
 
 /** A top-levl ElysiaJS instance, exported for Eden Treaty usage in frontend. */
 export type ApiTreaty = Awaited<
-    ReturnType<InstanceType<typeof ApiServer>["createElysia"]>
+    ReturnType<InstanceType<typeof HttpServer>["createElysia"]>
 >;
 
 export type ErrorShape = {

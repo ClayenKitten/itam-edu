@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import { Elysia, t } from "elysia";
 import * as schema from "./schema";
-import { REQUIRE_TOKEN } from "../api/plugins/docs";
-import { AuthenticationPlugin } from "../api/plugins/authenticate";
+import { REQUIRE_TOKEN } from "../ports/http/openapi";
+import { AuthenticationPlugin } from "../ports/http/authn";
 import { CourseRepository } from "./repository";
 import { CourseQuery } from "./query";
 import { CourseChangelog } from "./changes";
