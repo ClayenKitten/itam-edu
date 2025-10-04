@@ -19,15 +19,12 @@
     "dependencies": {
         "@elysiajs/cors": "^1.4.0",
         "@elysiajs/openapi": "^1.4.0",
-        "@hono/node-server": "^1.13.7",
-        "@hono/zod-validator": "^0.4.2",
         "@sinclair/typebox": "^0.34.14",
         "bullmq": "^5.41.8",
         "elysia": "^1.4.0",
         "grammy": "^1.38.2",
         "inversify": "^7.5.1",
         "itam-edu-common": "file:../common",
-        "jsonwebtoken": "^9.0.2",
         "kysely": "^0.27.5",
         "livekit-server-sdk": "^2.12.0",
         "pg": "^8.13.1",
@@ -38,7 +35,6 @@
     },
     "devDependencies": {
         "@types/bun": "^1.1.17",
-        "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^22.7.4",
         "@types/pg": "^8.11.10",
         "@types/sharp": "^0.31.1",
