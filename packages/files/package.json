@@ -1,6 +1,6 @@
 {
     "name": "itam-edu-files",
-    "version": "0.1.0-alpha",
+    "version": "0.1.0-alpha.1",
     "description": "File proxy for ITAM Education Platform",
     "homepage": "https://github.com/ClayenKitten/itam-edu",
     "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
