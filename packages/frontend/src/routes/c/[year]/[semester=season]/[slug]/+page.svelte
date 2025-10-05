@@ -30,7 +30,22 @@
                 />
             {/if}
         </div>
-        <h1>{data.course.title}</h1>
+        <div class="flex items-center gap-3">
+            <h1>{data.course.title}</h1>
+            {#if data.course.isPublished === false}
+                <span
+                    class="py-2 px-3 rounded-2xs bg-[#ECEEFF] text-[#6E7CEC] text-md-regular"
+                >
+                    Не опубликован
+                </span>
+            {:else if data.course.isEnrollmentOpen === false && data.course.role === null}
+                <span
+                    class="py-2 px-3 rounded-2xs bg-[#ECEEFF] text-[#6E7CEC] text-md-regular"
+                >
+                    Поступление закрыто
+                </span>
+            {/if}
+        </div>
         {#if data.course.status}
             <h4 class="text-on-background-muted">{data.course.status}</h4>
         {/if}
