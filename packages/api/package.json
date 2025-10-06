@@ -1,6 +1,6 @@
 {
     "name": "itam-edu-api",
-    "version": "0.1.0-alpha.1",
+    "version": "0.1.0",
     "description": "Core package for ITAM Education",
     "homepage": "https://github.com/ClayenKitten/itam-edu",
     "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
