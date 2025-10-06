@@ -4,7 +4,7 @@ ARG ITAM_PACKAGE_SHORT_NAME="files"
 
 
 ## Prepare and build
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 ARG ITAM_PACKAGE_NAME
 ARG ITAM_PACKAGE_SHORT_NAME
@@ -36,4 +36,4 @@ COPY package.json .
 COPY --from=build /app/packages/common ./packages/common
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/${ITAM_PACKAGE_SHORT_NAME}/build ./build
-CMD ["bun", "./build"]
+CMD ["bun", "run", "./build/index.js"]

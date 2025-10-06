@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ghcr.io/clayenkitten/itam-edu-frontend:main
+    image: ghcr.io/clayenkitten/itam-edu-frontend:${DEPLOY_TAG:-latest}
     build: &build
       dockerfile: ./packages/frontend/Dockerfile
       context: .
@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   api:
-    image: ghcr.io/clayenkitten/itam-edu-api:main
+    image: ghcr.io/clayenkitten/itam-edu-api:${DEPLOY_TAG:-latest}
     build: { <<: *build, dockerfile: ./packages/api/Dockerfile }
     depends_on: { db-migration: { condition: service_completed_successfully } }
     expose: [3000]
@@ -26,13 +26,19 @@ services:
     restart: unless-stopped
 
   files:
-    image: ghcr.io/clayenkitten/itam-edu-files:main
+    image: ghcr.io/clayenkitten/itam-edu-files:${DEPLOY_TAG:-latest}
     build: { <<: *build, dockerfile: ./packages/files/Dockerfile }
     expose: [3000]
     env_file: ./.env
     restart: unless-stopped
 
-  # Database
+  db-migration:
+    image: ghcr.io/clayenkitten/itam-edu-db:${DEPLOY_TAG:-latest}
+    build: ./packages/db
+    depends_on: { postgres: { condition: service_healthy } }
+    env_file: ./.env
+
+  # Backing services
   ## PostgreSQL server
   postgres:
     image: postgres:17
@@ -49,18 +55,7 @@ services:
       retries: 5
       start_period: 30s
       start_interval: 500ms
-  ## Database migration
-  db-migration:
-    image: ghcr.io/clayenkitten/itam-edu-db:main
-    build: ./packages/db
-    depends_on: { postgres: { condition: service_healthy } }
-    env_file: ./.env
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-
-  # Redis
+  ## Redis
   redis:
     image: redis:8.0
     entrypoint: sh -c 'redis-server --save 60 1 --appendonly yes --loglevel notice --requirepass $$REDIS_PASSWORD'

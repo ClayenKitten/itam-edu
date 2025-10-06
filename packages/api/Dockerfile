@@ -1,33 +1,41 @@
-# Install dependencies and copy source code
-FROM node:22-alpine AS prepare
-WORKDIR /app
+## Global defaults
+ARG ITAM_PACKAGE_NAME="itam-edu-api"
+ARG ITAM_PACKAGE_SHORT_NAME="api"
 
+
+## Prepare and build
+FROM node:24-alpine AS build
+WORKDIR /app
+ARG ITAM_PACKAGE_NAME
+ARG ITAM_PACKAGE_SHORT_NAME
+
+# Copy workspace-level stuff
 COPY .npmrc .
 COPY package.json .
 COPY package-lock.json .
-COPY ./packages/api/package.json ./packages/api/package.json
-COPY ./packages/common ./packages/common
-RUN npm --workspace=itam-edu-api ci
 
+# Copy package manifest and file dependencies, and install other dependencies
+COPY ./packages/${ITAM_PACKAGE_SHORT_NAME}/package.json ./packages/${ITAM_PACKAGE_SHORT_NAME}/package.json
 COPY ./packages/db ./packages/db
-COPY ./packages/api ./packages/api
+COPY ./packages/common ./packages/common
+RUN npm --workspace=${ITAM_PACKAGE_NAME} ci
 
-# Build for production and prune dev dependencies
-FROM node:22-alpine AS build
-WORKDIR /app
-ENV NODE_ENV=production
+# Copy package source and build
+COPY ./packages/${ITAM_PACKAGE_SHORT_NAME} ./packages/${ITAM_PACKAGE_SHORT_NAME}
+RUN npm --workspace=${ITAM_PACKAGE_NAME} run build
+RUN npm --workspace=${ITAM_PACKAGE_NAME} prune --omit=dev 
 
-COPY --from=prepare /app .
-RUN npm --workspace=itam-edu-api run build
-RUN npm --workspace=itam-edu-api prune --omit=dev 
 
-# Serve production build
+## Serve production build
 FROM oven/bun:1.2-alpine AS serve
 WORKDIR /app
 ENV NODE_ENV=production
+ARG ITAM_PACKAGE_NAME
+ARG ITAM_PACKAGE_SHORT_NAME
 
 COPY package.json .
+COPY --from=build /app/packages/db ./packages/db
 COPY --from=build /app/packages/common ./packages/common
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/packages/api/build ./build
-CMD ["bun", "./build"]
+COPY --from=build /app/packages/${ITAM_PACKAGE_SHORT_NAME}/build ./build
+CMD ["bun", "run", "./build/index.js"]

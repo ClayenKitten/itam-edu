@@ -1,14 +1,13 @@
 {
     "name": "itam-edu-files",
     "version": "0.1.0-alpha.1",
-    "description": "File proxy for ITAM Education Platform",
+    "description": "File proxy for ITAM Education",
     "homepage": "https://github.com/ClayenKitten/itam-edu",
     "bugs": "https://github.com/ClayenKitten/itam-edu/issues",
     "repository": "github:ClayenKitten/itam-edu",
     "license": "MIT",
     "author": "ClayenKitten",
     "main": "./src/index.ts",
-    "type": "module",
     "scripts": {
         "start": "bun .",
         "dev": "bun --watch --clear-screen=false .",
@@ -17,6 +16,7 @@
         "check": "tsc --noEmit",
         "check:format": "prettier . --check"
     },
+    "type": "module",
     "dependencies": {
         "itam-edu-common": "file:../common",
         "winston": "^3.17.0"
