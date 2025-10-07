@@ -13,25 +13,6 @@
         calls: Promise<Call[]>;
         courses: CoursePartial[];
     };
-    const prompter = getPrompter();
-    const toaster = getToaster();
-
-    async function createCourse(data: CreateCourse) {
-        const result = await api({ fetch }).courses.post(data);
-        if (result.error) {
-            if (result.status === 409) {
-                toaster.add(
-                    "Курс с таким идентификатором и периодом уже существует",
-                    "error"
-                );
-            } else {
-                toaster.add("Не удалось создать курс", "error");
-            }
-            return;
-        }
-        await Promise.all([invalidate("app:courses"), invalidate("app:user")]);
-        await goto(coursePath(result.data));
-    }
 </script>
 
 <article class="flex flex-col gap-5 p-6 rounded-lg shadow">
@@ -85,8 +66,7 @@
                                 Курс
                                 <a
                                     class="text-primary hover:underline"
-                                    target="_blank"
-                                    href={`/courses/${course.title}`}
+                                    href={coursePath(course)}
                                 >
                                     {course.title}
                                 </a>
