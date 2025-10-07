@@ -1,10 +1,6 @@
 <script lang="ts">
-    import api from "$lib/api";
-    import { goto, invalidate } from "$app/navigation";
     import { coursePath, filePath } from "$lib/path";
-    import { getPrompter } from "$lib/Prompter.svelte";
-    import type { Call, CoursePartial, CreateCourse } from "$lib/types";
-    import { getToaster } from "$lib/Toaster.svelte";
+    import type { Call, CoursePartial } from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import { format } from "date-fns";
 
