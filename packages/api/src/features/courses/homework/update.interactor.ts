@@ -48,15 +48,15 @@ export class UpdateHomework {
         );
         await this.repo.save(newHomework);
 
-        if (homework.deadline !== newHomework.deadline) {
+        if (homework.deadline?.getTime() !== newHomework.deadline?.getTime()) {
             await Promise.allSettled([
                 this.notificationSender.send(
-                    new Notification(course, homework),
+                    new Notification(course, newHomework),
                     [...course.members.map(m => m.id)]
                 ),
                 this.changelog.add(actor, course, {
                     kind: "homework-deadline-changed",
-                    homeworkId: homework.id
+                    homeworkId: newHomework.id
                 })
             ]);
         }
