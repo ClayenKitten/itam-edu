@@ -9,6 +9,7 @@ import { CourseChangelog } from "../changes";
 import { CourseRepository } from "../repository";
 import { NotificationTemplate } from "../../notifications";
 import type { Course } from "../entity";
+import logger from "../../../logger";
 
 @injectable()
 export class UpdateLesson {
@@ -69,17 +70,19 @@ export class UpdateLesson {
         );
         await this.repo.save(newLesson);
 
-        if (change.schedule !== undefined && newLesson.schedule !== null) {
-            const oneHourAgo = new Date().getTime() - 60 * 60 * 1000;
-            if (newLesson.schedule.date.getTime() >= oneHourAgo) {
-                await this.notificationSender.send(
-                    new Notification(course, newLesson),
-                    [...course.members.map(m => m.id)]
-                );
-                await this.changelog.add(actor, course, {
-                    kind: "lesson-schedule-changed",
-                    lessonId: lesson.id
-                });
+        const oneHourAgo = new Date(new Date().getTime() - 60 * 60 * 1000);
+        if (change.schedule !== undefined) {
+            if (newLesson.schedule !== null) {
+                if (new Date(newLesson.schedule.date) >= oneHourAgo) {
+                    await this.notificationSender.send(
+                        new Notification(course, newLesson),
+                        [...course.members.map(m => m.id)]
+                    );
+                    await this.changelog.add(actor, course, {
+                        kind: "lesson-schedule-changed",
+                        lessonId: lesson.id
+                    });
+                }
             }
         }
 
