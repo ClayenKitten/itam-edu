@@ -135,7 +135,7 @@
         class={[
             "flex flex-col items-start gap-4",
             "w-[356px] p-3 pb-4",
-            "bg-surface rounded-md shadow"
+            "bg-surface border border-surface-border rounded-md shadow"
         ]}
     >
         <header class="flex flex-col gap-1 break-all">
@@ -154,9 +154,13 @@
             {:else}
                 <div
                     class={[
-                        "w-[330px] h-[220px] bg-on-primary object-cover rounded-xs"
+                        "w-[330px] h-[220px] flex justify-center items-center",
+                        "bg-on-primary rounded-xs"
                     ]}
-                ></div>
+                >
+                    <i class="ph ph-phone-outgoing text-[32px] text-primary"
+                    ></i>
+                </div>
             {/if}
         </a>
     </article>
