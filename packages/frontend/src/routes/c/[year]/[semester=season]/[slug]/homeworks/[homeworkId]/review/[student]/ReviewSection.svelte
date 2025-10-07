@@ -16,7 +16,14 @@
     };
 
     let content: string = $state("");
+    let key = $state(crypto.randomUUID());
+
     const isUnreviewed = $derived(submission.attempts[0].review === null);
+    $effect(() => {
+        content = "";
+        key = crypto.randomUUID();
+        submission;
+    });
 
     async function review(accepted: boolean) {
         const response = await api({ fetch })
@@ -74,9 +81,12 @@
         <hr class="border-surface-border" />
         <section class="flex flex-col gap-4">
             <h5>Комментарий от проверяющего</h5>
-            <div class={["flex min-h-[200px] max-h-[600px]"]}>
-                <RichEditor bind:content characterLimit={10000} />
-            </div>
+            <!-- TODO: rich editor should handle "content" reset automatically. -->
+            {#key key}
+                <div class="flex min-h-[200px] max-h-[600px]">
+                    <RichEditor bind:content characterLimit={10000} />
+                </div>
+            {/key}
         </section>
         <menu class="flex justify-end gap-2.5">
             <button

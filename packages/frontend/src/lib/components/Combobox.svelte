@@ -9,7 +9,8 @@
         isSelectable = () => true,
         selected,
         suggestion: suggestionSnippet,
-        empty
+        empty,
+        alignRight = false
     }: Props = $props();
 
     type Props = {
@@ -40,11 +41,7 @@
          */
         isSelectable?: (value: T) => boolean;
 
-        /**
-         * Snippet to display in place of input when value is selected.
-         *
-         * Consumer is responsible for providing a way to remove current value.
-         * */
+        /** Snippet to display in place of input when value is selected. */
         selected: Snippet<[value: T]>;
         /** Snippet to display a suggestion. */
         suggestion: Snippet<
@@ -52,6 +49,9 @@
         >;
         /** Snippet to display when nothing is found. */
         empty: Snippet;
+
+        /** Whether to pin suggestion box to the right instead of to the left. */
+        alignRight?: boolean;
     };
 
     let highlightedIndex: number = $state(-1);
@@ -97,13 +97,12 @@
     const MAX_ELEMENTS = 5;
 </script>
 
-<div class="relative">
+<div class="relative flex-1 shrink-1 basis-0 min-w-0">
     <div
         class={[
-            "w-full h-11",
+            "w-full h-11 overflow-hidden",
             value ? "" : "input-small",
-            "border border-surface-border rounded-2xs overflow-hidden",
-            query && "border-b-0 rounded-b-none"
+            "border border-surface-border rounded-2xs"
         ]}
     >
         {#if value === null}
@@ -116,14 +115,26 @@
                 autocomplete="off"
             />
         {:else}
-            {@render selected(value)}
+            <div class="flex">
+                <div class="flex-1 overflow-hidden">
+                    {@render selected(value)}
+                </div>
+                <button
+                    class="shrink-0 self-center p-2 mr-1 rounded-full hover:bg-surface-tint"
+                    aria-label="Удалить"
+                    onclick={() => (value = null)}
+                >
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
         {/if}
     </div>
     {#if query !== ""}
         <ul
             class={[
-                "z-10 flex flex-col shadow absolute top-11 inset-x-0",
-                "border border-t-0 border-surface-border rounded-b-2xs overflow-hidden"
+                "z-10 flex flex-col absolute top-12 min-w-max w-full",
+                "border border-surface-border rounded-2xs shadow overflow-hidden",
+                alignRight ? "right-0" : "left-0"
             ]}
         >
             {#each suggestions.slice(0, MAX_ELEMENTS) as suggestion, i}

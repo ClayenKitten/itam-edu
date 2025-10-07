@@ -39,6 +39,7 @@
     <ReviewSidebar
         course={data.course}
         submissions={data.submissions}
+        students={data.students}
         selectedSubmission={data.submission}
     />
 </div>

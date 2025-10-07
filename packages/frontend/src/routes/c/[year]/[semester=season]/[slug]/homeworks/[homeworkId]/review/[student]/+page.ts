@@ -9,18 +9,15 @@ export const load: PageLoad = async ({ fetch, depends, parent, params }) => {
     const { course } = await parent();
 
     if (course.permissions.submissions.view !== true) {
-        error(404);
+        error(403);
     }
 
-    let submission: Submission | null = null;
-    submission = await getSubmission(
-        fetch,
-        course.id,
-        params.homeworkId,
-        params.student
-    );
+    const [submission, students] = await Promise.all([
+        getSubmission(fetch, course.id, params.homeworkId, params.student),
+        getStudents(fetch, course.id)
+    ]);
 
-    return { submission, title: `Проверка работ | ${course.title}` };
+    return { title: `Проверка работ | ${course.title}`, submission, students };
 };
 
 async function getSubmission(
@@ -37,5 +34,13 @@ async function getSubmission(
     if (response.error) {
         error(response.status);
     }
+    return response.data;
+}
+
+async function getStudents(fetch: typeof window.fetch, courseId: string) {
+    const response = await api({ fetch })
+        .courses({ course: courseId })
+        .students.get();
+    if (response.error) error(response.status);
     return response.data;
 }

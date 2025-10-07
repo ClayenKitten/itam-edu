@@ -5,6 +5,7 @@
     import Combobox from "$lib/components/Combobox.svelte";
     import type { UserDto } from "itam-edu-api/src/features/users/query";
     import { filePath } from "$lib/path";
+    import { search } from "$lib/utils/search";
 
     const { users, onConfirm, onCancel }: Props = $props();
     type Props = PromptProps<CreateCourse> & { users: UserDto[] };
@@ -119,20 +120,7 @@
             <Combobox
                 bind:query={ownerQuery}
                 bind:value={owner}
-                suggestions={users.filter(user => {
-                    let searchWords = ownerQuery
-                        .trim()
-                        .toLowerCase()
-                        .split(" ");
-                    return searchWords.every(searchWord => {
-                        const match = (s: string) =>
-                            s.toLowerCase().includes(searchWord);
-                        if (match("@" + user.tgUsername)) return true;
-                        if (match(user.firstName)) return true;
-                        if (match(user.lastName ?? "")) return true;
-                        return false;
-                    });
-                })}
+                suggestions={search(ownerQuery, users)}
                 placeholder="Начните вводить имя или Telegram-юзернейм..."
             >
                 {#snippet selected(user)}
@@ -153,19 +141,13 @@
                         <span
                             class="text-md-regular text-nowrap overflow-ellipsis"
                         >
-                            {user.firstName}
-                            {user.lastName},
+                            {[user.firstName, user.lastName]
+                                .filter(n => n)
+                                .join(" ")},
                         </span>
                         <span class="text-on-surface-muted"
                             >@{user.tgUsername}</span
                         >
-                        <button
-                            class="ml-auto p-2 rounded-full hover:bg-surface-tint"
-                            aria-label="Удалить"
-                            onclick={() => (owner = null)}
-                        >
-                            <i class="ph ph-x"></i>
-                        </button>
                     </div>
                 {/snippet}
                 {#snippet suggestion(user, { highlighted })}
@@ -188,8 +170,9 @@
                         <span
                             class="text-md-regular text-nowrap overflow-ellipsis"
                         >
-                            {user.firstName}
-                            {user.lastName},
+                            {[user.firstName, user.lastName]
+                                .filter(n => n)
+                                .join(" ")},
                         </span>
                         <span class="text-on-surface-muted"
                             >@{user.tgUsername}</span
