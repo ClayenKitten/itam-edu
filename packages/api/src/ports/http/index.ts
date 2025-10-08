@@ -5,7 +5,7 @@ import { cors } from "@elysiajs/cors";
 import logger from "../../logger";
 import type { AppConfig } from "itam-edu-common/config";
 import { NO_AUTHENTICATION, openapiPlugin } from "./openapi";
-import { AppError, errorToHttpStatus } from "../../errors";
+import { AppError } from "../../errors";
 
 import { AuthenticationPlugin } from "./authn";
 import { httpLoggerPlugin } from "./logger";
@@ -79,7 +79,7 @@ export class HttpServer {
                             cause: error.cause
                         }
                     });
-                    const httpStatus = errorToHttpStatus(error);
+                    const httpStatus = error?.meta?.httpCode ?? 400;
                     return status(httpStatus, {
                         error: {
                             code: error.code,

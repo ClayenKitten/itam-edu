@@ -31,7 +31,7 @@ export class ApplyAttendanceToken {
     public async invoke(actor: User, token: string): Promise<void> {
         const payload = await this.tokenService.verify(token);
         if (!payload) {
-            throw new BadToken();
+            throw new BadToken(actor.id);
         }
         const { courseId, lessonId } = payload;
 
@@ -52,6 +52,10 @@ export class ApplyAttendanceToken {
 }
 
 export class BadToken extends AppError {
-    public code = "bad-attendance-token";
-    public message = "Неправильный или устаревший код";
+    public constructor(actorId: string) {
+        super("bad-attendance-token", "Неправильный или устаревший код", {
+            httpCode: 404,
+            actor: actorId
+        });
+    }
 }

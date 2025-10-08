@@ -3,8 +3,8 @@ import { User } from "itam-edu-common";
 import { CallDao, type CallDto } from "./dao";
 import { CourseRepository } from "../courses/repository";
 import { CallNotFound } from "./errors";
-import { ForbiddenError } from "../../errors";
 import { CourseNotFound } from "../courses/errors";
+import { AppError } from "../../errors";
 
 @injectable()
 export class CallQuery {
@@ -30,13 +30,14 @@ export class CallQuery {
     /**
      * Returns all calls.
      *
-     * @throws {ForbiddenError}
+     * @throws {AppError}
      * */
     public async getAll(actor: User): Promise<CallDto[]> {
         if (actor.permissions.calls.view !== true) {
-            throw new ForbiddenError(
+            throw new AppError(
                 "not-allowed-get-all-calls",
-                "Вы не имеете права на просмотр списка звонков"
+                "Вы не имеете права на просмотр списка звонков",
+                { httpCode: 403, actor: actor.id }
             );
         }
         return await this.dao.getAll();
@@ -45,7 +46,7 @@ export class CallQuery {
     /**
      * Returns all calls for the course.
      *
-     * @throws {ForbiddenError}
+     * @throws {AppError}
      * */
     public async getAllForCourse(
         actor: User,
@@ -57,9 +58,10 @@ export class CallQuery {
             throw new CourseNotFound(courseId);
         }
         if (permissions.calls.list !== true) {
-            throw new ForbiddenError(
+            throw new AppError(
                 "not-allowed-get-all-course-calls",
-                "Вы не имеете права на просмотр списка звонков курса"
+                "Вы не имеете права на просмотр списка звонков курса",
+                { httpCode: 403, actor: actor.id }
             );
         }
         return await this.dao.getAll(courseId);

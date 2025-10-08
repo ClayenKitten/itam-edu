@@ -1,50 +1,25 @@
-/** Expected application error. */
-export abstract class AppError extends Error {
-    /** Machine-friendly error code that will be forwarded to the client. */
-    public abstract code: string;
-    /** Human-readable message that will be forwarded to the client. */
-    public abstract message: string;
-    /** Structured metadata for logging. */
-    public meta?: Record<string, unknown> = undefined;
-    /** Optional parent error. */
-    public cause?: Error = undefined;
-}
-
-export abstract class NotFoundError extends AppError {
-    public override meta?: Record<string, unknown> & {
-        resource?: { kind: string; id: string };
-    } = undefined;
-}
-
-export class ForbiddenError extends AppError {
+/**
+ * Expected application error.
+ *
+ * Domain services are expected to extend this class to support type matching,
+ * while application services might return this class directly.
+ * */
+export class AppError extends Error {
     public constructor(
         /** Machine-friendly error code that will be forwarded to the client. */
         public code: string,
         /** Human-readable message that will be forwarded to the client. */
         public message: string,
         /** Structured metadata for logging. */
-        public meta?: Record<string, unknown>,
+        public meta?: AppErrorMeta,
         /** Optional parent error. */
         public cause?: Error
     ) {
-        super();
+        super(message, { cause });
     }
 }
-
-export abstract class ConflictError extends AppError {}
-
-export function errorToHttpStatus(error: Error): number {
-    if (error instanceof NotFoundError) {
-        return 404;
-    }
-    if (error instanceof ForbiddenError) {
-        return 403;
-    }
-    if (error instanceof ConflictError) {
-        return 409;
-    }
-    if (error instanceof AppError) {
-        return 400;
-    }
-    return 500;
-}
+export type AppErrorMeta = Partial<{
+    actor: string;
+    resource: { kind: string; id: string };
+    httpCode: number;
+}>;
