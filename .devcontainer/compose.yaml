@@ -40,13 +40,14 @@ services:
 
   redis:
     image: redis:8.0
+    restart: unless-stopped
     command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
     expose: [6379]
     volumes: [redis:/data]
 
   minio:
     image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-    entrypoint: sh -c "mc mb /data/files --ignore-existing && minio server --console-address ":9001" /data"
+    entrypoint: sh -c "mc mb /data/files --ignore-existing && mc mb /data/recordings --ignore-existing && minio server --console-address ":9001" /data"
     expose: ["9000", "9001"]
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -75,12 +76,35 @@ services:
     volumes:
       - ./livekit.yaml:/etc/livekit.yaml
 
+  livekit-egress:
+    image: livekit/egress:v1.9.1
+    restart: unless-stopped
+    volumes:
+      - ./livekit-egress.yaml:/etc/egress.yaml
+    environment:
+      EGRESS_CONFIG_FILE: /etc/egress.yaml
+
+  livekit-ingress:
+    image: livekit/ingress:v1.4.3
+    restart: unless-stopped
+    volumes:
+      - ./livekit-ingress.yaml:/etc/ingress.yaml
+    environment:
+      INGRESS_CONFIG_FILE: /etc/ingress.yaml
+
+  livekit-redis:
+    image: redis:8.0
+    restart: unless-stopped
+    command: redis-server --save 60 1 --appendonly yes --loglevel warning --requirepass password
+    expose: [6379]
+    volumes: [redis_livekit:/data]
+
   # Web interface for databases
   dbgate:
     image: dbgate/dbgate:6.4.1-alpine
     expose: [3000]
     environment:
-      CONNECTIONS: Postgres,Redis
+      CONNECTIONS: Postgres,Redis,RedisLivekit
 
       LABEL_Postgres: Postgres
       ENGINE_Postgres: postgres@dbgate-plugin-postgres
@@ -97,6 +121,14 @@ services:
       DATABASE_Redis: 0
       USER_Redis: default
       PASSWORD_Redis: password
+
+      LABEL_RedisLivekit: Redis LiveKit
+      ENGINE_RedisLivekit: redis@dbgate-plugin-redis
+      SERVER_RedisLivekit: livekit-redis
+      PORT_RedisLivekit: 6379
+      DATABASE_RedisLivekit: 0
+      USER_RedisLivekit: default
+      PASSWORD_RedisLivekit: password
     volumes:
       - dbgate:/root/.dbgate
 
@@ -118,3 +150,4 @@ volumes:
   dbgate:
   caddy_data:
   caddy_config:
+  redis_livekit:

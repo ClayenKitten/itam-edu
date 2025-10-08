@@ -9,6 +9,9 @@
         "redis",
         "minio",
         "livekit",
+        "livekit-egress",
+        "livekit-ingress",
+        "livekit-redis",
         "dbgate",
         "bull-board"
     ],
