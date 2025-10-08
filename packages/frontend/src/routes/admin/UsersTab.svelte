@@ -41,6 +41,7 @@
                 }
             }}
             items={users}
+            pageSize={10}
         />
     {/await}
 </article>
