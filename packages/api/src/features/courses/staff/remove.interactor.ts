@@ -27,7 +27,7 @@ export class RemoveStaffMember {
         const permissions = course.getPermissionsFor(actor);
         if (permissions === null) return new NotFoundError("Course not found.");
 
-        if (permissions.staff.manage !== true) {
+        if (actor.id !== target.id && permissions.staff.manage !== true) {
             return new ForbiddenError(
                 "You are not allowed to manage staff members."
             );
