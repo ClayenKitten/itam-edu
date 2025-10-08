@@ -26,12 +26,6 @@ export class LessonController {
             tags: ["Lessons"]
         })
             .use(this.authPlugin.toElysia())
-            .guard({
-                params: t.Object(
-                    { course: t.String({ format: "uuid" }) },
-                    { additionalProperties: true }
-                )
-            })
             .get(
                 "",
                 async ({ user, params, status }) => {
@@ -45,6 +39,9 @@ export class LessonController {
                     return result;
                 },
                 {
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "List lessons",
                         description: "Returns all lessons of the course."
@@ -67,6 +64,9 @@ export class LessonController {
                 {
                     requireAuthentication: true,
                     body: t.Object({ lesson: schema.createLesson }),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "Create new lesson",
                         description: "Creates new lesson.",
@@ -88,6 +88,9 @@ export class LessonController {
                 },
                 {
                     requireAuthentication: true,
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     body: t.Object({ lessons: schema.reorderLessonsList }),
                     detail: {
                         summary: "Update lessons",
@@ -111,10 +114,10 @@ export class LessonController {
                     return lesson;
                 },
                 {
-                    params: t.Object(
-                        { lesson: t.String() },
-                        { additionalProperties: true }
-                    ),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" }),
+                        lesson: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "Get lesson",
                         description: "Returns lesson with content."
@@ -133,17 +136,18 @@ export class LessonController {
                     if (newLesson instanceof HttpError) {
                         return status(newLesson.code, newLesson.message);
                     }
+                    return newLesson;
                 },
                 {
                     requireAuthentication: true,
-                    params: t.Object(
-                        { lesson: t.String() },
-                        { additionalProperties: true }
-                    ),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" }),
+                        lesson: t.String({ format: "uuid" })
+                    }),
                     body: schema.updateLesson,
                     detail: {
                         summary: "Update lesson",
-                        description: "Updates lesson."
+                        description: "Updates lesson info."
                     }
                 }
             );

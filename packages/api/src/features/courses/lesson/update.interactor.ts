@@ -69,8 +69,9 @@ export class UpdateLesson {
         );
         await this.repo.save(newLesson);
 
-        if (change.schedule !== undefined) {
-            if (newLesson.schedule !== null) {
+        if (change.schedule !== undefined && newLesson.schedule !== null) {
+            const oneHourAgo = new Date().getTime() - 60 * 60 * 1000;
+            if (newLesson.schedule.date.getTime() >= oneHourAgo) {
                 await this.notificationSender.send(
                     new Notification(course, newLesson),
                     [...course.members.map(m => m.id)]
