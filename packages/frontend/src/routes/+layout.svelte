@@ -3,12 +3,16 @@
     import Toaster, { createToaster } from "$lib/Toaster.svelte";
     import Prompter, { createPrompter } from "$lib/Prompter.svelte";
     import "../app.css";
+    import ContextMenu, {
+        createContextMenuManager
+    } from "$lib/components/portals/ContextMenu.svelte";
 
     let { data, children } = $props();
 
     let metadata = $derived(page.data);
     const toaster = createToaster();
     const prompter = createPrompter();
+    const contextMenuManager = createContextMenuManager();
 
     const enableTracking = $derived(!page.url.hostname.includes("localhost"));
     $effect(() => {
@@ -61,5 +65,6 @@
 
 <Toaster {toaster} />
 <Prompter {prompter} />
+<ContextMenu {contextMenuManager} />
 
 {@render children()}

@@ -349,7 +349,7 @@
             rounded-xs overflow-hidden shadow;
 
         > .context-menu-item {
-            @apply flex items-center gap-2 p-3
+            @apply flex items-center gap-2 py-2 px-3
                 bg-surface hover:bg-surface-tint focus-within:bg-surface-tint
                 outline-0 transition-colors duration-100
                 cursor-pointer;
