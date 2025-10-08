@@ -13,7 +13,6 @@
         courses,
         call,
         room,
-        focus = $bindable(null),
         tab = $bindable(),
         joinData,
         onClose
@@ -23,7 +22,6 @@
         courses: CoursePartial[];
         call: Call;
         room: RoomState;
-        focus: ParticipantState | null;
         tab: "people" | "chat" | "settings";
         joinData: CallJoinData;
         onClose: () => void;
@@ -205,13 +203,13 @@
                     "shrink-0 flex items-center gap-1 h-10",
                     "px-4 border-l-4",
                     "whitespace-nowrap overflow-hidden",
-                    focus?.identity !== participant.identity
+                    room.focus?.identity !== participant.identity
                         ? "border-transparent"
                         : "border-primary",
                     "bg-surface hover:bg-surface-tint transition-all duration-200"
                 ]}
                 onclick={() => {
-                    focus = participant;
+                    room.focus = participant;
                     closeIfMobile();
                 }}
             >

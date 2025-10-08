@@ -34,7 +34,8 @@
         joinData = resp.data;
         try {
             await room.connect(url, joinData.token);
-        } catch {
+        } catch (e) {
+            console.error(e);
             toaster.add("Не удалось подключиться к звонку", "error");
             return;
         }

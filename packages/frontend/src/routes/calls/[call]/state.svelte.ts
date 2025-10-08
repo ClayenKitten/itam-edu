@@ -18,7 +18,16 @@ export class RoomState {
             this.room.localParticipant
         );
 
-        this.room.on("connectionStateChanged", state => (this.state = state));
+        this.room.on("connectionStateChanged", state => {
+            this.state = state;
+            if (state === ConnectionState.Connected) {
+                setTimeout(() => {
+                    this.autofocus();
+                }, 250);
+            } else {
+                this.room.unregisterTextStreamHandler("chat");
+            }
+        });
         this.room.on("participantConnected", participant => {
             this.remoteParticipants.filter(
                 p => p.identity !== participant.identity
@@ -48,6 +57,40 @@ export class RoomState {
         null as any as LocalParticipantState // Definitely assigned in constructor
     );
     public remoteParticipants: RemoteParticipantState[] = $state([]);
+
+    /** Participant that is focused on by the local participant. */
+    public get focus(): ParticipantState | null {
+        return (
+            [this.localParticipant, ...this.remoteParticipants].find(
+                p => p.identity === this.#focus
+            ) ?? null
+        );
+    }
+    public set focus(value: ParticipantState | null) {
+        this.#focus = value === null ? value : value.identity;
+    }
+    #focus: string | null = $state(null);
+
+    /**
+     * Automatically focuses on the first participant with enabled camera or screenshare.
+     *
+     * Does nothing if focus is already set.
+     * */
+    public autofocus() {
+        if (this.focus !== null) return;
+        const showingParticipants = [
+            this.localParticipant,
+            ...this.remoteParticipants
+        ].filter(
+            r =>
+                (r.screenTrack && !r.screenTrack.isMuted) ||
+                (r.cameraTrack && !r.cameraTrack.isMuted)
+        );
+        const newFocus = showingParticipants.at(0);
+        if (newFocus) this.focus = newFocus;
+    }
+
+    /** Chat messages. */
     public readonly messages: ChatMessage[] = $state([]);
 
     public async connect(url: string, token: string) {
@@ -151,7 +194,10 @@ export class RemoteParticipantState extends ParticipantState {
                 this.microphoneTrack = null;
             }
         });
-        this.participant.on("trackSubscribed", track => {
+        participant.on("trackMuted", () => {
+            this.room.autofocus();
+        });
+        participant.on("trackSubscribed", track => {
             this.afterSubscribe(track);
         });
     }
@@ -163,6 +209,7 @@ export class RemoteParticipantState extends ParticipantState {
             } else if (track.source === "screen_share") {
                 this.screenTrack = new VideoTrackState(track);
             }
+            this.room.autofocus();
         } else if (isAudioTrack(track) && track.source === "microphone") {
             this.microphoneTrack = new AudioTrackState(track);
         }
@@ -211,10 +258,15 @@ export class LocalParticipantState extends ParticipantState {
             } else {
                 this.cameraTrack = new VideoTrackState(result.videoTrack!);
             }
+            this.room.autofocus();
         } else if (source === "screen_share") {
             let result = await this.participant.setScreenShareEnabled(value);
-            if (!result?.videoTrack) this.screenTrack = null;
-            else this.screenTrack = new VideoTrackState(result.videoTrack!);
+            if (!result?.videoTrack) {
+                this.screenTrack = null;
+            } else {
+                this.screenTrack = new VideoTrackState(result.videoTrack!);
+            }
+            this.room.autofocus();
         }
     }
 

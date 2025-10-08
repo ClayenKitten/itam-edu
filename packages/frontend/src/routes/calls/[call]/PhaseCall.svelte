@@ -4,9 +4,8 @@
     import type { User } from "itam-edu-common";
     import ParticipantVideo from "./ParticipantVideo.svelte";
     import ParticipantAudio from "./ParticipantAudio.svelte";
-    import type { ParticipantState, RoomState } from "./state.svelte";
+    import type { RoomState } from "./state.svelte";
     import Sidebar from "./Sidebar.svelte";
-    import { onMount } from "svelte";
     import { coursePath } from "$lib/path";
 
     let { user, courses, call, joinData, room }: Props = $props();
@@ -20,21 +19,7 @@
     const toaster = getToaster();
 
     let course = $derived(courses.find(c => c.id === call.courseId) ?? null);
-    let focus: ParticipantState | null = $state(null);
     let sidebarTab: "people" | "chat" | "settings" | null = $state(null);
-
-    onMount(() => {
-        setTimeout(() => {
-            if (focus !== null) return;
-            const showingParticipants = room.remoteParticipants.filter(
-                r =>
-                    (r.screenTrack && !r.screenTrack.isMuted) ||
-                    (r.cameraTrack && !r.cameraTrack.isMuted)
-            );
-            const newFocus = showingParticipants.at(0);
-            if (newFocus) focus = newFocus;
-        }, 500);
-    });
 
     const disconnect = async () => {
         if (!confirm("Вы уверены, что хотите отключиться?")) {
@@ -90,14 +75,14 @@
 <svelte:window
     onkeydown={e => {
         if (e.key === "Escape") {
-            focus = null;
+            room.focus = null;
         }
     }}
 />
 
 <div id="wrapper" class="h-dvh flex bg-background">
     <div class="flex-1 flex flex-col gap-4 m-4">
-        {#key focus}
+        {#key room.focus}
             <main
                 class={[
                     "relative flex-1 overflow-hidden",
@@ -105,31 +90,35 @@
                     "bg-surface shadow rounded-xs"
                 ]}
             >
-                {#if focus !== null && focus.screenTrack && !focus.screenTrack.isMuted}
-                    <div class="size-full overflow-hidden">
-                        <ParticipantVideo track={focus.screenTrack} />
-                    </div>
-                    {#if focus && focus.cameraTrack && !focus.cameraTrack.isMuted}
+                {#if room.focus !== null}
+                    {#if room.focus.screenTrack && !room.focus.screenTrack.isMuted}
+                        <div class="size-full overflow-hidden">
+                            <ParticipantVideo track={room.focus.screenTrack} />
+                        </div>
+                        {#if room.focus && room.focus.cameraTrack && !room.focus.cameraTrack.isMuted}
+                            <div
+                                class="absolute top-4 right-4 max-h-60 max-w-60 overflow-hidden rounded-xs"
+                            >
+                                <ParticipantVideo
+                                    track={room.focus.cameraTrack}
+                                />
+                            </div>
+                        {/if}
+                    {:else if room.focus.cameraTrack && !room.focus.cameraTrack.isMuted}
+                        <div class="size-full overflow-hidden">
+                            <ParticipantVideo track={room.focus.cameraTrack} />
+                        </div>
+                    {:else}
                         <div
-                            class="absolute top-4 right-4 max-h-60 max-w-60 overflow-hidden rounded-xs"
+                            class={[
+                                "flex justify-center items-center bg-surface-dimmed p-8",
+                                "border border-surface-border rounded-full"
+                            ]}
                         >
-                            <ParticipantVideo track={focus.cameraTrack} />
+                            <i class="ph ph-video-camera-slash text-[30px]"></i>
                         </div>
                     {/if}
-                {:else if focus !== null && focus.cameraTrack && !focus.cameraTrack.isMuted}
-                    <div class="size-full overflow-hidden">
-                        <ParticipantVideo track={focus.cameraTrack} />
-                    </div>
-                {:else if focus !== null}
-                    <div
-                        class={[
-                            "flex justify-center items-center bg-surface-dimmed p-8",
-                            "border border-surface-border rounded-full"
-                        ]}
-                    >
-                        <i class="ph ph-video-camera-slash text-[30px]"></i>
-                    </div>
-                {:else if focus === null}
+                {:else}
                     <div
                         class={[
                             "absolute top-0 left-0 w-max max-w-full",
@@ -152,18 +141,22 @@
                         {/if}
                     </div>
                     <div class="text-center">
-                        Выберите участника из списка для просмотра его
-                        трансляции
+                        Выберите участника из <button
+                            class="text-primary hover:underline"
+                            onclick={() => (sidebarTab = "people")}
+                        >
+                            списка
+                        </button> для просмотра его трансляции
                     </div>
                 {/if}
-                {#if focus}
+                {#if room.focus}
                     <div
                         class={[
                             "absolute bottom-4 left-4 px-3 py-2",
                             "bg-primary text-on-primary text-md-regular rounded-full"
                         ]}
                     >
-                        {focus.name}
+                        {room.focus.name}
                     </div>
                 {/if}
             </main>
@@ -183,7 +176,6 @@
             onClose={() => {
                 sidebarTab = null;
             }}
-            bind:focus
         />
     {/if}
 </div>
