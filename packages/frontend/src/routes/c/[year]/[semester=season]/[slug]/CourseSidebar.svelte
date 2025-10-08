@@ -7,8 +7,9 @@
     import { format as formatDate, formatDistanceToNowStrict } from "date-fns";
     import { ru } from "date-fns/locale";
     import type { User } from "itam-edu-common";
+    import { onMount } from "svelte";
 
-    const { course, courses, user }: Props = $props();
+    let { course, courses, user }: Props = $props();
     type Props = {
         course: Course;
         courses: CoursePartial[];
@@ -16,6 +17,11 @@
     };
 
     let isCourseSelectorOpen = $state(false);
+
+    export function open() {
+        dialog?.showModal();
+    }
+    let dialog = $state<HTMLDialogElement>();
 
     const scheduledLessons = $derived(
         course.lessons
@@ -42,29 +48,46 @@
     };
 </script>
 
-<nav
-    class={[
-        "sticky top-0 h-dvh row-span-2 flex flex-col gap-6 p-5",
-        "bg-surface border-r border-surface-border"
-    ]}
+<div class={["sticky top-0 h-dvh hidden md:flex"]}>
+    {@render menu(false)}
+</div>
+
+<dialog
+    bind:this={dialog}
+    onclick={() => {
+        dialog?.close();
+    }}
+    class={["fixed z-50 h-dvh w-full md:hidden"]}
 >
-    {@render courseSelector()}
-    <ul class="flex flex-col gap-2">
-        {@render link("/", "Главная", "house")}
-        {@render link("/lessons", "Уроки", "folder")}
-        {@render link("/homeworks", "Задания", "book-open-text")}
-        {@render link("/about", "О курсе", "info")}
-    </ul>
-    {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
-        <hr class="text-surface-border -mx-5" />
+    {@render menu(true)}
+</dialog>
+
+{#snippet menu(isDialog: boolean)}
+    <nav
+        class={[
+            "row-span-2 h-full flex-col gap-6 p-5",
+            "bg-surface border-r border-surface-border",
+            isDialog ? "md:hidden flex" : "hidden md:flex"
+        ]}
+    >
+        {@render courseSelector()}
         <ul class="flex flex-col gap-2">
-            {@render link("/calls", "Звонки", "video-conference")}
-            {@render link("/analytics", "Аналитика", "chart-line")}
-            {@render link("/settings", "Настройки", "gear-six")}
+            {@render link("/", "Главная", "house")}
+            {@render link("/lessons", "Уроки", "folder")}
+            {@render link("/homeworks", "Задания", "book-open-text")}
+            {@render link("/about", "О курсе", "info")}
         </ul>
-    {/if}
-    {@render lessonNotification()}
-</nav>
+        {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
+            <hr class="text-surface-border -mx-5" />
+            <ul class="flex flex-col gap-2">
+                {@render link("/calls", "Звонки", "video-conference")}
+                {@render link("/analytics", "Аналитика", "chart-line")}
+                {@render link("/settings", "Настройки", "gear-six")}
+            </ul>
+        {/if}
+        {@render lessonNotification()}
+    </nav>
+{/snippet}
 
 {#snippet courseSelector()}
     <details
