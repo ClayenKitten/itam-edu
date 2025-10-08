@@ -7,6 +7,7 @@
     import { goto } from "$app/navigation";
     import { coursePath } from "$lib/path";
     import { format } from "date-fns";
+    import { slide } from "svelte/transition";
 
     let {
         courses,
@@ -63,7 +64,6 @@
         chatInput = "";
         await room.localParticipant.sendMessage(text);
     };
-
     const endCall = async () => {
         if (
             !confirm(
@@ -86,13 +86,22 @@
             await goto(coursePath(course));
         }
     };
+    const closeIfMobile = () => {
+        const breakpoint = getComputedStyle(
+            document.documentElement
+        ).getPropertyValue("--breakpoint-md");
+        const isMobile = matchMedia(`(width <= ${breakpoint})`).matches;
+        if (isMobile) {
+            onClose();
+        }
+    };
 </script>
 
 <aside
     class={[
-        "w-80 2xl:w-100 shrink-0",
-        "hidden md:flex flex-col overflow-y-auto",
-        "bg-surface"
+        "shrink-0",
+        "absolute inset-0 md:static md:w-80 2xl:w-100",
+        "flex flex-col overflow-y-auto bg-surface text-on-surface"
     ]}
 >
     <header
@@ -201,7 +210,10 @@
                         : "border-primary",
                     "bg-surface hover:bg-surface-tint transition-all duration-200"
                 ]}
-                onclick={() => (focus = participant)}
+                onclick={() => {
+                    focus = participant;
+                    closeIfMobile();
+                }}
             >
                 <span class="mr-auto overflow-hidden overflow-ellipsis">
                     {participant.name}

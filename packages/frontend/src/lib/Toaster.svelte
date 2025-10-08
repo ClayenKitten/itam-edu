@@ -70,8 +70,9 @@
 
 <div
     class={[
-        "fixed bottom-0 right-0 z-10",
-        "flex flex-col justify-end items-end p-4 gap-4"
+        toaster.toasts.length > 0 ? "flex" : "hidden",
+        "fixed bottom-0 right-0 z-10 p-4",
+        "flex-col justify-end items-end gap-4"
     ]}
 >
     {#each toaster.toasts as toast (toast.id)}

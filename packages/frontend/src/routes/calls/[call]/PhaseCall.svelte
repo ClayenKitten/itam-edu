@@ -21,7 +21,7 @@
 
     let course = $derived(courses.find(c => c.id === call.courseId) ?? null);
     let focus: ParticipantState | null = $state(null);
-    let sidebarTab: "people" | "chat" | "settings" | null = $state("people");
+    let sidebarTab: "people" | "chat" | "settings" | null = $state(null);
 
     onMount(() => {
         setTimeout(() => {
@@ -96,13 +96,13 @@
 />
 
 <div id="wrapper" class="h-dvh flex bg-background">
-    <div class="flex-1 flex flex-col gap-4 md:m-4">
+    <div class="flex-1 flex flex-col gap-4 m-4">
         {#key focus}
             <main
                 class={[
                     "relative flex-1 overflow-hidden",
                     "flex flex-col gap-4 justify-center items-center",
-                    "bg-surface shadow md:rounded-xs"
+                    "bg-surface shadow rounded-xs"
                 ]}
             >
                 {#if focus !== null && focus.screenTrack && !focus.screenTrack.isMuted}
@@ -132,9 +132,9 @@
                 {:else if focus === null}
                     <div
                         class={[
-                            "absolute top-0 left-0 w-max",
+                            "absolute top-0 left-0 w-max max-w-full",
                             "flex flex-col gap-1 p-6",
-                            "bg-surface-dimmed shadow rounded-br-xs rounded-tl-md",
+                            "bg-surface-dimmed shadow rounded-xs",
                             "border border-surface-border"
                         ]}
                     >
@@ -151,7 +151,7 @@
                             </h5>
                         {/if}
                     </div>
-                    <div>
+                    <div class="text-center">
                         Выберите участника из списка для просмотра его
                         трансляции
                     </div>
