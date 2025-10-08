@@ -14,6 +14,7 @@ import {
 export class RoomState {
     public constructor() {
         this.localParticipant = new LocalParticipantState(
+            this,
             this.room.localParticipant
         );
 
@@ -23,7 +24,7 @@ export class RoomState {
                 p => p.identity !== participant.identity
             );
             this.remoteParticipants.push(
-                new RemoteParticipantState(participant)
+                new RemoteParticipantState(this, participant)
             );
         });
         this.room.on("participantDisconnected", participant => {
@@ -47,12 +48,35 @@ export class RoomState {
         null as any as LocalParticipantState // Definitely assigned in constructor
     );
     public remoteParticipants: RemoteParticipantState[] = $state([]);
+    public readonly messages: ChatMessage[] = $state([]);
 
     public async connect(url: string, token: string) {
         await this.room.connect(url, token);
+        this.room.registerTextStreamHandler(
+            "chat",
+            async (reader, { identity }) => {
+                const info = reader.info;
+                if (info.size === undefined || info.size > 1024 * 1024) {
+                    return;
+                }
+                const text = await reader.readAll();
+                this.messages.push({
+                    id: info.id,
+                    timestamp: info.timestamp,
+                    sender: {
+                        identity,
+                        name:
+                            this.remoteParticipants.find(
+                                p => p.identity === identity
+                            )?.name ?? "Гость"
+                    },
+                    text
+                });
+            }
+        );
         this.remoteParticipants = this.room.remoteParticipants
             .values()
-            .map(p => new RemoteParticipantState(p))
+            .map(p => new RemoteParticipantState(this, p))
             .toArray();
     }
 
@@ -66,7 +90,10 @@ export class RoomState {
 }
 
 export class ParticipantState {
-    public constructor(protected participant: Participant) {
+    public constructor(
+        protected room: RoomState,
+        protected participant: Participant
+    ) {
         this.name = this.participant.name;
         this.identity = this.participant.identity;
 
@@ -99,8 +126,11 @@ export class ParticipantState {
 }
 
 export class RemoteParticipantState extends ParticipantState {
-    public constructor(protected override participant: RemoteParticipant) {
-        super(participant);
+    public constructor(
+        protected room: RoomState,
+        protected override participant: RemoteParticipant
+    ) {
+        super(room, participant);
         for (const publication of this.participant.trackPublications.values()) {
             if (publication.track) {
                 this.afterSubscribe(publication.track);
@@ -140,8 +170,11 @@ export class RemoteParticipantState extends ParticipantState {
 }
 
 export class LocalParticipantState extends ParticipantState {
-    public constructor(protected override participant: LocalParticipant) {
-        super(participant);
+    public constructor(
+        protected room: RoomState,
+        protected override participant: LocalParticipant
+    ) {
+        super(room, participant);
 
         participant.on("localTrackUnpublished", track => {
             if (track.source === "camera") {
@@ -184,6 +217,18 @@ export class LocalParticipantState extends ParticipantState {
             else this.screenTrack = new VideoTrackState(result.videoTrack!);
         }
     }
+
+    public async sendMessage(text: string): Promise<void> {
+        const { id, timestamp } = await this.participant.sendText(text, {
+            topic: "chat"
+        });
+        this.room.messages.push({
+            id,
+            timestamp,
+            sender: { identity: this.identity, name: this.name ?? "Вы" },
+            text
+        });
+    }
 }
 
 export class AudioTrackState {
@@ -217,3 +262,13 @@ export class VideoTrackState {
         this.track.detach();
     }
 }
+
+export type ChatMessage = {
+    id: string;
+    timestamp: number;
+    sender: {
+        identity: string;
+        name: string;
+    };
+    text: string;
+};

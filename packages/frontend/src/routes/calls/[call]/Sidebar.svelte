@@ -6,6 +6,7 @@
     import { getToaster } from "$lib/Toaster.svelte";
     import { goto } from "$app/navigation";
     import { coursePath } from "$lib/path";
+    import { format } from "date-fns";
 
     let {
         courses,
@@ -27,6 +28,41 @@
         onClose: () => void;
     };
     const toaster = getToaster();
+
+    let chatInput: string = $state("");
+    let msgListEl: HTMLUListElement | undefined = $state();
+
+    let shouldScroll: "instant" | "smooth" | null = $state("instant");
+    $effect.pre(() => {
+        if (!msgListEl) {
+            shouldScroll = "instant";
+            return;
+        }
+        shouldScroll =
+            msgListEl.scrollHeight -
+                msgListEl.scrollTop -
+                msgListEl.clientHeight <
+            100
+                ? "smooth"
+                : null;
+
+        room.messages.length;
+    });
+    $effect(() => {
+        if (!shouldScroll) return;
+        msgListEl?.scrollTo({
+            top: msgListEl.scrollHeight,
+            behavior: shouldScroll
+        });
+        room.messages.length;
+    });
+
+    const sendMessage = async () => {
+        if (chatInput.trim() === "") return;
+        let text = chatInput;
+        chatInput = "";
+        await room.localParticipant.sendMessage(text);
+    };
 
     const endCall = async () => {
         if (
@@ -194,7 +230,58 @@
 {/snippet}
 {#snippet chatTab()}
     <div class="flex-1 shrink-0 flex flex-col overflow-y-auto">
-        Under construction!
+        <ul
+            class="flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
+            bind:this={msgListEl}
+        >
+            {#each room.messages as message}
+                <li
+                    class={[
+                        "flex flex-col hover:bg-surface-tint",
+                        "py-2 px-3 gap-0.5"
+                    ]}
+                >
+                    <header class="flex justify-between">
+                        <div class="text-md-medium text-on-surface-contrast">
+                            {message.sender.name}
+                        </div>
+                        <div class="text-sm-medium text-on-surface-muted">
+                            {format(message.timestamp, "HH:mm:ss")}
+                        </div>
+                    </header>
+                    <div class="text-sm-regular text-on-surface wrap-anywhere">
+                        {message.text.slice(0, 500)}
+                    </div>
+                </li>
+            {:else}
+                <span
+                    class="text-lg-regular text-on-surface-muted text-center my-auto"
+                >
+                    Сообщений пока нет!
+                </span>
+            {/each}
+        </ul>
+        {#if room.localParticipant.permissions?.canPublishData}
+            <menu class="shrink-0 flex gap-2 p-4 bg-surface-tint">
+                <input
+                    class="flex-1 input-small"
+                    maxlength="500"
+                    placeholder="Ваше сообщение..."
+                    onkeydown={async e => {
+                        if (e.key !== "Enter") return;
+                        await sendMessage();
+                    }}
+                    bind:value={chatInput}
+                />
+                <button
+                    class="shrink-0 btn size-11 rounded-2xs"
+                    onclick={sendMessage}
+                    aria-label="Отправить сообщение"
+                >
+                    <i class="ph-fill ph-paper-plane-right text-[24px]"></i>
+                </button>
+            </menu>
+        {/if}
     </div>
 {/snippet}
 {#snippet settingsTab()}

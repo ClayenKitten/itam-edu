@@ -50,7 +50,7 @@ export class JoinCall {
             canSubscribe: true,
             canPublish: permissions.canPublish,
             roomAdmin: permissions.isAdmin,
-            canPublishData: false
+            canPublishData: permissions.canPublish
         });
         const tokenJwt = await token.toJwt();
         return {
