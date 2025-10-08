@@ -21,6 +21,35 @@ export class RoomState {
         this.room.on("connectionStateChanged", state => {
             this.state = state;
             if (state === ConnectionState.Connected) {
+                this.localParticipant = new LocalParticipantState(
+                    this,
+                    this.room.localParticipant
+                );
+                this.room.registerTextStreamHandler(
+                    "chat",
+                    async (reader, { identity }) => {
+                        const info = reader.info;
+                        if (
+                            info.size === undefined ||
+                            info.size > 1024 * 1024
+                        ) {
+                            return;
+                        }
+                        const text = await reader.readAll();
+                        this.messages.push({
+                            id: info.id,
+                            timestamp: info.timestamp,
+                            sender: {
+                                identity,
+                                name:
+                                    this.remoteParticipants.find(
+                                        p => p.identity === identity
+                                    )?.name ?? "Гость"
+                            },
+                            text
+                        });
+                    }
+                );
                 setTimeout(() => {
                     this.autofocus();
                 }, 250);
@@ -95,28 +124,6 @@ export class RoomState {
 
     public async connect(url: string, token: string) {
         await this.room.connect(url, token);
-        this.room.registerTextStreamHandler(
-            "chat",
-            async (reader, { identity }) => {
-                const info = reader.info;
-                if (info.size === undefined || info.size > 1024 * 1024) {
-                    return;
-                }
-                const text = await reader.readAll();
-                this.messages.push({
-                    id: info.id,
-                    timestamp: info.timestamp,
-                    sender: {
-                        identity,
-                        name:
-                            this.remoteParticipants.find(
-                                p => p.identity === identity
-                            )?.name ?? "Гость"
-                    },
-                    text
-                });
-            }
-        );
         this.remoteParticipants = this.room.remoteParticipants
             .values()
             .map(p => new RemoteParticipantState(this, p))
@@ -139,14 +146,19 @@ export class ParticipantState {
     ) {
         this.name = this.participant.name;
         this.identity = this.participant.identity;
+        this.permissions = this.participant.permissions;
 
         participant.on("participantNameChanged", newName => {
             this.name = newName;
+        });
+        participant.on("participantPermissionsChanged", permissions => {
+            this.permissions = permissions;
         });
     }
 
     public identity: string = $state("");
     public name: string | undefined = $state();
+    public permissions: Participant["permissions"] = $state();
 
     public microphoneTrack: AudioTrackState | null = $state(null);
     public readonly microphoneEnabled: boolean = $derived(
@@ -161,10 +173,6 @@ export class ParticipantState {
     public screenTrack: VideoTrackState | null = $state(null);
     public readonly screenEnabled: boolean = $derived(
         this.screenTrack !== null && !this.screenTrack.isMuted
-    );
-
-    public readonly permissions = $derived.by(
-        () => this.participant.permissions
     );
 }
 
@@ -222,7 +230,6 @@ export class LocalParticipantState extends ParticipantState {
         protected override participant: LocalParticipant
     ) {
         super(room, participant);
-
         participant.on("localTrackUnpublished", track => {
             if (track.source === "camera") {
                 this.cameraTrack = null;

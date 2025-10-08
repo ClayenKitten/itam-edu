@@ -17,4 +17,15 @@
 </script>
 
 <!-- svelte-ignore a11y_media_has_caption -->
-<video class="h-full w-full" controls={false} bind:this={video}></video>
+<video
+    class="h-full w-full"
+    controls={false}
+    bind:this={video}
+    ondblclick={async () => {
+        if (document.fullscreenElement) {
+            await document.exitFullscreen();
+        } else {
+            await video.requestFullscreen();
+        }
+    }}
+></video>

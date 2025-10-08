@@ -187,14 +187,21 @@
 {/each}
 
 {#snippet tools()}
+    {@const canPublish = room.localParticipant.permissions?.canPublish === true}
+    {@const overrideTitle = canPublish
+        ? isAwaitingApproval
+            ? "Включаем..."
+            : null
+        : "Вы не можете говорить в этом звонке"}
     <label
         class={[
             "call-toggle",
             room.localParticipant.microphoneEnabled && "enabled"
         ]}
-        title={room.localParticipant.microphoneEnabled
-            ? "Выключить микрофон"
-            : "Включить микрофон"}
+        title={overrideTitle ??
+            (room.localParticipant.microphoneEnabled
+                ? "Выключить микрофон"
+                : "Включить микрофон")}
     >
         {#if room.localParticipant.microphoneEnabled}
             <i class="ph ph-microphone text-[22px]"></i>
@@ -206,7 +213,7 @@
             class="hidden"
             checked={room.localParticipant.microphoneEnabled}
             onchange={onMicrophoneChange}
-            disabled={isAwaitingApproval}
+            disabled={!canPublish || isAwaitingApproval}
         />
     </label>
     <label
@@ -214,9 +221,10 @@
             "call-toggle",
             room.localParticipant.cameraEnabled && "enabled"
         ]}
-        title={room.localParticipant.cameraEnabled
-            ? "Выключить видеокамеру"
-            : "Включить видеокамеру"}
+        title={overrideTitle ??
+            (room.localParticipant.cameraEnabled
+                ? "Выключить видеокамеру"
+                : "Включить видеокамеру")}
     >
         {#if room.localParticipant.cameraEnabled}
             <i class="ph ph-video-camera text-[22px]"></i>
@@ -228,7 +236,7 @@
             class="hidden"
             checked={room.localParticipant.cameraEnabled}
             onchange={onCameraChange}
-            disabled={isAwaitingApproval}
+            disabled={!canPublish || isAwaitingApproval}
         />
     </label>
     <label
@@ -236,9 +244,10 @@
             "call-toggle",
             room.localParticipant.screenEnabled && "enabled"
         ]}
-        title={room.localParticipant.screenEnabled
-            ? "Выключить трансляцию экрана"
-            : "Включить трансляцию экрана"}
+        title={overrideTitle ??
+            (room.localParticipant.screenEnabled
+                ? "Выключить трансляцию экрана"
+                : "Включить трансляцию экрана")}
     >
         <i class="ph ph-monitor-arrow-up text-[22px]"></i>
         <input
@@ -246,7 +255,7 @@
             class="hidden"
             checked={room.localParticipant.screenEnabled}
             onchange={onScreenChange}
-            disabled={isAwaitingApproval}
+            disabled={!canPublish || isAwaitingApproval}
         />
     </label>
     <button
