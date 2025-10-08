@@ -99,7 +99,7 @@
                     "bg-surface disabled:bg-surface-dimmed shadow",
                     "disabled:cursor-not-allowed"
                 ]}
-                onclick={() => goTo(1)}
+                onclick={() => goTo(0)}
                 disabled={page === 0}
                 aria-label="Первая страница"
             >
@@ -139,7 +139,7 @@
                     "bg-surface disabled:bg-surface-dimmed shadow",
                     "disabled:cursor-not-allowed"
                 ]}
-                onclick={() => goTo(totalPages)}
+                onclick={() => goTo(totalPages - 1)}
                 disabled={page === totalPages - 1}
                 aria-label="Последняя страница"
             >
