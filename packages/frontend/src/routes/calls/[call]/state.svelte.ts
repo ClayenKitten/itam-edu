@@ -267,7 +267,11 @@ export class LocalParticipantState extends ParticipantState {
             }
             this.room.autofocus();
         } else if (source === "screen_share") {
-            let result = await this.participant.setScreenShareEnabled(value);
+            let result = await this.participant.setScreenShareEnabled(
+                value,
+                { contentHint: "text" },
+                { degradationPreference: "maintain-resolution" }
+            );
             if (!result?.videoTrack) {
                 this.screenTrack = null;
             } else {
