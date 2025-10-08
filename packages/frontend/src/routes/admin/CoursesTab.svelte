@@ -1,6 +1,6 @@
 <script lang="ts">
     import api from "$lib/api";
-    import { goto, invalidate } from "$app/navigation";
+    import { goto, invalidate, invalidateAll } from "$app/navigation";
     import { coursePath, filePath } from "$lib/path";
     import { getPrompter } from "$lib/Prompter.svelte";
     import type { CoursePartial, CreateCourse } from "$lib/types";
@@ -44,7 +44,7 @@
             }
             return;
         }
-        await Promise.all([invalidate("app:courses"), invalidate("app:user")]);
+        await invalidateAll();
         await goto(coursePath(result.data));
     }
 </script>

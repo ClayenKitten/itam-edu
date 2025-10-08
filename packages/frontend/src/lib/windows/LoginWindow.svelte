@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate, replaceState } from "$app/navigation";
+    import { invalidate, invalidateAll, replaceState } from "$app/navigation";
     import { page } from "$app/state";
     import { env } from "$env/dynamic/public";
     import api from "$lib/api";
@@ -37,7 +37,7 @@
             return;
         }
         toaster.add("Авторизация успешна");
-        await invalidate("app:user");
+        await invalidateAll();
         dialog.close();
     };
 </script>

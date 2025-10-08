@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate, replaceState } from "$app/navigation";
+    import { invalidateAll, replaceState } from "$app/navigation";
     import { page } from "$app/state";
     import api from "$lib/api";
     import { getToaster } from "$lib/Toaster.svelte";
@@ -63,7 +63,7 @@
             return;
         }
         toaster.add("Приглашение на курс принято");
-        await Promise.all([invalidate("app:user"), invalidate("app:courses")]);
+        await invalidateAll();
         dialog.close();
     }
 

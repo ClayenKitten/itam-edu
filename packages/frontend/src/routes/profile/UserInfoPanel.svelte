@@ -30,7 +30,7 @@
             return;
         }
         toaster.add("Изменения сохранены");
-        await invalidate("app:user");
+        await invalidateAll();
     };
     let timer: number | null = $state(null);
     const DEBOUNCE_MS = 1500;
