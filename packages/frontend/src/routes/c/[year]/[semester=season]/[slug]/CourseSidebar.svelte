@@ -62,12 +62,12 @@
 >
     <div class="grid grid-cols-[278px_1fr] h-full">
         {@render menu()}
-        <button 
+        <button
             onclick={() => dialog?.close()}
             class="w-full h-full"
             aria-label="Закрыть меню"
         ></button>
-    </div> 
+    </div>
 </dialog>
 
 {#snippet menu()}
