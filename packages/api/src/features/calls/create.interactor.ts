@@ -1,6 +1,6 @@
 import type { User } from "itam-edu-common";
 import { randomUUID } from "crypto";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { CallDao, type CallDto } from "./dao";
 import {
     ConflictError,
@@ -10,13 +10,26 @@ import {
 } from "../../api/errors";
 import { LessonRepository } from "../courses/lesson/repository";
 import { CourseRepository } from "../courses/repository";
+import { LiveKit } from "../../infra/livekit";
+import {
+    EncodedFileOutput,
+    EncodedFileType,
+    EncodingOptionsPreset,
+    RoomCompositeEgressRequest,
+    RoomEgress,
+    S3Upload
+} from "livekit-server-sdk";
+import type { AppConfig } from "itam-edu-common/config";
 
 @injectable()
 export class CreateCall {
     public constructor(
+        @inject("AppConfig")
+        private config: AppConfig,
         private dao: CallDao,
         private courseRepo: CourseRepository,
-        private lessonRepo: LessonRepository
+        private lessonRepo: LessonRepository,
+        private livekit: LiveKit
     ) {}
 
     public async invoke(
@@ -69,6 +82,41 @@ export class CreateCall {
             actor.id,
             cover
         );
+
+        const output = {
+            case: "s3",
+            value: new S3Upload({
+                endpoint: this.config.s3.endpoint,
+                bucket: this.config.s3.bucket,
+                accessKey: this.config.s3.accessKey,
+                secret: this.config.s3.secretKey,
+                forcePathStyle: true
+            })
+        } as const;
+
+        await this.livekit.roomService.createRoom({
+            name: id,
+            maxParticipants: 1000,
+            emptyTimeout: 1 * 60 * 60,
+            departureTimeout: 1 * 60 * 60,
+            egress: new RoomEgress({
+                room: new RoomCompositeEgressRequest({
+                    roomName: id,
+                    layout: "single-speaker",
+                    options: {
+                        case: "preset",
+                        value: EncodingOptionsPreset.H264_1080P_30
+                    },
+                    fileOutputs: [
+                        new EncodedFileOutput({
+                            fileType: EncodedFileType.MP4,
+                            filepath: "recordings/{room_name}/{time}",
+                            output
+                        })
+                    ]
+                })
+            })
+        });
         return call;
     }
 }
