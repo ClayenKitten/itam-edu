@@ -48,8 +48,8 @@
     };
 </script>
 
-<div class={["sticky top-0 h-dvh hidden md:flex"]}>
-    {@render menu(false)}
+<div class={["sticky top-0 h-dvh row-span-2", "hidden md:flex flex-col"]}>
+    {@render menu()}
 </div>
 
 <dialog
@@ -57,17 +57,16 @@
     onclick={() => {
         dialog?.close();
     }}
-    class={["fixed z-50 h-dvh w-full md:hidden"]}
+    class={["fixed z-50 md:hidden h-full w-full", "max-w-none max-h-none"]}
 >
-    {@render menu(true)}
+    {@render menu()}
 </dialog>
 
-{#snippet menu(isDialog: boolean)}
+{#snippet menu()}
     <nav
         class={[
-            "row-span-2 h-full flex-col gap-6 p-5",
-            "bg-surface border-r border-surface-border",
-            isDialog ? "md:hidden flex" : "hidden md:flex"
+            "h-full flex flex-col gap-6 p-5",
+            "bg-surface border-r border-surface-border"
         ]}
     >
         {@render courseSelector()}
