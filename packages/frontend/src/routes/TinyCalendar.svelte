@@ -46,7 +46,7 @@
         if (!browser || user === null) {
             return [];
         }
-        const result = await api({ fetch }).users.me.calendar.get({
+        const result = await api({ fetch }).calendar.get({
             query: {
                 after: startOfDay(firstDay).toISOString(),
                 before: endOfDay(lastDay).toISOString()

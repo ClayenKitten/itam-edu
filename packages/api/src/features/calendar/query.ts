@@ -11,23 +11,29 @@ export class CalendarQuery {
         user: User,
         filters?: CalendarFilters
     ): Promise<CalendarEvent[]> {
-        const courseIds = await this.postgres.kysely
+        let courseIds = await this.postgres.kysely
             .selectFrom("userCourses")
             .where("userId", "=", user.id)
             .select("courseId")
             .execute()
             .then(courses => courses.map(c => c.courseId));
+        if (filters?.course?.length) {
+            courseIds = courseIds.filter(id => filters.course!.includes(id));
+        }
         if (courseIds.length === 0) {
             return [];
         }
-
+        const kinds = filters?.kind || ["lesson", "homework"];
         const events = (
             await Promise.all([
-                this.getLessons(courseIds, filters),
-                this.getHomeworks(courseIds, filters)
+                kinds.includes("lesson")
+                    ? this.getLessons(courseIds, filters)
+                    : Promise.resolve([]),
+                kinds.includes("homework")
+                    ? this.getHomeworks(courseIds, filters)
+                    : Promise.resolve([])
             ])
-        ).flat(1);
-
+        ).flat();
         events.sort((a, b) => a.datetime.getTime() - b.datetime.getTime());
         return events;
     }
@@ -38,24 +44,26 @@ export class CalendarQuery {
     ): Promise<CalendarEvent[]> {
         let query = this.postgres.kysely
             .selectFrom("lessons")
-            .innerJoin("courses", "courseId", "courses.id")
+            .innerJoin("courses", "lessons.courseId", "courses.id")
             .select([
                 sql.lit("lesson" as const).as("kind"),
                 "lessons.id",
                 "lessons.title",
-                "lessons.scheduledAt as datetime",
-                "courses.id as courseId"
+                sql.ref("lessons.scheduledAt").as("datetime"),
+                sql.ref("courses.id").as("courseId")
             ])
-            .where("courseId", "in", courseIds)
-            .where("scheduledAt", "is not", null)
+            .where("lessons.courseId", "in", courseIds)
+            .where("lessons.scheduledAt", "is not", null)
             .$narrowType<{ datetime: NotNull }>();
+
         if (filters?.after) {
-            query = query.where("scheduledAt", ">", filters.after);
+            query = query.where("lessons.scheduledAt", ">", filters.after);
         }
         if (filters?.before) {
-            query = query.where("scheduledAt", "<", filters.before);
+            query = query.where("lessons.scheduledAt", "<", filters.before);
         }
-        return await query.execute();
+        const result = (await query.execute()) as CalendarEvent[];
+        return result;
     }
 
     private async getHomeworks(
@@ -64,25 +72,32 @@ export class CalendarQuery {
     ): Promise<CalendarEvent[]> {
         let query = this.postgres.kysely
             .selectFrom("homeworks")
-            .innerJoin("courses", "courseId", "courses.id")
+            .innerJoin("courses", "homeworks.courseId", "courses.id")
             .select([
                 sql.lit("homework" as const).as("kind"),
                 "homeworks.id",
                 "homeworks.title",
-                "homeworks.deadline as datetime",
-                "courses.id as courseId"
+                sql.ref("homeworks.deadline").as("datetime"),
+                sql.ref("courses.id").as("courseId")
             ])
-            .where("courseId", "in", courseIds)
-            .where("deadline", "is not", null)
+            .where("homeworks.courseId", "in", courseIds)
+            .where("homeworks.deadline", "is not", null)
             .$narrowType<{ datetime: NotNull }>();
+
         if (filters?.after) {
-            query = query.where("deadline", ">", filters.after);
+            query = query.where("homeworks.deadline", ">", filters.after);
         }
         if (filters?.before) {
-            query = query.where("deadline", "<", filters.before);
+            query = query.where("homeworks.deadline", "<", filters.before);
         }
-        return await query.execute();
+        const result = (await query.execute()) as CalendarEvent[];
+        return result;
     }
 }
 
-export type CalendarFilters = { after?: Date; before?: Date };
+export type CalendarFilters = {
+    after?: Date;
+    before?: Date;
+    kind?: Array<"lesson" | "homework">;
+    course?: string[];
+};

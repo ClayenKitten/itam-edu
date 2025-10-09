@@ -36,7 +36,7 @@
                   before: endOfDay(selected).toISOString()
               }
             : { after: new Date().toISOString() };
-        const result = await api({ fetch }).users.me.calendar.get({ query });
+        const result = await api({ fetch }).calendar.get({ query });
         if (result.error) {
             toaster.add("Не удалось загрузить список событий", "error");
             return [];
