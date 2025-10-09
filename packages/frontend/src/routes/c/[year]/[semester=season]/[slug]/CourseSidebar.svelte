@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from "$app/navigation";
     import { page } from "$app/state";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
     import { formatLessonPlace } from "$lib/format";
@@ -7,7 +8,6 @@
     import { format as formatDate, formatDistanceToNowStrict } from "date-fns";
     import { ru } from "date-fns/locale";
     import type { User } from "itam-edu-common";
-    import { onMount } from "svelte";
 
     let { course, courses, user }: Props = $props();
     type Props = {
@@ -22,6 +22,10 @@
         dialog?.showModal();
     }
     let dialog = $state<HTMLDialogElement>();
+
+    afterNavigate(() => {
+        dialog?.close();
+    });
 
     const scheduledLessons = $derived(
         course.lessons
@@ -54,18 +58,22 @@
 
 <dialog
     bind:this={dialog}
-    onclick={() => {
-        dialog?.close();
-    }}
-    class={["fixed z-50 md:hidden h-full w-full", "max-w-none max-h-none"]}
+    class={["fixed z-50 h-full w-full bg-transparent", "max-w-none max-h-none"]}
 >
-    {@render menu()}
+    <div class="grid grid-cols-[278px_1fr] h-full">
+        {@render menu()}
+        <button 
+            onclick={() => dialog?.close()}
+            class="w-full h-full"
+            aria-label="Закрыть меню"
+        ></button>
+    </div> 
 </dialog>
 
 {#snippet menu()}
     <nav
         class={[
-            "h-full flex flex-col gap-6 p-5",
+            "h-full flex flex-col gap-6 p-5 w-full",
             "bg-surface border-r border-surface-border"
         ]}
     >
