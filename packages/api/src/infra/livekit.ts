@@ -2,6 +2,8 @@ import { inject, injectable } from "inversify";
 import type { AppConfig } from "itam-edu-common/config";
 import {
     AccessToken,
+    EgressClient,
+    IngressClient,
     RoomServiceClient,
     WebhookReceiver,
     type AccessTokenOptions
@@ -19,6 +21,16 @@ export class LiveKit {
             config.livekit.apiKey,
             config.livekit.secretKey
         );
+        this.egress = new EgressClient(
+            config.livekit.url,
+            config.livekit.apiKey,
+            config.livekit.secretKey
+        );
+        this.ingress = new IngressClient(
+            config.livekit.url,
+            config.livekit.apiKey,
+            config.livekit.secretKey
+        );
         this.webhookReceiver = new WebhookReceiver(
             this.config.livekit.apiKey,
             this.config.livekit.secretKey
@@ -26,6 +38,8 @@ export class LiveKit {
     }
 
     public readonly roomService: RoomServiceClient;
+    public readonly egress: EgressClient;
+    public readonly ingress: IngressClient;
     public readonly webhookReceiver: WebhookReceiver;
 
     /** Creates new access token for the user. */
