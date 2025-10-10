@@ -1,13 +1,16 @@
 import { injectable } from "inversify";
 import { Postgres } from "../../infra/postgres";
-import type { User } from "itam-edu-common";
+import type { CalendarEvent, User } from "itam-edu-common";
 import { sql, type NotNull } from "kysely";
 
 @injectable()
-export class EventQuery {
+export class CalendarQuery {
     public constructor(protected postgres: Postgres) {}
 
-    public async get(user: User, filters?: EventFilters): Promise<Event[]> {
+    public async get(
+        user: User,
+        filters?: CalendarFilters
+    ): Promise<CalendarEvent[]> {
         let courseIds = await this.postgres.kysely
             .selectFrom("userCourses")
             .where("userId", "=", user.id)
@@ -37,8 +40,8 @@ export class EventQuery {
 
     private async getLessons(
         courseIds: string[],
-        filters?: EventFilters
-    ): Promise<Event[]> {
+        filters?: CalendarFilters
+    ): Promise<CalendarEvent[]> {
         let query = this.postgres.kysely
             .selectFrom("lessons")
             .innerJoin("courses", "lessons.courseId", "courses.id")
@@ -59,14 +62,14 @@ export class EventQuery {
         if (filters?.before) {
             query = query.where("lessons.scheduledAt", "<", filters.before);
         }
-        const result = (await query.execute()) as Event[];
+        const result = (await query.execute()) as CalendarEvent[];
         return result;
     }
 
     private async getHomeworks(
         courseIds: string[],
-        filters?: EventFilters
-    ): Promise<Event[]> {
+        filters?: CalendarFilters
+    ): Promise<CalendarEvent[]> {
         let query = this.postgres.kysely
             .selectFrom("homeworks")
             .innerJoin("courses", "homeworks.courseId", "courses.id")
@@ -87,21 +90,14 @@ export class EventQuery {
         if (filters?.before) {
             query = query.where("homeworks.deadline", "<", filters.before);
         }
-        const result = (await query.execute()) as Event[];
+        const result = (await query.execute()) as CalendarEvent[];
         return result;
     }
 }
 
-export type EventFilters = {
+export type CalendarFilters = {
     after?: Date;
     before?: Date;
     kind?: Array<"lesson" | "homework">;
     course?: string[];
 };
-
-export type Event = {
-    id: string;
-    title: string;
-    datetime: Date;
-    courseId: string;
-} & ({ kind: "lesson" } | { kind: "homework" });

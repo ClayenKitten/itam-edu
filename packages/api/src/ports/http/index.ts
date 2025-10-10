@@ -21,7 +21,7 @@ import { StaffController } from "../../features/courses/staff/controller";
 import { InviteController } from "../../features/courses/staff/invites/controller";
 import { CallController } from "../../features/calls/controller";
 import { FileController } from "../../features/files/controller";
-import { EventController } from "../../features/event/controller";
+import { CalendarController } from "../../features/calendar/controller";
 
 @injectable()
 export class HttpServer {
@@ -42,7 +42,7 @@ export class HttpServer {
         protected inviteController: InviteController,
         protected callController: CallController,
         protected fileController: FileController,
-        protected eventController: EventController
+        protected calendarController: CalendarController
     ) {
         this.elysia = this.createElysia();
     }
@@ -117,7 +117,7 @@ export class HttpServer {
             .use(this.inviteController.toElysia())
             .use(this.callController.toElysia())
             .use(this.fileController.toElysia())
-            .use(this.eventController.toElysia())
+            .use(this.calendarController.toElysia())
             .get(
                 "/healthz",
                 () => {
