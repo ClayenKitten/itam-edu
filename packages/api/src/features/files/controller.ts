@@ -4,7 +4,7 @@ import { AuthenticationPlugin } from "../../ports/http/authn";
 import { randomUUID } from "crypto";
 import { REQUIRE_TOKEN } from "../../ports/http/openapi";
 import { PresignDownloadUrl } from "./presign-download.interactor";
-import { UploadFile } from "./upload.interactor";
+import { UploadFile } from "./upload/interactor";
 import { HttpError } from "../../api/errors";
 
 @injectable()
@@ -44,16 +44,13 @@ export class FileController {
             )
             .post(
                 "/*",
-                async ({ user, params, status, body }) => {
+                async ({ user, params, body }) => {
                     const path = params["*"].split("/");
                     const result = await this.uploadInteractor.invoke(
                         user,
                         path,
                         body.file
                     );
-                    if (result instanceof HttpError) {
-                        return status(result.code, result.message);
-                    }
                     return { filename: result };
                 },
                 {

@@ -2,21 +2,21 @@ import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../courses/repository";
 import { S3 } from "../../infra/s3";
-import { parseFileSpec } from "./parser";
 import {
+    parseFileSpec,
     UserAvatar,
     CourseCover,
     CourseBanner,
     CourseIcon,
     LessonCover,
-    LessonVideo,
-    type FileSpec
-} from "./specs";
+    LessonVideo
+} from "./specs/kinds";
 import {
     BadRequestError,
     NotFoundError,
     type HttpError
 } from "../../api/errors";
+import type { FileSpec } from "./specs";
 
 /**
  * Presigns download URL for the file.

@@ -12,19 +12,21 @@ export type MatchResult = {
 
 export function match<P extends readonly Token[]>(
     path: readonly string[],
-    /** File path. */
-    pattern: P,
-    /** Allowed name of the file. */
-    name?: string,
-    /** Allowed extensions. */
-    extensions?: ReadonlyArray<string>
+    rules: {
+        /** File path. */
+        pattern: P;
+        /** Allowed name of the file. */
+        name?: string;
+        /** Allowed extensions. */
+        extensions?: ReadonlyArray<string>;
+    }
 ): MatchResult | null {
-    if (path.length !== pattern.length + 1) return null;
+    if (path.length !== rules.pattern.length + 1) return null;
 
     const ids: UUID[] = [];
     for (let i = 0; i < path.length - 1; i++) {
         const segment = path[i]!;
-        const token = pattern[i]!;
+        const token = rules.pattern[i]!;
         if (typeof token === "string") {
             if (segment !== token) return null;
         } else {
@@ -34,12 +36,12 @@ export function match<P extends readonly Token[]>(
     }
 
     const filename = splitFilename(path[path.length - 1]!);
-    if (name !== undefined && name !== filename.name) {
+    if (rules.name !== undefined && rules.name !== filename.name) {
         return null;
     }
     if (
-        extensions !== undefined &&
-        !extensions.includes(filename.extension ?? "")
+        rules.extensions !== undefined &&
+        !rules.extensions.includes(filename.extension ?? "")
     ) {
         return null;
     }

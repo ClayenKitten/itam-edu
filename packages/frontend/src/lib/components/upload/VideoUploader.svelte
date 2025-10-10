@@ -73,7 +73,7 @@
     <input
         type="file"
         class="hidden"
-        accept="video/mp4,video/webm"
+        accept="video/mp4"
         onchange={async e => {
             const file = (e.target! as HTMLInputElement).files?.item(0);
             if (!file) return;

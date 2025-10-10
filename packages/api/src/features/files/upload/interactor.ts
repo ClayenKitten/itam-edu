@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import type { User } from "itam-edu-common";
-import { CourseRepository } from "../courses/repository";
-import { S3 } from "../../infra/s3";
-import sharp from "sharp";
-import { parseFileSpec } from "./parser";
+import { CourseRepository } from "../../courses/repository";
+import { AppError } from "../../../errors";
+import type { FileSpec } from "../specs";
+import { UploadService } from "./service";
 import {
     UserAvatar,
     CourseCover,
@@ -11,64 +11,47 @@ import {
     CourseIcon,
     LessonCover,
     LessonVideo,
-    ImageSpec,
-    type FileSpec
-} from "./specs";
-import {
-    BadRequestError,
-    NotFoundError,
-    type HttpError
-} from "../../api/errors";
+    parseFileSpec
+} from "../specs/kinds";
 
 /** Uploads file. */
 @injectable()
 export class UploadFile {
     public constructor(
-        private s3: S3,
-        private courseRepository: CourseRepository
+        private courseRepository: CourseRepository,
+        private service: UploadService
     ) {}
 
+    /**
+     * Uploads provided file.
+     *
+     * @throws {AppError}
+     */
     public async invoke(
         actor: User | null,
         path: string[],
         blob: Blob
-    ): Promise<string | HttpError> {
+    ): Promise<string> {
         const spec = parseFileSpec(path);
-        if (!spec) return new BadRequestError("Requested route is invalid.");
-
-        const allowed = await this.isAllowed(actor, spec);
-        if (!allowed) {
-            return new NotFoundError(
-                "You are not allowed to upload that file."
+        if (!spec) {
+            throw new AppError(
+                "invalid-file-spec",
+                "Путь к файлу некорректен.",
+                { httpCode: 422 }
             );
         }
 
-        if (spec instanceof ImageSpec) {
-            const imgBuffer = await blob.bytes();
-            const pngBuffer = await sharp(imgBuffer, {})
-                .resize(spec.size.width, spec.size.height, { fit: "cover" })
-                .png()
-                .toBuffer();
-            const newPath = this.withPngExtension(path);
-            const pathStr = `/${newPath.join("/")}`;
-
-            // Prefer correct content-type. Wrap Buffer to Blob for existing S3.upload signature.
-            const pngBlob = new Blob([pngBuffer], { type: "image/png" });
-            await this.s3.upload(pathStr, pngBlob);
-            return pathStr;
-        } else {
-            const pathStr = `/${path.join("/")}`;
-            await this.s3.upload(pathStr, blob);
-            return pathStr;
+        const allowed = await this.isAllowed(actor, spec);
+        if (!allowed) {
+            throw new AppError(
+                "forbidden-file-upload",
+                "Вы не имеете права на загрузку данного файла.",
+                { httpCode: 403, actor: actor?.id }
+            );
         }
-    }
 
-    private withPngExtension(path: string[]): string[] {
-        if (path.length === 0) return path;
-        const parts = [...path];
-        const base = parts[parts.length - 1]!.replace(/\.[^.]+$/, "");
-        parts[parts.length - 1] = `${base}.png`;
-        return parts;
+        const { path: newPath } = await this.service.uploadBlob(spec, blob);
+        return newPath;
     }
 
     private async isAllowed(
