@@ -25,7 +25,7 @@
 
 <div
     id="wrapper"
-    class="grid grid-cols-[1] md:grid-cols-[278px_1fr] grid-rows-[56px_1fr] min-h-dvh bg-background"
+    class="grid grid-cols-[1fr] md:grid-cols-[278px_1fr] grid-rows-[56px_1fr] min-h-dvh bg-background"
     style:--color-primary={colors.primary}
     style:--color-on-primary={colors.onPrimary}
     style:--color-primary-border={colors.primaryBorder}

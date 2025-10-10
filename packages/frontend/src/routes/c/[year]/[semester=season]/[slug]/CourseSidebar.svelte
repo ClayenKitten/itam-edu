@@ -52,13 +52,15 @@
     };
 </script>
 
-<div class={["sticky top-0 h-dvh row-span-2", "hidden md:flex flex-col"]}>
+<div class="sticky top-0 h-dvh row-span-2 hidden md:flex flex-col">
     {@render menu()}
 </div>
-
 <dialog
     bind:this={dialog}
-    class={["fixed z-50 h-full w-full bg-transparent", "max-w-none max-h-none"]}
+    class={[
+        "modal",
+        "fixed h-dvh w-dvw bg-transparent max-w-none max-h-none backdrop:bg-[black] backdrop:opacity-45"
+    ]}
 >
     <div class="grid grid-cols-[278px_1fr] h-full">
         {@render menu()}
@@ -73,7 +75,7 @@
 {#snippet menu()}
     <nav
         class={[
-            "h-full flex flex-col gap-6 p-5 w-full",
+            "size-full flex flex-col gap-6 p-5",
             "bg-surface border-r border-surface-border"
         ]}
     >
