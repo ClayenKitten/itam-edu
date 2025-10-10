@@ -1,6 +1,7 @@
 <script lang="ts">
     import api from "$lib/api";
-    import type { CalendarEvent, User } from "itam-edu-common";
+    import type { User } from "itam-edu-common";
+    import type { Event } from "/itam-edu/packages/api/src/features/event/query.ts";
     import type { CoursePartial } from "$lib/types";
     import { coursePath } from "$lib/path";
     import {
@@ -36,7 +37,7 @@
                   before: endOfDay(selected).toISOString()
               }
             : { after: new Date().toISOString() };
-        const result = await api({ fetch }).calendar.get({ query });
+        const result = await api({ fetch }).event.get({ query });
         if (result.error) {
             toaster.add("Не удалось загрузить список событий", "error");
             return [];
@@ -45,7 +46,7 @@
     };
     const eventsPromise = $derived(getEvents(selected));
 
-    const eventToHref = (course: CoursePartial, event: CalendarEvent) => {
+    const eventToHref = (course: CoursePartial, event: Event) => {
         switch (event.kind) {
             case "homework":
                 return `${coursePath(course)}/homeworks/${event.id}`;
@@ -76,7 +77,7 @@
                         ]}
                         aria-label="отдыхать"
                         target="_blank"
-                        href="https://info.itatmisis.ru/calendar"
+                        href="https://info.itatmisis.ru/event"
                     ></a>
                     🌅
                 </div>
@@ -96,7 +97,7 @@
     {/if}
 {/await}
 
-{#snippet eventCard(event: CalendarEvent)}
+{#snippet eventCard(event: Event)}
     {@const course = courses.find(c => c.id === event.courseId)!}
     {@const href = eventToHref(course, event)}
     {@const isHighlighted =

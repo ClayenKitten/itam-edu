@@ -28,6 +28,7 @@ import type {
 } from "itam-edu-api/src/features/courses/schema";
 import type { CallDto } from "itam-edu-api/src/features/calls/dao";
 import type { JoinDto } from "itam-edu-api/src/features/calls/join.interactor";
+import type { Event as EventType } from "itam-edu-api/src/features/event/query";
 
 export type Course = CourseQueryDto;
 export type CoursePartial = CourseQueryPartialDto;
@@ -55,3 +56,4 @@ export type Call = CallDto;
 export type CallJoinData = JoinDto;
 
 export type Notification = WebNotification;
+export type Event = EventType;
