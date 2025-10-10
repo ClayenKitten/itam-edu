@@ -6,7 +6,7 @@
     import Notifications from "./Notifications.svelte";
     import { filePath } from "$lib/path";
 
-    let { user, courses, standalone = false }: Props = $props();
+    let { user, courses, standalone = false, onShowMenu }: Props = $props();
 
     let loginWindow: LoginWindow;
 
@@ -16,6 +16,7 @@
         user: User | null;
         courses: CoursePartial[];
         standalone?: boolean;
+        onShowMenu?: () => void;
     };
 </script>
 
@@ -35,6 +36,20 @@
                 alt=""
             />
         </a>
+    {/if}
+    {#if onShowMenu}
+        <button
+            class={[
+                "md:hidden mr-auto",
+                "flex justify-center items-center h-full aspect-square",
+                "hover:bg-on-primary rounded-xs transition-colors duration-100"
+            ]}
+            aria-label="Показать навигацию"
+            title="Показать навигацию"
+            onclick={() => onShowMenu()}
+        >
+            <i class="ph ph-list text-primary text-[24px]"></i>
+        </button>
     {/if}
     <a
         class={[

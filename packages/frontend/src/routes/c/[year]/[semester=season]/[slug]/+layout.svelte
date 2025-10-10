@@ -19,11 +19,13 @@
         }
         return getColors(data.theme);
     });
+
+    let sidebar: CourseSidebar;
 </script>
 
 <div
     id="wrapper"
-    class="grid grid-cols-[278px_1fr] grid-rows-[56px_1fr] min-h-dvh bg-background"
+    class="grid grid-cols-[1fr] md:grid-cols-[278px_1fr] grid-rows-[56px_1fr] min-h-dvh bg-background"
     style:--color-primary={colors.primary}
     style:--color-on-primary={colors.onPrimary}
     style:--color-primary-border={colors.primaryBorder}
@@ -32,8 +34,15 @@
         course={data.course}
         courses={data.courses}
         user={data.user}
+        bind:this={sidebar}
     />
-    <Header user={data.user} courses={data.courses} />
+    <Header
+        user={data.user}
+        courses={data.courses}
+        onShowMenu={() => {
+            sidebar.open();
+        }}
+    />
     <main class="relative z-0 flex flex-col items-stretch @container/main">
         {#if data.course.isArchived}
             <div

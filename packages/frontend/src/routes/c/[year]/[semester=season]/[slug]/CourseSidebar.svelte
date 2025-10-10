@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from "$app/navigation";
     import { page } from "$app/state";
     import { dismissable } from "$lib/attachments/dismissable.svelte";
     import { formatLessonPlace } from "$lib/format";
@@ -8,7 +9,7 @@
     import { ru } from "date-fns/locale";
     import type { User } from "itam-edu-common";
 
-    const { course, courses, user }: Props = $props();
+    let { course, courses, user }: Props = $props();
     type Props = {
         course: Course;
         courses: CoursePartial[];
@@ -16,6 +17,15 @@
     };
 
     let isCourseSelectorOpen = $state(false);
+
+    export function open() {
+        dialog?.showModal();
+    }
+    let dialog = $state<HTMLDialogElement>();
+
+    afterNavigate(() => {
+        dialog?.close();
+    });
 
     const scheduledLessons = $derived(
         course.lessons
@@ -42,29 +52,51 @@
     };
 </script>
 
-<nav
+<div class="sticky top-0 h-dvh row-span-2 hidden md:flex flex-col">
+    {@render menu()}
+</div>
+<dialog
+    bind:this={dialog}
     class={[
-        "sticky top-0 h-dvh row-span-2 flex flex-col gap-6 p-5",
-        "bg-surface border-r border-surface-border"
+        "modal",
+        "fixed h-dvh w-dvw bg-transparent max-w-none max-h-none backdrop:bg-[black] backdrop:opacity-45"
     ]}
 >
-    {@render courseSelector()}
-    <ul class="flex flex-col gap-2">
-        {@render link("/", "Главная", "house")}
-        {@render link("/lessons", "Уроки", "folder")}
-        {@render link("/homeworks", "Задания", "book-open-text")}
-        {@render link("/about", "О курсе", "info")}
-    </ul>
-    {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
-        <hr class="text-surface-border -mx-5" />
+    <div class="grid grid-cols-[278px_1fr] h-full">
+        {@render menu()}
+        <button
+            onclick={() => dialog?.close()}
+            class="w-full h-full"
+            aria-label="Закрыть меню"
+        ></button>
+    </div>
+</dialog>
+
+{#snippet menu()}
+    <nav
+        class={[
+            "size-full flex flex-col gap-6 p-5",
+            "bg-surface border-r border-surface-border"
+        ]}
+    >
+        {@render courseSelector()}
         <ul class="flex flex-col gap-2">
-            {@render link("/calls", "Звонки", "video-conference")}
-            {@render link("/analytics", "Аналитика", "chart-line")}
-            {@render link("/settings", "Настройки", "gear-six")}
+            {@render link("/", "Главная", "house")}
+            {@render link("/lessons", "Уроки", "folder")}
+            {@render link("/homeworks", "Задания", "book-open-text")}
+            {@render link("/about", "О курсе", "info")}
         </ul>
-    {/if}
-    {@render lessonNotification()}
-</nav>
+        {#if user && (user.isCourseStaff(course.id) || user.info.role === "admin" || user.info.role === "supervisor")}
+            <hr class="text-surface-border -mx-5" />
+            <ul class="flex flex-col gap-2">
+                {@render link("/calls", "Звонки", "video-conference")}
+                {@render link("/analytics", "Аналитика", "chart-line")}
+                {@render link("/settings", "Настройки", "gear-six")}
+            </ul>
+        {/if}
+        {@render lessonNotification()}
+    </nav>
+{/snippet}
 
 {#snippet courseSelector()}
     <details
