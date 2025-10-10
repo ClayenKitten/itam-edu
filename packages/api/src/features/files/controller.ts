@@ -21,7 +21,7 @@ export class FileController {
             .get(
                 "/*",
                 async ({ user, params, status, redirect, set }) => {
-                    const path = params["*"].split("/");
+                    const path = decodeURI(params["*"]).split("/");
                     const result = await this.presignDownloadInteractor.invoke(
                         user,
                         path

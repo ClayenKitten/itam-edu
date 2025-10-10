@@ -17,6 +17,7 @@ import {
     type HttpError
 } from "../../api/errors";
 import type { FileSpec } from "./specs";
+import { SubmissionAttachment } from "../courses/submission/submit.interactor";
 
 /**
  * Presigns download URL for the file.
@@ -55,6 +56,7 @@ export class PresignDownloadUrl {
         spec: FileSpec
     ): Promise<boolean> {
         if (spec instanceof UserAvatar) return true;
+        if (spec instanceof SubmissionAttachment) return true;
         if (
             spec instanceof CourseCover ||
             spec instanceof CourseBanner ||

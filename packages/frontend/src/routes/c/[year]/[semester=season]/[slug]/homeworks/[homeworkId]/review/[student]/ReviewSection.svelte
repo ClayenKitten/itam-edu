@@ -6,6 +6,7 @@
     import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import RichContent from "$lib/components/editor/RichContent.svelte";
     import { filePath } from "$lib/path";
+    import FileItem from "$lib/components/FileItem.svelte";
 
     const { course, homework, submission }: Props = $props();
     type Props = {
@@ -75,9 +76,19 @@
         </div>
     </header>
     {#if isUnreviewed}
-        <article>
-            <RichContent content={submission.attempts[0].content} />
-        </article>
+        {@const attempt = submission.attempts[0]!}
+        {#if attempt.content}
+            <article>
+                <RichContent content={attempt.content} />
+            </article>
+        {/if}
+        {#if attempt.files.length > 0}
+            <section class="flex flex-wrap gap-2.5">
+                {#each attempt.files as file}
+                    <FileItem {file} />
+                {/each}
+            </section>
+        {/if}
         <hr class="border-surface-border" />
         <section class="flex flex-col gap-4">
             <h5>Комментарий от проверяющего</h5>

@@ -4,7 +4,7 @@
     import HomeworksSection from "./HomeworksSection.svelte";
     import ContentSection from "./ContentSection.svelte";
     import InfoSection from "./InfoSection.svelte";
-    import api, { UploadClient } from "$lib/api";
+    import api, { UploadClient, UploadError } from "$lib/api";
     import ScheduleSection from "./ScheduleSection.svelte";
     import equal from "fast-deep-equal";
     import VideoSection from "./VideoSection.svelte";
@@ -33,30 +33,37 @@
 
         const fileClient = new UploadClient({ fetch });
 
-        if (uploadBannerFile !== undefined) {
-            if (uploadBannerFile === null) {
-                lesson.banner = null;
-            } else {
-                lesson.banner = await fileClient.uploadLessonFile(
-                    data.course.id,
-                    data.lesson.id,
-                    "cover",
-                    uploadBannerFile
-                );
+        try {
+            if (uploadBannerFile !== undefined) {
+                if (uploadBannerFile === null) {
+                    lesson.banner = null;
+                } else {
+                    lesson.banner = await fileClient.uploadLessonFile(
+                        data.course.id,
+                        data.lesson.id,
+                        "cover",
+                        uploadBannerFile
+                    );
+                }
             }
-        }
-
-        if (uploadVideoFile !== undefined) {
-            if (uploadVideoFile === null) {
-                lesson.video = null;
-            } else {
-                lesson.video = await fileClient.uploadLessonFile(
-                    data.course.id,
-                    data.lesson.id,
-                    "video",
-                    uploadVideoFile
-                );
+            if (uploadVideoFile !== undefined) {
+                if (uploadVideoFile === null) {
+                    lesson.video = null;
+                } else {
+                    lesson.video = await fileClient.uploadLessonFile(
+                        data.course.id,
+                        data.lesson.id,
+                        "video",
+                        uploadVideoFile
+                    );
+                }
             }
+        } catch (e) {
+            if (e instanceof UploadError) {
+                console.error(e);
+                toaster.add("Не удалось сохранить файл", "error");
+            }
+            return;
         }
 
         const result = await api({ fetch })

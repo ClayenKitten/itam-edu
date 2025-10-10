@@ -3,10 +3,12 @@
     import type { User } from "itam-edu-common";
     import { coursePath } from "$lib/path.js";
     import { format as formatDate } from "date-fns";
-    import { invalidate } from "$app/navigation";
+    import { invalidateAll } from "$app/navigation";
     import api from "$lib/api";
     import RichContent from "$lib/components/editor/RichContent.svelte";
     import RichEditor from "$lib/components/editor/RichEditor.svelte";
+    import { getToaster } from "$lib/Toaster.svelte";
+    import FileItem from "$lib/components/FileItem.svelte";
 
     const { user, course, homework, submission }: Props = $props();
     type Props = {
@@ -15,8 +17,10 @@
         homework: Homework;
         submission: Submission | null;
     };
+    const toaster = getToaster();
 
     let content: string = $state("");
+    let attachments: File[] = $state([]);
 
     async function submit() {
         if (!user) return;
@@ -25,14 +29,13 @@
             .homeworks({
                 homework: homework.id
             })
-            .submissions.post({ content });
+            .submissions.post({ content, attachments });
         if (response.error) {
             alert(response.error.status);
             return;
         }
         content = "";
-        await invalidate("app:submission");
-        await invalidate("app:submissions");
+        await invalidateAll();
     }
 
     const doesAcceptSubmissions = $derived(
@@ -146,16 +149,48 @@
                     }}
                 />
             </div>
+            {#if attachments.length > 0}
+                <ul class="flex flex-wrap gap-2.5">
+                    {#each attachments as attachment}
+                        <FileItem
+                            file={attachment}
+                            onDelete={() => {
+                                attachments = attachments.filter(
+                                    a => a !== attachment
+                                );
+                            }}
+                        />
+                    {/each}
+                </ul>
+            {/if}
             <menu class="flex justify-end gap-2.5">
-                <button
-                    class="btn secondary"
-                    onclick={() => {
-                        alert("Sorry, not implemented yet!");
-                    }}
-                >
-                    Добавить файл
-                    <i class="ph ph-plus text-[18px]"></i>
-                </button>
+                {#if attachments.length < 3}
+                    <label
+                        class="btn secondary"
+                        title="Прикрепите файл до 50 мегабайт к ответу на задание."
+                    >
+                        Добавить файл
+                        <i class="ph ph-plus text-[18px]"></i>
+                        <input
+                            class="hidden"
+                            type="file"
+                            oninput={e => {
+                                const files = e.currentTarget.files;
+                                if (!files) return;
+                                const file = files.item(0);
+                                if (!file) return;
+                                if (file.size > 50 * 1024 * 1024) {
+                                    toaster.add(
+                                        "Файл должен быть размером не более 50мб",
+                                        "error"
+                                    );
+                                    return;
+                                }
+                                attachments.push(file);
+                            }}
+                        />
+                    </label>
+                {/if}
                 <button class="btn" onclick={() => submit()}>
                     Отправить
                     <i class="ph ph-paper-plane-right text-[21px]"></i>

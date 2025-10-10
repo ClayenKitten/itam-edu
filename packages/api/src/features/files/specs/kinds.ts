@@ -3,6 +3,7 @@
 import type { UUID } from "crypto";
 import { match, uuid } from "./dsl";
 import { FileSpec, ImageSpec, MEGABYTE, VideoSpec } from ".";
+import { SubmissionAttachment } from "../../courses/submission/submit.interactor";
 
 export function parseFileSpec(path: ReadonlyArray<string>): FileSpec | null {
     return (
@@ -12,6 +13,7 @@ export function parseFileSpec(path: ReadonlyArray<string>): FileSpec | null {
         CourseCover.parse(path) ??
         CourseBanner.parse(path) ??
         CourseIcon.parse(path) ??
+        SubmissionAttachment.parse(path) ??
         null
     );
 }

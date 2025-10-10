@@ -16,6 +16,10 @@ import { Submission } from "./entity";
 import { CourseRepository } from "../repository";
 import { HomeworkRepository } from "../homework/repository";
 import { NotificationTemplate } from "../../notifications";
+import { UploadService } from "../../files/upload/service";
+import { FileSpec, MEGABYTE } from "../../files/specs";
+import { match, uuid, type UUID } from "../../files/specs/dsl";
+import { splitFilename } from "../../files/utils";
 
 @injectable()
 export class SubmitHomework {
@@ -24,7 +28,8 @@ export class SubmitHomework {
         private homeworkRepo: HomeworkRepository,
         private repository: SubmissionRepository,
         private notificationSender: NotificationSender,
-        private courseChangelog: CourseChangelog
+        private courseChangelog: CourseChangelog,
+        private uploadService: UploadService
     ) {}
 
     /** Creates new homework submission. */
@@ -32,7 +37,8 @@ export class SubmitHomework {
         actor: User,
         courseId: string,
         homeworkId: string,
-        content: string
+        content: string,
+        attachments: File[] = []
     ): Promise<void | HttpError> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
@@ -58,10 +64,28 @@ export class SubmitHomework {
             return new ConflictError("Submission is not reviewed yet.");
         }
 
+        const key = crypto.randomUUID();
+        const files = await Promise.all(
+            attachments.map(async attachment => {
+                const { name, extension } = splitFilename(attachment.name);
+                const spec = new SubmissionAttachment(
+                    actor.id as UUID,
+                    key,
+                    name,
+                    extension
+                );
+                const { path } = await this.uploadService.uploadBlob(
+                    spec,
+                    attachment
+                );
+                return path;
+            })
+        );
+
         const attempt = {
             id: randomUUID(),
             content,
-            files: [],
+            files,
             review: null,
             sentAt: new Date()
         };
@@ -118,5 +142,45 @@ class Notification extends NotificationTemplate {
                 url: `${this.course.path}/homeworks/${this.homework.id}/review/${this.student.id}`
             }
         };
+    }
+}
+
+/** Attachment that student may add to the submission. */
+export class SubmissionAttachment extends FileSpec {
+    public constructor(
+        public readonly userId: UUID,
+        /** Random key to prevent collisions. */
+        public readonly key: UUID,
+        public readonly name: string,
+        public readonly extension: string | null
+    ) {
+        super(SubmissionAttachment.MAX_SIZE);
+    }
+
+    public static readonly MAX_SIZE = 50 * MEGABYTE;
+
+    public static parse(
+        path: ReadonlyArray<string>
+    ): SubmissionAttachment | null {
+        const matched = match(path, {
+            pattern: ["users", uuid, "attachments", uuid]
+        });
+        if (!matched) return null;
+        return new SubmissionAttachment(
+            matched.ids[0]!,
+            matched.ids[1]!,
+            matched.name,
+            matched.extension
+        );
+    }
+
+    public get path(): string[] {
+        return [
+            "users",
+            this.userId,
+            "attachments",
+            this.key,
+            this.extension ? `${this.name}.${this.extension}` : this.name
+        ];
     }
 }

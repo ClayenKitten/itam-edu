@@ -2,8 +2,8 @@
     import type { Submission } from "$lib/types";
     import { format as formatDate } from "date-fns";
     import Tag from "$lib/components/Tag.svelte";
-    import RichEditor from "$lib/components/editor/RichEditor.svelte";
     import RichContent from "$lib/components/editor/RichContent.svelte";
+    import FileItem from "$lib/components/FileItem.svelte";
 
     const { attempt, open = false }: Props = $props();
     type Props = {
@@ -39,9 +39,18 @@
         </div>
     </summary>
     <div class="flex flex-col gap-6 p-6 pt-0">
-        <section>
-            <RichContent content={attempt.content} />
-        </section>
+        {#if attempt.content}
+            <section>
+                <RichContent content={attempt.content} />
+            </section>
+        {/if}
+        {#if attempt.files.length > 0}
+            <section class="flex flex-wrap gap-2.5">
+                {#each attempt.files as file}
+                    <FileItem {file} />
+                {/each}
+            </section>
+        {/if}
         {#if attempt.review && attempt.review.content}
             <hr class="border-surface-border" />
             <section class="flex flex-col gap-4">

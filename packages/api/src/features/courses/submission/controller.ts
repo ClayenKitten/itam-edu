@@ -5,7 +5,7 @@ import { HttpError } from "../../../api/errors";
 import { AuthenticationPlugin } from "../../../ports/http/authn";
 import { SubmissionQuery } from "./query";
 import { ReviewHomework } from "./review.interactor";
-import { SubmitHomework } from "./submit.interactor";
+import { SubmissionAttachment, SubmitHomework } from "./submit.interactor";
 
 @injectable()
 export class SubmissionController {
@@ -99,7 +99,8 @@ export class SubmissionController {
                         user,
                         params.course,
                         params.homework,
-                        body.content
+                        body.content,
+                        body.attachments
                     );
                     if (result instanceof HttpError) {
                         return status(result.code, result.message);
@@ -112,7 +113,11 @@ export class SubmissionController {
                         homework: t.String({ format: "uuid" })
                     }),
                     body: t.Object({
-                        content: t.String({ maxLength: 65536 })
+                        content: t.String({ maxLength: 1048576 }),
+                        attachments: t.Files({
+                            maxSize: SubmissionAttachment.MAX_SIZE,
+                            maxItems: 3
+                        })
                     }),
                     detail: {
                         summary: "Submit homework",
