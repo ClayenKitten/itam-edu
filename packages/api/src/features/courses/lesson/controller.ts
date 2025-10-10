@@ -147,7 +147,7 @@ export class LessonController {
                     body: schema.updateLesson,
                     detail: {
                         summary: "Update lesson",
-                        description: "Updates lesson info."
+                        description: "Updates lesson."
                     }
                 }
             );
