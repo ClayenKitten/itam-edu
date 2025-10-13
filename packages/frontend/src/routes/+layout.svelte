@@ -7,22 +7,12 @@
         createContextMenuManager
     } from "$lib/components/portals/ContextMenu.svelte";
 
-    let { data, children } = $props();
+    let { children } = $props();
 
     let metadata = $derived(page.data);
     const toaster = createToaster();
     const prompter = createPrompter();
     const contextMenuManager = createContextMenuManager();
-
-    const enableTracking = $derived(!page.url.hostname.includes("localhost"));
-    $effect(() => {
-        if (enableTracking && data.user) {
-            (window as any).umami.identify(data.user.id, {
-                name: data.user.displayName,
-                telegram: data.user.telegram.username
-            });
-        }
-    });
 </script>
 
 <svelte:head>
@@ -52,14 +42,6 @@
         />
         <meta name="twitter:image" content={metadata.pageImage.url} />
         <meta name="twitter:card" content="summary_large_image" />
-    {/if}
-    {#if enableTracking}
-        <script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="9f2248b2-2fd4-4dbd-9fc0-1515f1feab90"
-            data-domains="edu.itatmisis.ru"
-        ></script>
     {/if}
 </svelte:head>
 
