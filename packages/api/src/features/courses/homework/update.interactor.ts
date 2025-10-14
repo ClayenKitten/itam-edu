@@ -23,7 +23,9 @@ export class UpdateHomework {
         actor: User,
         courseId: string,
         homeworkId: string,
-        changes: typeof schema.updateHomework.static
+        changes: typeof schema.updateHomework.static & {
+            skipNotification?: boolean;
+        }
     ): Promise<Homework | HttpError> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
@@ -47,8 +49,11 @@ export class UpdateHomework {
             homework.createdAt
         );
         await this.repo.save(newHomework);
-
-        if (homework.deadline?.getTime() !== newHomework.deadline?.getTime()) {
+        //TO-DO:
+        if (
+            homework.deadline?.getTime() !== newHomework.deadline?.getTime() &&
+            changes.skipNotification !== true
+        ) {
             await Promise.allSettled([
                 this.notificationSender.send(
                     new Notification(course, newHomework),
