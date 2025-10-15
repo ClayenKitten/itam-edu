@@ -22,6 +22,16 @@ export class LessonNotFound extends AppError {
     }
 }
 
+/** Lesson must be scheduled. */
+export class LessonNotScheduledConflict extends AppError {
+    public constructor(lessonId: string) {
+        super("lesson-not-scheduled", "Урок должен быть запланирован.", {
+            httpCode: 409,
+            resource: { kind: "lesson", id: lessonId }
+        });
+    }
+}
+
 /** User must be a course student to complete an action. */
 export class UserIsNotCourseStudent extends AppError {
     public constructor() {

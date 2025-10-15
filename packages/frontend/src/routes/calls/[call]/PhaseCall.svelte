@@ -4,9 +4,10 @@
     import type { User } from "itam-edu-common";
     import ParticipantVideo from "./ParticipantVideo.svelte";
     import ParticipantAudio from "./ParticipantAudio.svelte";
-    import type { RoomState } from "./state.svelte";
     import Sidebar from "./Sidebar.svelte";
     import { coursePath } from "$lib/path";
+    import { RoomState } from "$lib/calls/room.svelte";
+    import { ConnectionState } from "livekit-client";
 
     let { user, courses, call, joinData, room }: Props = $props();
     type Props = {
@@ -82,6 +83,26 @@
 
 <div id="wrapper" class="h-dvh flex bg-background">
     <div class="flex-1 flex flex-col gap-4 m-4">
+        <header
+            class={[
+                "flex items-center gap-4 p-4",
+                "bg-surface-tint shadow rounded-xs",
+                "border border-surface-border"
+            ]}
+        >
+            <h4 class="flex gap-3">
+                {call.title}
+                {#if course}
+                    <span>&bull;</span>
+                    <a
+                        class="text-primary hover:underline"
+                        href={coursePath(course)}
+                    >
+                        {course.title}
+                    </a>
+                {/if}
+            </h4>
+        </header>
         {#key room.focus}
             <main
                 class={[
@@ -90,7 +111,9 @@
                     "bg-surface shadow rounded-xs"
                 ]}
             >
-                {#if room.focus !== null}
+                {#if room.state === ConnectionState.Reconnecting || room.state === ConnectionState.SignalReconnecting}
+                    Переподключаемся...
+                {:else if room.focus !== null}
                     {#if room.focus.screenTrack && !room.focus.screenTrack.isMuted}
                         <div class="size-full overflow-hidden">
                             <ParticipantVideo track={room.focus.screenTrack} />
@@ -119,27 +142,6 @@
                         </div>
                     {/if}
                 {:else}
-                    <div
-                        class={[
-                            "absolute top-0 left-0 w-max max-w-full",
-                            "flex flex-col gap-1 p-6",
-                            "bg-surface-dimmed shadow rounded-xs",
-                            "border border-surface-border"
-                        ]}
-                    >
-                        <h4>{call.title}</h4>
-                        {#if course}
-                            <h5>
-                                Курс
-                                <a
-                                    class="text-primary hover:underline"
-                                    href={coursePath(course)}
-                                >
-                                    {course.title}
-                                </a>
-                            </h5>
-                        {/if}
-                    </div>
                     <div class="text-center">
                         Выберите участника из <button
                             class="text-primary hover:underline"
@@ -187,7 +189,7 @@
 {/each}
 
 {#snippet tools()}
-    {@const canPublish = room.localParticipant.permissions?.canPublish === true}
+    {@const canPublish = room.localParticipant.metadata.permissions.canPublish}
     {@const overrideTitle = canPublish
         ? isAwaitingApproval
             ? "Включаем..."

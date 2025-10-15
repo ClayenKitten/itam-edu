@@ -2,12 +2,6 @@ import type { User } from "itam-edu-common";
 import { randomUUID } from "crypto";
 import { inject, injectable } from "inversify";
 import { CallDao, type CallDto } from "./dao";
-import {
-    ConflictError,
-    ForbiddenError,
-    NotFoundError,
-    type HttpError
-} from "../../api/errors";
 import { LessonRepository } from "../courses/lesson/repository";
 import { CourseRepository } from "../courses/repository";
 import { LiveKit } from "../../infra/livekit";
@@ -20,6 +14,12 @@ import {
     S3Upload
 } from "livekit-server-sdk";
 import type { AppConfig } from "itam-edu-common/config";
+import { AppError } from "../../errors";
+import {
+    CourseNotFound,
+    LessonNotFound,
+    LessonNotScheduledConflict
+} from "../courses/errors";
 
 @injectable()
 export class CreateCall {
@@ -35,22 +35,26 @@ export class CreateCall {
     public async invoke(
         actor: User,
         options: CreateCallOptions
-    ): Promise<CallDto | HttpError> {
+    ): Promise<CallDto> {
         if (options.courseId === undefined) {
             if (actor.permissions.calls.create !== true) {
-                return new ForbiddenError(
-                    "You are not allowed to create calls."
+                throw new AppError(
+                    "call-creation-not-allowed",
+                    "Вы не имеете права создавать звонки.",
+                    { httpCode: 403 }
                 );
             }
         } else {
             const course = await this.courseRepo.getById(options.courseId);
             const permissions = course?.getPermissionsFor(actor);
             if (!course || !permissions) {
-                return new NotFoundError("Course does not exist.");
+                throw new CourseNotFound(options.courseId);
             }
             if (permissions.calls.manage !== true) {
-                return new ForbiddenError(
-                    "You are not allowed to create course calls."
+                throw new AppError(
+                    "course-call-creation-not-allowed",
+                    "Вы не имеете права создавать звонки в этом курсе.",
+                    { httpCode: 403 }
                 );
             }
         }
@@ -64,10 +68,10 @@ export class CreateCall {
                 options.lessonId
             );
             if (lesson === null) {
-                return new NotFoundError("Lesson does not exist.");
+                throw new LessonNotFound(options.lessonId);
             }
             if (lesson.schedule === null) {
-                return new ConflictError("Lesson is not scheduled.");
+                throw new LessonNotScheduledConflict(options.lessonId);
             }
             id = lesson.id;
             title = lesson.info.title;

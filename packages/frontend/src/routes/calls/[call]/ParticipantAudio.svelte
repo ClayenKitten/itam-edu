@@ -1,6 +1,6 @@
 <script lang="ts">
+    import type { AudioTrackState } from "$lib/calls/track.svelte";
     import { onMount } from "svelte";
-    import type { AudioTrackState } from "./state.svelte";
 
     let { track }: Props = $props();
 

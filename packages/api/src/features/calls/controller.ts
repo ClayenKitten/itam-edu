@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import { REQUIRE_TOKEN } from "../../ports/http/openapi";
 import { AuthenticationPlugin } from "../../ports/http/authn";
 import { CallQuery } from "./query";
-import { JoinCall } from "./join.interactor";
+import { JoinCall } from "./participants/join.interactor";
 import { CreateCall } from "./create.interactor";
 import { LiveKitWebhookHandler } from "./webhook";
 import { HttpError } from "../../api/errors";
@@ -57,17 +57,34 @@ export class CallController {
                     }
                 }
             )
+            .patch("/calls/:call", async () => {}, {
+                requireAuthentication: true,
+                detail: {
+                    summary: "Stop a call",
+                    description: "Stops a call.",
+                    security: REQUIRE_TOKEN
+                }
+            })
+            .get("/calls/:call/participants", async () => {}, {
+                requireAuthentication: true,
+                detail: {
+                    summary: "List participants",
+                    description: "Returns all participants of the call.",
+                    security: REQUIRE_TOKEN
+                }
+            })
+            .patch("/calls/:call/participants/:participantId", async () => {}, {
+                requireAuthentication: true,
+                detail: {
+                    summary: "Stop a call",
+                    description: "Stops a call.",
+                    security: REQUIRE_TOKEN
+                }
+            })
             .post(
                 "/calls/:call/stop",
-                async ({ user, params, status }) => {
-                    const result = await this.stopCallInteractor.invoke(
-                        user,
-                        params.call
-                    );
-                    if (result instanceof HttpError) {
-                        return status(result.code, result.message);
-                    }
-                    return result;
+                async ({ user, params }) => {
+                    await this.stopCallInteractor.invoke(user, params.call);
                 },
                 {
                     requireAuthentication: true,

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { ParticipantState, RoomState } from "./state.svelte";
     import type { User } from "itam-edu-common";
     import type { Call, CallJoinData, CoursePartial } from "$lib/types";
     import api from "$lib/api";
@@ -7,7 +6,9 @@
     import { goto } from "$app/navigation";
     import { coursePath } from "$lib/path";
     import { format } from "date-fns";
-    import { slide } from "svelte/transition";
+    import { useContextMenu } from "$lib/components/portals/ContextMenu.svelte";
+    import type { RoomState } from "$lib/calls/room.svelte";
+    import { RemoteParticipantState } from "$lib/calls/participant.svelte";
 
     let {
         courses,
@@ -27,6 +28,7 @@
         onClose: () => void;
     };
     const toaster = getToaster();
+    const ctxMenuManager = useContextMenu();
 
     let chatInput: string = $state("");
     let msgListEl: HTMLUListElement | undefined = $state();
@@ -212,6 +214,19 @@
                     room.focus = participant;
                     closeIfMobile();
                 }}
+                oncontextmenu={e => {
+                    if (joinData.permissions.isAdmin) {
+                        e.preventDefault();
+                        if (participant instanceof RemoteParticipantState) {
+                            ctxMenuManager.show(e, ctxMenu, {
+                                onMute: async () => {
+                                    participant.screenEnabled;
+                                },
+                                onForceMute: async () => {}
+                            });
+                        }
+                    }
+                }}
             >
                 <span class="mr-auto overflow-hidden overflow-ellipsis">
                     {participant.name}
@@ -298,4 +313,20 @@
     <div class="flex-1 shrink-0 flex flex-col overflow-y-auto p-4">
         <button class="btn mt-auto" onclick={endCall}>Завершить звонок</button>
     </div>
+{/snippet}
+
+{#snippet ctxMenu(props: { onMute: () => void; onForceMute: () => void })}
+    <menu class="context-menu">
+        <button class="context-menu-item" onclick={props.onMute}>
+            <i class="ph ph-microphone-slash"></i>
+            Отключить микрофон
+        </button>
+        <button
+            class="context-menu-item text-danger"
+            onclick={props.onForceMute}
+        >
+            <i class="ph ph-gavel"></i>
+            Заблокировать микрофон
+        </button>
+    </menu>
 {/snippet}

@@ -1,8 +1,9 @@
 import type { User } from "itam-edu-common";
 import { CourseRepository } from "../courses/repository";
 import type { CallDto } from "./dao";
-import { CallParticipantDao } from "./participant.dao";
+import { CallParticipantDao } from "./participants/dao";
 import { injectable } from "inversify";
+import { ParticipantPermission } from "livekit-server-sdk";
 
 @injectable()
 export class CallPolicy {
@@ -42,6 +43,16 @@ export class CallPolicy {
             }
             return { canPublish, isAdmin: false };
         }
+    }
+
+    public toLivekit(permissions: CallPermissions): ParticipantPermission {
+        return new ParticipantPermission({
+            canSubscribe: true,
+            canPublish: permissions.canPublish,
+            canPublishData: permissions.canPublish,
+            hidden: false,
+            canUpdateMetadata: false
+        });
     }
 
     private async canPublish(

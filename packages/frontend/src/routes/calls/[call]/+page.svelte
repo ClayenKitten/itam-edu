@@ -1,7 +1,6 @@
 <script lang="ts">
     import api from "$lib/api";
     import { onMount } from "svelte";
-    import { RoomState } from "./state.svelte";
     import { env } from "$env/dynamic/public";
     import { ConnectionState } from "livekit-client";
     import { getToaster } from "$lib/Toaster.svelte";
@@ -9,6 +8,7 @@
     import PhaseCall from "./PhaseCall.svelte";
     import { invalidate } from "$app/navigation";
     import type { CallJoinData } from "$lib/types";
+    import { RoomState } from "$lib/calls/room.svelte";
 
     let { data } = $props();
     const toaster = getToaster();
@@ -67,17 +67,13 @@
                 }
             }}
         />
-    {:else if room.state !== ConnectionState.Connected}
+    {:else if room.state === ConnectionState.Connecting}
         <main class="my-auto flex flex-col gap-4 justify-center items-center">
             <div class="flex flex-col items-center gap-2.5">
-                {#if room.state === ConnectionState.Connecting}
-                    Подключаемся...
-                {:else if room.state === ConnectionState.Reconnecting || room.state === ConnectionState.SignalReconnecting}
-                    Переподключаемся...
-                {/if}
+                Подключаемся...
             </div>
         </main>
-    {:else if room.state === ConnectionState.Connected && joinData !== undefined}
+    {:else if (room.state === ConnectionState.Connected || room.state === ConnectionState.Reconnecting || room.state === ConnectionState.SignalReconnecting) && joinData !== undefined}
         <PhaseCall
             user={data.user}
             courses={data.courses}

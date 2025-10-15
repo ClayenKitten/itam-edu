@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Postgres } from "../../infra/postgres";
+import { Postgres } from "../../../infra/postgres";
 
 @injectable()
 export class CallParticipantDao {
@@ -84,6 +84,20 @@ export class CallParticipantDao {
             .set({ lastLeftAt: new Date() })
             .where("callId", "=", callId)
             .where("userId", "=", userId)
+            .execute();
+    }
+
+    /** Updates participant properties. */
+    public async update(
+        callId: string,
+        participantId: string,
+        update: { isMuted: boolean }
+    ): Promise<void> {
+        await this.postgres.kysely
+            .updateTable("callParticipants")
+            .set({ isMuted: update.isMuted })
+            .where("callId", "=", callId)
+            .where("userId", "=", participantId)
             .execute();
     }
 

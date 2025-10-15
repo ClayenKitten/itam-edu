@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { LiveKit } from "../../infra/livekit";
 import logger from "../../logger";
-import { CallParticipantDao } from "./participant.dao";
+import { CallParticipantDao } from "./participants/dao";
 import { ParticipantInfo_Kind } from "@livekit/protocol";
 
 @injectable()
