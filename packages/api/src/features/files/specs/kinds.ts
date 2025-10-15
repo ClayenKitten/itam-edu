@@ -106,7 +106,7 @@ export class LessonCover extends ImageSpec {
         public readonly courseId: UUID,
         public readonly lessonId: UUID
     ) {
-        super({ width: 330, height: 200 });
+        super({ width: 1366, height: 768 });
     }
 
     public static parse(path: ReadonlyArray<string>): LessonCover | null {

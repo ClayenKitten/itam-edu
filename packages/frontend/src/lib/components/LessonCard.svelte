@@ -18,14 +18,14 @@
 <a
     href={`${coursePath(course)}/lessons/${lesson.id}`}
     class={[
-        "flex flex-col w-[356px] h-[295px] p-3 pb-4 rounded-lg border",
+        "shrink-0 flex flex-col w-[356px] p-3 pb-4 rounded-lg border",
         "bg-surface hover:bg-on-primary",
         "border-surface-border hover:border-primary",
         "transition-colors duration-100"
     ]}
 >
     <div
-        class="relative w-full h-[200px] shrink-0 mb-3 rounded-md overflow-hidden"
+        class="relative w-full aspect-[16/9] shrink-0 mb-3 rounded-md overflow-hidden"
         aria-hidden="true"
     >
         {#if showSoon}

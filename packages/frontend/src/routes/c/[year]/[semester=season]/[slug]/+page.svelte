@@ -16,9 +16,16 @@
     );
 </script>
 
-<div class="w-min mx-auto flex flex-col gap-10 px-7 pb-10">
+<div
+    class={[
+        "flex flex-col gap-8 md:gap-10",
+        "md:w-min md:mx-auto md:px-7 md:pb-10"
+    ]}
+>
     <header class="flex flex-col">
-        <div class="banner w-full aspect-[5] mb-7.5 rounded-lg overflow-hidden">
+        <div
+            class="banner w-full aspect-[5] mb-7.5 md:rounded-lg overflow-hidden"
+        >
             {#if data.course.banner}
                 <img
                     class={[
@@ -30,7 +37,7 @@
                 />
             {/if}
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 max-md:px-4">
             <h1>{data.course.title}</h1>
             {#if data.course.isPublished === false}
                 <span
@@ -50,19 +57,25 @@
             <h4 class="text-on-background-muted">{data.course.status}</h4>
         {/if}
     </header>
-    <section class="flex flex-col gap-5 p-6 pb-8 bg-surface shadow rounded-xl">
-        <header class="flex justify-between items-center">
+    <section
+        class="flex flex-col gap-5 py-6 px-4 md:px-6 pb-8 bg-surface shadow md:rounded-xl"
+    >
+        <header class="flex justify-between items-center gap-2">
             <h3>Последние уроки</h3>
-            <a class="btn" href={`${coursePath(data.course)}/lessons`}>
+            <a
+                class="btn max-md:hidden"
+                href={`${coursePath(data.course)}/lessons`}
+            >
                 Все
                 <i class="ph ph-arrow-right text-[26px]"></i>
             </a>
         </header>
         <ol
             class={[
-                "flex flex-wrap gap-4",
-                "h-[295px] overflow-y-hidden",
+                "flex overflow-x-hidden gap-4",
+                "@max-[800px]/main:flex-col",
                 "@max-[800px]/main:w-[356px]",
+                "@max-[800px]/main:[&>*:nth-child(n+3)]:hidden",
                 "@min-[800px]/main:w-[calc(356px_*_2_+_16px)]",
                 "@min-[1200px]/main:w-[calc(356px_*_3_+_16px_*_2)]",
                 "@min-[1600px]/main:w-[calc(356px_*_4_+_16px_*_3)]"
@@ -76,12 +89,10 @@
                     showSoon={lessonGroups.soon.some(l => l.id === lesson.id)}
                 />
             {:else}
-                <div
-                    class="self-center mx-auto flex flex-col items-center gap-2"
-                >
-                    <h4 class="text-on-surface-contrast">
+                <div class="flex flex-col items-center gap-2 mx-auto my-12">
+                    <h5 class="text-on-surface-contrast">
                         Уроки курса ещё не начались 🏝️
-                    </h4>
+                    </h5>
                     <span class="text-lg-regular text-on-surface-muted">
                         Но это ненадолго!
                         <a
@@ -96,12 +107,14 @@
             {/each}
         </ol>
     </section>
-    <section class="flex flex-col p-6 pb-8 bg-surface shadow rounded-xl">
+    <section class="flex flex-col p-6 pb-8 bg-surface shadow md:rounded-xl">
         <header class="flex justify-between items-center h-11">
             <h3>Обновления по курсу</h3>
         </header>
         <hr class="text-primary-border mt-5" />
-        <ol class="flex flex-col max-h-120 overflow-auto mt-5 -mb-6 -mx-6">
+        <ol
+            class="flex flex-col md:max-h-100 md:overflow-y-auto mt-5 -mb-6 -mx-6"
+        >
             {#each data.changes as change}
                 {@const display = getCourseChangeDisplay(
                     change,
@@ -134,7 +147,9 @@
                                 {display.message}
                             </p>
                         </header>
-                        <p class="ml-auto text-on-surface-muted">
+                        <p
+                            class="ml-auto text-on-surface-muted hidden md:block"
+                        >
                             {formatDate(change.createdAt, "dd.MM.yy / HH:mm")}
                         </p>
                     </a>

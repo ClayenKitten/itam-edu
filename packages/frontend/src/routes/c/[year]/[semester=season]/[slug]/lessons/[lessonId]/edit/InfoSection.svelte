@@ -8,7 +8,6 @@
         position,
         title = $bindable(),
         description = $bindable(),
-        schedule,
         banner,
         onBannerChange
     }: Props = $props();
@@ -48,7 +47,7 @@
                 <ImageUploader
                     url={banner ? filePath(banner) : null}
                     onChange={onBannerChange}
-                    aspectRatio="320/200"
+                    aspectRatio="16/9"
                     height="200px"
                 />
             </div>

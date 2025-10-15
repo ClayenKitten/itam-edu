@@ -32,10 +32,12 @@
         {@render fileInput()}
     </label>
 {:else}
-    <div class="relative">
+    <div
+        class="relative w-full bg-surface-tint border border-surface-border shadow rounded-xs"
+    >
         <!-- svelte-ignore a11y_media_has_caption -->
         <video
-            class="max-h-150 shadow rounded-xs"
+            class="aspect-[16/9] w-full rounded-xs"
             {src}
             controls
             preload="metadata"

@@ -70,9 +70,10 @@
     {#if data.lesson.video}
         <!-- svelte-ignore a11y_media_has_caption -->
         <video
+            class="self-start aspect-[16/9] w-full bg-surface-tint border border-surface-border shadow rounded-xs"
             controls
             preload="metadata"
-            class="self-start max-h-150 shadow rounded-xs"
+            poster={data.lesson.banner ? filePath(data.lesson.banner) : null}
         >
             <source src={filePath(data.lesson.video)} />
         </video>

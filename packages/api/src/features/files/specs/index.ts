@@ -12,7 +12,7 @@ export const MEGABYTE = 1048576;
 export abstract class ImageSpec extends FileSpec {
     public constructor(
         public readonly dimensions: ImageDimensions,
-        public readonly maxSize: number = 1 * MEGABYTE
+        public readonly maxSize: number = 50 * MEGABYTE
     ) {
         super(maxSize);
     }
