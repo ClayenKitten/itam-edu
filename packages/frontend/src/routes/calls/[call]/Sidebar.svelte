@@ -10,21 +10,13 @@
     import type { RoomState } from "$lib/calls/room.svelte";
     import { RemoteParticipantState } from "$lib/calls/participant.svelte";
 
-    let {
-        courses,
-        call,
-        room,
-        tab = $bindable(),
-        joinData,
-        onClose
-    }: Props = $props();
+    let { courses, call, room, tab = $bindable(), onClose }: Props = $props();
     type Props = {
         user: User | null;
         courses: CoursePartial[];
         call: Call;
         room: RoomState;
         tab: "people" | "chat" | "settings";
-        joinData: CallJoinData;
         onClose: () => void;
     };
     const toaster = getToaster();
@@ -166,7 +158,7 @@
         >
             <i class="ph ph-chats text-[25px]"></i>
         </button>
-        {#if joinData.permissions.isAdmin}
+        {#if room.localParticipant.metadata.permissions.isAdmin}
             <button
                 class={[
                     "flex-1 flex justify-center items-center",
@@ -205,9 +197,9 @@
                     "shrink-0 flex items-center gap-1 h-10",
                     "px-4 border-l-4",
                     "whitespace-nowrap overflow-hidden",
-                    room.focus?.identity !== participant.identity
-                        ? "border-transparent"
-                        : "border-primary",
+                    room.focus && room.focus.identity === participant.identity
+                        ? "border-primary"
+                        : "border-transparent",
                     "bg-surface hover:bg-surface-tint transition-all duration-200"
                 ]}
                 onclick={() => {
@@ -215,16 +207,17 @@
                     closeIfMobile();
                 }}
                 oncontextmenu={e => {
-                    if (joinData.permissions.isAdmin) {
-                        e.preventDefault();
-                        if (participant instanceof RemoteParticipantState) {
-                            ctxMenuManager.show(e, ctxMenu, {
-                                onMute: async () => {
-                                    participant.screenEnabled;
-                                },
-                                onForceMute: async () => {}
-                            });
-                        }
+                    if (!room.localParticipant.metadata.permissions.isAdmin) {
+                        return;
+                    }
+                    e.preventDefault();
+                    if (participant instanceof RemoteParticipantState) {
+                        ctxMenuManager.show(e, ctxMenu, {
+                            onMute: async () => {
+                                participant.screenEnabled;
+                            },
+                            onForceMute: async () => {}
+                        });
                     }
                 }}
             >

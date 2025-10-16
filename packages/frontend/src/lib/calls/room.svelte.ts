@@ -53,7 +53,7 @@ export class RoomState {
             }
         });
         this.room.on("participantConnected", participant => {
-            this.remoteParticipants.filter(
+            this.remoteParticipants = this.remoteParticipants.filter(
                 p => p.identity !== participant.identity
             );
             this.remoteParticipants.push(
@@ -86,7 +86,11 @@ export class RoomState {
         return this.participants.find(p => p.identity === this.#focus) ?? null;
     }
     public set focus(value: ParticipantState | null) {
-        this.#focus = value === null ? value : value.identity;
+        if (value === null) {
+            this.#focus = null;
+            return;
+        }
+        this.#focus = value.identity;
     }
     #focus: string | null = $state(null);
 

@@ -1,6 +1,4 @@
 import {
-    isAudioTrack,
-    isVideoTrack,
     Track,
     type LocalParticipant,
     type Participant,

@@ -173,7 +173,6 @@
             {courses}
             {call}
             {room}
-            {joinData}
             bind:tab={sidebarTab}
             onClose={() => {
                 sidebarTab = null;
