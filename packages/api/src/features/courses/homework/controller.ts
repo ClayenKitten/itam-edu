@@ -36,7 +36,9 @@ export class HomeworkController {
                     return result;
                 },
                 {
-                    params: t.Object({ course: t.String({ format: "uuid" }) }),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "List homeworks",
                         description: "Returns all homeworks of the course."
@@ -59,7 +61,9 @@ export class HomeworkController {
                 {
                     requireAuthentication: true,
                     body: schema.createHomework,
-                    params: t.Object({ course: t.String({ format: "uuid" }) }),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "Create new homework",
                         description: "Creates new homework.",
@@ -81,8 +85,12 @@ export class HomeworkController {
                 },
                 {
                     requireAuthentication: true,
-                    body: t.Object({ homeworks: schema.reorderHomeworksList }),
-                    params: t.Object({ course: t.String({ format: "uuid" }) }),
+                    body: t.Object({
+                        homeworks: schema.reorderHomeworksList
+                    }),
+                    params: t.Object({
+                        course: t.String({ format: "uuid" })
+                    }),
                     detail: {
                         summary: "Update homeworks",
                         description:
@@ -122,7 +130,8 @@ export class HomeworkController {
                         user,
                         params.course,
                         params.homework,
-                        body
+                        body.homework,
+                        body.skipNotification
                     );
                     if (result instanceof HttpError) {
                         return status(result.code, result.message);
@@ -135,7 +144,10 @@ export class HomeworkController {
                         course: t.String({ format: "uuid" }),
                         homework: t.String({ format: "uuid" })
                     }),
-                    body: schema.updateHomework,
+                    body: t.Object({
+                        homework: schema.updateHomework,
+                        skipNotification: t.Optional(t.Boolean())
+                    }),
                     detail: {
                         summary: "Update homework",
                         description: "Updates homework.",

@@ -71,7 +71,7 @@
             const result2 = await api({ fetch })
                 .courses({ course: data.course.id })
                 .lessons({ lesson: result.data.id })
-                .patch({ banner, video });
+                .patch({ lesson: { banner, video } });
             if (result2.error) {
                 toaster.add("Не удалось сохранить файлы урока", "error");
                 return;

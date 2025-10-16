@@ -131,7 +131,8 @@ export class LessonController {
                         user,
                         params.course,
                         params.lesson,
-                        body
+                        body.lesson,
+                        body.skipNotification
                     );
                     if (newLesson instanceof HttpError) {
                         return status(newLesson.code, newLesson.message);
@@ -144,7 +145,10 @@ export class LessonController {
                         course: t.String({ format: "uuid" }),
                         lesson: t.String({ format: "uuid" })
                     }),
-                    body: schema.updateLesson,
+                    body: t.Object({
+                        lesson: schema.updateLesson,
+                        skipNotification: t.Optional(t.Boolean())
+                    }),
                     detail: {
                         summary: "Update lesson",
                         description: "Updates lesson info."
