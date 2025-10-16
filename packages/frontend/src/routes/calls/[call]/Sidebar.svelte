@@ -197,13 +197,13 @@
                     "shrink-0 flex items-center gap-1 h-10",
                     "px-4 border-l-4",
                     "whitespace-nowrap overflow-hidden",
-                    room.focus && room.focus.identity === participant.identity
+                    room.focus === participant.identity
                         ? "border-primary"
                         : "border-transparent",
                     "bg-surface hover:bg-surface-tint transition-all duration-200"
                 ]}
                 onclick={() => {
-                    room.focus = participant;
+                    room.focus = participant.identity;
                     closeIfMobile();
                 }}
                 oncontextmenu={e => {

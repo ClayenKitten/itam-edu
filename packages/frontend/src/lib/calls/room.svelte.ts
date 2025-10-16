@@ -15,9 +15,16 @@ export class RoomState {
             this.localParticipant,
             ...this.remoteParticipants
         ]);
+        this.focused = $derived(
+            this.participants.find(p => p.identity === this.focus) ?? null
+        );
 
         this.room.on("connectionStateChanged", state => {
             this.state = state;
+            this.localParticipant = new LocalParticipantState(
+                this,
+                this.room.localParticipant
+            );
             if (state === ConnectionState.Connected) {
                 this.room.registerTextStreamHandler(
                     "chat",
@@ -81,18 +88,8 @@ export class RoomState {
     public remoteParticipants: RemoteParticipantState[];
     public readonly participants: ParticipantState[];
 
-    /** Participant that is focused on by the local participant. */
-    public get focus(): ParticipantState | null {
-        return this.participants.find(p => p.identity === this.#focus) ?? null;
-    }
-    public set focus(value: ParticipantState | null) {
-        if (value === null) {
-            this.#focus = null;
-            return;
-        }
-        this.#focus = value.identity;
-    }
-    #focus: string | null = $state(null);
+    public focus: string | null = $state(null);
+    public readonly focused: ParticipantState | null;
 
     /**
      * Automatically focuses on the first participant with enabled camera or screenshare.
@@ -110,7 +107,7 @@ export class RoomState {
                 (r.cameraTrack && !r.cameraTrack.isMuted)
         );
         const newFocus = showingParticipants.at(0);
-        if (newFocus) this.focus = newFocus;
+        if (newFocus) this.focus = newFocus.identity;
     }
 
     /** Chat messages. */

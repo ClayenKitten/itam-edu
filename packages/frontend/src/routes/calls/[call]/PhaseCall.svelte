@@ -111,25 +111,31 @@
                     "bg-surface shadow rounded-xs"
                 ]}
             >
-                {#if room.state === ConnectionState.Reconnecting || room.state === ConnectionState.SignalReconnecting}
+                {#if room.state === ConnectionState.Connecting}
+                    Подключаемся...
+                {:else if room.state === ConnectionState.Reconnecting || room.state === ConnectionState.SignalReconnecting}
                     Переподключаемся...
-                {:else if room.focus !== null}
-                    {#if room.focus.screenTrack && !room.focus.screenTrack.isMuted}
+                {:else if room.focused !== null}
+                    {#if room.focused.screenTrack && !room.focused.screenTrack.isMuted}
                         <div class="size-full overflow-hidden">
-                            <ParticipantVideo track={room.focus.screenTrack} />
+                            <ParticipantVideo
+                                track={room.focused.screenTrack}
+                            />
                         </div>
-                        {#if room.focus && room.focus.cameraTrack && !room.focus.cameraTrack.isMuted}
+                        {#if room.focus && room.focused.cameraTrack && !room.focused.cameraTrack.isMuted}
                             <div
                                 class="absolute top-4 right-4 max-h-60 max-w-60 overflow-hidden rounded-xs"
                             >
                                 <ParticipantVideo
-                                    track={room.focus.cameraTrack}
+                                    track={room.focused.cameraTrack}
                                 />
                             </div>
                         {/if}
-                    {:else if room.focus.cameraTrack && !room.focus.cameraTrack.isMuted}
+                    {:else if room.focused.cameraTrack && !room.focused.cameraTrack.isMuted}
                         <div class="size-full overflow-hidden">
-                            <ParticipantVideo track={room.focus.cameraTrack} />
+                            <ParticipantVideo
+                                track={room.focused.cameraTrack}
+                            />
                         </div>
                     {:else}
                         <div
@@ -151,14 +157,14 @@
                         </button> для просмотра его трансляции
                     </div>
                 {/if}
-                {#if room.focus}
+                {#if room.focused}
                     <div
                         class={[
                             "absolute bottom-4 left-4 px-3 py-2",
                             "bg-primary text-on-primary text-md-regular rounded-full"
                         ]}
                     >
-                        {room.focus.name}
+                        {room.focused.name}
                     </div>
                 {/if}
             </main>

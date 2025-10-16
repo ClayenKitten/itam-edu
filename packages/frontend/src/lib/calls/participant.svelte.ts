@@ -85,10 +85,19 @@ export class RemoteParticipantState extends ParticipantState {
     ) {
         super(room, internal);
         this.refreshTracks();
-        internal.on("trackPublished", () => this.refreshTracks());
-        internal.on("trackUnpublished", () => this.refreshTracks());
-        internal.on("trackSubscribed", () => this.refreshTracks());
 
+        internal.on("trackPublished", () => {
+            this.refreshTracks();
+            this.room.autofocus();
+        });
+        internal.on("trackUnpublished", () => {
+            this.refreshTracks();
+            this.room.autofocus();
+        });
+        internal.on("trackSubscribed", () => {
+            this.refreshTracks();
+            this.room.autofocus();
+        });
         internal.on("trackMuted", () => {
             this.room.autofocus();
         });
@@ -102,8 +111,8 @@ export class LocalParticipantState extends ParticipantState {
     ) {
         super(room, internal);
         this.refreshTracks();
-        internal.on("localTrackPublished", () => this.refreshTracks());
-        internal.on("localTrackUnpublished", () => this.refreshTracks());
+        this.internal.on("localTrackPublished", () => this.refreshTracks());
+        this.internal.on("localTrackUnpublished", () => this.refreshTracks());
     }
 
     public async setSourceEnabled(
