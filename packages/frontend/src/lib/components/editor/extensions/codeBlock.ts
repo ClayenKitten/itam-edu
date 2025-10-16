@@ -9,15 +9,17 @@ export const CodeBlock = CodeBlockLowlight.extend({
             const header = document.createElement("header");
             header.textContent = currentLanguage;
             header.contentEditable = "false";
-            header.addEventListener("click", () => {
-                const newLanguage = prompt("Укажите язык программирования");
-                if (!newLanguage) return null;
-                view.dispatch(
-                    view.state.tr.setNodeMarkup(getPos()!, undefined, {
-                        language: newLanguage
-                    })
-                );
-            });
+            if (this.editor.isEditable) {
+                header.addEventListener("click", () => {
+                    const newLanguage = prompt("Укажите язык программирования");
+                    if (!newLanguage) return null;
+                    view.dispatch(
+                        view.state.tr.setNodeMarkup(getPos()!, undefined, {
+                            language: newLanguage
+                        })
+                    );
+                });
+            }
 
             const pre = document.createElement("pre");
             const code = document.createElement("code");

@@ -22,6 +22,7 @@
         "@eslint/compat": "^1.2.3",
         "@phosphor-icons/web": "^2.1.1",
         "@sinclair/typebox": "^0.34.14",
+        "@svelte-put/qr": "^2.1.0",
         "@sveltejs/adapter-node": "^5.3.1",
         "@sveltejs/kit": "^2.36.1",
         "@sveltejs/vite-plugin-svelte": "^5.1.1",
@@ -65,9 +66,5 @@
         "typescript": "^5.0.0",
         "typescript-eslint": "^8.0.0",
         "vite": "^6.0.0"
-    },
-    "dependencies": {
-        "@svelte-put/qr": "^2.1.0",
-        "jsonwebtoken": "^9.0.2"
     }
 }

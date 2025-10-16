@@ -1,12 +1,20 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github.min.css");
 
-.tiptap {
-    padding: 12px 16px;
-    background-color: var(--color-surface);
-}
-@container editor (width >= 1200px) {
+.rich-editor {
     .tiptap {
-        padding: 12px 25dvw;
+        padding: 12px 16px;
+        background-color: var(--color-surface);
+    }
+    @container editor (width >= 1200px) {
+        .tiptap {
+            padding: 12px 25dvw;
+        }
+    }
+}
+
+.rich-content {
+    p:has(.ProseMirror-trailingBreak) {
+        display: none;
     }
 }
 
@@ -110,13 +118,8 @@
     pre {
         display: flex;
         flex-direction: column;
-        padding: 16px;
-
-        width: max-content;
-        min-width: 600px;
-        max-width: 800px;
-
-        overflow-x: clip;
+        overflow-x: hidden;
+        text-wrap: nowrap;
         border: 1px solid var(--color-surface-border);
         background-color: var(--color-surface-tint);
         border-radius: var(--radius-2xs);
@@ -127,11 +130,18 @@
             font-weight: 600;
             color: var(--color-primary);
             background-color: var(--color-on-primary);
-            padding: 2px 16px;
+            padding: 4px 12px;
             border-bottom: 1px solid var(--color-surface-border);
-            cursor: pointer;
-            margin: -16px -16px 16px -16px;
             user-select: none;
+            [contenteditable="true"] & {
+                cursor: pointer;
+            }
+        }
+
+        code {
+            overflow-x: auto;
+            text-wrap: nowrap;
+            padding: 16px;
         }
     }
 

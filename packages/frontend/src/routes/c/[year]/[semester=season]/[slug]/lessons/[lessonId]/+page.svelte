@@ -80,10 +80,7 @@
     {/if}
     {#if data.lesson.content}
         <section class="flex flex-col gap-3">
-            <h3>Теория и материалы</h3>
-            <article class="shadow px-8 py-6 rounded-lg">
-                <RichContent content={data.lesson.content} />
-            </article>
+            <RichContent content={data.lesson.content} />
         </section>
     {/if}
     {#if data.lesson.homeworkIds.length > 0}
