@@ -22,7 +22,7 @@
         const result = await api({ fetch })
             .courses({ course: data.course.id })
             .homeworks({ homework: data.homework.id })
-            .put(update);
+            .put({ homework: update });
         if (result.error) {
             toaster.add("Не удалось сохранить задание", "error");
             return;
