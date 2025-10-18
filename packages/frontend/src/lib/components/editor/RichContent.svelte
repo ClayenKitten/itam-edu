@@ -24,7 +24,7 @@
 
     let element: HTMLDivElement | undefined = $state();
     let editor: Editor | null = $state(null);
-    onMount(() => {
+    $effect(() => {
         editor = new Editor({
             element,
             extensions,
