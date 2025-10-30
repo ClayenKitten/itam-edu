@@ -1,10 +1,13 @@
 /* Fonts */
-/* Basic */
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=fallback");
-/* H1, H2 */
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,135,676&display=fallback");
-/* H3, H4, H5 */
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,135,573&display=fallback");
+
+@font-face {
+    font-family: "Roboto Flex";
+    src: url("/fonts/RobotoFlex-VariableFont_GRAD,XOPQ,XTRA,YOPQ,YTAS,YTDE,YTFI,YTLC,YTUC,opsz,slnt,wdth,wght.ttf")
+        format("truetype");
+    font-weight: 100 1000;
+    font-stretch: 75% 150%;
+    font-display: fallback;
+}
 
 /* Icons */
 @import "@phosphor-icons/web/regular";
@@ -375,6 +378,7 @@ body:has(.modal[open]) {
 
 body {
     font-size: var(--text-lg-regular);
+    /*font-variation-settings: 'wght' 400;*/
     line-height: var(--text-lg-regular--line-height);
     font-weight: var(--text-lg-regular--font-weight);
 }
