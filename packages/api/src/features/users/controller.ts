@@ -3,7 +3,6 @@ import { Elysia, t } from "elysia";
 import { NO_AUTHENTICATION, REQUIRE_TOKEN } from "../../ports/http/openapi";
 import { AuthenticationPlugin } from "../../ports/http/authn";
 import { UserRepository } from "./repository";
-import { CalendarQuery, type CalendarFilters } from "./calendar";
 import { UserLogin } from "./login";
 import { NotificationsQuery } from "./notifications/query";
 import * as schema from "./schema";
@@ -19,7 +18,6 @@ export class UserController {
         private userQuery: UserQuery,
         private sessionRepo: SessionRepository,
         private login: UserLogin,
-        private calendarQuery: CalendarQuery,
         private notificationsQuery: NotificationsQuery
     ) {}
 
@@ -130,34 +128,7 @@ export class UserController {
                     }
                 }
             )
-            .get(
-                "/me/calendar",
-                async ({ user, query }) => {
-                    const filters: CalendarFilters = {
-                        after: query.after ? new Date(query.after) : undefined,
-                        before: query.before
-                            ? new Date(query.before)
-                            : undefined
-                    };
-                    const events = await this.calendarQuery.get(user, filters);
-                    return events;
-                },
-                {
-                    requireAuthentication: true,
-                    detail: {
-                        summary: "Get current user calendar",
-                        description:
-                            "Returns calendar events of the current user.",
-                        security: REQUIRE_TOKEN
-                    },
-                    query: t.Partial(
-                        t.Object({
-                            after: t.String({ format: "date-time" }),
-                            before: t.String({ format: "date-time" })
-                        })
-                    )
-                }
-            )
+
             .get(
                 "/me/notifications",
                 async ({ user }) => {
