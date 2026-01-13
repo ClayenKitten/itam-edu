@@ -70,13 +70,15 @@
             .courses({ course: data.course.id })
             .lessons({ lesson: data.lesson.id })
             .patch({
-                title: lesson.title,
-                description: lesson.description,
-                banner: lesson.banner,
-                video: lesson.video,
-                content: lesson.content,
-                homeworkIds: lesson.homeworkIds,
-                schedule: changedSchedule ? lesson.schedule : undefined
+                lesson: {
+                    title: lesson.title,
+                    description: lesson.description,
+                    banner: lesson.banner,
+                    video: lesson.video,
+                    content: lesson.content,
+                    homeworkIds: lesson.homeworkIds,
+                    schedule: changedSchedule ? lesson.schedule : undefined
+                }
             });
         if (result.error) {
             toaster.add("Не удалось сохранить урок", "error");

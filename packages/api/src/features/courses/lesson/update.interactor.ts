@@ -24,7 +24,8 @@ export class UpdateLesson {
         actor: User,
         courseId: string,
         lessonId: string,
-        change: typeof schema.updateLesson.static
+        change: typeof schema.updateLesson.static,
+        skipNotification?: boolean
     ): Promise<Lesson | UnauthorizedError> {
         const course = await this.courseRepo.getById(courseId);
         const permissions = course?.getPermissionsFor(actor);
@@ -68,8 +69,11 @@ export class UpdateLesson {
             change.schedule === undefined ? lesson.schedule : change.schedule
         );
         await this.repo.save(newLesson);
-
-        if (change.schedule !== undefined && newLesson.schedule !== null) {
+        if (
+            change.schedule !== undefined &&
+            newLesson.schedule !== null &&
+            skipNotification !== true
+        ) {
             const oneHourAgo = new Date().getTime() - 60 * 60 * 1000;
             if (newLesson.schedule.date.getTime() >= oneHourAgo) {
                 await this.notificationSender.send(
