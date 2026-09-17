@@ -34,7 +34,11 @@ export class TelegramBot {
         private config: AppConfig,
         private userRepo: UserRepository
     ) {
-        this.grammy = new Grammy(config.telegram.token);
+        this.grammy = new Grammy(config.telegram.token, {
+            client: {
+                apiRoot: config.telegram.botApiRoot,
+            }
+        });
 
         this.publisher = new MessagePublisher(
             config.redis.connectionString,
