@@ -40,7 +40,9 @@ export const appConfigSchema = t.Object({
         /** Telegram API token. */
         token: t.String(),
         /** Support account username without a leading `@`, e.g. `durov`. */
-        supportUsername: t.String()
+        supportUsername: t.String(),
+        /** Api host to use for requests to Telegram. */
+        botApiRoot: t.String({ default: "https://api.telegram.org" })
     }),
     /** LiveKit connection configuration. */
     livekit: t.Object({
@@ -112,7 +114,8 @@ export function createConfigFromEnv(): AppConfig {
         },
         telegram: {
             token: env.ITAMEDU_TELEGRAM_TOKEN!,
-            supportUsername: env.ITAMEDU_TELEGRAM_SUPPORT_USERNAME!
+            supportUsername: env.ITAMEDU_TELEGRAM_SUPPORT_USERNAME!,
+            botApiRoot: env.ITAMEDU_TELEGRAM_BOT_API_ROOT!
         },
         postgres: {
             connectionString: env.ITAMEDU_POSTGRES_CONNECTION_STRING!
