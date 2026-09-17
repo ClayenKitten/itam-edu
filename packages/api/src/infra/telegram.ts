@@ -36,7 +36,7 @@ export class TelegramBot {
     ) {
         this.grammy = new Grammy(config.telegram.token, {
             client: {
-                apiRoot: config.telegram.botApiRoot,
+                apiRoot: config.telegram.botApiRoot
             }
         });
 
